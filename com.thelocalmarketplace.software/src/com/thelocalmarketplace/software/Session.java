@@ -269,7 +269,7 @@ public class Session {
 				sessionState = SessionState.PAY_BY_CASH;
 				funds.setPay(true);
 				coinSlot.enable();
-				coinSlot.disable();
+				banknoteSlot.enable();
 			} else {
 				throw new CartEmptyException("Cannot pay for an empty order");
 			}
