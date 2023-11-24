@@ -6,6 +6,7 @@ import java.util.HashMap;
 import com.jjjwelectronics.Mass;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.software.Session;
+import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.exceptions.ProductNotFoundException;
 
 /**
@@ -38,15 +39,10 @@ import com.thelocalmarketplace.software.exceptions.ProductNotFoundException;
 
 public class ItemManager {
 	private Session session;
-	private HashMap<BarcodedProduct, Integer> barcodedItems;
-	private HashMap<BarcodedProduct, Integer> bulkyItems = new HashMap<BarcodedProduct, Integer>();
-	private BarcodedProduct lastProduct;
 	
 	
 	public ItemManager(Session session) {
 		this.session = session;
-		barcodedItems = session.getBarcodedItems();
-		bulkyItems = session.getBulkyItems();
 	}
 
 	/**
@@ -58,6 +54,7 @@ public class ItemManager {
 	 *                The product to be added to the HashMap.
 	 */
 	public void addItem(BarcodedProduct product) {
+		HashMap<BarcodedProduct, Integer> barcodedItems = session.getBarcodedItems();
 		if (barcodedItems.containsKey(product)) {
 			barcodedItems.replace(product, barcodedItems.get(product) + 1);
 		} else {
@@ -69,7 +66,10 @@ public class ItemManager {
 		BigDecimal itemPrice = new BigDecimal(price);
 		session.getWeight().update(mass);
 		session.getFunds().update(itemPrice);
-		lastProduct = product;
+		
+		if(Session.getState() == SessionState.IN_SESSION) {
+			session.updateMap(barcodedItems);
+		}
 	}
 	
 	/**
@@ -80,6 +80,7 @@ public class ItemManager {
 	 *                The product to be removed from the HashMap.
 	 */
 	public void removeItem(BarcodedProduct product) {
+		HashMap<BarcodedProduct, Integer> barcodedItems = session.getBarcodedItems();
 		double weight = product.getExpectedWeight();
 		long price = product.getPrice(); 
 		Mass mass = new Mass(weight);
@@ -94,7 +95,9 @@ public class ItemManager {
 		}
 		
 		session.getFunds().removeItemPrice(ItemPrice);
+		session.updateMap(barcodedItems);
 		
+		HashMap<BarcodedProduct, Integer> bulkyItems = session.getBulkyItems();
 		if (bulkyItems.containsKey(product) && bulkyItems.get(product) >= 1 ) {
 			bulkyItems.replace(product, bulkyItems.get(product)-1);
 		} else if (bulkyItems.containsKey(product) && bulkyItems.get(product) == 1 ) {

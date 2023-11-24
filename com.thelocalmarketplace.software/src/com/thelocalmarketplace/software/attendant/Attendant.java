@@ -1,7 +1,9 @@
-package com.thelocalmarketplace.software;
+package com.thelocalmarketplace.software.attendant;
 
 import java.util.ArrayList;
 
+import com.thelocalmarketplace.software.Session;
+import com.thelocalmarketplace.software.SessionListener;
 import com.thelocalmarketplace.software.weight.WeightListener;
 
 /**

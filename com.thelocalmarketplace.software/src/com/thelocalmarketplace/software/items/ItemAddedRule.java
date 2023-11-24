@@ -47,7 +47,7 @@ import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
  * Kingsley Zhong 			: 30197260 
  */
 public class ItemAddedRule {
-	private Session session;
+	private ItemManager itemManager;
 
 	/**
 	 * Basic constructor for ItemAddedRule. Registers a listener to scanners being
@@ -67,6 +67,7 @@ public class ItemAddedRule {
 		}
 		mainScanner.register(new innerListener());
 		handheldScanner.register(new innerListener());
+		this.itemManager = itemManager;
 	}
 
 	/**
@@ -76,18 +77,14 @@ public class ItemAddedRule {
 	public class innerListener implements BarcodeScannerListener {
 		@Override
 		public void aBarcodeHasBeenScanned(IBarcodeScanner barcodeScanner, Barcode barcode) {
-			if (Session.getState() == SessionState.IN_SESSION) {
-				Map<Barcode, BarcodedProduct> database = ProductDatabases.BARCODED_PRODUCT_DATABASE;
+			Map<Barcode, BarcodedProduct> database = ProductDatabases.BARCODED_PRODUCT_DATABASE;
 
-				// Checks if product is in database. Throws exception if not in database.
-				if (database.containsKey(barcode)) {
-					BarcodedProduct product = database.get(barcode);
-					session.addItem(product);
-				} else {
-					throw new InvalidArgumentSimulationException("Not in database");
-				}
+			// Checks if product is in database. Throws exception if not in database.
+			if (database.containsKey(barcode)) {
+				BarcodedProduct product = database.get(barcode);
+				itemManager.addItem(product);
 			} else {
-				// silently ignore
+				throw new InvalidArgumentSimulationException("Not in database");
 			}
 		}
 

@@ -10,6 +10,7 @@ import com.tdc.CashOverloadException;
 import com.tdc.DisabledException;
 import com.tdc.NoCashAvailableException;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
 import com.thelocalmarketplace.software.exceptions.ProductNotFoundException;
 import com.thelocalmarketplace.software.funds.Funds;
@@ -69,7 +70,7 @@ public class Session {
 	private Weight weight;
 	private PrintReceipt receiptPrinter; // Code added
 	
-	private String request = "None";
+	private Requests request = Requests.NO_REQUEST;
 	private boolean requestApproved = false;
 
 	private class WeightDiscrepancyListener implements WeightListener {
@@ -296,6 +297,10 @@ public class Session {
 		// else: nothing changes about the Session's state
 	}
 
+	public void updateMap(HashMap<BarcodedProduct, Integer> barcodedItems) {
+		this.barcodedItems = barcodedItems;
+	}
+	
 	/**
 	 * Adds a barcoded product to the hashMap of the barcoded products. Updates the
 	 * expected weight and price
@@ -373,7 +378,7 @@ public class Session {
 		// Only able to add when in a discrepancy after adding bags
 		if(sessionState == SessionState.BLOCKED) {
 			sessionState = SessionState.BULKY_ITEM;
-			request = "BulkyItem";
+			request = Requests.BULKY_ITEM;
 			notifyAttendant();
 		}
 		else if (sessionState == SessionState.BULKY_ITEM) {
@@ -400,9 +405,9 @@ public class Session {
 	/**
 	 * method to allow assistant to approve customer requests
 	 */
-	public void attendantApprove(String request) {
+	public void attendantApprove(Requests request) {
 		requestApproved = true;
-		if (request == "BulkyItem") {
+		if (request == Requests.BULKY_ITEM) {
 			addBulkyItem();
 		}
 	}
