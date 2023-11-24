@@ -51,7 +51,7 @@ public class Funds {
 	private BigDecimal paid; // Amount paid by the customer (in cents)
 	private BigDecimal amountDue; // Remaining amount to be paid (in cents)
 	private boolean isPay; // Flag indicating if the session is in pay mode
-	private PayByCashController cashController;
+	private PayByCash cashController;
 	private PayByCard cardController;
 	private final BigDecimal[] banknoteDenominations;
     private final List<BigDecimal> coinDenominations;
@@ -80,8 +80,6 @@ public class Funds {
 		this.amountDue = BigDecimal.ZERO;
 		this.isPay = false;
 		this.payed = false;
-		this.cashController = new PayByCashController(scs, this);
-		this.cardController = new PayByCard(scs, this);
 		this.scs = scs;
 		
 		// sort denominations in descending order

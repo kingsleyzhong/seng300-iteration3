@@ -62,8 +62,8 @@ public class Weight {
 	 *            The self-checkout station in which the weight shall be registered
 	 *            to
 	 */
-	public Weight(AbstractSelfCheckoutStation scs) {
-		scs.baggingArea.register(new innerListener());
+	public Weight(IElectronicScale baggingArea) {
+		baggingArea.register(new innerListener());
 	}
 
 	public class innerListener implements ElectronicScaleListener {

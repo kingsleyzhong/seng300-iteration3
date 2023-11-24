@@ -1,5 +1,9 @@
 package com.thelocalmarketplace.software;
 
+import java.util.ArrayList;
+
+import com.thelocalmarketplace.software.weight.WeightListener;
+
 /**
  * Simulation of attendant function and interaction with sessions.
  * 
@@ -29,5 +33,23 @@ package com.thelocalmarketplace.software;
  */
 
 public class Attendant {
+	private ArrayList<Session> sessions = new ArrayList<>();
+	
+	
+	/**
+	 * default constructor
+	 */
+	public Attendant() {
+		
+	}
+
+	private class InnerListener implements SessionListener{
+		
+	}
+	
+	public void registerOn(Session session) {
+		session.register(new InnerListener());
+		sessions.add(session);
+	}
 
 }

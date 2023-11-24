@@ -1,6 +1,7 @@
 package com.thelocalmarketplace.software;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,6 +18,8 @@ import com.thelocalmarketplace.software.receipt.PrintReceipt;
 import com.thelocalmarketplace.software.receipt.PrintReceiptListener;
 import com.thelocalmarketplace.software.weight.Weight;
 import com.thelocalmarketplace.software.weight.WeightListener;
+
+import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 
 /**
  * Class facade representing the session of a self-checkout station
@@ -56,6 +59,7 @@ import com.thelocalmarketplace.software.weight.WeightListener;
  *
  */
 public class Session {
+	public ArrayList<SessionListener> listeners = new ArrayList<>();
 	protected static SessionState sessionState;
 	private SessionState prevState;
 	private HashMap<BarcodedProduct, Integer> barcodedItems = new HashMap<BarcodedProduct, Integer>();
@@ -418,7 +422,11 @@ public class Session {
 	public HashMap<BarcodedProduct, Integer> getBarcodedItems() {
 		return barcodedItems;
 	}
-   
+	
+    public HashMap<BarcodedProduct, Integer> getBulkyItems() {
+		return bulkyItems;
+	}
+    
 	public Funds getFunds() {
 		return funds;
 	}
@@ -435,5 +443,19 @@ public class Session {
 	 */
 	public static final SessionState getState() {
 		return sessionState;
+	}
+	
+	// register listeners
+	public final synchronized void register(SessionListener listener) {
+		if (listener == null)
+			throw new NullPointerSimulationException("listener");
+			listeners.add(listener);
+	}
+
+	// de-register listeners
+	public final synchronized void deRegister(SessionListener listener) {
+		if (listener == null)
+			throw new NullPointerSimulationException("listener");
+			listeners.remove(listener);
 	}
 }

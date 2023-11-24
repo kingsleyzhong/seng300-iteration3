@@ -28,7 +28,7 @@ import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 import com.thelocalmarketplace.software.funds.Funds;
-import com.thelocalmarketplace.software.funds.PayByCashController;
+import com.thelocalmarketplace.software.funds.PayByCash;
 import com.thelocalmarketplace.software.test.PayByCashControllerTest.MockSession;
 
 import powerutility.PowerGrid;
@@ -41,9 +41,9 @@ public class PayByCashControllerTest {
 	private CoinValidator validator;
 	private CoinValidator validatorSilver;
 	private CoinValidator validatorGold;
-	private PayByCashController cashControllerBronze;
-	private PayByCashController cashControllerSilver;
-	private PayByCashController cashControllerGold;
+	private PayByCash cashControllerBronze;
+	private PayByCash cashControllerSilver;
+	private PayByCash cashControllerGold;
 	private BigDecimal value;
 	private BigDecimal price;
 	private Funds fundScs;
@@ -65,7 +65,7 @@ public class PayByCashControllerTest {
 		scs.plugIn(PowerGrid.instance());
 		scs.turnOn();
 		this.fundScs = new Funds(scs);
-		this.cashControllerBronze = new PayByCashController(scs, fundScs);
+		this.cashControllerBronze = new PayByCash(scs, fundScs);
 		
 		// engage uninteruptable power source
 		PowerGrid.instance().engageUninterruptiblePowerSource();
@@ -74,13 +74,13 @@ public class PayByCashControllerTest {
 		scss.plugIn(PowerGrid.instance());
 		scss.turnOn();
 		this.fundScss = new Funds(scss);
-		this.cashControllerSilver = new PayByCashController(scss, fundScss);
+		this.cashControllerSilver = new PayByCash(scss, fundScss);
 		
 		scsg = new SelfCheckoutStationGold();
 		scsg.plugIn(PowerGrid.instance());
 		scsg.turnOn();
 		this.fundScsg = new Funds(scsg);
-		this.cashControllerGold = new PayByCashController(scss, fundScsg);
+		this.cashControllerGold = new PayByCash(scss, fundScsg);
 		
 		// register listeners
 		cvListenerBronze = new stubCVListener();

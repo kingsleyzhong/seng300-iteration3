@@ -34,7 +34,7 @@ import com.thelocalmarketplace.software.exceptions.NotEnoughChangeException;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.funds.FundsListener;
 import com.thelocalmarketplace.software.funds.PayByCard;
-import com.thelocalmarketplace.software.funds.PayByCashController;
+import com.thelocalmarketplace.software.funds.PayByCash;
 
 import StubClasses.FundsListenerStub;
 import StubClasses.SessionFundsSimulationStub;
@@ -63,9 +63,9 @@ public class FundsTest {
 	private SelfCheckoutStationSilver scss;
 	private SelfCheckoutStationGold scsg;
 
-	private PayByCashController cashControllerBronze;
-	private PayByCashController cashControllerSilver;
-	private PayByCashController cashControllerGold;
+	private PayByCash cashControllerBronze;
+	private PayByCash cashControllerSilver;
+	private PayByCash cashControllerGold;
 
 	private PayByCard cardControllerBronze;
 	private Funds funds;
@@ -104,9 +104,9 @@ public class FundsTest {
 		this.fundsg = fundsg;
 		fundsg.setPay(true);
 		
-		this.cashControllerBronze = new PayByCashController(scs, funds);
-		this.cashControllerSilver = new PayByCashController(scss, fundss);
-		this.cashControllerGold = new PayByCashController(scsg, fundsg);
+		this.cashControllerBronze = new PayByCash(scs, funds);
+		this.cashControllerSilver = new PayByCash(scss, fundss);
+		this.cashControllerGold = new PayByCash(scsg, fundsg);
 
 		price = BigDecimal.valueOf(1);
 		amountPaid = BigDecimal.valueOf(1);

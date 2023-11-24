@@ -46,7 +46,7 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
  */
 
 
-public class PayByCashController {
+public class PayByCash {
 	
 	private BigDecimal cashPaid; //amount of cash that has been paid
 	private Funds fund;
@@ -57,14 +57,14 @@ public class PayByCashController {
  * @param funds 
  * @param paid 
  */
-	public PayByCashController(AbstractSelfCheckoutStation scs, Funds funds) {
+	public PayByCash(CoinValidator coinValidator, BanknoteValidator banknoteValidator, Funds funds) {
 		
 		this.cashPaid = BigDecimal.ZERO;
 				
 		InnerCoinListener coinListener = new InnerCoinListener();
 		InnerBankNoteListener banknoteListener = new InnerBankNoteListener();
-		scs.coinValidator.attach(coinListener);
-		scs.banknoteValidator.attach(banknoteListener);
+		coinValidator.attach(coinListener);
+		banknoteValidator.attach(banknoteListener);
 		this.fund = funds;
 		
 		

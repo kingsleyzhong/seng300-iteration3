@@ -48,20 +48,17 @@ import com.jjjwelectronics.card.*;
 public class PayByCard {
 	
 	private Card card;
-	private PayByCard cardController;
 	private double amountDue;
 	boolean paidBool;
 	boolean posted;
 	private Funds funds;
-	private AbstractSelfCheckoutStation scs;
 	
-	public PayByCard(AbstractSelfCheckoutStation scs, Funds funds) {
+	public PayByCard(ICardReader cardReader, Funds funds) {
 		InnerListener cardListener = new InnerListener();
-		scs.cardReader.register(cardListener);
+		cardReader.register(cardListener);
 		
 		amountDue = funds.getAmountDue().doubleValue();
 		this.funds = funds;
-		this.scs = scs;
 	}
 	
 	private class InnerListener implements CardReaderListener {

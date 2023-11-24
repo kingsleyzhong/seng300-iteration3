@@ -1,9 +1,6 @@
-package com.thelocalmarketplace.software.items;
+package com.thelocalmarketplace.software;
 
 /**
- * Class that handles involvement of removing items/products
- * from the session/item manager
- * 
  * Project Iteration 3 Group 1
  *
  * Derek Atabayev 			: 30177060 
@@ -29,10 +26,6 @@ package com.thelocalmarketplace.software.items;
  * Kingsley Zhong 			: 30197260 
  */
 
-public class ItemRemovedRule {
-
-	public ItemRemovedRule(ItemManager itemManager) {
-		// TODO Auto-generated constructor stub
-	}
+public interface SessionListener {
 
 }

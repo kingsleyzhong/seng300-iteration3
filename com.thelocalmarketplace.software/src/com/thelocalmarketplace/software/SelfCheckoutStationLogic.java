@@ -5,7 +5,11 @@ import java.util.HashMap;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.software.funds.Funds;
+import com.thelocalmarketplace.software.funds.PayByCard;
+import com.thelocalmarketplace.software.funds.PayByCash;
 import com.thelocalmarketplace.software.items.ItemAddedRule;
+import com.thelocalmarketplace.software.items.ItemManager;
+import com.thelocalmarketplace.software.items.ItemRemovedRule;
 import com.thelocalmarketplace.software.receipt.PrintReceipt;
 import com.thelocalmarketplace.software.weight.Weight;
 
@@ -41,6 +45,8 @@ import com.thelocalmarketplace.software.weight.Weight;
 
 public class SelfCheckoutStationLogic {
 
+	public static Attendant attendant = new Attendant();
+	
 	/**
 	 * Installs an instance of the logic on the selfCheckoutStation and the session
 	 * run on the station
@@ -53,8 +59,8 @@ public class SelfCheckoutStationLogic {
 	 *         returns an instance of the SelfCheckoutStationLogic on a
 	 *         SelfChekoutStation and Session
 	 */
-	public static SelfCheckoutStationLogic installOn(AbstractSelfCheckoutStation scs, Session session) {
-		return new SelfCheckoutStationLogic(scs, session);
+	public static SelfCheckoutStationLogic installOn(AbstractSelfCheckoutStation scs) {
+		return new SelfCheckoutStationLogic(scs);
 	}
 
 	/**
@@ -65,20 +71,19 @@ public class SelfCheckoutStationLogic {
 	 * @param session
 	 *                The session that the logic shall be installed on
 	 */
-	private SelfCheckoutStationLogic(AbstractSelfCheckoutStation scs, Session session) {
-		//Session session = new Session();
-		//Attendant attendant = new Attendant(as);
-		//session.register(attendant);
-		Funds funds = new Funds(scs); //Funds needs the coinDispensers and bankNoteDispensers
-		// PayByCashController(scs.coinValidator, scs.banknoteValidator, funds);
-		// PayByCardController(scs.cardReader, funds);
-		Weight weight = new Weight(scs); //Weight need the bagging area
-		PrintReceipt receiptPrinter = new PrintReceipt(scs); // Needs printer
+	private SelfCheckoutStationLogic(AbstractSelfCheckoutStation scs) {
+		Session session = new Session();
+		attendant.registerOn(session);
+		Funds funds = new Funds(scs); 
+		new PayByCash(scs.coinValidator, scs.banknoteValidator, funds);
+		new PayByCard(scs.cardReader, funds);
+		Weight weight = new Weight(scs.baggingArea);
+		PrintReceipt receiptPrinter = new PrintReceipt(scs.printer); 
 		HashMap<BarcodedProduct, Integer> barcodedItems = new HashMap<BarcodedProduct, Integer>();
 		// Will also need the touch screen/ keyboard for GUI interaction
 		session.setup(barcodedItems, funds, weight, receiptPrinter); 
-		// ItemManager itemManager = new ItemManager(session);
-		// new ItemRemovedRule(itemManager)
-		new ItemAddedRule(scs, session); //Needs access to mainScanner and handheldScanner
+		ItemManager itemManager = new ItemManager(session);
+		new ItemRemovedRule(itemManager);
+		new ItemAddedRule(scs.mainScanner, scs.handheldScanner, itemManager);
 	}
 }

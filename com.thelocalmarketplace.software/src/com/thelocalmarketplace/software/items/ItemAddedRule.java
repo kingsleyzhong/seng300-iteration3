@@ -54,18 +54,19 @@ public class ItemAddedRule {
 	 * used in the
 	 * self-checkout station.
 	 * 
-	 * @param scs
-	 *                The selfCheckoutStation in which to be installed
-	 * @param session
-	 *                The session in which to add to
+	 * @param mainScanner
+	 *                The main scanner
+	 * @param handheldScanner
+	 *                The handheld scanner
+	 * @param itemManager
+	 * 				The item manager is where items are managed
 	 */
-	public ItemAddedRule(AbstractSelfCheckoutStation scs, Session session) {
-		if (scs == null) {
+	public ItemAddedRule(IBarcodeScanner mainScanner, IBarcodeScanner handheldScanner, ItemManager itemManager) {
+		if (mainScanner == null || handheldScanner == null || itemManager == null) {
 			throw new InvalidArgumentSimulationException("Self Checkout Station cannot be null.");
 		}
-		this.session = session;
-		scs.mainScanner.register(new innerListener());
-		scs.handheldScanner.register(new innerListener());
+		mainScanner.register(new innerListener());
+		handheldScanner.register(new innerListener());
 	}
 
 	/**

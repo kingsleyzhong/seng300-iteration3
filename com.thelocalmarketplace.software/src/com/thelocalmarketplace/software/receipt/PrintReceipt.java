@@ -48,15 +48,15 @@ public class PrintReceipt {
 	/**
      * Constructor that initializes the funds and registers an inner listener to the self-checkout station.
      * 
-     * @param scs The self-checkout station
+     * @param printer The self-checkout station
      */
-    public PrintReceipt (AbstractSelfCheckoutStation scs) {
-        if (scs == null) {
+    public PrintReceipt (IReceiptPrinter printer) {
+        if (printer == null) {
             throw new IllegalArgumentException("SelfCheckoutStation should not be null.");
         }
         InnerListener listener = new InnerListener();
-        scs.printer.register(listener);
-        this.printer = scs.printer;
+        printer.register(listener);
+        this.printer = printer;
     }
     
     /**
