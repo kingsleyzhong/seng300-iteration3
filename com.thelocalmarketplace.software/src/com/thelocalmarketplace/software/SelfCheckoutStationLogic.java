@@ -5,8 +5,8 @@ import java.util.HashMap;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.software.funds.Funds;
+import com.thelocalmarketplace.software.items.ItemAddedRule;
 import com.thelocalmarketplace.software.receipt.PrintReceipt;
-import com.thelocalmarketplace.software.rules.ItemAddedRule;
 import com.thelocalmarketplace.software.weight.Weight;
 
 /**
@@ -14,17 +14,29 @@ import com.thelocalmarketplace.software.weight.Weight;
  * station.
  * Allows for a database to be constructed
  * 
- * Project iteration 2 group members:
- * Aj Sallh : 30023811
- * Anthony Kostal-Vazquez : 30048301
- * Chloe Robitaille : 30022887
- * Dvij Raval : 30024340
- * Emily Kiddle : 30122331
- * Katelan NG : 30144672
- * Kingsley Zhong : 30197260
- * Nick McCamis : 30192610
- * Sua Lim : 30177039
- * Subeg CHAHAL : 30196531
+ * Project Iteration 3 Group 1
+ *
+ * Derek Atabayev 			: 30177060 
+ * Enioluwafe Balogun 		: 30174298 
+ * Subeg Chahal 			: 30196531 
+ * Jun Heo 					: 30173430 
+ * Emily Kiddle 			: 30122331 
+ * Anthony Kostal-Vazquez 	: 30048301 
+ * Jessica Li 				: 30180801 
+ * Sua Lim 					: 30177039 
+ * Savitur Maharaj 			: 30152888 
+ * Nick McCamis 			: 30192610 
+ * Ethan McCorquodale 		: 30125353 
+ * Katelan Ng 				: 30144672 
+ * Arcleah Pascual 			: 30056034 
+ * Dvij Raval 				: 30024340 
+ * Chloe Robitaille 		: 30022887 
+ * Danissa Sandykbayeva 	: 30200531 
+ * Emily Stein 				: 30149842 
+ * Thi My Tuyen Tran 		: 30193980 
+ * Aoi Ueki 				: 30179305 
+ * Ethan Woo 				: 30172855 
+ * Kingsley Zhong 			: 30197260 
  */
 
 public class SelfCheckoutStationLogic {
@@ -54,11 +66,19 @@ public class SelfCheckoutStationLogic {
 	 *                The session that the logic shall be installed on
 	 */
 	private SelfCheckoutStationLogic(AbstractSelfCheckoutStation scs, Session session) {
-		Funds funds = new Funds(scs);
-		Weight weight = new Weight(scs);
-		PrintReceipt receiptPrinter = new PrintReceipt(scs);
+		//Session session = new Session();
+		//Attendant attendant = new Attendant(as);
+		//session.register(attendant);
+		Funds funds = new Funds(scs); //Funds needs the coinDispensers and bankNoteDispensers
+		// PayByCashController(scs.coinValidator, scs.banknoteValidator, funds);
+		// PayByCardController(scs.cardReader, funds);
+		Weight weight = new Weight(scs); //Weight need the bagging area
+		PrintReceipt receiptPrinter = new PrintReceipt(scs); // Needs printer
 		HashMap<BarcodedProduct, Integer> barcodedItems = new HashMap<BarcodedProduct, Integer>();
-		session.setup(barcodedItems, funds, weight, receiptPrinter);
-		new ItemAddedRule(scs, session);
+		// Will also need the touch screen/ keyboard for GUI interaction
+		session.setup(barcodedItems, funds, weight, receiptPrinter); 
+		// ItemManager itemManager = new ItemManager(session);
+		// new ItemRemovedRule(itemManager)
+		new ItemAddedRule(scs, session); //Needs access to mainScanner and handheldScanner
 	}
 }

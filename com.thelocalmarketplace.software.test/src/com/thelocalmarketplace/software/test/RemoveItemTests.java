@@ -24,7 +24,7 @@ import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 import com.thelocalmarketplace.software.exceptions.ProductNotFoundException;
 import com.thelocalmarketplace.software.funds.Funds;
-import com.thelocalmarketplace.software.rules.ItemAddedRule;
+import com.thelocalmarketplace.software.items.ItemAddedRule;
 import com.thelocalmarketplace.software.weight.Weight;
 
 import powerutility.PowerGrid;

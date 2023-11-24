@@ -1,7 +1,7 @@
-package com.thelocalmarketplace.software.funds;
+package com.thelocalmarketplace.software;
 
 /**
- * Listens for if payment has been completed
+ * Simulation of attendant function and interaction with sessions.
  * 
  * Project Iteration 3 Group 1
  *
@@ -27,10 +27,7 @@ package com.thelocalmarketplace.software.funds;
  * Ethan Woo 				: 30172855 
  * Kingsley Zhong 			: 30197260 
  */
-public interface FundsListener {
 
-	/**
-	 * Signals an event in which the customer has paid for the complete amount of the order
-	 */
-	void notifyPaid();
+public class Attendant {
+
 }
