@@ -9,6 +9,8 @@ import com.jjjwelectronics.Mass;
 import com.tdc.CashOverloadException;
 import com.tdc.DisabledException;
 import com.tdc.NoCashAvailableException;
+import com.tdc.banknote.BanknoteInsertionSlot;
+import com.tdc.coin.CoinSlot;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
@@ -61,13 +63,15 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
  */
 public class Session {
 	public ArrayList<SessionListener> listeners = new ArrayList<>();
-	protected static SessionState sessionState;
+	private SessionState sessionState;
 	private SessionState prevState;
 	private HashMap<BarcodedProduct, Integer> barcodedItems = new HashMap<BarcodedProduct, Integer>();
 	private BarcodedProduct lastProduct;
 	private HashMap<BarcodedProduct, Integer> bulkyItems = new HashMap<BarcodedProduct, Integer>();
 	private Funds funds;
 	private Weight weight;
+	private CoinSlot coinSlot;
+	private BanknoteInsertionSlot banknoteSlot;
 	private PrintReceipt receiptPrinter; // Code added
 	
 	private Requests request = Requests.NO_REQUEST;
@@ -198,7 +202,8 @@ public class Session {
 	 * @param PrintReceipt 
 	 * 						The PrintReceipt behavior
 	 */
-	public void setup(HashMap<BarcodedProduct, Integer> barcodedItems, Funds funds, Weight weight, PrintReceipt receiptPrinter) {
+	public void setup(HashMap<BarcodedProduct, Integer> barcodedItems, Funds funds, Weight weight, PrintReceipt receiptPrinter, 
+			CoinSlot coinSlot, BanknoteInsertionSlot banknoteSlot) {
 		this.barcodedItems = barcodedItems;
 		this.funds = funds;
 		this.weight = weight;
@@ -206,6 +211,10 @@ public class Session {
 		this.funds.register(new PayListener());
 		this.receiptPrinter = receiptPrinter;
 		this.receiptPrinter.register(new PrinterListener());
+		this.coinSlot = coinSlot;
+		coinSlot.disable();
+		this.banknoteSlot = banknoteSlot;
+		banknoteSlot.disable();
 	}
 	
 	/**
@@ -259,6 +268,8 @@ public class Session {
 			if (!barcodedItems.isEmpty()) {
 				sessionState = SessionState.PAY_BY_CASH;
 				funds.setPay(true);
+				coinSlot.enable();
+				coinSlot.disable();
 			} else {
 				throw new CartEmptyException("Cannot pay for an empty order");
 			}
@@ -291,70 +302,20 @@ public class Session {
 	 */
 	public void addBags() {
 		if (sessionState == SessionState.IN_SESSION) {
-			Session.sessionState = SessionState.ADDING_BAGS;
+			sessionState = SessionState.ADDING_BAGS;
 			weight.addBags();
 		}
 		// else: nothing changes about the Session's state
 	}
 
+	/**
+	 * Updates product list
+	 * 
+	 * @param barcodedItems
+	 */
 	public void updateMap(HashMap<BarcodedProduct, Integer> barcodedItems) {
 		this.barcodedItems = barcodedItems;
 	}
-	
-	/**
-	 * Adds a barcoded product to the hashMap of the barcoded products. Updates the
-	 * expected weight and price
-	 * of the system based on the weight and price of the product.
-	 *
-	 * @param product
-	 *                The product to be added to the HashMap.
-	 */
-	public void addItem(BarcodedProduct product) {
-		if (barcodedItems.containsKey(product)) {
-			barcodedItems.replace(product, barcodedItems.get(product) + 1);
-		} else {
-			barcodedItems.put(product, 1);
-		}
-		double weight = product.getExpectedWeight();
-		long price = product.getPrice();
-		Mass mass = new Mass(weight);
-		BigDecimal itemPrice = new BigDecimal(price);
-		this.weight.update(mass);
-		funds.update(itemPrice);
-		lastProduct = product;
-	}
-	
-	/**
-	 * Removes a selected product from the hashMap of barcoded items.
-	 * Updates the weight and price of the products.
-	 * 
-	 * @param product
-	 *                The product to be removed from the HashMap.
-	 */
-	public void removeItem(BarcodedProduct product) {
-		double weight = product.getExpectedWeight();
-		long price = product.getPrice(); 
-		Mass mass = new Mass(weight);
-		BigDecimal ItemPrice = new BigDecimal(price);
-		
-		if (barcodedItems.containsKey(product) && barcodedItems.get(product) > 1 ) {
-			barcodedItems.replace(product, barcodedItems.get(product)-1);
-		} else if (barcodedItems.containsKey(product) && barcodedItems.get(product) == 1 ) { 
-			barcodedItems.remove(product);
-		} else {
-			throw new ProductNotFoundException("Item not found");
-		}
-		
-		funds.removeItemPrice(ItemPrice);
-		
-		if (bulkyItems.containsKey(product) && bulkyItems.get(product) >= 1 ) {
-			bulkyItems.replace(product, bulkyItems.get(product)-1);
-		} else if (bulkyItems.containsKey(product) && bulkyItems.get(product) == 1 ) {
-			bulkyItems.remove(product);
-		} else {
-			this.weight.removeItemWeightUpdate(mass);
-		}
-	} 
 	
 	// Move to receiptPrinter class (possible rename of receiptPrinter to just reciept
 	public void printReceipt() {
@@ -446,7 +407,7 @@ public class Session {
 	 * @return
 	 *         Session State
 	 */
-	public static final SessionState getState() {
+	public SessionState getState() {
 		return sessionState;
 	}
 	

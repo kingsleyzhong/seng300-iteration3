@@ -67,7 +67,7 @@ public class ItemManager {
 		session.getWeight().update(mass);
 		session.getFunds().update(itemPrice);
 		
-		if(Session.getState() == SessionState.IN_SESSION) {
+		if(session.getState() == SessionState.IN_SESSION) {
 			session.updateMap(barcodedItems);
 		}
 	}

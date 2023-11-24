@@ -105,14 +105,8 @@ public class PayByCash {
 				if (value.compareTo(BigDecimal.ZERO) <= 0) {
 	                throw new IllegalArgumentException("Coin value should be positive.");
 	            }
-				
-	            if (Session.getState() == SessionState.PAY_BY_CASH) {
 	                updateCoin(value); 
-	            }
 	            
-	            else {
-	            	throw new InvalidActionException("Pay is not activated at the moment.");
-	            }
 				
 			}
 
@@ -159,16 +153,7 @@ public class PayByCash {
 				if (denomination.compareTo(BigDecimal.ZERO) <= 0) {
 	                throw new IllegalArgumentException("Coin value should be positive.");
 	            }
-				
-	            if (Session.getState() == SessionState.PAY_BY_CASH) {
 	            	updateBankNote(denomination); 
-	            	
-	            }
-	            
-	            else {
-	            	throw new InvalidActionException("Pay is not activated at the moment.");
-	            }
-				
 			}
 
 			@Override

@@ -105,19 +105,19 @@ public class SelfCheckoutStationSystemTest {
 		scs.plugIn(PowerGrid.instance());
 		scs.turnOn();
 		session = new Session();
-		SelfCheckoutStationLogic.installOn(scs, session);
+		SelfCheckoutStationLogic.installOn(scs);
 
 		scss = new SelfCheckoutStationSilver();
 		scss.plugIn(PowerGrid.instance());
 		scss.turnOn();
 		session2 = new Session();
-		SelfCheckoutStationLogic.installOn(scss, session2);
+		SelfCheckoutStationLogic.installOn(scss);
 
 		scsg = new SelfCheckoutStationGold();
 		scsg.plugIn(PowerGrid.instance());
 		scsg.turnOn();
 		session3 = new Session();
-		SelfCheckoutStationLogic.installOn(scsg, session3);
+		SelfCheckoutStationLogic.installOn(scsg);
 
 		// Populate database
 		barcode = new Barcode(new Numeral[] { Numeral.valueOf((byte) 1) });

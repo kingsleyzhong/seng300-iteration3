@@ -156,15 +156,11 @@ public class Funds {
 	 */
 	private void calculateAmountDue() {
 
-		if (Session.getState() == SessionState.PAY_BY_CASH) {
-			this.paid = cashController.getCashPaid();
-		}
-
 		this.amountDue = this.itemsPrice.subtract(this.paid);
 
 		// To account for any rounding errors, checks if less that 0.0005 rather than
 		// just 0
-		if (amountDue.intValue() <= 0.0005 && Session.getState().inPay()) {
+		if (amountDue.intValue() <= 0.0005 && isPay) {
 
 			for (FundsListener l : listeners)
 				l.notifyPaid();
@@ -181,7 +177,7 @@ public class Funds {
 	 * Checks the status of a card payment
 	 */
 	public void updatePaidCard(boolean paidBool) {
-		if (Session.getState() == SessionState.PAY_BY_CARD) {
+		if (isPay) {
 			if (paidBool) {
 				this.paid = amountDue;
 				calculateAmountDue();
@@ -196,7 +192,7 @@ public class Funds {
 	 */
 	public void updatePaidCash() {
 
-		if (Session.getState() == SessionState.PAY_BY_CASH) {
+		if (isPay) {
 			this.paid = cashController.getCashPaid();
 			calculateAmountDue();
 

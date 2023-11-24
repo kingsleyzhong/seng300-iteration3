@@ -82,7 +82,7 @@ public class SelfCheckoutStationLogic {
 		PrintReceipt receiptPrinter = new PrintReceipt(scs.printer); 
 		HashMap<BarcodedProduct, Integer> barcodedItems = new HashMap<BarcodedProduct, Integer>();
 		// Will also need the touch screen/ keyboard for GUI interaction
-		session.setup(barcodedItems, funds, weight, receiptPrinter); 
+		session.setup(barcodedItems, funds, weight, receiptPrinter, scs.coinSlot, scs.banknoteInput); 
 		ItemManager itemManager = new ItemManager(session);
 		new ItemRemovedRule(itemManager);
 		new ItemAddedRule(scs.mainScanner, scs.handheldScanner, itemManager);
