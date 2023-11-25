@@ -51,8 +51,6 @@ public class Funds {
 	private BigDecimal paid; // Amount paid by the customer (in cents)
 	private BigDecimal amountDue; // Remaining amount to be paid (in cents)
 	private boolean isPay; // Flag indicating if the session is in pay mode
-	private PayByCash cashController;
-	private PayByCard cardController;
 	private final BigDecimal[] banknoteDenominations;
     private final List<BigDecimal> coinDenominations;
 
@@ -81,7 +79,8 @@ public class Funds {
 		this.isPay = false;
 		this.payed = false;
 		this.scs = scs;
-		
+		scs.coinSlot.disable();
+		scs.banknoteInput.disable();
 		// sort denominations in descending order
         banknoteDenominations = scs.banknoteDenominations;
         Arrays.sort(banknoteDenominations, Collections.reverseOrder());
@@ -124,6 +123,11 @@ public class Funds {
 	public void setPay(boolean isPay) {
 		this.isPay = isPay;
 	}
+	
+	public void enableCash() {
+		scs.coinSlot.enable();
+		scs.banknoteInput.disable();
+	}
 
 	public BigDecimal getItemsPrice() {
 		return itemsPrice;
@@ -139,15 +143,6 @@ public class Funds {
 
 	public boolean isPay() {
 		return isPay;
-	}
-
-	public void beginPayment() {
-		
-		if (amountDue.compareTo(BigDecimal.ZERO) <= 0) {
-			throw new IllegalDigitException("Price should be positive.");
-		}
-		cardController.paidBool = false;
-		calculateAmountDue();
 	}
 
 	/**
@@ -190,12 +185,10 @@ public class Funds {
 	/***
 	 * Updates Payment based on the PayByCash Controller
 	 */
-	public void updatePaidCash() {
-
+	public void updatePaidCash(BigDecimal paid) {
 		if (isPay) {
-			this.paid = cashController.getCashPaid();
+			this.paid = paid;
 			calculateAmountDue();
-
 		}
 
 	}
@@ -204,9 +197,7 @@ public class Funds {
 	 * Calculates the change needed	 * 
 	 */
 	private void returnChange() {
-
 		double changeDue = (this.amountDue).abs().doubleValue();
-
 		changeHelper(changeDue);
 	}
 

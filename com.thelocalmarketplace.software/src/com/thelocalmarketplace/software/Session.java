@@ -68,8 +68,6 @@ public class Session {
 	private HashMap<BarcodedProduct, Integer> bulkyItems = new HashMap<BarcodedProduct, Integer>();
 	private Funds funds;
 	private Weight weight;
-	private CoinSlot coinSlot;
-	private BanknoteInsertionSlot banknoteSlot;
 	private Receipt receiptPrinter;
 	
 	private Requests request = Requests.NO_REQUEST;
@@ -199,8 +197,7 @@ public class Session {
 	 * @param Receipt 
 	 * 						The PrintReceipt behavior
 	 */
-	public void setup(HashMap<BarcodedProduct, Integer> barcodedItems, Funds funds, Weight weight, Receipt receiptPrinter, 
-			CoinSlot coinSlot, BanknoteInsertionSlot banknoteSlot) {
+	public void setup(HashMap<BarcodedProduct, Integer> barcodedItems, Funds funds, Weight weight, Receipt receiptPrinter) {
 		this.barcodedItems = barcodedItems;
 		this.funds = funds;
 		this.weight = weight;
@@ -208,10 +205,6 @@ public class Session {
 		this.funds.register(new PayListener());
 		this.receiptPrinter = receiptPrinter;
 		this.receiptPrinter.register(new PrinterListener());
-		this.coinSlot = coinSlot;
-		coinSlot.disable();
-		this.banknoteSlot = banknoteSlot;
-		banknoteSlot.disable();
 	}
 	
 	/**
@@ -265,8 +258,7 @@ public class Session {
 			if (!barcodedItems.isEmpty()) {
 				sessionState = SessionState.PAY_BY_CASH;
 				funds.setPay(true);
-				coinSlot.enable();
-				banknoteSlot.enable();
+				funds.enableCash();
 			} else {
 				throw new CartEmptyException("Cannot pay for an empty order");
 			}

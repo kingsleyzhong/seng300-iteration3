@@ -75,14 +75,14 @@ public class SelfCheckoutStationLogic {
 	private SelfCheckoutStationLogic(AbstractSelfCheckoutStation scs) {
 		Session session = new Session();
 		attendant.registerOn(session);
-		Funds funds = new Funds(scs); 
+		Funds funds = new Funds(scs);
 		new PayByCash(scs.coinValidator, scs.banknoteValidator, funds);
 		new PayByCard(scs.cardReader, funds);
 		Weight weight = new Weight(scs.baggingArea);
 		Receipt receiptPrinter = new Receipt(scs.printer); 
 		HashMap<BarcodedProduct, Integer> barcodedItems = new HashMap<BarcodedProduct, Integer>();
 		// Will also need the touch screen/ keyboard for GUI interaction
-		session.setup(barcodedItems, funds, weight, receiptPrinter, scs.coinSlot, scs.banknoteInput); 
+		session.setup(barcodedItems, funds, weight, receiptPrinter); 
 		ItemManager itemManager = new ItemManager(session);
 		new ItemRemovedRule(itemManager);
 		new ItemAddedRule(scs.mainScanner, scs.handheldScanner, itemManager);
