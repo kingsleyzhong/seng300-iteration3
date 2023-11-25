@@ -2,6 +2,7 @@ package com.thelocalmarketplace.software.attendant;
 
 import java.util.ArrayList;
 
+import com.thelocalmarketplace.hardware.AttendantStation;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionListener;
 import com.thelocalmarketplace.software.weight.WeightListener;
@@ -35,14 +36,14 @@ import com.thelocalmarketplace.software.weight.WeightListener;
  */
 
 public class Attendant {
+	private AttendantStation as;
 	private ArrayList<Session> sessions = new ArrayList<>();
-	
 	
 	/**
 	 * default constructor
 	 */
-	public Attendant() {
-		
+	public Attendant(AttendantStation as) {
+		this.as = as;
 	}
 
 	private class InnerListener implements SessionListener{
@@ -54,4 +55,7 @@ public class Attendant {
 		sessions.add(session);
 	}
 
+	public AttendantStation getStation() {
+		return as;
+	}
 }

@@ -10,6 +10,7 @@ import com.tdc.DisabledException;
 import com.tdc.NoCashAvailableException;
 import com.tdc.banknote.BanknoteInsertionSlot;
 import com.tdc.coin.CoinSlot;
+import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
@@ -61,15 +62,15 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
  */
 public class Session {
 	public ArrayList<SessionListener> listeners = new ArrayList<>();
+	private AbstractSelfCheckoutStation scs;
 	private SessionState sessionState;
 	private SessionState prevState;
 	private HashMap<BarcodedProduct, Integer> barcodedItems = new HashMap<BarcodedProduct, Integer>();
-	private BarcodedProduct lastProduct;
 	private HashMap<BarcodedProduct, Integer> bulkyItems = new HashMap<BarcodedProduct, Integer>();
+	private BarcodedProduct lastProduct;
 	private Funds funds;
 	private Weight weight;
 	private Receipt receiptPrinter;
-	
 	private Requests request = Requests.NO_REQUEST;
 	private boolean requestApproved = false;
 
@@ -197,7 +198,8 @@ public class Session {
 	 * @param Receipt 
 	 * 						The PrintReceipt behavior
 	 */
-	public void setup(HashMap<BarcodedProduct, Integer> barcodedItems, Funds funds, Weight weight, Receipt receiptPrinter) {
+	public void setup(HashMap<BarcodedProduct, Integer> barcodedItems, Funds funds, Weight weight, Receipt receiptPrinter,
+			AbstractSelfCheckoutStation scs) {
 		this.barcodedItems = barcodedItems;
 		this.funds = funds;
 		this.weight = weight;
@@ -205,6 +207,7 @@ public class Session {
 		this.funds.register(new PayListener());
 		this.receiptPrinter = receiptPrinter;
 		this.receiptPrinter.register(new PrinterListener());
+		this.scs = scs;
 	}
 	
 	/**
@@ -382,8 +385,12 @@ public class Session {
 		return weight;
 	}
 	
+	public AbstractSelfCheckoutStation getStation() {
+		return scs;
+	}
+	
 	/**
-	 * Static getter for session state
+	 * getter for session state
 	 *
 	 * @return
 	 *         Session State

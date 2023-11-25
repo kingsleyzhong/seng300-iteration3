@@ -1,9 +1,16 @@
 package com.thelocalmarketplace.software;
 
 import java.util.HashMap;
+import java.util.Map;
 
+import com.jjjwelectronics.scanner.Barcode;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+import com.thelocalmarketplace.hardware.AttendantStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.hardware.PLUCodedProduct;
+import com.thelocalmarketplace.hardware.PriceLookUpCode;
+import com.thelocalmarketplace.hardware.Product;
+import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.attendant.Attendant;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.funds.PayByCard;
@@ -46,7 +53,12 @@ import com.thelocalmarketplace.software.weight.Weight;
 
 public class SelfCheckoutStationLogic {
 
-	public static Attendant attendant = new Attendant();
+	private static Attendant attendant;
+	private Session session;
+	
+	public static void installAttendantStation(AttendantStation as) {
+		attendant = new Attendant(as);
+	}
 	
 	/**
 	 * Installs an instance of the logic on the selfCheckoutStation and the session
@@ -73,7 +85,7 @@ public class SelfCheckoutStationLogic {
 	 *                The session that the logic shall be installed on
 	 */
 	private SelfCheckoutStationLogic(AbstractSelfCheckoutStation scs) {
-		Session session = new Session();
+		session = new Session();
 		attendant.registerOn(session);
 		Funds funds = new Funds(scs);
 		new PayByCash(scs.coinValidator, scs.banknoteValidator, funds);
@@ -82,9 +94,36 @@ public class SelfCheckoutStationLogic {
 		Receipt receiptPrinter = new Receipt(scs.printer); 
 		HashMap<BarcodedProduct, Integer> barcodedItems = new HashMap<BarcodedProduct, Integer>();
 		// Will also need the touch screen/ keyboard for GUI interaction
-		session.setup(barcodedItems, funds, weight, receiptPrinter); 
+		session.setup(barcodedItems, funds, weight, receiptPrinter, scs); 
 		ItemManager itemManager = new ItemManager(session);
 		new ItemRemovedRule(itemManager);
 		new ItemAddedRule(scs.mainScanner, scs.handheldScanner, itemManager);
+	}
+	
+	public static Attendant getAttendant() {
+		return attendant;
+	}
+	
+	public Session getSession() {
+		return session;
+	}
+	
+	/**
+	 * populates the database with a barcode and barcoded product into the inventory
+	 * @param barcode
+	 * @param product
+	 */
+	public static void populateDatabase(Barcode barcode, BarcodedProduct product, int amount) {
+		Map<Product, Integer> inventory = ProductDatabases.INVENTORY;
+		Map<Barcode, BarcodedProduct> barcodedProducts = ProductDatabases.BARCODED_PRODUCT_DATABASE;
+		inventory.put(product, amount);
+		barcodedProducts.put(barcode, product);	
+	}
+	
+	public static void populateDatabase(PriceLookUpCode plu, PLUCodedProduct product, int amount) {
+		Map<Product, Integer> inventory = ProductDatabases.INVENTORY;
+		Map<PriceLookUpCode, PLUCodedProduct> pluProducts = ProductDatabases.PLU_PRODUCT_DATABASE;
+		inventory.put(product, amount);
+		pluProducts.put(plu, product);	
 	}
 }
