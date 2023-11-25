@@ -25,7 +25,7 @@ package com.thelocalmarketplace.software.receipt;
  * Ethan Woo 				: 30172855 
  * Kingsley Zhong 			: 30197260 
  */
-public interface PrintReceiptListener {
+public interface ReceiptListener {
 
 	/**
 	 * Signals an event that the printer is out of paper

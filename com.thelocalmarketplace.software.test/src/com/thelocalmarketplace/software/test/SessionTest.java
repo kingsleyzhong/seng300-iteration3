@@ -22,7 +22,7 @@ import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
 import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 import com.thelocalmarketplace.software.funds.Funds;
-import com.thelocalmarketplace.software.receipt.PrintReceipt;
+import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.weight.Weight;
 
 import powerutility.PowerGrid;
@@ -77,7 +77,7 @@ public class SessionTest {
     private Weight weightGold;
 
     // Code added
-    private PrintReceipt receiptPrinter;
+    private Receipt receiptPrinter;
 
     @Before
     public void setUp() {
@@ -97,7 +97,7 @@ public class SessionTest {
         product2 = new BarcodedProduct(barcode2, "Sample Product 2", 15, 20.0);
         funds = new Funds(scs);
         weight = new Weight(scs);
-        receiptPrinter = new PrintReceipt(scs);
+        receiptPrinter = new Receipt(scs);
     }
 
     @Test

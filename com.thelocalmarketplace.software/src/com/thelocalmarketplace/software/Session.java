@@ -15,8 +15,8 @@ import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.funds.FundsListener;
-import com.thelocalmarketplace.software.receipt.PrintReceipt;
-import com.thelocalmarketplace.software.receipt.PrintReceiptListener;
+import com.thelocalmarketplace.software.receipt.Receipt;
+import com.thelocalmarketplace.software.receipt.ReceiptListener;
 import com.thelocalmarketplace.software.weight.Weight;
 import com.thelocalmarketplace.software.weight.WeightListener;
 
@@ -70,7 +70,7 @@ public class Session {
 	private Weight weight;
 	private CoinSlot coinSlot;
 	private BanknoteInsertionSlot banknoteSlot;
-	private PrintReceipt receiptPrinter; // Code added
+	private Receipt receiptPrinter;
 	
 	private Requests request = Requests.NO_REQUEST;
 	private boolean requestApproved = false;
@@ -119,8 +119,7 @@ public class Session {
 
 	}
 	
-	// Code added
-	private class PrinterListener implements PrintReceiptListener {
+	private class PrinterListener implements ReceiptListener {
 
 		@Override
 		public void notifiyOutOfPaper() {
@@ -197,10 +196,10 @@ public class Session {
 	 *                      The weight of the items and actual weight on the scale
 	 *                      during the session
 	 *                      
-	 * @param PrintReceipt 
+	 * @param Receipt 
 	 * 						The PrintReceipt behavior
 	 */
-	public void setup(HashMap<BarcodedProduct, Integer> barcodedItems, Funds funds, Weight weight, PrintReceipt receiptPrinter, 
+	public void setup(HashMap<BarcodedProduct, Integer> barcodedItems, Funds funds, Weight weight, Receipt receiptPrinter, 
 			CoinSlot coinSlot, BanknoteInsertionSlot banknoteSlot) {
 		this.barcodedItems = barcodedItems;
 		this.funds = funds;
@@ -317,15 +316,7 @@ public class Session {
 	
 	// Move to receiptPrinter class (possible rename of receiptPrinter to just reciept
 	public void printReceipt() {
-		String formattedReceipt = "";
-		for (Map.Entry<BarcodedProduct, Integer> item : barcodedItems.entrySet()) {
-			BarcodedProduct product = item.getKey();
-			int numberOfProduct = item.getValue().intValue();
-			// barcoded item does not store the price for items which need to be weighted
-			long overallPrice = product.getPrice()*numberOfProduct;
-			formattedReceipt = formattedReceipt.concat("Item: " + product.getDescription() + " Amount: " + numberOfProduct + " Price: " + overallPrice + "\n");
-		}
-		receiptPrinter.printReceipt(formattedReceipt);
+		receiptPrinter.printReceipt(barcodedItems);
 	}
 
 	/**
