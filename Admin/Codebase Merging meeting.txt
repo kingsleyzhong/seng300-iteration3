@@ -1,0 +1,117 @@
+Codebase Merging meeting (Nov 24):
+	- Team Structure stuff:
+		- Kinglsey is now the team lead lead. Anything to do with the repo goes through him. He will also do work where needed/where it interests him
+		- Team leads watch over their group, handle communication with Kinglsey and other teams.
+		- everyone does their own tests! Plan accordingly! If you need help ask people in your team + team lead
+		- Payment team has TOO MANY PEOPLE! PEOPLE WILL NEED TO MOVE TO OTHER TEAMS
+		- Teams:
+			- Team Lead Leader and repo master: Kingsley Zhong
+			- Payment Stuff: 
+				- Team lead: Ethan Woo
+				- desired size: 5 (has 9, needs to lose 3 or 4 people!!)
+			- Item Stuff:
+				- Team leads: Derek Atabayev AND Ethan McCorquodale
+				- desired size: 5 (has 6, could add 1 or lose 1)
+			- Attendant Stuff:
+				- Team lead: Chloe Robitaille
+				- desired size: 5 (has 4, probably fine but could take another if someone wants to join)
+			- GUI Stuff:
+				- Team leads: Emily Kiddle
+				- desired size: 7 (has 5, needs at least 2)
+			- Documentation (for later)
+			- Demo (for later)
+	- Overall Structure:
+		- software
+			- src
+				- Session
+				- ItemManager
+				- Attendant
+				- Funds
+				- Weight
+				- Receipt 
+			- Exceptions
+			- GUI
+		- testing
+			- src
+				- SessionTests
+				- ItemManagerTests
+				- AttendentTests
+				- FundsTests
+				- WeightTests
+				- ReceiptTests
+				- SystemTests (tests that run all parts of the system and make sure it works) 
+				- GUITests (tests that check the GUI is functioning as possible)
+				- Stub/Mock Classes
+	- Session 
+		- SessionState will stay an ennum but will NOT be static anymore (to support having multiple Sessions running in parallel)
+		- Session will track Weight and Funds 
+		- SessionListener will need to be created. Session will need to have notify() methods + register/deregister stuff
+		- Contain HashMap<Item, Int> to keep track of item quantity
+		- Data:
+			- Weight
+			- Funds
+			- "cart of items": HashMap<Product:Integer> WILL NEED TO CHANGE CODE TO HANDLE PRODUCTS, NOT ITEMS
+			- keeps track of membership (yes/no)  + membership id number
+		
+
+	- ItemManager: Replace current itemAddedRule from group 1's code with group 2's itemManager.
+		- Tracks Session; tells Session when to update expected weight and total Funds (amountDue) + HashMap of items
+		- Tracks other classes that handle interaction with hardware (these could be inner classes) (eg. barcode scanner listener)
+		- Will also handle AddBag and PurchaseBag
+		- How can items be added:
+			- By BarcodeScanner
+			- By HandheldBarcodeScanner
+			- By Typing PLU code (Keyboard)
+			- By Visual Cataloge (Touchscreen)
+
+	- Attendant stuff: 
+		- Attendant implements SessionListener
+		- Doesn’t interact with SelfCheckoutStation hardware at all
+		- Notifies/changes stuff with Session
+		- What it does:
+			- gets notifications 
+			- disable/enable sessions (a new state? block Session? disable the hardware?)
+			- prediction (ink/paper/coin/banknotes)
+			- maintenance stuff
+	
+	- SoftwareLogic: 
+		- gets hardware (self checkout station). Creates new instances of Session, Weight, Funds, ItemManager and associates them with each other
+			- will only associate Weight with Scale, PayByCard with CardReader, PayByCash with CoinValidator + BankNoteValidator, ect
+		- Keeps track of all Sessions that exist
+		- Registers Attendant with each new Session (one attendant, many sessions)
+		- not yet decided how Attendant is made? inside Software
+	
+	- PrintReciept/Receipt:
+		- rename to Receipt (implements RecieptPrinterListener)
+		- will create the Receipt
+		- will try to print the Receipt on the printer
+			- if an error occurs than hardware notifies Receipt which notifies Session about the problem. Session can then tell Attendant
+
+	- PaymentManager/Funds:
+		- rename PayByCashController to PayByCash
+		- use Group 2's Card and return change method (already updated)
+		- will need to be told if the Customer has a membership
+		- PayByCard probably needs to be updated b/c its broken??
+		- How do we want to support case where user inserts banknotes/coins when not in a pay state
+	
+	- Language support:
+		- if we have time we will do this (and by we i mean Emily K + whoever she appoints to help her) 
+
+
+	- GUI:
+		- will use interfaces 
+		- Rest API
+		- Figma?
+		- button is pressed -> GUI interface takes the button press and calls software/hardware method
+
+	- Testing: 
+		- FIX ALL TESTING
+		- Split it up into packages (the same packages as the software: eg ItemManagaer related to its go into the package ItemManager
+			- each package will have Abstract Test class (kingsley is making them), your tests will Extend these
+		- GUI tests will be tests of the GUI (eg. if a button is able to be pressed). This can be done using the swing API which can simulate button presses (for example) 
+		- System tests: tests that use the whole software system to make sure it works well together
+
+
+	- Meeting outcome:
+		- software and testing upgrades will be (tentatively) done by monday.
+		- GUI stuff can be started whenever
