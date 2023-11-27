@@ -79,12 +79,12 @@ public class Funds {
 		this.isPay = false;
 		this.payed = false;
 		this.scs = scs;
-		scs.coinSlot.disable();
-		scs.banknoteInput.disable();
+		scs.getCoinSlot().disable();
+		scs.getBanknoteInput().disable();
 		// sort denominations in descending order
-        banknoteDenominations = scs.banknoteDenominations;
+        banknoteDenominations = scs.getBanknoteDenominations();
         Arrays.sort(banknoteDenominations, Collections.reverseOrder());
-        coinDenominations = scs.coinDenominations;
+        coinDenominations = scs.getCoinDenominations();
         coinDenominations.sort(Collections.reverseOrder());
 	}
 
@@ -125,8 +125,8 @@ public class Funds {
 	}
 	
 	public void enableCash() {
-		scs.coinSlot.enable();
-		scs.banknoteInput.disable();
+		scs.getCoinSlot().enable();
+		scs.getBanknoteInput().disable();
 	}
 
 	public BigDecimal getItemsPrice() {
@@ -231,7 +231,7 @@ public class Funds {
             while (changeDue >= denomination.doubleValue()) {
                 if (isBanknote) {
                     try {
-                        scs.banknoteDispensers.get(denomination).emit();
+                        scs.getBanknoteDispensers().get(denomination).emit();
                     } catch (NoCashAvailableException e) {
                         break; // go to next denomination if this denomination runs out
                     } catch (DisabledException e) {
@@ -244,7 +244,7 @@ public class Funds {
                 }
                 else {
                     try {
-                        scs.coinDispensers.get(denomination).emit();
+                        scs.getCoinDispensers().get(denomination).emit();
                     } catch (NoCashAvailableException e) {
                         break; // go to next denomination if this denomination runs out
                     } catch (CashOverloadException e) {
@@ -258,7 +258,7 @@ public class Funds {
                 changeDue -= denomination.doubleValue();
             }
         }
-        scs.banknoteOutput.dispense();
+        scs.getBanknoteOutput().dispense();
         // occurs when all denominations have been cycled through and the change is not yet fully dispensed
         if (changeDue > 0) {
         	throw new NotEnoughChangeException("Not enough change in the machine");

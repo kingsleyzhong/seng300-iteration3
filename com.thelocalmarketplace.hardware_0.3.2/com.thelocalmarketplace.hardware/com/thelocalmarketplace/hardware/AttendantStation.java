@@ -33,14 +33,14 @@ public class AttendantStation {
 	 */
 	public final USKeyboardQWERTY keyboard;
 
-	private final ArrayList<SelfCheckoutStationBronze> supervisedStations;
+	private final ArrayList<ISelfCheckoutStation> supervisedStations;
 
 	/**
 	 * Creates a supervisor station.
 	 */
 	public AttendantStation() {
 		screen = new TouchScreenBronze();
-		supervisedStations = new ArrayList<SelfCheckoutStationBronze>();
+		supervisedStations = new ArrayList<ISelfCheckoutStation>();
 		keyboard = new USKeyboardQWERTY();
 	}
 
@@ -50,7 +50,7 @@ public class AttendantStation {
 	 * @return An immutable list of the self-checkout stations supervised by this
 	 *             supervisor station.
 	 */
-	public synchronized List<SelfCheckoutStationBronze> supervisedStations() {
+	public synchronized List<ISelfCheckoutStation> supervisedStations() {
 		return Collections.unmodifiableList(supervisedStations);
 	}
 
