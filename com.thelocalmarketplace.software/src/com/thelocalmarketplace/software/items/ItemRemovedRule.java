@@ -31,6 +31,23 @@ package com.thelocalmarketplace.software.items;
 
 public class ItemRemovedRule {
 
+	private ItemManager itemManager;
+	/**
+	 * Will need a method to accept an input from GUI to remove later
+	 * Leaving as barcode for now
+	 */
+
+	public void removeWithGUI(Barcode barcode) {
+		Map<Barcode, BarcodedProduct> database = ProductDatabases.BARCODED_PRODUCT_DATABASE;
+		// Checks if product is in database. Throws exception if not in database.
+        	if (database.containsKey(barcode)) {
+            		BarcodedProduct product = database.get(barcode);
+            		itemManager.removeItem(product);
+        	} else {
+            		throw new InvalidArgumentSimulationException("Not in database");
+        	}
+    	}
+
 	public ItemRemovedRule(ItemManager itemManager) {
 		// TODO Auto-generated constructor stub
 	}
