@@ -1,5 +1,6 @@
 package com.thelocalmarketplace.software;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +17,8 @@ import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.funds.FundsListener;
+import com.thelocalmarketplace.software.items.ItemListener;
+import com.thelocalmarketplace.software.items.ItemManager;
 import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.receipt.ReceiptListener;
 import com.thelocalmarketplace.software.weight.Weight;
@@ -65,14 +68,29 @@ public class Session {
 	private AbstractSelfCheckoutStation scs;
 	private SessionState sessionState;
 	private SessionState prevState;
-	private HashMap<BarcodedProduct, Integer> barcodedItems = new HashMap<BarcodedProduct, Integer>();
-	private HashMap<BarcodedProduct, Integer> bulkyItems = new HashMap<BarcodedProduct, Integer>();
 	private BarcodedProduct lastProduct;
 	private Funds funds;
 	private Weight weight;
+	private ItemManager manager;
 	private Receipt receiptPrinter;
 	private Requests request = Requests.NO_REQUEST;
 	private boolean requestApproved = false;
+	
+	private class ItemManagerListener implements ItemListener{
+
+		@Override
+		public void anItemHasBeenAdded(Mass mass, BigDecimal price) {
+			weight.update(mass);
+			funds.update(price);
+		}
+
+		@Override
+		public void anItemHasBeenRemoved(Mass mass, BigDecimal price) {
+			weight.removeItemWeightUpdate(mass);
+			funds.removeItemPrice(price);
+		}
+		
+	}
 
 	private class WeightDiscrepancyListener implements WeightListener {
 
@@ -198,13 +216,14 @@ public class Session {
 	 * @param Receipt 
 	 * 						The PrintReceipt behavior
 	 */
-	public void setup(HashMap<BarcodedProduct, Integer> barcodedItems, Funds funds, Weight weight, Receipt receiptPrinter,
+	public void setup(ItemManager manager, Funds funds, Weight weight, Receipt receiptPrinter,
 			AbstractSelfCheckoutStation scs) {
-		this.barcodedItems = barcodedItems;
+		this.manager = manager;
 		this.funds = funds;
 		this.weight = weight;
 		this.weight.register(new WeightDiscrepancyListener());
 		this.funds.register(new PayListener());
+		this.manager.register(new ItemManagerListener());
 		this.receiptPrinter = receiptPrinter;
 		this.receiptPrinter.register(new PrinterListener());
 		this.scs = scs;
@@ -215,7 +234,8 @@ public class Session {
 	 */
 	public void start() {
 		sessionState = SessionState.IN_SESSION;
-		barcodedItems.clear();
+		manager.setAddItems(true);
+		// manager.clear();
 		// funds.clear();
 		// weight.clear();
 	}
@@ -239,7 +259,7 @@ public class Session {
 	private void block() {
 		prevState = sessionState;
 		sessionState = SessionState.BLOCKED;
-		
+		manager.setAddItems(false);
 	}
 
 	/**
@@ -249,7 +269,10 @@ public class Session {
 		if(funds.isPay()) {
 			sessionState = prevState;
 		}
-		else sessionState = SessionState.IN_SESSION;
+		else {
+			sessionState = SessionState.IN_SESSION;
+			manager.setAddItems(true);
+		}
 	}
 
 	/**
@@ -258,10 +281,11 @@ public class Session {
 	 */
 	public void payByCash() {
 		if (sessionState == SessionState.IN_SESSION) {
-			if (!barcodedItems.isEmpty()) {
+			if (!manager.getItems().isEmpty()) {
 				sessionState = SessionState.PAY_BY_CASH;
 				funds.setPay(true);
 				funds.enableCash();
+				manager.setAddItems(false);
 			} else {
 				throw new CartEmptyException("Cannot pay for an empty order");
 			}
@@ -277,9 +301,10 @@ public class Session {
 	 */
 	public void payByCard() throws CashOverloadException, NoCashAvailableException, DisabledException {
 		if (sessionState == SessionState.IN_SESSION) {
-			if (!barcodedItems.isEmpty()) {
+			if (!manager.getItems().isEmpty()) {
 				sessionState = SessionState.PAY_BY_CARD;
 				funds.setPay(true);
+				manager.setAddItems(false);
 			} else {
 				throw new CartEmptyException("Cannot pay for an empty order");
 			}
@@ -299,19 +324,10 @@ public class Session {
 		}
 		// else: nothing changes about the Session's state
 	}
-
-	/**
-	 * Updates product list
-	 * 
-	 * @param barcodedItems
-	 */
-	public void updateMap(HashMap<BarcodedProduct, Integer> barcodedItems) {
-		this.barcodedItems = barcodedItems;
-	}
 	
 	// Move to receiptPrinter class (possible rename of receiptPrinter to just reciept
 	public void printReceipt() {
-		receiptPrinter.printReceipt(barcodedItems);
+		receiptPrinter.printReceipt(manager.getItems());
 	}
 
 	/**
@@ -332,11 +348,7 @@ public class Session {
 				// subtract the bulky item weight from total weight if assistant has approved
 				Mass bulkyItemWeight = this.weight.getLastWeightAdded();
 				this.weight.subtract(bulkyItemWeight);
-				if (bulkyItems.containsKey(lastProduct)) {
-					bulkyItems.replace(lastProduct, bulkyItems.get(lastProduct) + 1);
-				} else {
-					bulkyItems.put(lastProduct, 1);
-				}
+				manager.addBulkyItem();
 			} else {
 				// assistant has not approved the request. Do nothing
 				return;
@@ -370,11 +382,11 @@ public class Session {
 	}
 	
 	public HashMap<BarcodedProduct, Integer> getBarcodedItems() {
-		return barcodedItems;
+		return manager.getItems();
 	}
 	
     public HashMap<BarcodedProduct, Integer> getBulkyItems() {
-		return bulkyItems;
+		return manager.getBulkyItems();
 	}
     
 	public Funds getFunds() {

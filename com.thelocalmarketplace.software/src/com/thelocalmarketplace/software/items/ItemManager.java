@@ -1,13 +1,14 @@
 package com.thelocalmarketplace.software.items;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.jjjwelectronics.Mass;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.software.Session;
-import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.exceptions.ProductNotFoundException;
+import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 
 /**
  * Manages aspects to adding items
@@ -38,13 +39,22 @@ import com.thelocalmarketplace.software.exceptions.ProductNotFoundException;
  */
 
 public class ItemManager {
+	protected ArrayList<ItemListener> listeners = new ArrayList<>();
+	private HashMap<BarcodedProduct, Integer> barcodedItems = new HashMap<BarcodedProduct, Integer>();
+	private HashMap<BarcodedProduct, Integer> bulkyItems = new HashMap<BarcodedProduct, Integer>();
+	private BarcodedProduct lastProduct;
 	private Session session;
+	private boolean addItems = false;
 	
 	
 	public ItemManager(Session session) {
 		this.session = session;
 	}
 
+	public void setAddItems(boolean value) {
+		addItems = value;
+	}
+	
 	/**
 	 * Adds a barcoded product to the hashMap of the barcoded products. Updates the
 	 * expected weight and price
@@ -54,21 +64,27 @@ public class ItemManager {
 	 *                The product to be added to the HashMap.
 	 */
 	public void addItem(BarcodedProduct product) {
-		HashMap<BarcodedProduct, Integer> barcodedItems = session.getBarcodedItems();
-		if (barcodedItems.containsKey(product)) {
-			barcodedItems.replace(product, barcodedItems.get(product) + 1);
-		} else {
-			barcodedItems.put(product, 1);
+		if(addItems) {
+			if (barcodedItems.containsKey(product)) {
+				barcodedItems.replace(product, barcodedItems.get(product) + 1);
+			} else {
+				barcodedItems.put(product, 1);
+			}
+			double weight = product.getExpectedWeight();
+			long price = product.getPrice();
+			Mass mass = new Mass(weight);
+			BigDecimal itemPrice = new BigDecimal(price);
+			lastProduct = product;
+			
+			notifyItemAdded(mass, itemPrice);
 		}
-		double weight = product.getExpectedWeight();
-		long price = product.getPrice();
-		Mass mass = new Mass(weight);
-		BigDecimal itemPrice = new BigDecimal(price);
-		session.getWeight().update(mass);
-		session.getFunds().update(itemPrice);
-		
-		if(session.getState() == SessionState.IN_SESSION) {
-			session.updateMap(barcodedItems);
+	}
+	
+	public void addBulkyItem() {
+		if (bulkyItems.containsKey(lastProduct)) {
+			bulkyItems.replace(lastProduct, bulkyItems.get(lastProduct) + 1);
+		} else {
+			bulkyItems.put(lastProduct, 1);
 		}
 	}
 	
@@ -80,11 +96,10 @@ public class ItemManager {
 	 *                The product to be removed from the HashMap.
 	 */
 	public void removeItem(BarcodedProduct product) {
-		HashMap<BarcodedProduct, Integer> barcodedItems = session.getBarcodedItems();
 		double weight = product.getExpectedWeight();
 		long price = product.getPrice(); 
 		Mass mass = new Mass(weight);
-		BigDecimal ItemPrice = new BigDecimal(price);
+		BigDecimal itemPrice = new BigDecimal(price);
 		
 		if (barcodedItems.containsKey(product) && barcodedItems.get(product) > 1 ) {
 			barcodedItems.replace(product, barcodedItems.get(product)-1);
@@ -94,17 +109,56 @@ public class ItemManager {
 			throw new ProductNotFoundException("Item not found");
 		}
 		
-		session.getFunds().removeItemPrice(ItemPrice);
-		session.updateMap(barcodedItems);
-		
 		HashMap<BarcodedProduct, Integer> bulkyItems = session.getBulkyItems();
 		if (bulkyItems.containsKey(product) && bulkyItems.get(product) >= 1 ) {
 			bulkyItems.replace(product, bulkyItems.get(product)-1);
+			mass = new Mass(0);
 		} else if (bulkyItems.containsKey(product) && bulkyItems.get(product) == 1 ) {
 			bulkyItems.remove(product);
-		} else {
-			session.getWeight().removeItemWeightUpdate(mass);
+			mass = new Mass(0);
 		}
+		
+		notifyItemRemoved(mass, itemPrice);
 	} 
+	
+	public void notifyItemAdded(Mass mass, BigDecimal price) {
+		for (ItemListener l : listeners)
+			l.anItemHasBeenAdded(mass, price);
+	}
+	
+	public void notifyItemRemoved(Mass mass, BigDecimal price) {
+		for (ItemListener l : listeners)
+			l.anItemHasBeenRemoved(mass, price);
+	}
+	
+	
+	/**
+	 * Methods for adding funds listeners to the funds
+	 */
+	public synchronized boolean deregister(ItemListener listener) {
+		if (listener == null)
+			throw new NullPointerSimulationException("listener");
+
+		return listeners.remove(listener);
+	}
+
+	public synchronized void deregisterAll() {
+		listeners.clear();
+	}
+
+	public final synchronized void register(ItemListener listener) {
+		if (listener == null)
+			throw new NullPointerSimulationException("listener");
+
+		listeners.add(listener);
+	}
+	
+	public HashMap<BarcodedProduct, Integer> getItems(){
+		return barcodedItems;
+	}
+	
+	public HashMap<BarcodedProduct, Integer> getBulkyItems(){
+		return bulkyItems;
+	}
 	
 }
