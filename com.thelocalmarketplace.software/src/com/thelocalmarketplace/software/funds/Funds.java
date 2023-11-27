@@ -4,28 +4,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-
+import java.util.List;
 import com.jjjwelectronics.IllegalDigitException;
-import com.tdc.AbstractComponent;
 import com.tdc.CashOverloadException;
 import com.tdc.DisabledException;
-import com.tdc.IComponent;
-import com.tdc.IComponentObserver;
 import com.tdc.NoCashAvailableException;
-import com.tdc.banknote.BanknoteDispenserBronze;
-import com.tdc.banknote.IBanknoteDispenser;
-import com.tdc.coin.AbstractCoinDispenser;
-import com.tdc.coin.CoinDispenserBronze;
-import com.tdc.coin.CoinValidator;
-import com.tdc.coin.CoinValidatorObserver;
-import com.tdc.coin.ICoinDispenser;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionState;
@@ -38,17 +21,29 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
  * This class represents the funds associated with a self-checkout session.
  * It manages the total price of items, the amount paid, and the amount due.
  * 
- * Project iteration 2 group members:
- * Aj Sallh : 30023811
- * Anthony Kostal-Vazquez : 30048301
- * Chloe Robitaille : 30022887
- * Dvij Raval : 30024340
- * Emily Kiddle : 30122331
- * Katelan NG : 30144672
- * Kingsley Zhong : 30197260
- * Nick McCamis : 30192610
- * Sua Lim : 30177039
- * Subeg CHAHAL : 30196531
+ * Project Iteration 3 Group 1
+ *
+ * Derek Atabayev 			: 30177060 
+ * Enioluwafe Balogun 		: 30174298 
+ * Subeg Chahal 			: 30196531 
+ * Jun Heo 					: 30173430 
+ * Emily Kiddle 			: 30122331 
+ * Anthony Kostal-Vazquez 	: 30048301 
+ * Jessica Li 				: 30180801 
+ * Sua Lim 					: 30177039 
+ * Savitur Maharaj 			: 30152888 
+ * Nick McCamis 			: 30192610 
+ * Ethan McCorquodale 		: 30125353 
+ * Katelan Ng 				: 30144672 
+ * Arcleah Pascual 			: 30056034 
+ * Dvij Raval 				: 30024340 
+ * Chloe Robitaille 		: 30022887 
+ * Danissa Sandykbayeva 	: 30200531 
+ * Emily Stein 				: 30149842 
+ * Thi My Tuyen Tran 		: 30193980 
+ * Aoi Ueki 				: 30179305 
+ * Ethan Woo 				: 30172855 
+ * Kingsley Zhong 			: 30197260 
  */
 public class Funds {
 	protected ArrayList<FundsListener> listeners = new ArrayList<>();
@@ -56,8 +51,8 @@ public class Funds {
 	private BigDecimal paid; // Amount paid by the customer (in cents)
 	private BigDecimal amountDue; // Remaining amount to be paid (in cents)
 	private boolean isPay; // Flag indicating if the session is in pay mode
-	private PayByCashController cashController;
-	private PayByCard cardController;
+	private final BigDecimal[] banknoteDenominations;
+    private final List<BigDecimal> coinDenominations;
 
   // from old version, delete if unused/ it breaks stuff
 	// Testing ONLY
@@ -83,11 +78,14 @@ public class Funds {
 		this.amountDue = BigDecimal.ZERO;
 		this.isPay = false;
 		this.payed = false;
-		this.cashController = new PayByCashController(scs, this);
-		this.cardController = new PayByCard(scs, this);
-
-
 		this.scs = scs;
+		scs.coinSlot.disable();
+		scs.banknoteInput.disable();
+		// sort denominations in descending order
+        banknoteDenominations = scs.banknoteDenominations;
+        Arrays.sort(banknoteDenominations, Collections.reverseOrder());
+        coinDenominations = scs.coinDenominations;
+        coinDenominations.sort(Collections.reverseOrder());
 	}
 
 	/**
@@ -125,6 +123,11 @@ public class Funds {
 	public void setPay(boolean isPay) {
 		this.isPay = isPay;
 	}
+	
+	public void enableCash() {
+		scs.coinSlot.enable();
+		scs.banknoteInput.disable();
+	}
 
 	public BigDecimal getItemsPrice() {
 		return itemsPrice;
@@ -142,30 +145,17 @@ public class Funds {
 		return isPay;
 	}
 
-	public void beginPayment() {
-		
-		if (amountDue.compareTo(BigDecimal.ZERO) <= 0) {
-			throw new IllegalDigitException("Price should be positive.");
-		}
-		cardController.paidBool = false;
-		calculateAmountDue();
-	}
-
 	/**
 	 * Calculates the amount due by subtracting the paid amount from the total items
 	 * price.
 	 */
 	private void calculateAmountDue() {
 
-		if (Session.getState() == SessionState.PAY_BY_CASH) {
-			this.paid = cashController.getCashPaid();
-		}
-
 		this.amountDue = this.itemsPrice.subtract(this.paid);
 
 		// To account for any rounding errors, checks if less that 0.0005 rather than
 		// just 0
-		if (amountDue.intValue() <= 0.0005) {
+		if (amountDue.intValue() <= 0.0005 && isPay) {
 
 			for (FundsListener l : listeners)
 				l.notifyPaid();
@@ -182,7 +172,7 @@ public class Funds {
 	 * Checks the status of a card payment
 	 */
 	public void updatePaidCard(boolean paidBool) {
-		if (Session.getState() == SessionState.PAY_BY_CARD) {
+		if (isPay) {
 			if (paidBool) {
 				this.paid = amountDue;
 				calculateAmountDue();
@@ -195,12 +185,10 @@ public class Funds {
 	/***
 	 * Updates Payment based on the PayByCash Controller
 	 */
-	public void updatePaidCash() {
-
-		if (Session.getState() == SessionState.PAY_BY_CASH) {
-			this.paid = cashController.getCashPaid();
+	public void updatePaidCash(BigDecimal paid) {
+		if (isPay) {
+			this.paid = paid;
 			calculateAmountDue();
-
 		}
 
 	}
@@ -209,13 +197,8 @@ public class Funds {
 	 * Calculates the change needed	 * 
 	 */
 	private void returnChange() {
-
-		int changeDue = (this.amountDue).abs().intValue();
-
+		double changeDue = (this.amountDue).abs().doubleValue();
 		changeHelper(changeDue);
-	
-
-
 	}
 
 	/***
@@ -223,92 +206,63 @@ public class Funds {
 	 * 
 	 * @param changeDue
 	 * 	 */
-	private void changeHelper(int changeDue){
+	private void changeHelper(double changeDue){
 		if (changeDue < 0) {
 			throw new InternalError("Change due is negative, which should not happen");
 		}
 
-		// Getting banknote denominations and sorting from descending order by value
-		Set<BigDecimal> banknoteType = scs.banknoteDispensers.keySet();
-		ArrayList banknoteList = new ArrayList(banknoteType);
-		Collections.sort(banknoteList);
-		Collections.reverse(banknoteList);
+		// loop through the denominations (sorted from largest to smallest) 
+        // until either the change is fully paid
+        // or the system possesses insufficient change
+        for (int index = 0; index < banknoteDenominations.length + coinDenominations.size() && changeDue > 0; index++) {
+            BigDecimal denomination;
+            boolean isBanknote = false;
 
-		// Getting coin denominations and sorting from descending order by value
-		Set<BigDecimal> coinType = scs.coinDispensers.keySet();
-		ArrayList coinList = new ArrayList(coinType);
-		Collections.sort(coinList);
-		Collections.reverse(coinList);
+            // if the current index is within the "banknotes zone"
+            if (index < banknoteDenominations.length) {
+                denomination = banknoteDenominations[index];
+                isBanknote = true;
+            }
+            // if the current index is within the "coins zone"
+            else
+                denomination = coinDenominations.get(index - banknoteDenominations.length);
 
-		// Going through each banknoteDispenser by denomination
-		Iterator itrBanknote = banknoteList.iterator();
-
-		while (itrBanknote.hasNext()) {
-
-			// Getting the number of change from a specific that can "fit" into the
-			// changeDue
-			BigDecimal banknoteDenomination = (BigDecimal) itrBanknote.next();
-
-			int denominationNum = changeDue / banknoteDenomination.intValue();
-
-			// Checking to see if there is enough bills in the dispenser
-			if (scs.banknoteDispensers.get(banknoteDenomination).size() >= denominationNum) {
-
-				for (int i = 0; i < denominationNum; i++) {
-
-					try {
-						scs.banknoteDispensers.get(banknoteDenomination).emit();
-					} catch (NoCashAvailableException e) {
-						throw new NotEnoughChangeException("There are no banknotes available");
-					} catch (DisabledException e) {
-						System.out.println("Machine is not turned on");
+            // dispense the current denomination until it is larger than the remaining amount of change
+            while (changeDue >= denomination.doubleValue()) {
+                if (isBanknote) {
+                    try {
+                        scs.banknoteDispensers.get(denomination).emit();
+                    } catch (NoCashAvailableException e) {
+                        break; // go to next denomination if this denomination runs out
+                    } catch (DisabledException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					} catch (CashOverloadException e) {
-						System.out.println("Too much cash, the machine has broken");
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-
-					changeDue = changeDue - banknoteDenomination.intValue();
-
-				}
-			}
-		}
-
-		// Going through each coinDispenser by denomination
-		Iterator itrCoin = coinList.iterator();
-
-		while (itrCoin.hasNext()) {
-
-			// Getting the number of change from a specific that can "fit" into the
-			// changeDue
-			BigDecimal coinDenomination = (BigDecimal) itrCoin.next();
-
-			int denominationNum = (int)(changeDue / coinDenomination.doubleValue());
-
-			// Checking to see if there is enough bills in the dispenser
-			if (scs.coinDispensers.get(coinDenomination).size() >= denominationNum) {
-
-				for (int i = 0; i < denominationNum; i++) {
-
-					try {
-						scs.coinDispensers.get(coinDenomination).emit();
-					} catch (NoCashAvailableException e) {
-						throw new NotEnoughChangeException("There are no coins available");
+                }
+                else {
+                    try {
+                        scs.coinDispensers.get(denomination).emit();
+                    } catch (NoCashAvailableException e) {
+                        break; // go to next denomination if this denomination runs out
+                    } catch (CashOverloadException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					} catch (DisabledException e) {
-						System.out.println("Machine is not turned on");
-					} catch (CashOverloadException e) {
-						System.out.println("Too much cash, the machine has broken");
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-
-					changeDue = changeDue - coinDenomination.intValue();
-				}
-			}
-		}
-
-		scs.banknoteOutput.dispense();
-		
-		if (changeDue > 0.005) {
-			throw new NotEnoughChangeException("Not enough change in the machine");
-		}
-
+                }
+                changeDue -= denomination.doubleValue();
+            }
+        }
+        scs.banknoteOutput.dispense();
+        // occurs when all denominations have been cycled through and the change is not yet fully dispensed
+        if (changeDue > 0) {
+        	throw new NotEnoughChangeException("Not enough change in the machine");
+        }
 	}
 
 	/**

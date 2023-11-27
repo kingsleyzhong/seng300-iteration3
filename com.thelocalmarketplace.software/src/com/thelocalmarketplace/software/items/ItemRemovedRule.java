@@ -1,7 +1,8 @@
-package com.thelocalmarketplace.software.funds;
+package com.thelocalmarketplace.software.items;
 
 /**
- * Listens for if payment has been completed
+ * Class that handles involvement of removing items/products
+ * from the session/item manager
  * 
  * Project Iteration 3 Group 1
  *
@@ -27,10 +28,11 @@ package com.thelocalmarketplace.software.funds;
  * Ethan Woo 				: 30172855 
  * Kingsley Zhong 			: 30197260 
  */
-public interface FundsListener {
 
-	/**
-	 * Signals an event in which the customer has paid for the complete amount of the order
-	 */
-	void notifyPaid();
+public class ItemRemovedRule {
+
+	public ItemRemovedRule(ItemManager itemManager) {
+		// TODO Auto-generated constructor stub
+	}
+
 }

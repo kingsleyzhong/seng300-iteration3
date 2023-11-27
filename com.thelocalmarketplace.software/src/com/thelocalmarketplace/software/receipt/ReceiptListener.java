@@ -1,7 +1,5 @@
-package com.thelocalmarketplace.software.funds;
-
-/**
- * Listens for if payment has been completed
+package com.thelocalmarketplace.software.receipt;
+/*
  * 
  * Project Iteration 3 Group 1
  *
@@ -27,10 +25,31 @@ package com.thelocalmarketplace.software.funds;
  * Ethan Woo 				: 30172855 
  * Kingsley Zhong 			: 30197260 
  */
-public interface FundsListener {
+public interface ReceiptListener {
 
 	/**
-	 * Signals an event in which the customer has paid for the complete amount of the order
+	 * Signals an event that the printer is out of paper
 	 */
-	void notifyPaid();
+	void notifiyOutOfPaper();
+	
+	/**
+	 * Signals an event that the printer is out of ink
+	 */
+	void notifiyOutOfInk();
+	
+	/**
+	 * Signals an event that the printer paper has been refilled
+	 */
+	void notifiyPaperRefilled();
+	
+	/**
+	 * Signals an event that the ink has been refilled
+	 */
+	void notifiyInkRefilled();
+	
+	/**
+	 * Signals that the receipt was successfully printed 
+	 */
+	void notifiyReceiptPrinted();
+
 }

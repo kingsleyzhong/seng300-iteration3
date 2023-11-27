@@ -1,4 +1,4 @@
-package com.thelocalmarketplace.software.rules;
+package com.thelocalmarketplace.software.items;
 
 import java.util.Map;
 
@@ -22,38 +22,52 @@ import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
  * In the case that a session is frozen or not on, an InvalidActionException
  * will be called.
  * 
- * Project iteration 2 group members:
- * Aj Sallh : 30023811
- * Anthony Kostal-Vazquez : 30048301
- * Chloe Robitaille : 30022887
- * Dvij Raval : 30024340
- * Emily Kiddle : 30122331
- * Katelan NG : 30144672
- * Kingsley Zhong : 30197260
- * Nick McCamis : 30192610
- * Sua Lim : 30177039
- * Subeg CHAHAL : 30196531
+ * Project Iteration 3 Group 1
+ *
+ * Derek Atabayev 			: 30177060 
+ * Enioluwafe Balogun 		: 30174298 
+ * Subeg Chahal 			: 30196531 
+ * Jun Heo 					: 30173430 
+ * Emily Kiddle 			: 30122331 
+ * Anthony Kostal-Vazquez 	: 30048301 
+ * Jessica Li 				: 30180801 
+ * Sua Lim 					: 30177039 
+ * Savitur Maharaj 			: 30152888 
+ * Nick McCamis 			: 30192610 
+ * Ethan McCorquodale 		: 30125353 
+ * Katelan Ng 				: 30144672 
+ * Arcleah Pascual 			: 30056034 
+ * Dvij Raval 				: 30024340 
+ * Chloe Robitaille 		: 30022887 
+ * Danissa Sandykbayeva 	: 30200531 
+ * Emily Stein 				: 30149842 
+ * Thi My Tuyen Tran 		: 30193980 
+ * Aoi Ueki 				: 30179305 
+ * Ethan Woo 				: 30172855 
+ * Kingsley Zhong 			: 30197260 
  */
 public class ItemAddedRule {
-	private Session session;
+	private ItemManager itemManager;
 
 	/**
 	 * Basic constructor for ItemAddedRule. Registers a listener to scanners being
 	 * used in the
 	 * self-checkout station.
 	 * 
-	 * @param scs
-	 *                The selfCheckoutStation in which to be installed
-	 * @param session
-	 *                The session in which to add to
+	 * @param mainScanner
+	 *                The main scanner
+	 * @param handheldScanner
+	 *                The handheld scanner
+	 * @param itemManager
+	 * 				The item manager is where items are managed
 	 */
-	public ItemAddedRule(AbstractSelfCheckoutStation scs, Session session) {
-		if (scs == null) {
+	public ItemAddedRule(IBarcodeScanner mainScanner, IBarcodeScanner handheldScanner, ItemManager itemManager) {
+		if (mainScanner == null || handheldScanner == null || itemManager == null) {
 			throw new InvalidArgumentSimulationException("Self Checkout Station cannot be null.");
 		}
-		this.session = session;
-		scs.mainScanner.register(new innerListener());
-		scs.handheldScanner.register(new innerListener());
+		mainScanner.register(new innerListener());
+		handheldScanner.register(new innerListener());
+		this.itemManager = itemManager;
 	}
 
 	/**
@@ -63,18 +77,14 @@ public class ItemAddedRule {
 	public class innerListener implements BarcodeScannerListener {
 		@Override
 		public void aBarcodeHasBeenScanned(IBarcodeScanner barcodeScanner, Barcode barcode) {
-			if (Session.getState() == SessionState.IN_SESSION) {
-				Map<Barcode, BarcodedProduct> database = ProductDatabases.BARCODED_PRODUCT_DATABASE;
+			Map<Barcode, BarcodedProduct> database = ProductDatabases.BARCODED_PRODUCT_DATABASE;
 
-				// Checks if product is in database. Throws exception if not in database.
-				if (database.containsKey(barcode)) {
-					BarcodedProduct product = database.get(barcode);
-					session.addItem(product);
-				} else {
-					throw new InvalidArgumentSimulationException("Not in database");
-				}
+			// Checks if product is in database. Throws exception if not in database.
+			if (database.containsKey(barcode)) {
+				BarcodedProduct product = database.get(barcode);
+				itemManager.addItem(product);
 			} else {
-				// silently ignore
+				throw new InvalidArgumentSimulationException("Not in database");
 			}
 		}
 

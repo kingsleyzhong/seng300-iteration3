@@ -21,35 +21,44 @@ import com.jjjwelectronics.card.*;
 /**
  * <p> This class facilitates communication between com.jjjwelectronics.card.CardReaderListener and com.thelocalmarketplace.software.funds.Funds</p> 
  *  
- * <p>Project iteration 2 group members: </p>
- * 		Aj Sallh 				: 30023811
- *		Anthony Kostal-Vazquez 	: 30048301  
- *		Chloe Robitaille 		: 30022887
- *		Dvij Raval				: 30024340 
- *		Emily Kiddle 			: 30122331
- *		Katelan NG 				: 30144672 
- *		Kingsley Zhong 			: 30197260
- *		Nick McCamis 			: 30192610
- *		Sua Lim 				: 30177039
- *		Subeg CHAHAL 			: 30196531
+ * Project Iteration 3 Group 1
+ *
+ * Derek Atabayev 			: 30177060 
+ * Enioluwafe Balogun 		: 30174298 
+ * Subeg Chahal 			: 30196531 
+ * Jun Heo 					: 30173430 
+ * Emily Kiddle 			: 30122331 
+ * Anthony Kostal-Vazquez 	: 30048301 
+ * Jessica Li 				: 30180801 
+ * Sua Lim 					: 30177039 
+ * Savitur Maharaj 			: 30152888 
+ * Nick McCamis 			: 30192610 
+ * Ethan McCorquodale 		: 30125353 
+ * Katelan Ng 				: 30144672 
+ * Arcleah Pascual 			: 30056034 
+ * Dvij Raval 				: 30024340 
+ * Chloe Robitaille 		: 30022887 
+ * Danissa Sandykbayeva 	: 30200531 
+ * Emily Stein 				: 30149842 
+ * Thi My Tuyen Tran 		: 30193980 
+ * Aoi Ueki 				: 30179305 
+ * Ethan Woo 				: 30172855 
+ * Kingsley Zhong 			: 30197260 
  */
 public class PayByCard {
 	
 	private Card card;
-	private PayByCard cardController;
 	private double amountDue;
 	boolean paidBool;
 	boolean posted;
 	private Funds funds;
-	private AbstractSelfCheckoutStation scs;
 	
-	public PayByCard(AbstractSelfCheckoutStation scs, Funds funds) {
+	public PayByCard(ICardReader cardReader, Funds funds) {
 		InnerListener cardListener = new InnerListener();
-		scs.cardReader.register(cardListener);
+		cardReader.register(cardListener);
 		
 		amountDue = funds.getAmountDue().doubleValue();
 		this.funds = funds;
-		this.scs = scs;
 	}
 	
 	private class InnerListener implements CardReaderListener {
@@ -87,8 +96,26 @@ public class PayByCard {
 
 		@Override
 		public void theDataFromACardHasBeenRead(CardData data) {	
-			card = new Card(data.getType(), data.getNumber(), data.getCardholder(), null);
+			//card = new Card(data.getType(), data.getNumber(), data.getCardholder(), null);
 			getTransactionFromBank(card);
+		}
+
+		@Override
+		public void aCardHasBeenInserted() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void theCardHasBeenRemoved() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void aCardHasBeenTapped() {
+			// TODO Auto-generated method stub
+			
 		}
 	}
 

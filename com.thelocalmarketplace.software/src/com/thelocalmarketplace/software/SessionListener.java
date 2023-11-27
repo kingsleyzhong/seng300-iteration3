@@ -1,8 +1,6 @@
-package com.thelocalmarketplace.software.funds;
+package com.thelocalmarketplace.software;
 
 /**
- * Listens for if payment has been completed
- * 
  * Project Iteration 3 Group 1
  *
  * Derek Atabayev 			: 30177060 
@@ -27,10 +25,7 @@ package com.thelocalmarketplace.software.funds;
  * Ethan Woo 				: 30172855 
  * Kingsley Zhong 			: 30197260 
  */
-public interface FundsListener {
 
-	/**
-	 * Signals an event in which the customer has paid for the complete amount of the order
-	 */
-	void notifyPaid();
+public interface SessionListener {
+
 }

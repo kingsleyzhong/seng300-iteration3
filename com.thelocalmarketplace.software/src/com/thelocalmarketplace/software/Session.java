@@ -1,24 +1,27 @@
 package com.thelocalmarketplace.software;
 
-import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.jjjwelectronics.Mass;
-import com.jjjwelectronics.scanner.BarcodedItem;
 import com.tdc.CashOverloadException;
 import com.tdc.DisabledException;
 import com.tdc.NoCashAvailableException;
+import com.tdc.banknote.BanknoteInsertionSlot;
+import com.tdc.coin.CoinSlot;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
-import com.thelocalmarketplace.software.exceptions.ProductNotFoundException;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.funds.FundsListener;
-import com.thelocalmarketplace.software.receipt.PrintReceipt;
-import com.thelocalmarketplace.software.receipt.PrintReceiptListener;
+import com.thelocalmarketplace.software.receipt.Receipt;
+import com.thelocalmarketplace.software.receipt.ReceiptListener;
 import com.thelocalmarketplace.software.weight.Weight;
 import com.thelocalmarketplace.software.weight.WeightListener;
+
+import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 
 /**
  * Class facade representing the session of a self-checkout station
@@ -32,30 +35,44 @@ import com.thelocalmarketplace.software.weight.WeightListener;
  *
  * Has add bulky item functionality
  *
- * Project iteration 2 group members:
- * Aj Sallh : 30023811
- * Anthony Kostal-Vazquez : 30048301
- * Chloe Robitaille : 30022887
- * Dvij Raval : 30024340
- * Emily Kiddle : 30122331
- * Katelan NG : 30144672
- * Kingsley Zhong : 30197260
- * Nick McCamis : 30192610
- * Sua Lim : 30177039
- * Subeg CHAHAL : 30196531
+ * Project Iteration 3 Group 1
+ *
+ * Derek Atabayev 			: 30177060 
+ * Enioluwafe Balogun 		: 30174298 
+ * Subeg Chahal 			: 30196531 
+ * Jun Heo 					: 30173430 
+ * Emily Kiddle 			: 30122331 
+ * Anthony Kostal-Vazquez 	: 30048301 
+ * Jessica Li 				: 30180801 
+ * Sua Lim 					: 30177039 
+ * Savitur Maharaj 			: 30152888 
+ * Nick McCamis 			: 30192610 
+ * Ethan McCorquodale 		: 30125353 
+ * Katelan Ng 				: 30144672 
+ * Arcleah Pascual 			: 30056034 
+ * Dvij Raval 				: 30024340 
+ * Chloe Robitaille 		: 30022887 
+ * Danissa Sandykbayeva 	: 30200531 
+ * Emily Stein 				: 30149842 
+ * Thi My Tuyen Tran 		: 30193980 
+ * Aoi Ueki 				: 30179305 
+ * Ethan Woo 				: 30172855 
+ * Kingsley Zhong 			: 30197260 
  *
  */
 public class Session {
-	protected static SessionState sessionState;
+	public ArrayList<SessionListener> listeners = new ArrayList<>();
+	private AbstractSelfCheckoutStation scs;
+	private SessionState sessionState;
 	private SessionState prevState;
-	private HashMap<BarcodedProduct, Integer> barcodedItems;
+	private HashMap<BarcodedProduct, Integer> barcodedItems = new HashMap<BarcodedProduct, Integer>();
+	private HashMap<BarcodedProduct, Integer> bulkyItems = new HashMap<BarcodedProduct, Integer>();
+	private BarcodedProduct lastProduct;
 	private Funds funds;
 	private Weight weight;
-	private PrintReceipt receiptPrinter; // Code added
-
-	private Mass MAXBAGWEIGHT = new Mass(500 * Mass.MICROGRAMS_PER_GRAM); // maximum weight of a bag for this system
-																			// unless configured, set to 500g ~ 1lb
-	private Mass ActualMassBeforeAddBag = Mass.ZERO;
+	private Receipt receiptPrinter;
+	private Requests request = Requests.NO_REQUEST;
+	private boolean requestApproved = false;
 
 	private class WeightDiscrepancyListener implements WeightListener {
 
@@ -71,7 +88,8 @@ public class Session {
 			// Only needed when the customer wants to add their own bags (this is how
 			// Session knows the bags' weight)
 			if (sessionState == SessionState.ADDING_BAGS) {
-				checkBags();
+				//This means that the bags are too heavy. Something should happen here. Perhaps
+				//instead we need another call that notifies bags too heavyS
 				return;
 			}
 			block();
@@ -100,8 +118,7 @@ public class Session {
 
 	}
 	
-	// Code added
-	private class PrinterListener implements PrintReceiptListener {
+	private class PrinterListener implements ReceiptListener {
 
 		@Override
 		public void notifiyOutOfPaper() {
@@ -147,7 +164,7 @@ public class Session {
 	 *         double representing the expected weight of a bag (in grams)
 	 */
 	public Session(double maxBagWeight) {
-		configureMAXBAGWEIGHT(maxBagWeight);
+		weight.configureMAXBAGWEIGHT(maxBagWeight);
 		sessionState = SessionState.PRE_SESSION;
 
 	}
@@ -160,31 +177,10 @@ public class Session {
 	 *                     micrograms)
 	 */
 	public Session(long maxBagWeight) {
-		configureMAXBAGWEIGHT(maxBagWeight);
+		weight.configureMAXBAGWEIGHT(maxBagWeight);
 		sessionState = SessionState.PRE_SESSION;
 	}
 
-	/**
-	 * Setup method for the session used in installing logic on the system
-	 * Initializes private variables to the ones passed. Initially has the session
-	 * off, session unfrozen, and pay not enabled.
-	 * 
-	 * @param BarcodedItems
-	 *                      A hashMap of barcoded products and their associated
-	 *                      quantity in shopping cart
-	 * @param funds
-	 *                      The funds used in the session
-	 * @param weight
-	 *                      The weight of the items and actual weight on the scale
-	 *                      during the session
-	 */
-	public void setup(HashMap<BarcodedProduct, Integer> barcodedItems, Funds funds, Weight weight) {
-		this.barcodedItems = barcodedItems;
-		this.funds = funds;
-		this.weight = weight;
-		this.weight.register(new WeightDiscrepancyListener());
-		this.funds.register(new PayListener());
-	}
 	/**
 	 * Setup method for the session used in installing logic on the system
 	 * Initializes private variables to the ones passed. Initially has the session
@@ -199,25 +195,27 @@ public class Session {
 	 *                      The weight of the items and actual weight on the scale
 	 *                      during the session
 	 *                      
-	 * @param PrintReceipt 
+	 * @param Receipt 
 	 * 						The PrintReceipt behavior
 	 */
-	public void setup(HashMap<BarcodedProduct, Integer> barcodedItems, Funds funds, Weight weight, PrintReceipt receiptPrinter) {
+	public void setup(HashMap<BarcodedProduct, Integer> barcodedItems, Funds funds, Weight weight, Receipt receiptPrinter,
+			AbstractSelfCheckoutStation scs) {
 		this.barcodedItems = barcodedItems;
 		this.funds = funds;
 		this.weight = weight;
 		this.weight.register(new WeightDiscrepancyListener());
 		this.funds.register(new PayListener());
-		// Code added
 		this.receiptPrinter = receiptPrinter;
 		this.receiptPrinter.register(new PrinterListener());
+		this.scs = scs;
 	}
+	
 	/**
 	 * Sets the session to have started, allowing customer to interact with station
 	 */
 	public void start() {
 		sessionState = SessionState.IN_SESSION;
-		// barcodedItems.clear();
+		barcodedItems.clear();
 		// funds.clear();
 		// weight.clear();
 	}
@@ -226,7 +224,13 @@ public class Session {
 	 * Cancels the current session and resets the current session
 	 */
 	public void cancel() {
-		sessionState = SessionState.PRE_SESSION;
+		if(sessionState == SessionState.IN_SESSION) {
+			sessionState = SessionState.PRE_SESSION;
+		}
+		else if(sessionState != SessionState.BLOCKED) {
+			sessionState = SessionState.IN_SESSION;
+			weight.cancel();
+		}
 	}
 
 	/**
@@ -257,6 +261,7 @@ public class Session {
 			if (!barcodedItems.isEmpty()) {
 				sessionState = SessionState.PAY_BY_CASH;
 				funds.setPay(true);
+				funds.enableCash();
 			} else {
 				throw new CartEmptyException("Cannot pay for an empty order");
 			}
@@ -288,221 +293,90 @@ public class Session {
 	 * 
 	 */
 	public void addBags() {
-		// can only occur during an active session
-		// this prevents the user from adding bags while already adding bags
 		if (sessionState == SessionState.IN_SESSION) {
-			Session.sessionState = SessionState.ADDING_BAGS;// change the state to the add bags state
-
-			// get the weight of the scale before adding the bag
-			ActualMassBeforeAddBag = this.getWeight().getActualWeight();
-
-			// signal customer to add bag to the bagging area (somehow) (GUI problem)
+			sessionState = SessionState.ADDING_BAGS;
+			weight.addBags();
 		}
 		// else: nothing changes about the Session's state
 	}
 
-	/*
-	 * Runs when a customer has signaled their desire to add their own bags to the
-	 * bagging area,
-	 * and then a change in the bagging area was recorded.
+	/**
+	 * Updates product list
 	 * 
-	 * Compares the weight on the scale to the the weight before adding bags to
-	 * determine if bags were added
-	 * and that the bags are below the specified maximum bag weight (MAXBAGWEIGHT).
-	 * 
-	 * If the weight change was negative -> notifies unexpected change in the
-	 * bagging area
-	 * and blocks the system. Expected weight is not updated.
-	 * If the bags are too heavy -> notifies attendant and customer. Blocks the
-	 * system
-	 * Else: bags were accepted. Expected weight is updated to include the bag
-	 * weight. Session returns to normal runtime state.
-	 * 
+	 * @param barcodedItems
 	 */
-	private void checkBags() {
-		// get the weight of the scale after the bag was added
-		Mass ActualMassAfterAddingBag = this.getWeight().getActualWeight();
+	public void updateMap(HashMap<BarcodedProduct, Integer> barcodedItems) {
+		this.barcodedItems = barcodedItems;
+	}
+	
+	// Move to receiptPrinter class (possible rename of receiptPrinter to just reciept
+	public void printReceipt() {
+		receiptPrinter.printReceipt(barcodedItems);
+	}
 
-		// check that the weight change was caused by adding weight
-		if (ActualMassAfterAddingBag.compareTo(ActualMassBeforeAddBag) < 0) {
-			// unexpected change in the bagging area
-			// signal problem to the customer
-			// do not update the expected weight
-
-			// cancel the interaction
-			this.block();// blocks the system
-			return;
+	/**
+	 * Subtracts the weight of the bulky item from the total expected weight
+	 * of the system
+	 * notifies that the event has happened
+	 */
+	public void addBulkyItem() {
+		// Only able to add when in a discrepancy after adding bags
+		if(sessionState == SessionState.BLOCKED) {
+			sessionState = SessionState.BULKY_ITEM;
+			request = Requests.BULKY_ITEM;
+			notifyAttendant();
 		}
+		else if (sessionState == SessionState.BULKY_ITEM) {
+			if (requestApproved) {
+				requestApproved = false;
+				// subtract the bulky item weight from total weight if assistant has approved
+				Mass bulkyItemWeight = this.weight.getLastWeightAdded();
+				this.weight.subtract(bulkyItemWeight);
+				if (bulkyItems.containsKey(lastProduct)) {
+					bulkyItems.replace(lastProduct, bulkyItems.get(lastProduct) + 1);
+				} else {
+					bulkyItems.put(lastProduct, 1);
+				}
+			} else {
+				// assistant has not approved the request. Do nothing
+				return;
+			}
 
-		// store the bags weight
-		// weight of the bag is the difference between the weight on the scale after and
-		// before adding the bags
-		// this should work, this should never be negative
-		Mass actualBagWeight = ActualMassAfterAddingBag.difference(ActualMassBeforeAddBag).abs();
-
-		// check if the updated weight is to heavy for just a bag (Throw exception??)
-		// if weight > expected weight of a bag
-		if (actualBagWeight.compareTo(MAXBAGWEIGHT) >= 0) {
-			bagsTooHeavy();
-			return;
-		} else {
-			// else: the bag added is within the allowed weight range
-			// update the expected weight on the scale
-			this.weight.update(actualBagWeight);
-
+			// resume session
+			this.resume();
 		}
-		// returns the Session to the normal runtime state
-		this.resume();
-	}
-
-	/*
-	 * Allows customer to signal they no longer wish to add bags.
-	 * Will not remove already added bags, but will return the session to normal
-	 * runtime behavior.
-	 */
-	public void cancelAddBags() {
-		// resumes normal functioning only when in the adding bags state
-		if (Session.sessionState == SessionState.ADDING_BAGS) {
-			this.resume();// changes the state
-		}
-		// else: does nothing
-
-	}
-
-	/*
-	 * Occurs when the bags the Customer added to the bagging area are above the
-	 * maximum allowed bag weight
-	 * (set by MAXBAGWEIGHT, able to be configured).
-	 * 
-	 * Currently sorta useless without an attendant or any way to contact an
-	 * attendant
-	 * 
-	 * Once blocked this could be overrides the same as any other blocked state
-	 */
-	private void bagsTooHeavy() {
-		// notifies attendant
-		// block the system
-		this.block();
-	}
-
-	/**
-	 * Returns the maximum bag weight for the system in grams (this one is secure)
-	 */
-	public double get_MAXBAGWEIGHT_inGrams() {
-		return this.MAXBAGWEIGHT.inGrams().doubleValue();
-	}
-
-	/**
-	 * Returns the maximum bag weight for the system in grams (this one is secure)
-	 */
-	public long get_MAXBAGWEIGHT_inMicrograms() {
-		return this.MAXBAGWEIGHT.inMicrograms().longValue();
-	}
-
-	/**
-	 * Sets the maximum bag weight for this session
-	 * 
-	 * @params
-	 *         maxBagWeight: double representing the maximum weight of a bag (in
-	 *         grams)
-	 */
-	public void configureMAXBAGWEIGHT(double maxBagWeight) {
-		MAXBAGWEIGHT = new Mass(maxBagWeight);
-
-	}
-
-	/**
-	 * Sets the maximum bag weight for this session
-	 * 
-	 * @params
-	 *         maxBagWeight: long representing the maximum weight of a bag (in
-	 *         micrograms)
-	 */
-	public void configureMAXBAGWEIGHT(long maxBagWeight) {
-		MAXBAGWEIGHT = new Mass(maxBagWeight);
-	}
-
-	/**
-	 * Static getter for session state
-	 *
-	 * @return
-	 *         Session State
-	 */
-	public static final SessionState getState() {
-		return sessionState;
-	}
-
-	/**
-	 * Adds a barcoded product to the hashMap of the barcoded products. Updates the
-	 * expected weight and price
-	 * of the system based on the weight and price of the product.
-	 *
-	 * @param product
-	 *                The product to be added to the HashMap.
-	 */
-	public void addItem(BarcodedProduct product) {
-		if (barcodedItems.containsKey(product)) {
-			barcodedItems.replace(product, barcodedItems.get(product) + 1);
-		} else {
-			barcodedItems.put(product, 1);
-		}
-		double weight = product.getExpectedWeight();
-		long price = product.getPrice();
-		Mass mass = new Mass(weight);
-		BigDecimal itemPrice = new BigDecimal(price);
-		this.weight.update(mass);
-		funds.update(itemPrice);
 	}
 	
 	/**
-	 * Removes a selected product from the hashMap of barcoded items.
-	 * Updates the weight and price of the products.
-	 *
-	 * Removes a selected product from the hashMap of bulky items.
-	 * Updates the price of the products.
-	 *
-	 * @param product
-	 *                The product to be removed from the HashMap.
+	 * method to allow assistant to approve customer requests
 	 */
-	public void removeItem(BarcodedProduct product) {
-		double weight = product.getExpectedWeight();
-		long price = product.getPrice(); 
-		Mass mass = new Mass(weight);
-		BigDecimal ItemPrice = new BigDecimal(price);
-
-		// remove bulky item
-		if (!this.getBulkyItem().isEmpty()) {
-			if (bulkyItem.get(product) > 1) {
-				bulkyItem.replace(product, bulkyItem.get(product) - 1);
-				barcodedItems.replace(product, barcodedItems.get(product)-1);
-				funds.removeItemPrice(ItemPrice);
-			} else if (bulkyItem.get(product) == 1) {
-				funds.removeItemPrice(ItemPrice);
-				bulkyItem.remove(product);
-				barcodedItems.remove(product);
-			}
-
-			return;
+	public void attendantApprove(Requests request) {
+		requestApproved = true;
+		if (request == Requests.BULKY_ITEM) {
+			addBulkyItem();
 		}
-
-		// remove item
-		if (barcodedItems.containsKey(product) && barcodedItems.get(product) > 1 ) {
-			barcodedItems.replace(product, barcodedItems.get(product)-1);
-			this.weight.removeItemWeightUpdate(mass);
-			funds.removeItemPrice(ItemPrice);
-		} else if (barcodedItems.containsKey(product) && barcodedItems.get(product) == 1 ) { 
-			funds.removeItemPrice(ItemPrice);
-			this.weight.removeItemWeightUpdate(mass);
-			barcodedItems.remove(product);
-		} else {
-			throw new ProductNotFoundException("Item not found");
-		} 
-	} 
- 
+	}
+	
+	public void notifyAttendant() {
+		// attendant.getRequest(request);
+		attendantApprove(request);
+	}
+	
+	/**
+	 * getter methods
+	 */
+	public boolean getRequestApproved() {
+		return this.requestApproved;
+	}
+	
 	public HashMap<BarcodedProduct, Integer> getBarcodedItems() {
 		return barcodedItems;
 	}
-   
+	
+    public HashMap<BarcodedProduct, Integer> getBulkyItems() {
+		return bulkyItems;
+	}
+    
 	public Funds getFunds() {
 		return funds;
 	}
@@ -511,69 +385,31 @@ public class Session {
 		return weight;
 	}
 	
-	// Code added
-	public void printReceipt() {
-		String formattedReceipt = "";
-		for (Map.Entry<BarcodedProduct, Integer> item : barcodedItems.entrySet()) {
-			BarcodedProduct product = item.getKey();
-			int numberOfProduct = item.getValue().intValue();
-			// barcoded item does not store the price for items which need to be weighted
-			long overallPrice = product.getPrice()*numberOfProduct;
-			formattedReceipt = formattedReceipt.concat("Item: " + product.getDescription() + " Amount: " + numberOfProduct + " Price: " + overallPrice + "\n");
-		}
-		receiptPrinter.printReceipt(formattedReceipt);
+	public AbstractSelfCheckoutStation getStation() {
+		return scs;
+	}
+	
+	/**
+	 * getter for session state
+	 *
+	 * @return
+	 *         Session State
+	 */
+	public SessionState getState() {
+		return sessionState;
+	}
+	
+	// register listeners
+	public final synchronized void register(SessionListener listener) {
+		if (listener == null)
+			throw new NullPointerSimulationException("listener");
+			listeners.add(listener);
 	}
 
-	// Handle Bulky Item Use Case
-	private boolean bulkyItemCalled;
-	private HashMap<BarcodedProduct, Integer> bulkyItem = new HashMap<BarcodedProduct, Integer>();
-
-	/**
-	 * get hash map that contains all the bulky item
-	 */
-	public HashMap getBulkyItem() { return this.bulkyItem; }
-	/**
-	 * method that records if customer calls handle bulky item (to the system and to
-	 * the assistant)
-	 */
-	public void bulkyItemCalled() { this.bulkyItemCalled = true; }
-
-	/**
-	 * Subtracts the weight of the bulky item from the total expected weight
-	 * of the system
-	 * notifies that the event has happened
-	 */
-	public void addBulkyItem(BarcodedProduct item) {
-		this.block();
-		if (this.bulkyItemCalled) {
-			// subtract the bulky item weight from total weight if assistant has approved
-			Mass bulkyItemWeight = this.weight.getLastWeightAdded();
-			this.weight.subtract(bulkyItemWeight);
-			if (bulkyItem.containsKey(item)) {
-				bulkyItem.replace(item, bulkyItem.get(item) + 1);
-			} else {
-				bulkyItem.put(item, 1);
-			}
-		}
-		this.resume();
+	// de-register listeners
+	public final synchronized void deRegister(SessionListener listener) {
+		if (listener == null)
+			throw new NullPointerSimulationException("listener");
+			listeners.remove(listener);
 	}
-
-	/**
-	 * method to cancel handle bulky item request
-	 * customer handles bulky item but claims that it is not a bulky item anymore
-	 */
-	public void cancelBulkyItem(BarcodedProduct product) {
-		if (this.bulkyItemCalled) {
-			this.bulkyItemCalled = false;
-			Mass bulkyItemWeight = this.weight.getLastWeightAdded();
-			this.weight.update(bulkyItemWeight);
-
-			if (bulkyItem.get(product) > 1) {
-				bulkyItem.replace(product, bulkyItem.get(product) - 1);
-			} else if (bulkyItem.get(product) == 1) {
-				bulkyItem.remove(product);
-			}
-		}
-	}
-
 }

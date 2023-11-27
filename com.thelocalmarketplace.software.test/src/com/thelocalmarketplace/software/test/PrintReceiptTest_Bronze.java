@@ -34,8 +34,8 @@ import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.funds.Funds;
-import com.thelocalmarketplace.software.receipt.PrintReceipt;
-import com.thelocalmarketplace.software.receipt.PrintReceiptListener;
+import com.thelocalmarketplace.software.receipt.Receipt;
+import com.thelocalmarketplace.software.receipt.ReceiptListener;
 import com.thelocalmarketplace.software.weight.Weight;
 
 import powerutility.PowerGrid;
@@ -55,7 +55,7 @@ public class PrintReceiptTest_Bronze {
 
     private Funds fundsBronze;
     private Weight weightBronze;
-    private PrintReceipt receiptPrinterBronze;
+    private Receipt receiptPrinterBronze;
     
     private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
     private final PrintStream originalErr = System.err;
@@ -80,7 +80,7 @@ public class PrintReceiptTest_Bronze {
         
         fundsBronze = new Funds(scsb);
         weightBronze = new Weight(scsb);
-        receiptPrinterBronze = new PrintReceipt(scsb);
+        receiptPrinterBronze = new Receipt(scsb);
         
         System.setErr(new PrintStream(errContent));
     }
@@ -92,7 +92,7 @@ public class PrintReceiptTest_Bronze {
     
     @Test (expected = IllegalArgumentException.class)
     public void testNullStation() {
-    	receiptPrinterBronze = new PrintReceipt(null);
+    	receiptPrinterBronze = new Receipt(null);
     }
     
     @Test
@@ -266,7 +266,7 @@ public class PrintReceiptTest_Bronze {
     }
     
 	// Stub listener
-	private class PrinterListener implements PrintReceiptListener {
+	private class PrinterListener implements ReceiptListener {
 		public boolean block = false; //Flag for running our of ink, set to false in default
 		public boolean success = false; //Flag for successful printing.
 

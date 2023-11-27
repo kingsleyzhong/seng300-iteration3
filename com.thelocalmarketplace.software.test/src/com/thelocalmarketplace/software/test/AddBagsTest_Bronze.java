@@ -25,7 +25,7 @@ import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.funds.Funds;
-import com.thelocalmarketplace.software.rules.ItemAddedRule;
+import com.thelocalmarketplace.software.items.ItemAddedRule;
 import com.thelocalmarketplace.software.weight.Weight;
 
 import StubClasses.BagStub;

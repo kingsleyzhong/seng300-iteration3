@@ -105,19 +105,19 @@ public class SelfCheckoutStationSystemTest {
 		scs.plugIn(PowerGrid.instance());
 		scs.turnOn();
 		session = new Session();
-		SelfCheckoutStationLogic.installOn(scs, session);
+		SelfCheckoutStationLogic.installOn(scs);
 
 		scss = new SelfCheckoutStationSilver();
 		scss.plugIn(PowerGrid.instance());
 		scss.turnOn();
 		session2 = new Session();
-		SelfCheckoutStationLogic.installOn(scss, session2);
+		SelfCheckoutStationLogic.installOn(scss);
 
 		scsg = new SelfCheckoutStationGold();
 		scsg.plugIn(PowerGrid.instance());
 		scsg.turnOn();
 		session3 = new Session();
-		SelfCheckoutStationLogic.installOn(scsg, session3);
+		SelfCheckoutStationLogic.installOn(scsg);
 
 		// Populate database
 		barcode = new Barcode(new Numeral[] { Numeral.valueOf((byte) 1) });
@@ -285,7 +285,6 @@ public class SelfCheckoutStationSystemTest {
 		assertTrue(scs.banknoteOutput.hasDanglingBanknotes());
 		List<Banknote> change = scs.banknoteOutput.removeDanglingBanknotes(); 
 		
-		// Hardware bug???
 		assertEquals("Dispensed $10", ten, change.get(0));
 	}
 	
@@ -329,12 +328,11 @@ public class SelfCheckoutStationSystemTest {
 		assertEquals("Dispensed $3", expected, coinchange);
 		
 		List<Banknote> banknotechange = scs.banknoteOutput.removeDanglingBanknotes(); 
-		// Hardware bug???
 		assertEquals("Dispensed $5", five, banknotechange.get(0));	
 	}
 	
 	// Tests for paying Credit via swipe
-	
+	/*
 	@Test
 	public void testPayWithCredit() throws CashOverloadException, NoCashAvailableException, DisabledException, IOException {
 		CardIssuer ci1 = new CardIssuer(SupportedCardIssuers.ONE.getIssuer(), 1);
@@ -432,7 +430,7 @@ public class SelfCheckoutStationSystemTest {
 		assertEquals("Session is fully paid for", BigDecimal.ZERO, funds.getAmountDue());
 		assertEquals("Session has been notified of full payment", Session.getState(), SessionState.PRE_SESSION);
 	}
-	
+	*/
 	// Test add bulky item
 	
 	@Test
@@ -441,8 +439,18 @@ public class SelfCheckoutStationSystemTest {
 		for(int i =0; i < 100; i++) {
 			scs.mainScanner.scan(item);
 		}
-		session.bulkyItemCalled();
-		session.addBulkyItem(product);
+		session.addBulkyItem();
+		assertEquals("Session is in session", SessionState.IN_SESSION, Session.getState());
+	}
+	
+	@Test
+	public void testRemoveBulkyItem() {
+		session.start();
+		for(int i =0; i < 100; i++) {
+			scs.mainScanner.scan(item);
+		}
+		session.addBulkyItem();
+		session.removeItem(product);
 		assertEquals("Session is in session", SessionState.IN_SESSION, Session.getState());
 	}
 	
@@ -457,7 +465,7 @@ public class SelfCheckoutStationSystemTest {
 		assertEquals("Session is frozen upon discrepancy", Session.getState(), SessionState.BLOCKED);
 	}
 
-	@Test
+	@Test 
 	public void testAddItemWhenDiscrepancy() {
 		session.start();
 		for(int i =0; i < 100; i++) {
@@ -472,7 +480,7 @@ public class SelfCheckoutStationSystemTest {
 	
 	@Test
 	public void testEnterPayWhenDiscrepancy() {
-		session.start();
+		session.start(); 
 		for(int i =0; i < 100; i++) {
 			scs.mainScanner.scan(item);
 		}

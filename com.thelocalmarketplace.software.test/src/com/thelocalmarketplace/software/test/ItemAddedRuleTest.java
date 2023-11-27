@@ -26,8 +26,8 @@ import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 import com.thelocalmarketplace.software.funds.Funds;
-import com.thelocalmarketplace.software.receipt.PrintReceipt;
-import com.thelocalmarketplace.software.rules.ItemAddedRule;
+import com.thelocalmarketplace.software.items.ItemAddedRule;
+import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.weight.Weight;
 import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
 import powerutility.PowerGrid;
@@ -70,9 +70,9 @@ public class ItemAddedRuleTest {
     private Weight weightGold;
     
     // Code added
-    private PrintReceipt receiptBronze;
-    private PrintReceipt receiptSilver;
-    private PrintReceipt receiptGold;
+    private Receipt receiptBronze;
+    private Receipt receiptSilver;
+    private Receipt receiptGold;
     
     private ScannerListenerStub listener;
 
@@ -115,9 +115,9 @@ public class ItemAddedRuleTest {
         fundsGold = new Funds(scsg);
         
         // Code added
-        receiptBronze = new PrintReceipt(scsb);
-        receiptSilver = new PrintReceipt(scsb);
-        receiptGold = new PrintReceipt(scsb);
+        receiptBronze = new Receipt(scsb);
+        receiptSilver = new Receipt(scsb);
+        receiptGold = new Receipt(scsb);
         
         session.setup(new HashMap<BarcodedProduct, Integer>(), fundsBronze, weightBronze, receiptBronze);
         session2.setup(new HashMap<BarcodedProduct, Integer>(), fundsSilver, weightSilver, receiptSilver);

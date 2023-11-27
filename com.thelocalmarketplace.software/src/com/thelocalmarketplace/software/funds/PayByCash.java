@@ -20,21 +20,33 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 /***
  * This class contains the observers for pay by cash events 
  * 
- * Project iteration 2 group members:
- * 		Aj Sallh 				: 30023811
- *		Anthony Kostal-Vazquez 	: 30048301
- *		Chloe Robitaille 		: 30022887
- *		Dvij Raval				: 30024340
- *		Emily Kiddle 			: 30122331
- *		Katelan NG 				: 30144672
- *		Kingsley Zhong 			: 30197260
- *		Nick McCamis 			: 30192610
- *		Sua Lim 				: 30177039
- *		Subeg CHAHAL 			: 30196531
+ * Project Iteration 3 Group 1
+ *
+ * Derek Atabayev 			: 30177060 
+ * Enioluwafe Balogun 		: 30174298 
+ * Subeg Chahal 			: 30196531 
+ * Jun Heo 					: 30173430 
+ * Emily Kiddle 			: 30122331 
+ * Anthony Kostal-Vazquez 	: 30048301 
+ * Jessica Li 				: 30180801 
+ * Sua Lim 					: 30177039 
+ * Savitur Maharaj 			: 30152888 
+ * Nick McCamis 			: 30192610 
+ * Ethan McCorquodale 		: 30125353 
+ * Katelan Ng 				: 30144672 
+ * Arcleah Pascual 			: 30056034 
+ * Dvij Raval 				: 30024340 
+ * Chloe Robitaille 		: 30022887 
+ * Danissa Sandykbayeva 	: 30200531 
+ * Emily Stein 				: 30149842 
+ * Thi My Tuyen Tran 		: 30193980 
+ * Aoi Ueki 				: 30179305 
+ * Ethan Woo 				: 30172855 
+ * Kingsley Zhong 			: 30197260 
  */
 
 
-public class PayByCashController {
+public class PayByCash {
 	
 	private BigDecimal cashPaid; //amount of cash that has been paid
 	private Funds fund;
@@ -45,14 +57,14 @@ public class PayByCashController {
  * @param funds 
  * @param paid 
  */
-	public PayByCashController(AbstractSelfCheckoutStation scs, Funds funds) {
+	public PayByCash(CoinValidator coinValidator, BanknoteValidator banknoteValidator, Funds funds) {
 		
 		this.cashPaid = BigDecimal.ZERO;
 				
 		InnerCoinListener coinListener = new InnerCoinListener();
 		InnerBankNoteListener banknoteListener = new InnerBankNoteListener();
-		scs.coinValidator.attach(coinListener);
-		scs.banknoteValidator.attach(banknoteListener);
+		coinValidator.attach(coinListener);
+		banknoteValidator.attach(banknoteListener);
 		this.fund = funds;
 		
 		
@@ -93,14 +105,8 @@ public class PayByCashController {
 				if (value.compareTo(BigDecimal.ZERO) <= 0) {
 	                throw new IllegalArgumentException("Coin value should be positive.");
 	            }
-				
-	            if (Session.getState() == SessionState.PAY_BY_CASH) {
 	                updateCoin(value); 
-	            }
 	            
-	            else {
-	            	throw new InvalidActionException("Pay is not activated at the moment.");
-	            }
 				
 			}
 
@@ -147,16 +153,7 @@ public class PayByCashController {
 				if (denomination.compareTo(BigDecimal.ZERO) <= 0) {
 	                throw new IllegalArgumentException("Coin value should be positive.");
 	            }
-				
-	            if (Session.getState() == SessionState.PAY_BY_CASH) {
 	            	updateBankNote(denomination); 
-	            	
-	            }
-	            
-	            else {
-	            	throw new InvalidActionException("Pay is not activated at the moment.");
-	            }
-				
 			}
 
 			@Override
@@ -171,7 +168,7 @@ public class PayByCashController {
 	private void updateCoin(BigDecimal value) {
 				
 		this.cashPaid = this.cashPaid.add(value);				
-		this.fund.updatePaidCash();
+		this.fund.updatePaidCash(cashPaid);
 				
 	}
 	
@@ -181,7 +178,7 @@ public class PayByCashController {
 	private void updateBankNote(BigDecimal denomination) {
 		
 		this.cashPaid = this.cashPaid.add(denomination);
-		this.fund.updatePaidCash();
+		this.fund.updatePaidCash(cashPaid);
 	
 	}
 
