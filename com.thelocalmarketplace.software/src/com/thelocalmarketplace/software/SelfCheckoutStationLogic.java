@@ -17,7 +17,6 @@ import com.thelocalmarketplace.software.funds.PayByCard;
 import com.thelocalmarketplace.software.funds.PayByCash;
 import com.thelocalmarketplace.software.items.ItemAddedRule;
 import com.thelocalmarketplace.software.items.ItemManager;
-import com.thelocalmarketplace.software.items.ItemRemovedRule;
 import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.weight.Weight;
 
@@ -91,12 +90,10 @@ public class SelfCheckoutStationLogic {
 		new PayByCash(scs.getCoinValidator(), scs.getBanknoteValidator(), funds);
 		new PayByCard(scs.getCardReader(), funds);
 		Weight weight = new Weight(scs.getBaggingArea());
-		Receipt receiptPrinter = new Receipt(scs.getPrinter()); 
-		HashMap<BarcodedProduct, Integer> barcodedItems = new HashMap<BarcodedProduct, Integer>();
+		Receipt receiptPrinter = new Receipt(scs.getPrinter());
+		ItemManager itemManager = new ItemManager(session); 
 		// Will also need the touch screen/ keyboard for GUI interaction
-		session.setup(barcodedItems, funds, weight, receiptPrinter, scs); 
-		ItemManager itemManager = new ItemManager(session);
-		new ItemRemovedRule(itemManager);
+		session.setup(itemManager, funds, weight, receiptPrinter, scs); 
 		new ItemAddedRule(scs.getMainScanner(), scs.getHandheldScanner(), itemManager);
 	}
 	
