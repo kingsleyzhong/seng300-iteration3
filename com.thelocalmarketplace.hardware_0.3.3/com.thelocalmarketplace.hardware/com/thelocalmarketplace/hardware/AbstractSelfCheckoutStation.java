@@ -291,212 +291,101 @@ public abstract class AbstractSelfCheckoutStation implements ISelfCheckoutStatio
 		this.coinTray = coinTray;
 	}
 
-	/**
-	 * Represents the large scale where items are to be placed once they have been
-	 * scanned or otherwise entered.
-	 * 
-	 * @return The bagging area.
-	 */
 	@Override
 	public IElectronicScale getBaggingArea() {
 		return baggingArea;
 	}
 
-	/**
-	 * Represents the small scale used to weigh items that are sold by weight.
-	 * 
-	 * @return The scanning area scale.
-	 */
 	@Override
 	public IElectronicScale getScanningArea() {
 		return scanningArea;
 	}
 
-	/**
-	 * Represents a touch screen display on which is shown a graphical user
-	 * interface.
-	 * 
-	 * @return The touch screen.
-	 */
 	@Override
 	public ITouchScreen getScreen() {
 		return screen;
 	}
 
-	/**
-	 * Represents the dispenser of reusable-bags.
-	 * 
-	 * @return The reusable bag dispenser.
-	 */
 	@Override
 	public IReusableBagDispenser getReusableBagDispenser() {
 		return reusableBagDispenser;
 	}
 
-	/**
-	 * Represents a printer for receipts.
-	 * 
-	 * @return The receipt printer.
-	 */
 	@Override
 	public IReceiptPrinter getPrinter() {
 		return printer;
 	}
 
-	/**
-	 * Represents a device that can read electronic cards, through one or more input
-	 * modes according to the setup of the card.
-	 * 
-	 * @return The card reader.
-	 */
 	@Override
 	public ICardReader getCardReader() {
 		return cardReader;
 	}
 
-	/**
-	 * Represents a large, central barcode scanner.
-	 * 
-	 * @return The main scanner.
-	 */
 	@Override
 	public IBarcodeScanner getMainScanner() {
 		return mainScanner;
 	}
 
-	/**
-	 * Represents a handheld, secondary barcode scanner.
-	 * 
-	 * @return The handheld scanner.
-	 */
 	@Override
 	public IBarcodeScanner getHandheldScanner() {
 		return handheldScanner;
 	}
 
-	/**
-	 * Represents a device that permits banknotes to be entered.
-	 * 
-	 * @return The banknote input slot.
-	 */
 	@Override
 	public BanknoteInsertionSlot getBanknoteInput() {
 		return banknoteInput;
 	}
 
-	/**
-	 * Represents a device that permits banknotes to be given to the customer.
-	 * 
-	 * @return The banknote output slot.
-	 */
 	@Override
 	public BanknoteDispensationSlot getBanknoteOutput() {
 		return banknoteOutput;
 	}
 
-	/**
-	 * Represents a device that checks the validity of a banknote, and determines
-	 * its denomination.
-	 * 
-	 * @return The banknote validator device.
-	 */
 	@Override
 	public BanknoteValidator getBanknoteValidator() {
 		return banknoteValidator;
 	}
 
-	/**
-	 * Represents a device that stores banknotes.
-	 * 
-	 * @return The banknote storage unit.
-	 */
 	@Override
 	public BanknoteStorageUnit getBanknoteStorage() {
 		return banknoteStorage;
 	}
 
-	/**
-	 * Represents the set of denominations supported by the self-checkout system.
-	 * 
-	 * @return The banknote denominations supported by this station.
-	 */
 	@Override
 	public BigDecimal[] getBanknoteDenominations() {
 		return banknoteDenominations;
 	}
 
-	/**
-	 * Represents the set of banknote dispensers, indexed by the denomination that
-	 * each contains. Note that nothing prevents banknotes of the wrong denomination
-	 * to be loaded into a given dispenser.
-	 * 
-	 * @return The banknote dispenser devices, indexed by the denomination managed
-	 *             by each.
-	 */
 	@Override
 	public Map<BigDecimal, IBanknoteDispenser> getBanknoteDispensers() {
 		return banknoteDispensers;
 	}
 
-	/**
-	 * Represents a device that permits coins to be entered.
-	 * 
-	 * @return The coin input.
-	 */
 	@Override
 	public CoinSlot getCoinSlot() {
 		return coinSlot;
 	}
 
-	/**
-	 * Represents a device that checks the validity of a coin, and determines its
-	 * denomination.
-	 * 
-	 * @return The coin validator device.
-	 */
 	@Override
 	public CoinValidator getCoinValidator() {
 		return coinValidator;
 	}
 
-	/**
-	 * Represents a device that stores coins that have been entered by customers.
-	 * 
-	 * @return The coin storage unit.
-	 */
 	@Override
 	public CoinStorageUnit getCoinStorage() {
 		return coinStorage;
 	}
 
-	/**
-	 * Represents the set of denominations of coins supported by this self-checkout
-	 * system.
-	 * 
-	 * @return The set of coin denominations supported by this station.
-	 */
 	@Override
 	public List<BigDecimal> getCoinDenominations() {
 		return coinDenominations;
 	}
 
-	/**
-	 * Represents the set of coin dispensers, indexed by the denomination of coins
-	 * contained by each.
-	 * 
-	 * @return The coin dispenser devices, indexed by the denomination managed by
-	 *             each.
-	 */
 	@Override
 	public Map<BigDecimal, ICoinDispenser> getCoinDispensers() {
 		return coinDispensers;
 	}
 
-	/**
-	 * Represents a device that receives coins to return to the customer.
-	 * 
-	 * @return The coin output.
-	 */
 	@Override
 	public CoinTray getCoinTray() {
 		return coinTray;
@@ -504,20 +393,16 @@ public abstract class AbstractSelfCheckoutStation implements ISelfCheckoutStatio
 
 	private AttendantStation supervisor = null;
 
-	boolean isSupervised() {
+	@Override
+	public boolean isSupervised() {
 		return supervisor != null;
 	}
 
-	void setSupervisor(AttendantStation supervisor) {
+	@Override
+	public void setSupervisor(AttendantStation supervisor) {
 		this.supervisor = supervisor;
 	}
 
-	/**
-	 * Plugs in all the devices in the station.
-	 * 
-	 * @param grid
-	 *            The power grid to plug into. Cannot be null.
-	 */
 	@Override
 	public void plugIn(PowerGrid grid) {
 		baggingArea.plugIn(grid);
@@ -542,9 +427,6 @@ public abstract class AbstractSelfCheckoutStation implements ISelfCheckoutStatio
 		reusableBagDispenser.plugIn(grid);
 	}
 
-	/**
-	 * Unplugs all the devices in the station.
-	 */
 	@Override
 	public void unplug() {
 		baggingArea.unplug();
@@ -569,9 +451,6 @@ public abstract class AbstractSelfCheckoutStation implements ISelfCheckoutStatio
 		reusableBagDispenser.unplug();
 	}
 
-	/**
-	 * Turns on all the devices in the station.
-	 */
 	@Override
 	public void turnOn() {
 		baggingArea.turnOn();
@@ -596,9 +475,6 @@ public abstract class AbstractSelfCheckoutStation implements ISelfCheckoutStatio
 		reusableBagDispenser.turnOn();
 	}
 
-	/**
-	 * Turns off all the devices in the station.
-	 */
 	@Override
 	public void turnOff() {
 		baggingArea.turnOff();
