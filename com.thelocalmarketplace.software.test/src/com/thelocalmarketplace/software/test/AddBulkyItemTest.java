@@ -76,7 +76,7 @@ public class AddBulkyItemTest {
         scsg = new SelfCheckoutStationGold();
 
         listener = new ScannerListenerStub();
-        scs.handheldScanner.register(listener);
+        scs.getHandheldScanner().register(listener);
         scss.handheldScanner.register(listener);
         scsg.handheldScanner.register(listener);
 
@@ -185,7 +185,7 @@ public class AddBulkyItemTest {
         session.setup(new HashMap<BarcodedProduct, Integer>(), funds, weight);
 
         while (!listener.barcodesScanned.contains(item.getBarcode())) {
-            scs.handheldScanner.scan(item);
+           scs.getHandheldScanner().scan(item);
         }
 
         session.bulkyItemCalled();
