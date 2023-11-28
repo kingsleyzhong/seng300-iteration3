@@ -175,29 +175,7 @@ public class Session {
 		sessionState = SessionState.PRE_SESSION;
 	}
 
-	/**
-	 * Constructor for session that also allows the MAX BAG WEIGHT to be defined
-	 * 
-	 * @params maxBagWeight
-	 *         double representing the expected weight of a bag (in grams)
-	 */
-	public Session(double maxBagWeight) {
-		weight.configureMAXBAGWEIGHT(maxBagWeight);
-		sessionState = SessionState.PRE_SESSION;
 
-	}
-
-	/**
-	 * Constructor for session that also allows the MAX BAG WEIGHT to be defined
-	 * 
-	 * @param maxBagWeight
-	 *                     long representing the expected weight of a bag (in
-	 *                     micrograms)
-	 */
-	public Session(long maxBagWeight) {
-		weight.configureMAXBAGWEIGHT(maxBagWeight);
-		sessionState = SessionState.PRE_SESSION;
-	}
 
 	/**
 	 * Setup method for the session used in installing logic on the system
