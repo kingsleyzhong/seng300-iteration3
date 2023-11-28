@@ -1,4 +1,4 @@
-package com.thelocalmarketplace.software.test;
+package com.thelocalmarketplace.software.test.funds;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -42,30 +42,50 @@ import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.funds.FundsListener;
 import com.thelocalmarketplace.software.funds.PayByCard;
 import com.thelocalmarketplace.software.funds.SupportedCardIssuers;
+import com.thelocalmarketplace.software.test.AbstractTest;
 
 import ca.ucalgary.seng300.simulation.SimulationException;
 import powerutility.NoPowerException;
 import powerutility.PowerGrid;
 
 /**
- *  <p> Testing for the Funds class </p>
+ * <p>
+ * Testing for the PayByCard class with Bronze hardware
+ * </p>
  * 
- *  <p> Project iteration 2 group members: </p>
- * 		Aj Sallh 				: 30023811
- *		Anthony Kostal-Vazquez 	: 30048301
- *		Chloe Robitaille 		: 30022887
- *		Dvij Raval				: 30024340
- *		Emily Kiddle 			: 30122331
- *		Katelan NG 				: 30144672
- *		Kingsley Zhong 			: 30197260
- *		Nick McCamis 			: 30192610
- *		Sua Lim 				: 30177039
- *		Subeg CHAHAL 			: 30196531
+ * Project Iteration 3 Group 1
+ *
+ * Derek Atabayev : 30177060
+ * Enioluwafe Balogun : 30174298
+ * Subeg Chahal : 30196531
+ * Jun Heo : 30173430
+ * Emily Kiddle : 30122331
+ * Anthony Kostal-Vazquez : 30048301
+ * Jessica Li : 30180801
+ * Sua Lim : 30177039
+ * Savitur Maharaj : 30152888
+ * Nick McCamis : 30192610
+ * Ethan McCorquodale : 30125353
+ * Katelan Ng : 30144672
+ * Arcleah Pascual : 30056034
+ * Dvij Raval : 30024340
+ * Chloe Robitaille : 30022887
+ * Danissa Sandykbayeva : 30200531
+ * Emily Stein : 30149842
+ * Thi My Tuyen Tran : 30193980
+ * Aoi Ueki : 30179305
+ * Ethan Woo : 30172855
+ * Kingsley Zhong : 30197260
  */
 
-public class PayByCardTest_Silver {
-	private SelfCheckoutStationSilver scs;
-	private ArrayList <CardIssuer> supportedCardsClasses = new ArrayList <CardIssuer>();
+public class PayByCardTest extends AbstractTest {
+
+	public PayByCardTest(String testName, AbstractSelfCheckoutStation scs) {
+		super(testName, scs);
+		// TODO Auto-generated constructor stub
+	}
+
+	private ArrayList<CardIssuer> supportedCardsClasses = new ArrayList<CardIssuer>();
 	private CardIssuer ci1;
 	private CardIssuer ci2;
 	private CardIssuer ci3;
@@ -76,130 +96,134 @@ public class PayByCardTest_Silver {
 	private Card debit;
 	private Funds funds;
 	private MockSession mockSession;
-	
+
 	/***
 	 * Mock Session to make the session pay mode in Pay by Card
 	 */
-		public class MockSession extends Session {
-			
-			@Override
-			public void payByCard() {
-				sessionState = SessionState.PAY_BY_CARD;
-			}
-			
-			public void block() {
-				sessionState = SessionState.BLOCKED;
-			}
+	public class MockSession extends Session {
+
+		@Override
+		public void payByCard() {
+			sessionState = SessionState.PAY_BY_CARD;
 		}
-	
+
+		public void block() {
+			sessionState = SessionState.BLOCKED;
+		}
+
+		public void reset() {
+			sessionState = SessionState.PRE_SESSION;
+		}
+	}
+
 	@Before
 	public void setup() {
-		AbstractSelfCheckoutStation.resetConfigurationToDefaults();
+		basicDefaultSetup();
 
 		mockSession = new MockSession();
-    	
-		scs = new SelfCheckoutStationSilver();
-		scs.plugIn(PowerGrid.instance());
-		PowerGrid.engageUninterruptiblePowerSource();
-		scs.turnOn();
+
 		funds = new Funds(scs);
-		
+
 		ci1 = new CardIssuer(SupportedCardIssuers.ONE.getIssuer(), 1);
 		ci2 = new CardIssuer(SupportedCardIssuers.TWO.getIssuer(), 5);
 		ci3 = new CardIssuer(SupportedCardIssuers.THREE.getIssuer(), 99);
 		ci4 = new CardIssuer(SupportedCardIssuers.FOUR.getIssuer(), 2);
-		
+
 		supportedCardsClasses.add(ci1);
 		supportedCardsClasses.add(ci2);
 		supportedCardsClasses.add(ci3);
 		supportedCardsClasses.add(ci4);
 
 		int index = 0;
-		for(SupportedCardIssuers supportedCards : SupportedCardIssuers.values()) {
+		for (SupportedCardIssuers supportedCards : SupportedCardIssuers.values()) {
 			CardIssuerDatabase.CARD_ISSUER_DATABASE.put(supportedCards.getIssuer(), supportedCardsClasses.get(index));
-			index ++;
+			index++;
 		}
-		
-		disCard = new Card(SupportedCardIssuers.ONE.getIssuer(), "5299334598001547", "Cindy Wiggins", "489");
-		viva = new Card(SupportedCardIssuers.TWO.getIssuer(), "9999999999999999", "MONEY BAGS", "777");
-		cdnDep = new Card(SupportedCardIssuers.THREE.getIssuer(), "7892457826750349", "James McGill", "123");
-		debit = new Card(SupportedCardIssuers.FOUR.getIssuer(), "5160617843321186", "Mark Klaassen", "111");
-		
+
+		disCard = new Card(SupportedCardIssuers.ONE.getIssuer(), "5299334598001547", "Brandon Chan", "666");
+		viva = new Card(SupportedCardIssuers.TWO.getIssuer(), "4504389022574000", "Doris Giles", "343");
+		cdnDep = new Card(SupportedCardIssuers.THREE.getIssuer(), "1111111111111111", "Not A Real Person", "420");
+		debit = new Card(SupportedCardIssuers.FOUR.getIssuer(), "5160617843321186", "Robehrt Lazar", "111");
+
 		Calendar exp = Calendar.getInstance();
 		exp.set(Calendar.YEAR, 2099);
 		exp.set(Calendar.MONTH, 12);
-		
+
 		ci1.addCardData(disCard.number, disCard.cardholder, exp, disCard.cvv, 10000);
-		ci2.addCardData("0", viva.cardholder, exp, viva.cvv, 7500);
-		ci3.addCardData(cdnDep.number, cdnDep.cardholder, exp, cdnDep.cvv, 1000);
+		ci2.addCardData(viva.number, viva.cardholder, exp, viva.cvv, 7500);
+		ci3.addCardData("0", cdnDep.cardholder, exp, cdnDep.cvv, 1000);
 		ci4.addCardData(debit.number, debit.cardholder, exp, debit.cvv, 2000);
 	}
-	
-// ---------- SILVER TESTS ----------	
-		
-	@Test (expected = NoPowerException.class)
-	public void powerOffSwipe() throws IOException{
+
+	// ---------- BRONZE TESTS ----------
+
+	@Test(expected = NoPowerException.class)
+	public void powerOffSwipe() throws IOException {
 		scs.turnOff();
-		scs.cardReader.swipe(debit);
+		scs.getCardReader().swipe(debit);
 		scs.turnOn();
-		// Swiping a card when the reader is not supposed to be in use (wrong session state
+		// Swiping a card when the reader is not supposed to be in use (wrong session
+		// state
 		// Expect that aCardHasBeenSwiped throws InvalidActionException
 	}
-	
-	@Test (expected = InvalidActionException.class)
-	public void swipeIncorrectState() throws IOException{
+
+	@Test(expected = InvalidActionException.class)
+	public void swipeIncorrectState() throws IOException {
 		mockSession.block();
-		while(!funds.successfulSwipe) {
+		while (!funds.successfulSwipe) {
 			try {
-				scs.cardReader.swipe(debit);
+				scs.getCardReader().swipe(debit);
 			} catch (MagneticStripeFailureException e) {
 			}
 		}
-		// Swiping a card when the reader is not supposed to be in use (wrong session state
+		// Swiping a card when the reader is not supposed to be in use (wrong session
+		// state
 		// Expect that aCardHasBeenSwiped throws InvalidActionException
 	}
-	
-	@Test (expected = InvalidActionException.class)
-	public void testInvalidCardNumber() throws IOException{
+
+	@Test(expected = InvalidActionException.class)
+	public void testInvalidCardNumber() throws IOException {
 		long price = 100;
 		BigDecimal itemPrice = new BigDecimal(price);
 		mockSession.payByCard();
 		funds.update(itemPrice);
 		funds.beginPayment();
-		while(!funds.successfulSwipe) {
+		while (!funds.successfulSwipe) {
 			try {
-				scs.cardReader.swipe(viva);
+				scs.getCardReader().swipe(cdnDep);
 			} catch (MagneticStripeFailureException e) {
 			}
 		}
 		// The card numbers do not match and will decline a card if the card is blocked
-		// authorizeHold should return -1 
+		// authorizeHold should return -1
 		// How do we effectively call authorize hold
 	}
-	
-	@Test (expected = InvalidActionException.class)
-	public void testBlockedCard() throws IOException{
+
+	@Test(expected = InvalidActionException.class)
+	public void testBlockedCard() throws IOException {
 		long price = 100;
 		BigDecimal itemPrice = new BigDecimal(price);
 		mockSession.payByCard();
 		funds.update(itemPrice);
 		funds.beginPayment();
 		ci4.block(debit.number);
-		while(!funds.successfulSwipe) {
+		while (!funds.successfulSwipe) {
 			try {
-				scs.cardReader.swipe(debit);
+				scs.getCardReader().swipe(debit);
 
 			} catch (MagneticStripeFailureException e) {
 			}
 		}
 		// This will decline a card if the card is blocked
-		// authorizeHold should return -1 
+		// authorizeHold should return -1
 	}
-	
-	// PayByCard currently is not capable of doing anything with the -1 value; change this?
-	// Otherwise testing both that cards are counting correct hold counts or not (redundant?)
-	@Test (expected = InvalidActionException.class)
-	public void testHoldCountDecline() throws IOException{
+
+	// PayByCard currently is not capable of doing anything with the -1 value;
+	// change this?
+	// Otherwise testing both that cards are counting correct hold counts or not
+	// (redundant?)
+	@Test(expected = InvalidActionException.class)
+	public void testHoldCountDecline() throws IOException {
 		ci1.authorizeHold(disCard.number, 1);
 		long price = 100;
 		BigDecimal itemPrice = new BigDecimal(price);
@@ -209,47 +233,48 @@ public class PayByCardTest_Silver {
 		ci1.authorizeHold(disCard.number, 1);
 		assertEquals(-1, ci1.authorizeHold(disCard.number, 1));
 		ci1.releaseHold(disCard.number, 1);
-		while(!funds.successfulSwipe) {
+		while (!funds.successfulSwipe) {
 			try {
-				scs.cardReader.swipe(disCard);
+				scs.getCardReader().swipe(disCard);
 			} catch (MagneticStripeFailureException e) {
 			}
 		}
 	}
-	
-	@Test (expected = InvalidActionException.class)
-	public void testAvailableBalanceDecline() throws IOException{
+
+	@Test(expected = InvalidActionException.class)
+	public void testAvailableBalanceDecline() throws IOException {
 		long price = 1000000;
 		BigDecimal itemPrice = new BigDecimal(price);
 		funds.update(itemPrice);
 		mockSession.payByCard();
 		funds.beginPayment();
-		while(!funds.successfulSwipe) {
+		while (!funds.successfulSwipe) {
 			try {
-				scs.cardReader.swipe(disCard);
+				scs.getCardReader().swipe(viva);
 			} catch (MagneticStripeFailureException e) {
 			}
 		}
-		// This will decline a card if there is insufficient available balance 
-		// postTransaction should return false 
+		// This will decline a card if there is insufficient available balance
+		// postTransaction should return false
 	}
 
 	@Test
-	public void testSuccessfulPostingTransaction() throws IOException{
+	public void testSuccessfulPostingTransaction()
+			throws CashOverloadException, NoCashAvailableException, DisabledException, IOException {
 		mockSession.payByCard();
 		long price = 10;
 		BigDecimal itemPrice = new BigDecimal(price);
 		funds.update(itemPrice);
 		funds.beginPayment();
-		
-		while(!funds.payed) {
+
+		while (!funds.payed) {
 			try {
-				scs.cardReader.swipe(debit);
+				scs.getCardReader().swipe(viva);
 				assertTrue(funds.payed);
 			} catch (MagneticStripeFailureException e) {
 			}
 		}
 		// This will post a successful charge on the given card
-		// postTransaction should return true 
-	}	
+		// postTransaction should return true
+	}
 }

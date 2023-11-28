@@ -40,27 +40,27 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
  *
  * Project Iteration 3 Group 1
  *
- * Derek Atabayev 			: 30177060 
- * Enioluwafe Balogun 		: 30174298 
- * Subeg Chahal 			: 30196531 
- * Jun Heo 					: 30173430 
- * Emily Kiddle 			: 30122331 
- * Anthony Kostal-Vazquez 	: 30048301 
- * Jessica Li 				: 30180801 
- * Sua Lim 					: 30177039 
- * Savitur Maharaj 			: 30152888 
- * Nick McCamis 			: 30192610 
- * Ethan McCorquodale 		: 30125353 
- * Katelan Ng 				: 30144672 
- * Arcleah Pascual 			: 30056034 
- * Dvij Raval 				: 30024340 
- * Chloe Robitaille 		: 30022887 
- * Danissa Sandykbayeva 	: 30200531 
- * Emily Stein 				: 30149842 
- * Thi My Tuyen Tran 		: 30193980 
- * Aoi Ueki 				: 30179305 
- * Ethan Woo 				: 30172855 
- * Kingsley Zhong 			: 30197260 
+ * Derek Atabayev : 30177060
+ * Enioluwafe Balogun : 30174298
+ * Subeg Chahal : 30196531
+ * Jun Heo : 30173430
+ * Emily Kiddle : 30122331
+ * Anthony Kostal-Vazquez : 30048301
+ * Jessica Li : 30180801
+ * Sua Lim : 30177039
+ * Savitur Maharaj : 30152888
+ * Nick McCamis : 30192610
+ * Ethan McCorquodale : 30125353
+ * Katelan Ng : 30144672
+ * Arcleah Pascual : 30056034
+ * Dvij Raval : 30024340
+ * Chloe Robitaille : 30022887
+ * Danissa Sandykbayeva : 30200531
+ * Emily Stein : 30149842
+ * Thi My Tuyen Tran : 30193980
+ * Aoi Ueki : 30179305
+ * Ethan Woo : 30172855
+ * Kingsley Zhong : 30197260
  *
  */
 public class Session {
@@ -75,8 +75,8 @@ public class Session {
 	private Receipt receiptPrinter;
 	private Requests request = Requests.NO_REQUEST;
 	private boolean requestApproved = false;
-	
-	private class ItemManagerListener implements ItemListener{
+
+	private class ItemManagerListener implements ItemListener {
 
 		@Override
 		public void anItemHasBeenAdded(Mass mass, BigDecimal price) {
@@ -89,7 +89,7 @@ public class Session {
 			weight.removeItemWeightUpdate(mass);
 			funds.removeItemPrice(price);
 		}
-		
+
 	}
 
 	private class WeightDiscrepancyListener implements WeightListener {
@@ -106,8 +106,8 @@ public class Session {
 			// Only needed when the customer wants to add their own bags (this is how
 			// Session knows the bags' weight)
 			if (sessionState == SessionState.ADDING_BAGS) {
-				//This means that the bags are too heavy. Something should happen here. Perhaps
-				//instead we need another call that notifies bags too heavyS
+				// This means that the bags are too heavy. Something should happen here. Perhaps
+				// instead we need another call that notifies bags too heavyS
 				return;
 			}
 			block();
@@ -135,7 +135,7 @@ public class Session {
 		}
 
 	}
-	
+
 	private class PrinterListener implements ReceiptListener {
 
 		@Override
@@ -160,10 +160,11 @@ public class Session {
 
 		@Override
 		public void notifiyReceiptPrinted() {
-			// Should notifyPaid() not wait until receipt is successfully printed to change to PRE_SESSION?
+			// Should notifyPaid() not wait until receipt is successfully printed to change
+			// to PRE_SESSION?
 			sessionState = SessionState.PRE_SESSION;
 		}
-		
+
 	}
 
 	/**
@@ -212,9 +213,9 @@ public class Session {
 	 * @param weight
 	 *                      The weight of the items and actual weight on the scale
 	 *                      during the session
-	 *                      
-	 * @param Receipt 
-	 * 						The PrintReceipt behavior
+	 * 
+	 * @param Receipt
+	 *                      The PrintReceipt behavior
 	 */
 	public void setup(ItemManager manager, Funds funds, Weight weight, Receipt receiptPrinter,
 			AbstractSelfCheckoutStation scs) {
@@ -228,7 +229,7 @@ public class Session {
 		this.receiptPrinter.register(new PrinterListener());
 		this.scs = scs;
 	}
-	
+
 	/**
 	 * Sets the session to have started, allowing customer to interact with station
 	 */
@@ -244,10 +245,9 @@ public class Session {
 	 * Cancels the current session and resets the current session
 	 */
 	public void cancel() {
-		if(sessionState == SessionState.IN_SESSION) {
+		if (sessionState == SessionState.IN_SESSION) {
 			sessionState = SessionState.PRE_SESSION;
-		}
-		else if(sessionState != SessionState.BLOCKED) {
+		} else if (sessionState != SessionState.BLOCKED) {
 			sessionState = SessionState.IN_SESSION;
 			weight.cancel();
 		}
@@ -266,17 +266,17 @@ public class Session {
 	 * Resumes the session, allowing the customer to continue interaction
 	 */
 	private void resume() {
-		if(funds.isPay()) {
+		if (funds.isPay()) {
 			sessionState = prevState;
-		}
-		else {
+		} else {
 			sessionState = SessionState.IN_SESSION;
 			manager.setAddItems(true);
 		}
 	}
 
 	/**
-	 * Enters the cash payment mode for the customer. Prevents customer from adding further
+	 * Enters the cash payment mode for the customer. Prevents customer from adding
+	 * further
 	 * items by freezing session.
 	 */
 	public void payByCash() {
@@ -293,11 +293,13 @@ public class Session {
 	}
 
 	/**
-	 * Enters the card payment mode for the customer. Prevents customer from adding further
+	 * Enters the card payment mode for the customer. Prevents customer from adding
+	 * further
 	 * items by freezing session.
-	 * @throws DisabledException 
-	 * @throws NoCashAvailableException 
-	 * @throws CashOverloadException 
+	 * 
+	 * @throws DisabledException
+	 * @throws NoCashAvailableException
+	 * @throws CashOverloadException
 	 */
 	public void payByCard() throws CashOverloadException, NoCashAvailableException, DisabledException {
 		if (sessionState == SessionState.IN_SESSION) {
@@ -324,8 +326,9 @@ public class Session {
 		}
 		// else: nothing changes about the Session's state
 	}
-	
-	// Move to receiptPrinter class (possible rename of receiptPrinter to just reciept
+
+	// Move to receiptPrinter class (possible rename of receiptPrinter to just
+	// reciept
 	public void printReceipt() {
 		receiptPrinter.printReceipt(manager.getItems());
 	}
@@ -337,12 +340,11 @@ public class Session {
 	 */
 	public void addBulkyItem() {
 		// Only able to add when in a discrepancy after adding bags
-		if(sessionState == SessionState.BLOCKED) {
+		if (sessionState == SessionState.BLOCKED) {
 			sessionState = SessionState.BULKY_ITEM;
 			request = Requests.BULKY_ITEM;
 			notifyAttendant();
-		}
-		else if (sessionState == SessionState.BULKY_ITEM) {
+		} else if (sessionState == SessionState.BULKY_ITEM) {
 			if (requestApproved) {
 				requestApproved = false;
 				// subtract the bulky item weight from total weight if assistant has approved
@@ -358,7 +360,7 @@ public class Session {
 			this.resume();
 		}
 	}
-	
+
 	/**
 	 * method to allow assistant to approve customer requests
 	 */
@@ -368,27 +370,27 @@ public class Session {
 			addBulkyItem();
 		}
 	}
-	
+
 	public void notifyAttendant() {
 		// attendant.getRequest(request);
 		attendantApprove(request);
 	}
-	
+
 	/**
 	 * getter methods
 	 */
 	public boolean getRequestApproved() {
 		return this.requestApproved;
 	}
-	
+
 	public HashMap<BarcodedProduct, Integer> getBarcodedItems() {
 		return manager.getItems();
 	}
-	
-    public HashMap<BarcodedProduct, Integer> getBulkyItems() {
+
+	public HashMap<BarcodedProduct, Integer> getBulkyItems() {
 		return manager.getBulkyItems();
 	}
-    
+
 	public Funds getFunds() {
 		return funds;
 	}
@@ -396,11 +398,11 @@ public class Session {
 	public Weight getWeight() {
 		return weight;
 	}
-	
+
 	public AbstractSelfCheckoutStation getStation() {
 		return scs;
 	}
-	
+
 	/**
 	 * getter for session state
 	 *
@@ -410,18 +412,18 @@ public class Session {
 	public SessionState getState() {
 		return sessionState;
 	}
-	
+
 	// register listeners
 	public final synchronized void register(SessionListener listener) {
 		if (listener == null)
 			throw new NullPointerSimulationException("listener");
-			listeners.add(listener);
+		listeners.add(listener);
 	}
 
 	// de-register listeners
 	public final synchronized void deRegister(SessionListener listener) {
 		if (listener == null)
 			throw new NullPointerSimulationException("listener");
-			listeners.remove(listener);
+		listeners.remove(listener);
 	}
 }
