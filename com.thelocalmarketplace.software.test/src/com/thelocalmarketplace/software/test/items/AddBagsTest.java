@@ -162,7 +162,7 @@ public class AddBagsTest extends AbstractTest {
 		session.addBags();
 
 		// add the bags to the bagging area
-		scs.baggingArea.addAnItem(bag);
+		scs.getBaggingArea().addAnItem(bag);
 
 		// check the expected weight has been updated (?)
 
@@ -206,7 +206,7 @@ public class AddBagsTest extends AbstractTest {
 		session.addBags();
 
 		// add the bags to the bagging area
-		scs.baggingArea.addAnItem(bag);
+		scs.getBaggingArea().addAnItem(bag);
 
 		// the system is unblocked
 		assertTrue(session.getState() == SessionState.IN_SESSION);
@@ -231,7 +231,7 @@ public class AddBagsTest extends AbstractTest {
 		session.addBags();
 
 		// add the bags to the bagging area
-		scs.baggingArea.addAnItem(bag);
+		scs.getBaggingArea().addAnItem(bag);
 
 		// check the expected weight has been updated (?)
 
@@ -261,7 +261,7 @@ public class AddBagsTest extends AbstractTest {
 		session.addBags();
 
 		// add the bags to the bagging area
-		scs.baggingArea.addAnItem(bag);
+		scs.getBaggingArea().addAnItem(bag);
 
 		Mass expectedMassAfter = weight.getExpectedWeight();
 
@@ -284,7 +284,7 @@ public class AddBagsTest extends AbstractTest {
 
 		// pre-test: add an item to the bagging area
 		weight.update(notBagMass); // sets the expected mass on the scale to already know about the bag
-		scs.baggingArea.addAnItem(notBag);
+		scs.getBaggingArea().addAnItem(notBag);
 
 		// save the expected Mass before adding the bag
 		Mass expectedMassBefore = weight.getExpectedWeight();
@@ -293,7 +293,7 @@ public class AddBagsTest extends AbstractTest {
 		session.addBags();
 
 		// remove the not-bag from the bagging area
-		scs.baggingArea.removeAnItem(notBag);
+		scs.getBaggingArea().removeAnItem(notBag);
 
 		// check the expected weight after the interaction
 		Mass expectedMassAfter = weight.getExpectedWeight();
@@ -318,13 +318,13 @@ public class AddBagsTest extends AbstractTest {
 		// pre-test: add an item to the bagging area
 		weight.update(notBagMass); // sets the expected mass on the scale to already know about the bag
 
-		scs.baggingArea.addAnItem(notBag);
+		scs.getBaggingArea().addAnItem(notBag);
 
 		// call addBags
 		session.addBags();
 
 		// remove the not-bag from the bagging area
-		scs.baggingArea.removeAnItem(notBag);
+		scs.getBaggingArea().removeAnItem(notBag);
 
 		// check the state
 		assertTrue(session.getState() == SessionState.BLOCKED);
@@ -346,7 +346,7 @@ public class AddBagsTest extends AbstractTest {
 		session.addBags();
 
 		// add the heavy bag to the bagging area
-		scs.baggingArea.addAnItem(overweightBag);
+		scs.getBaggingArea().addAnItem(overweightBag);
 
 		// check the state
 		assertTrue(session.getState() == SessionState.BLOCKED);
@@ -371,7 +371,7 @@ public class AddBagsTest extends AbstractTest {
 		session.addBags();
 
 		// add the heavy bag to the bagging area
-		scs.baggingArea.addAnItem(overweightBag);
+		scs.getBaggingArea().addAnItem(overweightBag);
 
 		// check the expected weight after the interaction
 		Mass expectedMassAfter = weight.getExpectedWeight();
@@ -397,7 +397,7 @@ public class AddBagsTest extends AbstractTest {
 		session.addBags();
 
 		// Add the bag to the bagging area
-		scs.baggingArea.addAnItem(weightLimitBag);
+		scs.getBaggingArea().addAnItem(weightLimitBag);
 
 		// check the state
 		assertTrue(session.getState() == SessionState.BLOCKED);
@@ -422,7 +422,7 @@ public class AddBagsTest extends AbstractTest {
 		session.addBags();
 
 		// add the heavy bag to the bagging area
-		scs.baggingArea.addAnItem(weightLimitBag);
+		scs.getBaggingArea().addAnItem(weightLimitBag);
 
 		// check the expected weight after the interaction
 		Mass expectedMassAfter = weight.getExpectedWeight();
@@ -475,7 +475,7 @@ public class AddBagsTest extends AbstractTest {
 		session.cancelAddBags();
 
 		// add the heavy bag to the bagging area
-		scs.baggingArea.addAnItem(bag);
+		scs.getBaggingArea().addAnItem(bag);
 
 		// check the expected weight after the interaction
 		Mass expectedMassAfter = weight.getExpectedWeight();
@@ -520,7 +520,7 @@ public class AddBagsTest extends AbstractTest {
 		session.cancelAddBags();
 
 		// add the heavy bag to the bagging area
-		scs.baggingArea.addAnItem(bag);
+		scs.getBaggingArea().addAnItem(bag);
 
 		// check that the session is blocked
 		assertTrue(session.getState() == SessionState.BLOCKED);

@@ -16,9 +16,7 @@ import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.scanner.BarcodedItem;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
-import com.thelocalmarketplace.hardware.SelfCheckoutStation;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationSilver;
+
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.exceptions.InvalidActionException;
@@ -27,8 +25,6 @@ import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.items.ItemAddedRule;
 import com.thelocalmarketplace.software.test.AbstractTest;
 import com.thelocalmarketplace.software.weight.Weight;
-
-import powerutility.PowerGrid;
 
 /**
  * Unit Test class for RemoveItemMethod and interaction with surrounding classes
@@ -67,11 +63,11 @@ import powerutility.PowerGrid;
 
 public class RemoveItemTests extends AbstractTest {
     public RemoveItemTests(String testName, AbstractSelfCheckoutStation scs) {
-		super(testName, scs);
-		// TODO Auto-generated constructor stub
-	}
+        super(testName, scs);
+        // TODO Auto-generated constructor stub
+    }
 
-	private Session session;
+    private Session session;
 
     private BarcodedProduct product;
     private BarcodedProduct product2;
@@ -109,7 +105,7 @@ public class RemoveItemTests extends AbstractTest {
         session.start();
         session.setup(new HashMap<BarcodedProduct, Integer>(), funds, weight);
         // add item
-        session.addItem(product);
+        itemManager.addItem(product);
 
         // Check that the product was added
         HashMap<BarcodedProduct, Integer> productList = session.getBarcodedItems();
@@ -149,8 +145,8 @@ public class RemoveItemTests extends AbstractTest {
         session.setup(new HashMap<BarcodedProduct, Integer>(), funds, weight);
 
         // add item twice
-        session.addItem(product);
-        session.addItem(product);
+        itemManager.addItem(product);
+        itemManager.addItem(product);
 
         // Check that the product was added
         HashMap<BarcodedProduct, Integer> productList = session.getBarcodedItems();
@@ -175,7 +171,7 @@ public class RemoveItemTests extends AbstractTest {
     public void testRemoveSameItemTwice() {
         session.start();
         session.setup(new HashMap<BarcodedProduct, Integer>(), funds, weight);
-        session.addItem(product);
+        itemManager.addItem(product);
         HashMap<BarcodedProduct, Integer> list = session.getBarcodedItems();
         session.removeItem(product);
         session.removeItem(product);
@@ -189,8 +185,8 @@ public class RemoveItemTests extends AbstractTest {
         session.setup(new HashMap<BarcodedProduct, Integer>(), funds, weight);
 
         // add two different items
-        session.addItem(product);
-        session.addItem(product2);
+        itemManager.addItem(product);
+        itemManager.addItem(product2);
 
         // Check that the product was added
         HashMap<BarcodedProduct, Integer> productList = session.getBarcodedItems();

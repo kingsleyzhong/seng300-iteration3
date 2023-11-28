@@ -162,7 +162,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	public void testScanAnItem() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
-			scs.mainScanner.scan(item);
+			scs.getMainScanner().scan(item);
 		}
 		HashMap<BarcodedProduct, Integer> items = session.getBarcodedItems();
 		assertTrue("The barcoded product associated with the barcode has been added", items.containsKey(product));
@@ -172,7 +172,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	public void testScanAnItemFunds() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
-			scs.mainScanner.scan(item);
+			scs.getMainScanner().scan(item);
 		}
 		Funds funds = session.getFunds();
 		BigDecimal expected = new BigDecimal(10);
@@ -184,7 +184,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	public void testScanAnItemWeight() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
-			scs.mainScanner.scan(item);
+			scs.getMainScanner().scan(item);
 		}
 		Weight weight = session.getWeight();
 		Mass expected = new Mass(20.0);
@@ -197,7 +197,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	public void testHandheldScanAnItem() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
-			scs.handheldScanner.scan(item);
+			scs.getHandheldScanner().scan(item);
 		}
 		HashMap<BarcodedProduct, Integer> items = session.getBarcodedItems();
 		assertTrue("The barcoded product associated with the barcode has been added", items.containsKey(product));
@@ -207,7 +207,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	public void testHandheldScanAnItemFunds() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
-			scs.handheldScanner.scan(item);
+			scs.getHandheldScanner().scan(item);
 		}
 		Funds funds = session.getFunds();
 		BigDecimal expected = new BigDecimal(10);
@@ -219,7 +219,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	public void testHandheldScanAnItemWeight() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
-			scs.handheldScanner.scan(item);
+			scs.getHandheldScanner().scan(item);
 		}
 		Weight weight = session.getWeight();
 		Mass expected = new Mass(20.0);
@@ -238,21 +238,21 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	@Test(expected = InvalidActionException.class)
 	public void addCoinWhenNotInPay() throws DisabledException, CashOverloadException {
 		session.start();
-		scs.coinSlot.receive(dollar);
+		scs.getCoinSlot().receive(dollar);
 	}
 
 	@Test
 	public void payForItemViaCash() throws DisabledException, CashOverloadException {
 		session.start();
 		for (int i = 0; i < 100; i++) {
-			scs.mainScanner.scan(item);
+			scs.getMainScanner().scan(item);
 		}
-		scs.baggingArea.addAnItem(item);
+		scs.getBaggingArea().addAnItem(item);
 		session.payByCash();
 		int count = 0;
 		while (count < 10) {
-			scs.coinSlot.receive(dollar);
-			if (scs.coinTray.collectCoins().isEmpty()) {
+			scs.getCoinSlot().receive(dollar);
+			if (scs.getCoinTray().collectCoins().isEmpty()) {
 				count = count + 1;
 			}
 		}
@@ -263,21 +263,21 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 
 	@Test
 	public void testPayItemWithCashGetChange() throws DisabledException, CashOverloadException {
-		scs.banknoteDispensers.get(BigDecimal.TEN).load(ten, ten, ten);
+		scs.getBanknoteDispensers().get(BigDecimal.TEN).load(ten, ten, ten);
 
 		session.start();
 		for (int i = 0; i < 100; i++) {
-			scs.mainScanner.scan(item);
+			scs.getMainScanner().scan(item);
 		}
-		scs.baggingArea.addAnItem(item);
+		scs.getBaggingArea().addAnItem(item);
 		session.payByCash();
 		boolean inserted = false;
 		while (!inserted) {
-			scs.banknoteInput.receive(twenty);
-			if (!scs.banknoteInput.hasDanglingBanknotes()) {
+			scs.getBanknoteInput().receive(twenty);
+			if (!scs.getBanknoteInput().hasDanglingBanknotes()) {
 				inserted = true;
 			} else {
-				scs.banknoteInput.removeDanglingBanknote();
+				scs.getBanknoteInput().removeDanglingBanknote();
 			}
 		}
 		Funds funds = session.getFunds();
@@ -285,16 +285,16 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 		assertTrue("Session is fully paid for", funds.getAmountDue().compareTo(BigDecimal.ZERO) < 0);
 		assertEquals("Session has been notified of full payment", SessionState.PRE_SESSION, session.getState());
 
-		assertTrue(scs.banknoteOutput.hasDanglingBanknotes());
-		List<Banknote> change = scs.banknoteOutput.removeDanglingBanknotes();
+		assertTrue(scs.getBanknoteOutput().hasDanglingBanknotes());
+		List<Banknote> change = scs.getBanknoteOutput().removeDanglingBanknotes();
 
 		assertEquals("Dispensed $10", ten, change.get(0));
 	}
 
 	@Test
 	public void testPayItemGetCoinChange() throws DisabledException, CashOverloadException {
-		scs.banknoteDispensers.get(new BigDecimal(5)).load(five, five, five);
-		scs.coinDispensers.get(new BigDecimal(1)).load(dollar, dollar, dollar, dollar, dollar);
+		scs.getBanknoteDispensers().get(new BigDecimal(5)).load(five, five, five);
+		scs.getCoinDispensers().get(new BigDecimal(1)).load(dollar, dollar, dollar, dollar, dollar);
 
 		Barcode barcode2 = new Barcode(new Numeral[] { Numeral.valueOf((byte) 2) });
 		BarcodedProduct product2 = new BarcodedProduct(barcode2, "Some product", 12, 20.0);
@@ -304,17 +304,17 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 
 		session.start();
 		for (int i = 0; i < 100; i++) {
-			scs.mainScanner.scan(item2);
+			scs.getMainScanner().scan(item2);
 		}
-		scs.baggingArea.addAnItem(item2);
+		scs.getBaggingArea().addAnItem(item2);
 		session.payByCash();
 		boolean inserted = false;
 		while (!inserted) {
-			scs.banknoteInput.receive(twenty);
-			if (!scs.banknoteInput.hasDanglingBanknotes()) {
+			scs.getBanknoteInput().receive(twenty);
+			if (!scs.getBanknoteInput().hasDanglingBanknotes()) {
 				inserted = true;
 			} else {
-				scs.banknoteInput.removeDanglingBanknote();
+				scs.getBanknoteInput().removeDanglingBanknote();
 			}
 		}
 		Funds funds = session.getFunds();
@@ -322,14 +322,14 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 		assertTrue("Session is fully paid for", funds.getAmountDue().compareTo(BigDecimal.ZERO) < 0);
 		assertEquals("Session has been notified of full payment", SessionState.PRE_SESSION, session.getState());
 
-		List<Coin> coinchange = scs.coinTray.collectCoins();
+		List<Coin> coinchange = scs.getCoinTray().collectCoins();
 		List<Coin> expected = new ArrayList<>();
 		expected.add(dollar);
 		expected.add(dollar);
 		expected.add(dollar);
 		assertEquals("Dispensed $3", expected, coinchange);
 
-		List<Banknote> banknotechange = scs.banknoteOutput.removeDanglingBanknotes();
+		List<Banknote> banknotechange = scs.getBanknoteOutput().removeDanglingBanknotes();
 		assertEquals("Dispensed $5", five, banknotechange.get(0));
 	}
 
@@ -353,9 +353,9 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	 * 
 	 * session.start();
 	 * for(int i =0; i < 100; i++) {
-	 * scs.mainScanner.scan(item);
+	 * scs.getMainScanner().scan(item);
 	 * }
-	 * scs.baggingArea.addAnItem(item);
+	 * scs.getBaggingArea().addAnItem(item);
 	 * session.payByCard();
 	 * 
 	 * Funds funds = session.getFunds();
@@ -365,7 +365,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	 * boolean read = false;
 	 * while (!read) {
 	 * try {
-	 * scs.cardReader.swipe(creditCard);
+	 * scs.getCardReader().swipe(creditCard);
 	 * read = true;
 	 * } catch (MagneticStripeFailureException e) {
 	 * }
@@ -394,9 +394,9 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	 * 
 	 * session.start();
 	 * for(int i =0; i < 100; i++) {
-	 * scs.mainScanner.scan(item);
+	 * scs.getMainScanner().scan(item);
 	 * }
-	 * scs.baggingArea.addAnItem(item);
+	 * scs.getBaggingArea().addAnItem(item);
 	 * session.payByCard();
 	 * 
 	 * Funds funds = session.getFunds();
@@ -406,7 +406,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	 * boolean read = false;
 	 * while (!read) {
 	 * try {
-	 * scs.cardReader.swipe(debitCard);
+	 * scs.getCardReader().swipe(debitCard);
 	 * read = true;
 	 * } catch (MagneticStripeFailureException e) {
 	 * }
@@ -424,20 +424,20 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	 * CashOverloadException {
 	 * session.start();
 	 * for(int i =0; i < 100; i++) {
-	 * scs.mainScanner.scan(item);
+	 * scs.getMainScanner().scan(item);
 	 * }
-	 * scs.baggingArea.addAnItem(item);
+	 * scs.getBaggingArea().addAnItem(item);
 	 * for(int i =0; i < 100; i++) {
-	 * scs.mainScanner.scan(item2);
+	 * scs.getMainScanner().scan(item2);
 	 * }
-	 * scs.baggingArea.addAnItem(item2);
+	 * scs.getBaggingArea().addAnItem(item2);
 	 * session.removeItem(product);
-	 * scs.baggingArea.removeAnItem(item);
+	 * scs.getBaggingArea().removeAnItem(item);
 	 * session.payByCash();
 	 * int count = 0;
 	 * while(count<10) {
-	 * scs.coinSlot.receive(dollar);
-	 * if(scs.coinTray.collectCoins().isEmpty()) {
+	 * scs.getCoinSlot().receive(dollar);
+	 * if(scs.getCoinTray().collectCoins().isEmpty()) {
 	 * count = count + 1;
 	 * }
 	 * }
@@ -454,7 +454,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	public void testAddBulkyItem() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
-			scs.mainScanner.scan(item);
+			scs.getMainScanner().scan(item);
 		}
 		session.addBulkyItem();
 		assertEquals("Session is in session", SessionState.IN_SESSION, session.getState());
@@ -464,7 +464,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	public void testRemoveBulkyItem() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
-			scs.mainScanner.scan(item);
+			scs.getMainScanner().scan(item);
 		}
 		session.addBulkyItem();
 		session.removeItem(product);
@@ -477,7 +477,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	public void testDiscrepancy() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
-			scs.mainScanner.scan(item);
+			scs.getMainScanner().scan(item);
 		}
 		assertEquals("Session is frozen upon discrepancy", session.getState(), SessionState.BLOCKED);
 	}
@@ -486,10 +486,10 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	public void testAddItemWhenDiscrepancy() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
-			scs.mainScanner.scan(item);
+			scs.getMainScanner().scan(item);
 		}
 		for (int i = 0; i < 100; i++) {
-			scs.mainScanner.scan(item2);
+			scs.getMainScanner().scan(item2);
 		}
 		HashMap<BarcodedProduct, Integer> list = session.getBarcodedItems();
 		assertFalse("Item is not added to list", list.containsKey(item2));
@@ -499,7 +499,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	public void testEnterPayWhenDiscrepancy() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
-			scs.mainScanner.scan(item);
+			scs.getMainScanner().scan(item);
 		}
 		assertEquals(SessionState.BLOCKED, session.getState());
 		session.payByCash();
@@ -510,15 +510,15 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	public void testPayWhenDiscrepancy() throws DisabledException, CashOverloadException {
 		session.start();
 		for (int i = 0; i < 100; i++) {
-			scs.mainScanner.scan(item);
+			scs.getMainScanner().scan(item);
 		}
-		scs.baggingArea.addAnItem(item);
+		scs.getBaggingArea().addAnItem(item);
 		session.payByCash();
-		scs.baggingArea.addAnItem(item2);
+		scs.getBaggingArea().addAnItem(item2);
 		int count = 0;
 		while (count < 1) {
-			scs.coinSlot.receive(dollar);
-			if (scs.coinTray.collectCoins().isEmpty()) {
+			scs.getCoinSlot().receive(dollar);
+			if (scs.getCoinTray().collectCoins().isEmpty()) {
 				count = count + 1;
 			}
 		}
@@ -528,16 +528,16 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	public void testDiscrepancyDuringPay() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
-			scs.mainScanner.scan(item);
+			scs.getMainScanner().scan(item);
 		}
-		scs.baggingArea.addAnItem(item);
+		scs.getBaggingArea().addAnItem(item);
 
 		session.payByCash();
-		scs.baggingArea.addAnItem(item2);
+		scs.getBaggingArea().addAnItem(item2);
 		Funds funds = session.getFunds();
 		assertEquals(SessionState.BLOCKED, session.getState());
 		assertTrue(funds.isPay());
-		scs.baggingArea.removeAnItem(item2);
+		scs.getBaggingArea().removeAnItem(item2);
 		assertEquals(SessionState.PAY_BY_CASH, session.getState());
 		assertTrue(funds.isPay());
 	}

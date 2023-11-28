@@ -27,6 +27,7 @@ import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
 import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 import com.thelocalmarketplace.software.funds.Funds;
+import com.thelocalmarketplace.software.items.ItemManager;
 import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.weight.Weight;
 
@@ -85,8 +86,7 @@ public class SessionTest extends AbstractTest {
 
     private Funds funds;
     private Weight weight;
-    private Weight weightSilver;
-    private Weight weightGold;
+    private ItemManager itemManager;
 
     // Code added
     private Receipt receiptPrinter;
@@ -110,6 +110,7 @@ public class SessionTest extends AbstractTest {
         product = new BarcodedProduct(barcode, "Sample Product", 10, 100.0);
         product2 = new BarcodedProduct(barcode2, "Sample Product 2", 15, 20.0);
         funds = new Funds(scs);
+        itemManager = new ItemManager(session);
 
         IElectronicScale baggingArea = scs.getBaggingArea();
         weight = new Weight(baggingArea);
@@ -143,7 +144,7 @@ public class SessionTest extends AbstractTest {
     public void testAddItem() {
         session.start();
         session.setup(new HashMap<BarcodedProduct, Integer>(), funds, weight, receiptPrinter);
-        session.addItem(product);
+        itemManager.addItem(product);
         HashMap<BarcodedProduct, Integer> list = session.getBarcodedItems();
         assertTrue("Contains product in list", list.containsKey(product));
         Integer expected = 1;
@@ -155,8 +156,8 @@ public class SessionTest extends AbstractTest {
         session.start();
         session.setup(new HashMap<BarcodedProduct, Integer>(), funds, weight, receiptPrinter);
         // Add multiple quantities of the same product
-        session.addItem(product);
-        session.addItem(product);
+        itemManager.addItem(product);
+        itemManager.addItem(product);
         HashMap<BarcodedProduct, Integer> list = session.getBarcodedItems();
         assertTrue("Contains product in list", list.containsKey(product));
         Integer expected = 2;
@@ -167,8 +168,8 @@ public class SessionTest extends AbstractTest {
     public void addTwoDifItems() {
         session.start();
         session.setup(new HashMap<BarcodedProduct, Integer>(), funds, weight, receiptPrinter);
-        session.addItem(product);
-        session.addItem(product2);
+        itemManager.addItem(product);
+        itemManager.addItem(product2);
         HashMap<BarcodedProduct, Integer> list = session.getBarcodedItems();
         Integer expected = 1;
         assertTrue("Contains product in list", list.containsKey(product));
@@ -181,7 +182,7 @@ public class SessionTest extends AbstractTest {
     public void addItemFundUpdate() {
         session.start();
         session.setup(new HashMap<BarcodedProduct, Integer>(), funds, weight, receiptPrinter);
-        session.addItem(product);
+        itemManager.addItem(product);
         Funds fund = session.getFunds();
         BigDecimal actual = fund.getItemsPrice();
         BigDecimal expected = new BigDecimal(10);
@@ -192,8 +193,8 @@ public class SessionTest extends AbstractTest {
     public void addTwoItemsFundUpdate() {
         session.start();
         session.setup(new HashMap<BarcodedProduct, Integer>(), funds, weight, receiptPrinter);
-        session.addItem(product);
-        session.addItem(product2);
+        itemManager.addItem(product);
+        itemManager.addItem(product2);
         Funds fund = session.getFunds();
         BigDecimal actual = fund.getItemsPrice();
         BigDecimal expected = new BigDecimal(25);
@@ -204,7 +205,7 @@ public class SessionTest extends AbstractTest {
     public void addItemWeightUpdate() {
         session.start();
         session.setup(new HashMap<BarcodedProduct, Integer>(), funds, weight, receiptPrinter);
-        session.addItem(product);
+        itemManager.addItem(product);
         Weight itemWeight = session.getWeight();
         Mass actual = itemWeight.getExpectedWeight();
         Mass expected = new Mass(100.0);
@@ -215,8 +216,8 @@ public class SessionTest extends AbstractTest {
     public void addTwoItemsWeightUpdate() {
         session.start();
         session.setup(new HashMap<BarcodedProduct, Integer>(), funds, weight, receiptPrinter);
-        session.addItem(product);
-        session.addItem(product2);
+        itemManager.addItem(product);
+        itemManager.addItem(product2);
         Weight itemWeight = session.getWeight();
         Mass actual = itemWeight.getExpectedWeight();
         Mass expected = new Mass(120.0);
@@ -227,7 +228,7 @@ public class SessionTest extends AbstractTest {
     public void testWeightDiscrepancy() {
         session.start();
         session.setup(new HashMap<BarcodedProduct, Integer>(), funds, weight, receiptPrinter);
-        session.addItem(product);
+        itemManager.addItem(product);
         assertEquals("Discrepancy must have occured", session.getState(), SessionState.BLOCKED);
     }
 
@@ -235,10 +236,10 @@ public class SessionTest extends AbstractTest {
     public void testWeightDiscrepancyResolved() {
         session.start();
         session.setup(new HashMap<BarcodedProduct, Integer>(), funds, weight, receiptPrinter);
-        session.addItem(product);
+        itemManager.addItem(product);
         scs.plugIn(PowerGrid.instance());
         scs.turnOn();
-        scs.baggingArea.addAnItem(new BarcodedItem(barcode, new Mass(100.0)));
+        scs.getBaggingArea().addAnItem(new BarcodedItem(barcode, new Mass(100.0)));
         assertEquals("Discrepancy resolved", session.getState(), SessionState.IN_SESSION);
 
     }
@@ -261,18 +262,18 @@ public class SessionTest extends AbstractTest {
     public void testPaid() throws DisabledException, CashOverloadException {
         session.start();
         session.setup(new HashMap<BarcodedProduct, Integer>(), funds, weight, receiptPrinter);
-        session.addItem(product);
+        itemManager.addItem(product);
         scs.plugIn(PowerGrid.instance());
         scs.turnOn();
-        scs.baggingArea.addAnItem(new BarcodedItem(barcode, new Mass(100.0)));
+        scs.getBaggingArea().addAnItem(new BarcodedItem(barcode, new Mass(100.0)));
         session.payByCash();
         assertTrue(session.getState().inPay());
         Coin.DEFAULT_CURRENCY = Currency.getInstance(Locale.CANADA);
         Coin coin = new Coin(BigDecimal.ONE);
         int count = 0;
         while (count < 10) {
-            scs.coinSlot.receive(coin);
-            if (scs.coinTray.collectCoins().isEmpty()) {
+            scs.getCoinSlot().receive(coin);
+            if (scs.getCoinTray().collectCoins().isEmpty()) {
                 count++;
             }
         }

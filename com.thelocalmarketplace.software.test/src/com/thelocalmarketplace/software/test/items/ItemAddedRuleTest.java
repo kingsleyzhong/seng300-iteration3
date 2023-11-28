@@ -19,21 +19,12 @@ import com.jjjwelectronics.scanner.BarcodedItem;
 import com.jjjwelectronics.scanner.IBarcodeScanner;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
-import com.thelocalmarketplace.hardware.SelfCheckoutStation;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationSilver;
+
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
-import com.thelocalmarketplace.software.Session;
-import com.thelocalmarketplace.software.exceptions.InvalidActionException;
-import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.items.ItemAddedRule;
 import com.thelocalmarketplace.software.items.ItemManager;
-import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.test.AbstractSessionTest;
-import com.thelocalmarketplace.software.test.AbstractTest;
-import com.thelocalmarketplace.software.weight.Weight;
 import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
-import powerutility.PowerGrid;
 
 /**
  * Testing for the AddItemRule class

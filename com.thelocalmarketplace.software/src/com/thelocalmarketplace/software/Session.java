@@ -66,7 +66,7 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 public class Session {
 	public ArrayList<SessionListener> listeners = new ArrayList<>();
 	private AbstractSelfCheckoutStation scs;
-	protected SessionState sessionState; // temp,setting as is to ensure testing works
+	private SessionState sessionState;
 	private SessionState prevState;
 	private BarcodedProduct lastProduct;
 	private Funds funds;
