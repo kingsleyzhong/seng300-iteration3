@@ -2,12 +2,17 @@ package com.thelocalmarketplace.GUI.hardware;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.HashMap;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import com.jjjwelectronics.Item;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
@@ -17,15 +22,25 @@ import java.awt.GridLayout;
 
 public class HardwareGUI {
 	private JFrame hardwareFrame;
+	private JPanel content;
 	private JPanel screens;
 	private CardLayout cards;
 	private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	private int width;
 	private int height;
+	public boolean clicked = false;
+	
+	private JButton selectedButton;
+	private DefaultListModel<Item> itemsInCart = new DefaultListModel<>();
+	private JPanel cartPanel;
+	private DefaultListModel<Item> itemsInScanningArea = new DefaultListModel<>();
+	private JPanel scanningPanel;
+	private DefaultListModel<Item> itemsInBaggingArea = new DefaultListModel<>();
+	private JPanel baggingPanel;
 	
 	public HardwareGUI(AbstractSelfCheckoutStation scs) {
-		//width = (int) screenSize.getWidth();
-		//height = (int) screenSize.getHeight();
+		width = (int) screenSize.getWidth();
+		height = (int) screenSize.getHeight();
 		
 		width = 1500;
 		height = 800;
@@ -39,52 +54,69 @@ public class HardwareGUI {
 		hardwareFrame.getContentPane().setLayout(new BorderLayout(0, 0));
 		hardwareFrame.getContentPane().setBackground(Colors.color1);
 		
-		JPanel buttonPanel = buttonPanel();
+		JPanel buttonPanel = new ButtonPanel(this);
+		buttonPanel.setPreferredSize(new Dimension(width, height/4));
+		
+		content = new JPanel();
+		content.setBackground(Colors.color1);
+		content.setLayout(new GridLayout(1,0));
 		
 		hardwareFrame.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+		hardwareFrame.getContentPane().add(content, BorderLayout.CENTER);
 		
+		screens = new JPanel();
+		screens.setBackground(Colors.color1);
 		
-		
-		hardwareFrame.setUndecorated(true);
+		//hardwareFrame.setUndecorated(true);
 		hardwareFrame.setVisible(true);
 	}
 	
-	public JPanel buttonPanel() {
-		JButton mainScanner = new PlainButton("MainScanner", Colors.color4);
-		JButton handheldScanner = new PlainButton("Handheld Scanner", Colors.color4);
-		JButton scanningArea = new PlainButton("Scanning Area", Colors.color4);
-		JButton baggingArea = new PlainButton("Bagging Area", Colors.color4);
-		JButton coinSlot = new PlainButton("Coin Slot", Colors.color4);
-		JButton banknoteInput = new PlainButton("Banknote Input", Colors.color4);
-		JButton coinTray = new PlainButton("Coin Tray", Colors.color4);
-		JButton banknoteOutput = new PlainButton("Banknote Output", Colors.color4);
-		JButton receiptPrinter = new PlainButton("Receipt Printer", Colors.color4);
-		JButton cardDevice = new PlainButton("Card Device", Colors.color4);
-		JButton sessionScreen = new PlainButton("Self Checkout Station Screen", Colors.color4);
-		JButton attendantScreen = new PlainButton("Attendant Screen", Colors.color4);
-		
-		JPanel buttonPanel = new JPanel();
-		buttonPanel.setPreferredSize(new Dimension(width, height/4));
-		buttonPanel.setBackground(Colors.color2);
-		GridLayout layout = new GridLayout(2,6,0,0);
+	
+	public JPanel introPanel() {
+		JPanel panel = new JPanel();
+		panel.setBackground(Colors.color1);
+		GridLayout layout = new GridLayout(1, 0);
 		layout.setHgap(20);
-		layout.setVgap(20);
-		buttonPanel.setLayout(layout);
-		buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+		panel.setLayout(layout);
+		panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+		JButton addButton = new PlainButton("+", Colors.color4);
+		addButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
+		cartPanel = new ItemPanel("Items in cart", addButton, itemsInCart);
+		JPanel panel2 = new JPanel();
+		panel2.setBackground(Colors.color1);
+		GridLayout layout2 = new GridLayout(0,1);
+		layout2.setVgap(20);
+		panel2.setLayout(layout2);
+		scanningPanel = new ItemPanel("Items in scanning area", null, itemsInScanningArea);
+		baggingPanel = new ItemPanel("Items in bagging area", null, itemsInBaggingArea);
+		panel.add(cartPanel);
+		panel2.add(scanningPanel);
+		panel2.add(baggingPanel);
+		panel.add(panel2);
+		content.add(panel);
+		content.add(screens);
+		content.revalidate();
+		return panel;
+	}
+	
+	public class buttonListener implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Object source = e.getSource();
+			if(source instanceof ItemButton) {
+				selectedButton = (JButton) source;
+			}
+			
+		}
 		
-		buttonPanel.add(mainScanner);
-		buttonPanel.add(scanningArea);
-		buttonPanel.add(coinSlot);
-		buttonPanel.add(coinTray);
-		buttonPanel.add(receiptPrinter);
-		buttonPanel.add(sessionScreen);
-		buttonPanel.add(handheldScanner);
-		buttonPanel.add(baggingArea);
-		buttonPanel.add(banknoteInput);
-		buttonPanel.add(banknoteOutput);
-		buttonPanel.add(cardDevice);
-		buttonPanel.add(attendantScreen);
-		
-		return buttonPanel;
 	}
 }
