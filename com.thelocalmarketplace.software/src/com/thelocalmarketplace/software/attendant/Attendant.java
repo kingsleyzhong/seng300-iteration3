@@ -48,6 +48,16 @@ public class Attendant {
 
 	private class InnerListener implements SessionListener{
 		
+		/**
+		 * Example of how getRequest could be written. It should include the request and the sesssion the request comes from.
+		 * Not you will also have to add any of these methods to SessionListener along with the @Override keyword
+		 * @param session
+		 * @param request
+		 */
+		@Override
+		public void getRequest(Session session, Requests request) {
+			
+		}
 	}
 	
 	public void registerOn(Session session) {

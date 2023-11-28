@@ -1,6 +1,6 @@
 package com.thelocalmarketplace.software.attendant;
 /**
- * Possible "requests" that can be sent from a Customer Session to an Attendant 
+ * Simulation of an attendant performing minuteness and preventative care on self checkout stations
  * 
  * Project Iteration 3 Group 1
  *
@@ -26,7 +26,6 @@ package com.thelocalmarketplace.software.attendant;
  * Ethan Woo 				: 30172855 
  * Kingsley Zhong 			: 30197260 
  */
-public enum Requests {
-	NO_REQUEST,
-	BULKY_ITEM
+public class MaintenanceManager {
+
 }

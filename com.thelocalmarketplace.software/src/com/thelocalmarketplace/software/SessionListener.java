@@ -1,5 +1,7 @@
 package com.thelocalmarketplace.software;
 
+import com.thelocalmarketplace.software.attendant.Requests;
+
 /**
  * Project Iteration 3 Group 1
  *
@@ -23,9 +25,15 @@ package com.thelocalmarketplace.software;
  * Thi My Tuyen Tran 		: 30193980 
  * Aoi Ueki 				: 30179305 
  * Ethan Woo 				: 30172855 
- * Kingsley Zhong 			: 30197260 
+ * Kingsley Zhong 		   	: 30197260 
  */
 
 public interface SessionListener {
-
+	/**
+	 * Example of how getRequest could be written. It should include the request and the session the request comes from.
+	 * Not you will also have to add any of these methods to Attendent's InnerListener along with the @Override keyword
+	 * @param session
+	 * @param request
+	 */
+	public void getRequest(Session session, Requests request);
 }
