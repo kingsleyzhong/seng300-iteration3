@@ -1,7 +1,6 @@
 package com.thelocalmarketplace.GUI.hardware;
 
 import java.awt.Dimension;
-import java.awt.Toolkit;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
@@ -9,20 +8,6 @@ import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-
-import com.jjjwelectronics.Item;
-import com.thelocalmarketplace.GUI.customComponents.Colors;
-import com.thelocalmarketplace.GUI.customComponents.PlainButton;
-import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.GridLayout;
-
-public class HardwareGUI {
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.DropMode;
@@ -62,11 +47,11 @@ public class HardwareGUI {
 	private int height;
 	public boolean clicked = false;
 	
-	private DefaultListModel<Item> itemsInCart = new DefaultListModel<>();
+	private DefaultListModel<ItemObject> itemsInCart = new DefaultListModel<>();
 	private JPanel cartPanel;
-	private DefaultListModel<Item> itemsInScanningArea = new DefaultListModel<>();
+	private DefaultListModel<ItemObject> itemsInScanningArea = new DefaultListModel<>();
 	private JPanel scanningPanel;
-	private DefaultListModel<Item> itemsInBaggingArea = new DefaultListModel<>();
+	private DefaultListModel<ItemObject> itemsInBaggingArea = new DefaultListModel<>();
 	private JPanel baggingPanel;
 	
 	public HardwareGUI(AbstractSelfCheckoutStation scs) {
