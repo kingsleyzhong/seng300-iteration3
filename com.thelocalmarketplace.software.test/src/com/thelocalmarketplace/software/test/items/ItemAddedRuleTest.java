@@ -29,6 +29,7 @@ import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.items.ItemAddedRule;
 import com.thelocalmarketplace.software.items.ItemManager;
 import com.thelocalmarketplace.software.receipt.Receipt;
+import com.thelocalmarketplace.software.test.AbstractSessionTest;
 import com.thelocalmarketplace.software.test.AbstractTest;
 import com.thelocalmarketplace.software.weight.Weight;
 import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
@@ -62,47 +63,30 @@ import powerutility.PowerGrid;
  * Kingsley Zhong : 30197260
  */
 
-public class ItemAddedRuleTest extends AbstractTest {
+public class ItemAddedRuleTest extends AbstractSessionTest {
 
     public ItemAddedRuleTest(String testName, AbstractSelfCheckoutStation scs) {
         super(testName, scs);
         // TODO Auto-generated constructor stub
     }
 
-    private Session session;
-
     private BarcodedProduct product;
     private Barcode barcode;
     private BarcodedItem item;
 
-    private Funds funds;
-
-    private Weight weight;
-
-    // Code added
-    private ItemManager itemManager;
-    private Receipt reciept;
 
     private ScannerListenerStub listener;
 
     @Before
     public void setup() {
-        session = new Session();
-
-        new ItemAddedRule(scs, session);
+    	basicDefaultSetup();
+        new ItemAddedRule(scs.getMainScanner(), scs.getHandheldScanner(), itemManager);
 
         barcode = new Barcode(new Numeral[] { Numeral.valueOf((byte) 1) });
         product = new BarcodedProduct(barcode, "Product 1", 10, 100.0);
         item = new BarcodedItem(barcode, new Mass(100.0));
         ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode, product); // Add a product to the database
 
-        weight = new Weight(scs);
-        funds = new Funds(scs);
-
-        // Code added
-        reciept = new Receipt(scs);
-
-        session.setup(itemManager, funds, weight, reciept, scs);
 
         listener = new ScannerListenerStub();
 
@@ -112,8 +96,8 @@ public class ItemAddedRuleTest extends AbstractTest {
 
     @Test(expected = InvalidArgumentSimulationException.class)
     public void testNullSCS() {
-        AbstractSelfCheckoutStation scsNull = null;
-        new ItemAddedRule(scsNull, session);
+        ItemManager itemManagerNull  = null;
+        new ItemAddedRule(scs.getMainScanner(), scs.getHandheldScanner(), itemManagerNull);
     }
 
     @Test
@@ -131,7 +115,7 @@ public class ItemAddedRuleTest extends AbstractTest {
     public void testAddItemInDatabaseHandheldScanner() {
         session.start();
         while (!listener.barcodesScanned.contains(item.getBarcode())) {
-            scs.handheldScanner.scan(item);
+            scs.getHandheldScanner().scan(item);
         }
         HashMap<BarcodedProduct, Integer> productList = session.getBarcodedItems();
         assertTrue(productList.containsKey(product));
