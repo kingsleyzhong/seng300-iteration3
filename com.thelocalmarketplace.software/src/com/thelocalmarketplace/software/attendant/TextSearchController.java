@@ -86,12 +86,12 @@ public class TextSearchController {
 			// We could have something like:
 //			if (key released is a typable character) {
 //				// Instead held keys could do nothing and releasing it could be what does the following
-//				// This is generally not how computers work
+//				// This is generally not how computers interpret key press events for the purposes of typing
 //				searchField += whatever the key label is;
 //			} else if (escape key) {
-//				// Cancel the search event?
+//				// Cancel the search event? These kinds of key press events usually are actioned on release
 //			} else if (enter key) {
-//				// textSearchProduct(searchField);
+//				// textSearchProduct(searchField); // These kinds of key press events usually are actioned on release
 //			} else {
 //				//Do nothing? These are keys that are not characters and do not have bindings in the software
 //			}
