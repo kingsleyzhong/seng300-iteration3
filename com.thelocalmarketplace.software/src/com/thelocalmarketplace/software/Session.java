@@ -73,7 +73,6 @@ public class Session {
 	private Weight weight;
 	private ItemManager manager;
 	private Receipt receiptPrinter;
-	private Requests request = Requests.NO_REQUEST;
 	private boolean requestApproved = false;
 
 	private class ItemManagerListener implements ItemListener {
@@ -98,18 +97,18 @@ public class Session {
 		 * Upon a weightDiscrepancy, session should freeze
 		 * 
 		 * If the Customer has declared their intention to add bags to the scale, then
-		 * checks
-		 * the bags instead.
+		 * checks the bags instead.
 		 */
 		@Override
 		public void notifyDiscrepancy() {
 			// Only needed when the customer wants to add their own bags (this is how
 			// Session knows the bags' weight)
 			if (sessionState == SessionState.ADDING_BAGS) {
-				// This means that the bags are too heavy. Something should happen here. Perhaps
-				// instead we need another call that notifies bags too heavyS
 				return;
 			}
+			
+			// signal attendent(s)
+			notifyAttendant(Requests.WEIGHT_DISCREPANCY);			
 			block();
 		}
 
@@ -121,6 +120,15 @@ public class Session {
 			resume();
 		}
 
+		@Override
+		public void notifyBagsTooHeavy() {
+			// tell attendant
+			notifyAttendant(Requests.BAGS_TOO_HEAVY);
+			block();
+
+		}
+
+		
 	}
 
 	private class PayListener implements FundsListener {
@@ -133,6 +141,17 @@ public class Session {
 		public void notifyPaid() {
 			sessionState = SessionState.PRE_SESSION;
 		}
+		
+		/**
+		 * Called when there is not enough change (of any kind) avalaiable to handle payment
+		 */
+		@Override
+		public void notifyInsufficentChange() {
+			// notify attendant
+			notifyAttendant(Requests.CANT_MAKE_CHANGE);
+			block();
+
+		}
 
 	}
 
@@ -140,11 +159,13 @@ public class Session {
 
 		@Override
 		public void notifiyOutOfPaper() {
+			notifyAttendant(Requests.CANT_PRINT_RECEIPT);
 			block();
 		}
 
 		@Override
 		public void notifiyOutOfInk() {
+			notifyAttendant(Requests.CANT_PRINT_RECEIPT);
 			block();
 		}
 
@@ -342,8 +363,7 @@ public class Session {
 		// Only able to add when in a discrepancy after adding bags
 		if (sessionState == SessionState.BLOCKED) {
 			sessionState = SessionState.BULKY_ITEM;
-			request = Requests.BULKY_ITEM;
-			notifyAttendant();
+			notifyAttendant(Requests.BULKY_ITEM);
 		} else if (sessionState == SessionState.BULKY_ITEM) {
 			if (requestApproved) {
 				requestApproved = false;
@@ -371,10 +391,26 @@ public class Session {
 		}
 	}
 
-	public void notifyAttendant() {
-		// attendant.getRequest(request);
-		attendantApprove(request);
+	/**
+	 * Abstract notification method that tells any registered listeners about the request of Session.
+	 * This is done to reduce redundancy, as there are many possible requests that could be made of the attendant
+
+	 * @param request specific instance of the Requests ennum related to the current issues within Session
+	 */
+	public void notifyAttendant(Requests request) {
+		for(SessionListener l:listeners) {
+			l.getRequest(this, request);
+		}
 	}
+	
+	/**
+	 * User demonstrates they wish to ask the attendent for help
+	 */
+	public void askForHelp() {
+		notifyAttendant(Requests.HELP_REQUESTED);
+	}
+	
+	
 
 	/**
 	 * getter methods

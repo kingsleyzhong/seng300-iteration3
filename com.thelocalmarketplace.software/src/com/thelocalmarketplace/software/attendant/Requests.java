@@ -27,6 +27,21 @@ package com.thelocalmarketplace.software.attendant;
  * Kingsley Zhong 			: 30197260 
  */
 public enum Requests {
-	NO_REQUEST,
-	BULKY_ITEM
+	// core requests based on Use case version 3
+	WEIGHT_DISCREPANCY,
+	BAGS_TOO_HEAVY,
+	BULKY_ITEM,
+	CANT_MAKE_CHANGE,
+	CANT_PRINT_RECEIPT,
+	ADD_ITEM_SEARCH,
+	HELP_REQUESTED;
+	
+	// requests that would be cool to have but arent needed for core functionality
+	// allow the Attendant to track Session better
+	// SESSION_STARTED,
+	// SESSION_ENDED,
+	// ADDED_ITEM,
+	// IS_PAYING;
+	
+	
 }
