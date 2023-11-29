@@ -19,6 +19,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
 import javax.swing.JButton;
+import javax.swing.JTextPane;
+import java.awt.Font;
 
 public class StartScreenGUI {
 	private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -28,19 +30,23 @@ public class StartScreenGUI {
 	
 	public StartScreenGUI() {
 		frame = new JFrame();
-		frame.setForeground(Color.RED);
-		frame.setBackground(Color.RED);
+		frame.setResizable(false);
+		frame.setForeground(Colors.color1);
+		frame.setBackground(Colors.color1);
 		frame.setAlwaysOnTop(true);
 		
 		//setting size
 		width = (int) screenSize.getWidth();
 		height = (int) screenSize.getHeight();
-		frame.setSize(width, height);
+		frame.setSize(941, 588);
 		
 		
 		
 		//this is the start button
 		JButton btnStart = new JButton("Start");
+		btnStart.setFont(new Font("Dialog", Font.BOLD, 40));
+		btnStart.setForeground(Color.BLACK);
+		btnStart.setBackground(Colors.color1);
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				close_start_screen();
@@ -49,6 +55,11 @@ public class StartScreenGUI {
 		
 		
 		frame.getContentPane().add(btnStart, BorderLayout.CENTER);
+		
+		JTextPane txtpnWelcome = new JTextPane();
+		txtpnWelcome.setFont(new Font("Dialog", Font.PLAIN, 52));
+		txtpnWelcome.setText("Welcome");
+		frame.getContentPane().add(txtpnWelcome, BorderLayout.NORTH);
 		frame.setVisible(true);	
 		
 		
