@@ -76,7 +76,7 @@ public class AttendantStation {
 	 * @throws IllegalStateException
 	 *             If station is already supervised.
 	 */
-	public synchronized void add(SelfCheckoutStationBronze station) {
+	public synchronized void add(ISelfCheckoutStation station) {
 		if(station == null)
 			throw new IllegalArgumentException("station cannot be null");
 		if(station.isSupervised())

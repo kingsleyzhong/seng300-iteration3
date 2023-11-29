@@ -29,7 +29,7 @@ import powerutility.PowerGrid;
  */
 public interface ISelfCheckoutStation {
 	/**
-	 * Represents the large scale where items are to be placed once they have been
+	 * Accesses the large scale where items are to be placed once they have been
 	 * scanned or otherwise entered.
 	 * 
 	 * @return The bagging area.
@@ -37,36 +37,35 @@ public interface ISelfCheckoutStation {
 	public IElectronicScale getBaggingArea();
 
 	/**
-	 * Represents the small scale used to weigh items that are sold by weight.
+	 * Accesses the small scale used to weigh items that are sold by weight.
 	 * 
 	 * @return The scanning area scale.
 	 */
 	public IElectronicScale getScanningArea();
 
 	/**
-	 * Represents a touch screen display on which is shown a graphical user
-	 * interface.
+	 * Accesses a touch screen display on which is shown a graphical user interface.
 	 * 
 	 * @return The touch screen.
 	 */
 	public ITouchScreen getScreen();
 
 	/**
-	 * Represents the dispenser of reusable-bags.
+	 * Accesses the dispenser of reusable-bags.
 	 * 
 	 * @return The reusable bag dispenser.
 	 */
 	public IReusableBagDispenser getReusableBagDispenser();
 
 	/**
-	 * Represents a printer for receipts.
+	 * Accesses a printer for receipts.
 	 * 
 	 * @return The receipt printer.
 	 */
 	public IReceiptPrinter getPrinter();
 
 	/**
-	 * Represents a device that can read electronic cards, through one or more input
+	 * Accesses a device that can read electronic cards, through one or more input
 	 * modes according to the setup of the card.
 	 * 
 	 * @return The card reader.
@@ -74,57 +73,57 @@ public interface ISelfCheckoutStation {
 	public ICardReader getCardReader();
 
 	/**
-	 * Represents a large, central barcode scanner.
+	 * Accesses a large, central barcode scanner.
 	 * 
 	 * @return The main scanner.
 	 */
 	public IBarcodeScanner getMainScanner();
 
 	/**
-	 * Represents a handheld, secondary barcode scanner.
+	 * Accesses a handheld, secondary barcode scanner.
 	 * 
 	 * @return The handheld scanner.
 	 */
 	public IBarcodeScanner getHandheldScanner();
 
 	/**
-	 * Represents a device that permits banknotes to be entered.
+	 * Accesses a device that permits banknotes to be entered.
 	 * 
 	 * @return The banknote input slot.
 	 */
 	public BanknoteInsertionSlot getBanknoteInput();
 
 	/**
-	 * Represents a device that permits banknotes to be given to the customer.
+	 * Accesses a device that permits banknotes to be given to the customer.
 	 * 
 	 * @return The banknote output slot.
 	 */
 	public BanknoteDispensationSlot getBanknoteOutput();
 
 	/**
-	 * Represents a device that checks the validity of a banknote, and determines
-	 * its denomination.
+	 * Accesses a device that checks the validity of a banknote, and determines its
+	 * denomination.
 	 * 
 	 * @return The banknote validator device.
 	 */
 	public BanknoteValidator getBanknoteValidator();
 
 	/**
-	 * Represents a device that stores banknotes.
+	 * Accesses a device that stores banknotes.
 	 * 
 	 * @return The banknote storage unit.
 	 */
 	public BanknoteStorageUnit getBanknoteStorage();
 
 	/**
-	 * Represents the set of denominations supported by the self-checkout system.
+	 * Accesses the set of denominations supported by the self-checkout system.
 	 * 
 	 * @return The banknote denominations supported by this station.
 	 */
 	public BigDecimal[] getBanknoteDenominations();
 
 	/**
-	 * Represents the set of banknote dispensers, indexed by the denomination that
+	 * Accesses the set of banknote dispensers, indexed by the denomination that
 	 * each contains. Note that nothing prevents banknotes of the wrong denomination
 	 * to be loaded into a given dispenser.
 	 * 
@@ -134,14 +133,14 @@ public interface ISelfCheckoutStation {
 	public Map<BigDecimal, IBanknoteDispenser> getBanknoteDispensers();
 
 	/**
-	 * Represents a device that permits coins to be entered.
+	 * Accesses a device that permits coins to be entered.
 	 * 
 	 * @return The coin input.
 	 */
 	public CoinSlot getCoinSlot();
 
 	/**
-	 * Represents a device that checks the validity of a coin, and determines its
+	 * Accesses a device that checks the validity of a coin, and determines its
 	 * denomination.
 	 * 
 	 * @return The coin validator device.
@@ -149,14 +148,14 @@ public interface ISelfCheckoutStation {
 	public CoinValidator getCoinValidator();
 
 	/**
-	 * Represents a device that stores coins that have been entered by customers.
+	 * Accesses a device that stores coins that have been entered by customers.
 	 * 
 	 * @return The coin storage unit.
 	 */
 	public CoinStorageUnit getCoinStorage();
 
 	/**
-	 * Represents the set of denominations of coins supported by this self-checkout
+	 * Accesses the set of denominations of coins supported by this self-checkout
 	 * system.
 	 * 
 	 * @return The set of coin denominations supported by this station.
@@ -164,7 +163,7 @@ public interface ISelfCheckoutStation {
 	public List<BigDecimal> getCoinDenominations();
 
 	/**
-	 * Represents the set of coin dispensers, indexed by the denomination of coins
+	 * Accesses the set of coin dispensers, indexed by the denomination of coins
 	 * contained by each.
 	 * 
 	 * @return The coin dispenser devices, indexed by the denomination managed by
@@ -173,7 +172,7 @@ public interface ISelfCheckoutStation {
 	public Map<BigDecimal, ICoinDispenser> getCoinDispensers();
 
 	/**
-	 * Represents a device that receives coins to return to the customer.
+	 * Accesses a device that receives coins to return to the customer.
 	 * 
 	 * @return The coin output.
 	 */
@@ -201,4 +200,20 @@ public interface ISelfCheckoutStation {
 	 * Turns off all the devices in the station.
 	 */
 	public void turnOff();
+
+	/**
+	 * Determines whether this station is supervised by an attendant station.
+	 * 
+	 * @return true if it is supervised; otherwise, false.
+	 */
+	public boolean isSupervised();
+
+	/**
+	 * Sets the supervising attendant station for this station.
+	 * 
+	 * @param supervisor
+	 *            The attendant station that is to supervise this station. May be
+	 *            null which will cause this station to become unsupervised.
+	 */
+	public void setSupervisor(AttendantStation supervisor);
 }

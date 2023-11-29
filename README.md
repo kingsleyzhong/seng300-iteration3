@@ -15,9 +15,12 @@
 - If you need the latest changes from main, simply pull from the main branch (using local git, NOT GITHUB). Do this before merging.
 - When you are ready to merge to main, open a pull request in GitHub
 
-
 # Conventions
 
 - Class names are in PascalCase
 - Functions / Methods and Variables are in camelCase
 - Constants are in MACRO_CASE
+
+# Collaborators
+
+kingsleyzhong, Anthony-kostalvazquez, NDMcCa, suaa-lim, Ekkiddle, CeeRobitaille, dvij99, kngtm1, SubegSC, arcleah, e-woo, Aoi-U, EmilyDStein01, derekatab, s0danissa, enibalo, jli213, estherTran26, Vergeful, Dino-Sour, junheoucal
