@@ -15,6 +15,7 @@ import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
+import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.funds.FundsListener;
 import com.thelocalmarketplace.software.items.ItemListener;
@@ -291,6 +292,20 @@ public class Session {
 			manager.setAddItems(true);
 		}
 	}
+	
+	/**
+	 * Enters the adding membership mode for the customer.
+	 * 
+	 * @throws InvalidActionException
+	 */
+	public void enteringMembership() {
+		if (sessionState == SessionState.IN_SESSION) {
+			membership.setAddingItems(true);
+			} else {
+				throw new InvalidActionException("Cannot enter membership if session is not in adding items state");
+			}
+	}
+	
 
 	/**
 	 * Enters the cash payment mode for the customer. Prevents customer from adding

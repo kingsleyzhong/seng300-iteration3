@@ -1,6 +1,11 @@
 package com.thelocalmarketplace.software.membership;
 
 import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
+
+import com.jjjwelectronics.IDevice;
+import com.jjjwelectronics.IDeviceListener;
+import com.jjjwelectronics.card.Card.CardData;
+import com.jjjwelectronics.card.CardReaderListener;
 import com.jjjwelectronics.card.ICardReader;
 import com.jjjwelectronics.scanner.IBarcodeScanner;
 
@@ -37,8 +42,10 @@ public class Membership {
     protected final List<MembershipListener> listeners;
     private final ICardReader cardReader;
     private final List<IBarcodeScanner> barcodeScanners;
+    private boolean addingItems = false;
 
-    /** Initializes a new instance of a Membership facade that provides the checkout station logic with a
+
+	/** Initializes a new instance of a Membership facade that provides the checkout station logic with a
      * user-inputted membership number.
      * @param cardReader The card reader to read membership cards.
      * @param barcodeScanners The barcode scanners to scan membership barcodes. */
@@ -46,7 +53,74 @@ public class Membership {
         listeners = new ArrayList<>();
         this.cardReader = cardReader;
         this.barcodeScanners = List.of(barcodeScanners);
+        InnerListener membershipReader = new InnerListener();
+        cardReader.register(membershipReader);
     }
+    
+    public class InnerListener implements CardReaderListener{
+
+		@Override
+		public void aDeviceHasBeenEnabled(IDevice<? extends IDeviceListener> device) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void aDeviceHasBeenDisabled(IDevice<? extends IDeviceListener> device) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void aDeviceHasBeenTurnedOn(IDevice<? extends IDeviceListener> device) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void aDeviceHasBeenTurnedOff(IDevice<? extends IDeviceListener> device) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void aCardHasBeenInserted() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void theCardHasBeenRemoved() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void aCardHasBeenTapped() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void aCardHasBeenSwiped() {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void theDataFromACardHasBeenRead(CardData data) {
+			// TODO Auto-generated method stub
+			if(addingItems == true && data.getType().contains("Membership")) {
+				notifyMembershipEntered(data.getNumber());
+			}
+		}
+    	
+		
+    }
+    
+    //setter for adding items
+    public void setAddingItems(boolean addingItems) {
+		this.addingItems = addingItems;
+	}
 
     /** Registers a MembershipListener on this Membership facade.
      * @param listener The MembershipListener to register.*/
