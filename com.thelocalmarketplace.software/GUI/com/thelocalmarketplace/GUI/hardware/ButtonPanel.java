@@ -14,8 +14,6 @@ import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 public class ButtonPanel extends JPanel implements ActionListener {
 	JButton mainScanner;
 	JButton handheldScanner;
-	JButton scanningArea;
-	JButton baggingArea;
 	JButton coinSlot;
 	JButton banknoteInput;
 	JButton coinTray;
@@ -24,20 +22,17 @@ public class ButtonPanel extends JPanel implements ActionListener {
 	JButton cardDevice;
 	JButton sessionScreen;
 	JButton attendantScreen;
+	JButton startButton;
 	
 	private static final long serialVersionUID = 1L;
 	private HardwareGUI gui;
 	
 	public ButtonPanel(HardwareGUI gui) {
 		this.gui = gui;
-		mainScanner = new PlainButton("MainScanner", Colors.color4);
+		mainScanner = new PlainButton("Scan With Main Scanner", Colors.color4);
 		mainScanner.addActionListener(this);
-		handheldScanner = new PlainButton("Handheld Scanner", Colors.color4);
+		handheldScanner = new PlainButton("Scan With Handheld Scanner", Colors.color4);
 		handheldScanner.addActionListener(this);
-		scanningArea = new PlainButton("Scanning Area", Colors.color4);
-		scanningArea.addActionListener(this);
-		baggingArea = new PlainButton("Bagging Area", Colors.color4);
-		baggingArea.addActionListener(this);
 		coinSlot = new PlainButton("Coin Slot", Colors.color4);
 		coinSlot.addActionListener(this);
 		banknoteInput = new PlainButton("Banknote Input", Colors.color4);
@@ -55,34 +50,55 @@ public class ButtonPanel extends JPanel implements ActionListener {
 		attendantScreen = new PlainButton("Attendant Screen", Colors.color4);
 		attendantScreen.addActionListener(this);
 		
+		startButton = new PlainButton("Start Hardware Simulation", Colors.color4);
+		startButton.addActionListener(this);
+		
 		this.setBackground(Colors.color2);
-		GridLayout layout = new GridLayout(2,6,0,0);
+		GridLayout layout = new GridLayout(2,0,0,0);
 		layout.setHgap(20);
 		layout.setVgap(20);
 		this.setLayout(layout);
 		this.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 		
+		this.add(startButton);
+	}
+
+	public void populateButtons() {
+		this.remove(startButton);
+		this.repaint();
+		
 		this.add(mainScanner);
-		this.add(scanningArea);
 		this.add(coinSlot);
 		this.add(coinTray);
 		this.add(receiptPrinter);
 		this.add(sessionScreen);
 		this.add(handheldScanner);
-		this.add(baggingArea);
 		this.add(banknoteInput);
 		this.add(banknoteOutput);
 		this.add(cardDevice);
 		this.add(attendantScreen);
+		this.revalidate();
 	}
-
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(!gui.clicked) {
 			gui.introPanel();
 			gui.clicked = true;
+			populateButtons();
 		}
-		if(e.getSource() == mainScanner);
+		if(e.getSource() == mainScanner) {
+			gui.mainScan();
+		}
+		else if(e.getSource() == handheldScanner) {
+			gui.handScan();
+		}
+		else if(e.getSource() == sessionScreen) {
+			gui.getStation().getScreen().getFrame().setVisible(true);
+		}
+		else if(e.getSource() == attendantScreen) {
+			
+		}
 		
 	}
 }

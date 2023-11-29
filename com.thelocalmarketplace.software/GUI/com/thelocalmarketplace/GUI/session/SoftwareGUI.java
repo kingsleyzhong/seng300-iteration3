@@ -13,7 +13,8 @@ public class SoftwareGUI {
 	public SoftwareGUI(Session session, ITouchScreen screen) {
 		this.session = session;
 		this.screen = screen;
-		screen.getFrame();
+		frame = screen.getFrame();
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 	}
 
 }

@@ -44,7 +44,7 @@ public class ItemManager {
 	private HashMap<BarcodedProduct, Integer> bulkyItems = new HashMap<BarcodedProduct, Integer>();
 	private BarcodedProduct lastProduct;
 	private Session session;
-	private boolean addItems = false;
+	private boolean addItems = true;
 	
 	
 	public ItemManager(Session session) {

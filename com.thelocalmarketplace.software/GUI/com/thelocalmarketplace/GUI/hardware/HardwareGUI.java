@@ -15,12 +15,16 @@ import javax.swing.DefaultListModel;
 import javax.swing.DropMode;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.TransferHandler;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import com.jjjwelectronics.Item;
 import com.jjjwelectronics.Mass;
@@ -44,6 +48,8 @@ public class HardwareGUI {
 	private JFrame hardwareFrame;
 	private JPanel content;
 	private JPanel screens;
+	private JPanel cashInput;
+	private JPanel card;
 	private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	private int width;
 	private int height;
@@ -51,13 +57,17 @@ public class HardwareGUI {
 	
 	private DefaultListModel<ItemObject> itemsInCart = new DefaultListModel<>();
 	private JPanel cartPanel;
+	private JList<ItemObject> cartList = new JList<ItemObject>(itemsInCart);
 	private DefaultListModel<ItemObject> itemsInScanningArea = new DefaultListModel<>();
 	private JPanel scanningPanel;
+	private JList<ItemObject> scanningList= new JList<ItemObject>(itemsInScanningArea);
 	private DefaultListModel<ItemObject> itemsInBaggingArea = new DefaultListModel<>();
 	private JPanel baggingPanel;
+	private JList<ItemObject> baggingList = new JList<ItemObject>(itemsInBaggingArea);
 	
 	private DefaultListModel<ItemObject> lastModel = new DefaultListModel<>();
 	private ItemObject lastObject = null;
+	protected ItemObject lastItem;
 	
 	public HardwareGUI(AbstractSelfCheckoutStation scs) {
 		this.scs = scs;
@@ -86,11 +96,21 @@ public class HardwareGUI {
 		content.setBackground(Colors.color1);
 		content.setLayout(new GridLayout(1,0));
 		
-		hardwareFrame.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
-		hardwareFrame.getContentPane().add(content, BorderLayout.CENTER);
+		//ANTHONY FOR YOU... PLEASE ADD YOUR THINGS TO THIS SPECIFIC PANEL
+		cashInput = new JPanel();
+		cashInput.setBackground(Colors.color1);
+		
+		card = new JPanel();
+		card.setBackground(Colors.color1);
 		
 		screens = new JPanel();
-		screens.setBackground(Colors.color1);
+		screens.setLayout(new GridLayout(0,1));
+		screens.add(cashInput);
+		screens.add(card);
+		screens.setBorder(BorderFactory.createEmptyBorder());
+		
+		hardwareFrame.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+		hardwareFrame.getContentPane().add(content, BorderLayout.CENTER);
 		
 		//hardwareFrame.setUndecorated(true);
 	}
@@ -126,14 +146,14 @@ public class HardwareGUI {
 			}
 			
 		});
-		cartPanel = itemPanel("Items in cart", addButton, itemsInCart);
+		cartPanel = itemPanel("Items in cart", cartList);
 		JPanel panel2 = new JPanel();
 		panel2.setBackground(Colors.color1);
 		GridLayout layout2 = new GridLayout(0,1);
 		layout2.setVgap(20);
 		panel2.setLayout(layout2);
-		scanningPanel = itemPanel("Items in scanning area", null, itemsInScanningArea);
-		baggingPanel = itemPanel("Items in bagging area", null, itemsInBaggingArea);
+		scanningPanel = itemPanel("Items in scanning area", scanningList);
+		baggingPanel = itemPanel("Items in bagging area", baggingList);
 		panel.add(cartPanel);
 		panel2.add(scanningPanel);
 		panel2.add(baggingPanel);
@@ -144,41 +164,15 @@ public class HardwareGUI {
 		return panel;
 	}
 	
-	public JPanel itemPanel(String title, JButton button, DefaultListModel<ItemObject> listModel) {
+	public JPanel itemPanel(String title, JList<ItemObject> list) {
 		JPanel thisPanel = new JPanel();
 		thisPanel.setLayout(new BoxLayout(thisPanel, BoxLayout.Y_AXIS));
 		JPanel panel = new JPanel();
-		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[]{17, 287, 0};
-		gbl_panel.rowHeights = new int[]{25, 0};
-		gbl_panel.columnWeights = new double[]{0.0, 1.0, 0.0};
-		gbl_panel.rowWeights = new double[]{0.0, Double.MIN_VALUE};
-		panel.setLayout(gbl_panel);
 		
 		JLabel label = new JLabel(title);
 		label.setForeground(Color.WHITE);
-		GridBagConstraints gbc_label = new GridBagConstraints();
-		gbc_label.anchor = GridBagConstraints.WEST;
-		gbc_label.insets = new Insets(0, 0, 0, 5);
-		gbc_label.gridx = 0;
-		gbc_label.gridy = 0;
-		panel.add(label, gbc_label);
+		panel.add(label);
 		
-		if(button != null) {
-			RoundPanel roundButton = new RoundPanel(15, Colors.color3);
-			roundButton.setPreferredSize(new Dimension(25,15));
-			roundButton.setBackground(Colors.color2);
-			GridBagConstraints gbc_roundButton = new GridBagConstraints();
-			gbc_roundButton.insets = new Insets(0, 0, 0, 5);
-			gbc_roundButton.anchor = GridBagConstraints.NORTHWEST;
-			gbc_roundButton.gridx = 2;
-			gbc_roundButton.gridy = 0;
-			button.setBorder(BorderFactory.createEmptyBorder());
-			button.setPreferredSize(new Dimension(20,10));
-			button.setOpaque(false);
-			panel.add(roundButton, gbc_roundButton);
-			roundButton.add(button);
-		}
 		panel.setMaximumSize(new Dimension(1000, 25));
 		panel.setBackground(Colors.color2);
 		
@@ -191,7 +185,33 @@ public class HardwareGUI {
 		thisPanel.add(items, BorderLayout.CENTER);
 		
 		BarcodedItem item1 = new BarcodedItem(new Barcode(new Numeral[] { Numeral.valueOf((byte) 1) }), new Mass(20.0));
-		JList<ItemObject> list = new JList<>(listModel);
+		list.addListSelectionListener(new ListSelectionListener() {
+
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				JList<ItemObject> list = (JList<ItemObject>) e.getSource();
+				if(list == cartList) {
+					scanningList.clearSelection();
+					baggingList.clearSelection();
+					int index = list.getSelectedIndex();
+					if(index == -1) {
+						lastItem = null;
+					}
+					else {
+						lastItem = list.getModel().getElementAt(index);
+					}
+				}
+				else if(list == scanningList) {
+					cartList.clearSelection();
+					baggingList.clearSelection();
+				}
+				else if(list == baggingList) {
+					cartList.clearSelection();
+					scanningList.clearSelection();
+				}
+			}
+			
+		});
 		ItemObject prototype = new ItemObject(item1, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
 		list.setPrototypeCellValue(prototype);
 		list.setFixedCellHeight(20);
@@ -202,13 +222,14 @@ public class HardwareGUI {
 		list.setMinimumSize(new Dimension(20,20));
 		list.setName(title);
 		items.add(new JScrollPane(list));
+		
+
+		
 		return thisPanel;
 	}
 	
 	public void addData(ItemObject data, DefaultListModel<ItemObject> listModel) {
-		System.out.println("HI");
 		if(listModel == itemsInScanningArea) {
-        	//System.out.println("removed from scanning area");
         	scs.getScanningArea().addAnItem(data.getItem());
         }
         else if(listModel == itemsInBaggingArea) {
@@ -218,7 +239,6 @@ public class HardwareGUI {
 	
 	public void removeData(ItemObject data, DefaultListModel<ItemObject> listModel) {
 		if(listModel == itemsInScanningArea) {
-        	//System.out.println("removed from scanning area");
         	scs.getScanningArea().removeAnItem(data.getItem());
         }
         else if(listModel == itemsInBaggingArea) {
@@ -226,6 +246,43 @@ public class HardwareGUI {
         }
 	}
 	
+	public void mainScan() {
+		if(lastItem == null) {
+			JOptionPane.showMessageDialog(hardwareFrame, "Please select an item from the cart.");
+		}
+		else {
+			Item item = lastItem.getItem();
+			if(item instanceof BarcodedItem) {
+				scs.getMainScanner().scan((BarcodedItem) item);
+			}
+			else {
+			JOptionPane.showMessageDialog(null, "This item does not have a barcode to scan.");
+			}
+		}
+	}
+	
+	public void handScan() {
+		if(lastItem == null) {
+			JOptionPane.showMessageDialog(null, "Please select an item from the cart.");
+		}
+		else {
+			Item item = lastItem.getItem();
+			if(item instanceof BarcodedItem) {
+				scs.getHandheldScanner().scan((BarcodedItem) item);
+			}
+			else {
+				JOptionPane.showMessageDialog(null, "This item does not have a barcode to scan.");
+			}
+		}
+	}
+	
+	public AbstractSelfCheckoutStation getStation() {
+		return scs;
+	}
+	
+	/**
+	 * Class that handles moving ItemObjects between JLists
+	 */
 	public class ListTransferHandler extends TransferHandler {
         private int[] indices = null;
         private int addIndex = -1; //Location where items were added
@@ -288,7 +345,6 @@ public class HardwareGUI {
             lastModel = listModel;
             lastObject = data;
             
-            System.out.println("Loop");
             return true;
         }
 
@@ -300,9 +356,7 @@ public class HardwareGUI {
             DefaultListModel<ItemObject> listModel  = (DefaultListModel<ItemObject>)source.getModel();
             ItemObject removedObject = null;
 
-            //System.out.println(action);
             if (action == TransferHandler.MOVE) {
-            	//System.out.println("move");
                 for (int i = indices.length - 1; i >= 0; i--) {
                 	removedObject = listModel.elementAt(indices[i]);
                     listModel.remove(indices[i]);
