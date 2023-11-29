@@ -5,6 +5,7 @@ import com.jjjwelectronics.scanner.Barcode;
 import com.thelocalmarketplace.GUI.attendant.AttendantGUI;
 import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
 import com.thelocalmarketplace.GUI.session.SoftwareGUI;
+import com.thelocalmarketplace.GUI.startscreen.StartScreenGUI;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.AttendantStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
@@ -29,9 +30,12 @@ public class Simulation {
 	public Simulation() {
 		setupLogic();
 		setupData();
+		
+		new StartScreenGUI();
 		new HardwareGUI(scs);
 		new AttendantGUI(attendant, as.screen);
 		new SoftwareGUI(session, scs.getScreen());
+		
 	}
 	
 	/**
