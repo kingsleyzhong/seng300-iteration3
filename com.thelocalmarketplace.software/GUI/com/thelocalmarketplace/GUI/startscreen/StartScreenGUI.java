@@ -9,6 +9,7 @@ import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import com.jjjwelectronics.screen.ITouchScreen;
 import com.thelocalmarketplace.GUI.Simulation;
@@ -21,6 +22,8 @@ import java.awt.Color;
 import javax.swing.JButton;
 import javax.swing.JTextPane;
 import java.awt.Font;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
 public class StartScreenGUI {
 	private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -38,7 +41,7 @@ public class StartScreenGUI {
 		//setting size
 		width = (int) screenSize.getWidth();
 		height = (int) screenSize.getHeight();
-		frame.setSize(941, 588);
+		frame.setSize(width, height);
 		
 		
 		
@@ -50,16 +53,21 @@ public class StartScreenGUI {
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				close_start_screen();
+				
+				//new Simulation();
+				
 			}
 		});
 		
 		
 		frame.getContentPane().add(btnStart, BorderLayout.CENTER);
 		
-		JTextPane txtpnWelcome = new JTextPane();
-		txtpnWelcome.setFont(new Font("Dialog", Font.PLAIN, 52));
-		txtpnWelcome.setText("Welcome");
-		frame.getContentPane().add(txtpnWelcome, BorderLayout.NORTH);
+		JLabel lblWelcome = new JLabel("WELCOME");
+		lblWelcome.setBackground(Color.RED);
+		lblWelcome.setHorizontalAlignment(SwingConstants.CENTER);
+		lblWelcome.setVerticalAlignment(SwingConstants.BOTTOM);
+		lblWelcome.setFont(new Font("Dialog", Font.BOLD, 92));
+		frame.getContentPane().add(lblWelcome, BorderLayout.NORTH);
 		frame.setVisible(true);	
 		
 		
