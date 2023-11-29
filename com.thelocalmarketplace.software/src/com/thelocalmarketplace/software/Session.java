@@ -19,6 +19,8 @@ import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.funds.FundsListener;
 import com.thelocalmarketplace.software.items.ItemListener;
 import com.thelocalmarketplace.software.items.ItemManager;
+import com.thelocalmarketplace.software.membership.Membership;
+import com.thelocalmarketplace.software.membership.MembershipListener;
 import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.receipt.ReceiptListener;
 import com.thelocalmarketplace.software.weight.Weight;
@@ -73,6 +75,9 @@ public class Session {
 	private Weight weight;
 	private ItemManager manager;
 	private Receipt receiptPrinter;
+	private Membership membership;
+	private String membershipNumber;
+	private boolean hasMembership = false;
 	private Requests request = Requests.NO_REQUEST;
 	private boolean requestApproved = false;
 
@@ -167,6 +172,15 @@ public class Session {
 
 	}
 
+	private class MemberListener implements MembershipListener {
+		/** Sets the membership number for the session.*/
+		@Override
+		public void membershipEntered(String membershipNumber) {
+			Session.this.membershipNumber = membershipNumber;
+			Session.this.hasMembership = true;
+		}
+	}
+
 	/**
 	 * Constructor for the session method. Requires to be installed on self-checkout
 	 * system
@@ -217,7 +231,7 @@ public class Session {
 	 * @param Receipt
 	 *                      The PrintReceipt behavior
 	 */
-	public void setup(ItemManager manager, Funds funds, Weight weight, Receipt receiptPrinter,
+	public void setup(ItemManager manager, Funds funds, Weight weight, Receipt receiptPrinter, Membership membership,
 			AbstractSelfCheckoutStation scs) {
 		this.manager = manager;
 		this.funds = funds;
@@ -227,6 +241,8 @@ public class Session {
 		this.manager.register(new ItemManagerListener());
 		this.receiptPrinter = receiptPrinter;
 		this.receiptPrinter.register(new PrinterListener());
+		this.membership = membership;
+		membership.register(new MemberListener());
 		this.scs = scs;
 	}
 
@@ -236,6 +252,8 @@ public class Session {
 	public void start() {
 		sessionState = SessionState.IN_SESSION;
 		manager.setAddItems(true);
+		hasMembership = false;
+		membershipNumber = null;
 		// manager.clear();
 		// funds.clear();
 		// weight.clear();
@@ -397,6 +415,18 @@ public class Session {
 
 	public Weight getWeight() {
 		return weight;
+	}
+
+	public Membership getMembership() {
+		return membership;
+	}
+
+	public String getMembershipNumber() {
+		return membershipNumber;
+	}
+
+	public boolean membershipEntered() {
+		return hasMembership;
 	}
 
 	public AbstractSelfCheckoutStation getStation() {

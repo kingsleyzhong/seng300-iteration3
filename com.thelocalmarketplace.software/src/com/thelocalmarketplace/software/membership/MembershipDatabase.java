@@ -1,4 +1,8 @@
 package com.thelocalmarketplace.software.membership;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /*
  *
  * Project Iteration 3 Group 1
@@ -25,7 +29,8 @@ package com.thelocalmarketplace.software.membership;
  * Ethan Woo 				: 30172855
  * Kingsley Zhong 			: 30197260
  */
-public interface MembershipListener {
 
-    void membershipEntered(String membershipNumber);
+public class MembershipDatabase {
+    private MembershipDatabase() {}
+    public static final Map<String, Member> MEMBERSHIP_DATABASE = new HashMap<>();
 }

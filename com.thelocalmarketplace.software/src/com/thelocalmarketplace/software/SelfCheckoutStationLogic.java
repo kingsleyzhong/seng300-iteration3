@@ -17,6 +17,7 @@ import com.thelocalmarketplace.software.funds.PayByCard;
 import com.thelocalmarketplace.software.funds.PayByCash;
 import com.thelocalmarketplace.software.items.ItemAddedRule;
 import com.thelocalmarketplace.software.items.ItemManager;
+import com.thelocalmarketplace.software.membership.Membership;
 import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.weight.Weight;
 
@@ -92,8 +93,9 @@ public class SelfCheckoutStationLogic {
 		Weight weight = new Weight(scs.getBaggingArea());
 		Receipt receiptPrinter = new Receipt(scs.getPrinter());
 		ItemManager itemManager = new ItemManager(session);
+		Membership membership = new Membership(scs.getCardReader(), scs.getHandheldScanner(), scs.getMainScanner());
 		// Will also need the touch screen/ keyboard for GUI interaction
-		session.setup(itemManager, funds, weight, receiptPrinter, scs);
+		session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
 		new ItemAddedRule(scs.getMainScanner(), scs.getHandheldScanner(), itemManager);
 	}
 
