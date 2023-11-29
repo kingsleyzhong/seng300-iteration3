@@ -47,12 +47,23 @@ public class MaintenanceManager {
     private Map<BigDecimal, ICoinDispenser> coinDispensers;
     private AbstractSelfCheckoutStation scs;
     private Session session;
-    public MaintenanceManager(Session session) {
+    public class NotDisabledSessionException extends Exception {
+        public NotDisabledSessionException(String str) {super(str);}
+    }
+    public MaintenanceManager() {
+    }
+    public void openHardware(Session session) throws NotDisabledSessionException {
         this.session = session;
         state = session.getState();
-        scs = session.getStation();
-        receiptPrinter = scs.getPrinter();
-        banknoteDispensers = scs.getBanknoteDispensers();
-        coinDispensers = scs.getCoinDispensers();
+        if (state == SessionState.BLOCKED) { // Change check to SessionState.DISABLED
+            scs = session.getStation();
+            receiptPrinter = scs.getPrinter();
+            banknoteDispensers = scs.getBanknoteDispensers();
+            coinDispensers = scs.getCoinDispensers();
+        }
+        else {
+            throw new NotDisabledSessionException("Session is not disabled!");
+        }
     }
+    
 }
