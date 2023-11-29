@@ -93,7 +93,6 @@ public class HardwareGUI {
 		screens.setBackground(Colors.color1);
 		
 		//hardwareFrame.setUndecorated(true);
-		hardwareFrame.setVisible(true);
 	}
 	
 	public void populateItems() {
@@ -319,4 +318,12 @@ public class HardwareGUI {
             addIndex = -1;
         }
     }
+	
+	public void hide() {
+    	hardwareFrame.setVisible(false);
+    }
+	
+	public void unhide() {
+		hardwareFrame.setVisible(true);
+	}
 }

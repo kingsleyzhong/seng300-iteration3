@@ -25,17 +25,14 @@ public class Simulation {
 	private Session session;
 	private ItemManager itemManager;
 	private Attendant attendant;
-
+	
+	private HardwareGUI hardwareGUI;
+	private AttendantGUI attendantGUI;
+	private SoftwareGUI softwareGUI;
 	
 	public Simulation() {
 		setupLogic();
 		setupData();
-		
-		new StartScreenGUI();
-		new HardwareGUI(scs);
-		new AttendantGUI(attendant, as.screen);
-		new SoftwareGUI(session, scs.getScreen());
-		
 	}
 	
 	/**
@@ -55,6 +52,13 @@ public class Simulation {
 		SelfCheckoutStationLogic logic = SelfCheckoutStationLogic.installOn(scs);
 		session = logic.getSession();
 		attendant = SelfCheckoutStationLogic.getAttendant();
+		
+		hardwareGUI = new HardwareGUI(scs);
+		//attendantGUI = new AttendantGUI(attendant, as.screen);
+		softwareGUI = new SoftwareGUI(session, scs.getScreen());
+		
+		// hidden by default
+		hardwareGUI.hide();
 	}
 	
 	/**
@@ -68,5 +72,9 @@ public class Simulation {
 		PriceLookUpCode plu1 = new PriceLookUpCode(new String("0000"));
 		PLUCodedProduct pluProduct1 = new PLUCodedProduct(plu1, "baaananas", 10);
 		SelfCheckoutStationLogic.populateDatabase(plu1, pluProduct1, 10);
+	}
+	
+	public void unhide() {
+		hardwareGUI.unhide();
 	}
 }

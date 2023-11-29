@@ -5,8 +5,8 @@ import com.thelocalmarketplace.GUI.startscreen.StartScreenGUI;
 public class Main {
 	
 	public static void main(String[] args) {
-		new Simulation();
-		//new StartScreenGUI();
+		Simulation simulation = new Simulation();
+		new StartScreenGUI(simulation);
 	}
 
 }

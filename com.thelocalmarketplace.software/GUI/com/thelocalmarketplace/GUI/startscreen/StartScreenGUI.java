@@ -29,9 +29,10 @@ public class StartScreenGUI {
 	private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	private int width;
 	private int height;
+	
 	JFrame frame;
 	
-	public StartScreenGUI() {
+	public StartScreenGUI(Simulation simulation) {
 		frame = new JFrame();
 		frame.setResizable(false);
 		frame.setForeground(Colors.color1);
@@ -53,9 +54,7 @@ public class StartScreenGUI {
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				close_start_screen();
-				
-				//new Simulation();
-				
+				simulation.unhide();
 			}
 		});
 		
@@ -69,7 +68,6 @@ public class StartScreenGUI {
 		lblWelcome.setFont(new Font("Dialog", Font.BOLD, 92));
 		frame.getContentPane().add(lblWelcome, BorderLayout.NORTH);
 		frame.setVisible(true);	
-		
 		
 		
 	}
