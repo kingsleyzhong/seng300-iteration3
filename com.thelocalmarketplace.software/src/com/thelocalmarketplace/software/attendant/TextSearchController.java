@@ -34,49 +34,46 @@ import com.jjjwelectronics.screen.TouchScreenListener;
  */
 public class TextSearchController {
 	private String searchField;
+	private boolean shift;
 	private class InnerListener implements TouchScreenListener, KeyboardListener {
 
 		@Override
 		public void aDeviceHasBeenEnabled(IDevice<? extends IDeviceListener> device) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void aDeviceHasBeenDisabled(IDevice<? extends IDeviceListener> device) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void aDeviceHasBeenTurnedOn(IDevice<? extends IDeviceListener> device) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void aDeviceHasBeenTurnedOff(IDevice<? extends IDeviceListener> device) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void aKeyHasBeenPressed(String label) {
 			// TODO This software must decide what is done with the key press here
-			// We could have something like:
-//			if (key pressed is a typable character) {
-//				// The following is a conceptual problem in that a real computer will loop a key if held
-//				// How fast this happens is based on a software configuration whereas here it would not be
-//				// Instead it would be based of the I guess the time complexity of the operation
-//				// And the speed of the hardware (i.e. clock speed) so in other words EXTREMELY fast
-//				searchField += whatever the key label is;
+			// This will only do something for meta keys like shift
+			if (label.equals("Shift (Right)") || label.equals("Shift (Left)")) {
+				shift = true;
 //			} else if (escape key) {
 //				// If escape does anything without being released
 //			} else if (enter key) {
 //				// If enter does anything without being released
-//			} else {
-//				//Do nothing? These are keys that are not characters and do not have bindings in the software
-//			}
+			} else {
+				//Do nothing? Unfortunately we can't make this realistic so every key actions on release
+			}
 			// Note this is very rough/inaccurate implementation
 		}
 
@@ -84,23 +81,31 @@ public class TextSearchController {
 		public void aKeyHasBeenReleased(String label) {
 			// TODO This software must decide what is done when the key is released here
 			// We could have something like:
-//			if (key released is a typable character) {
-//				// Instead held keys could do nothing and releasing it could be what does the following
-//				// This is generally not how computers interpret key press events for the purposes of typing
-//				searchField += whatever the key label is;
+			if (yada yada yada && !shift){
+				// This is a caharacter key with shift not pressed
+
+				searchField += label;
+			} else if (yada yada yada && shift) {
+					// This is a character key with shift pressed
+
+					searchField += label; // Will need
 //			} else if (escape key) {
 //				// Cancel the search event? These kinds of key press events usually are actioned on release
 //			} else if (enter key) {
 //				// textSearchProduct(searchField); // These kinds of key press events usually are actioned on release
-//			} else {
-//				//Do nothing? These are keys that are not characters and do not have bindings in the software
-//			}
-//			// Note this is very rough/inaccurate implementation
+			} else if (label.equals("Shift (Right)") || label.equals("Shift (Left)")) {
+				shift = false;
+			} else if (label.equals("Enter")) {
+				textSearchProduct(label);
+			} else {
+				//Do nothing? These are keys that are not characters and do not have bindings in the software
+			}
+			// Note this is very rough/inaccurate implementation
 		}
 	}
 
-	// private void textSearchProduct() {
-		// This is some kind of method that may action the search
-		// TBD how this will work
-	// }
+	 private void textSearchProduct(String label) {
+//		 This is some kind of method that may action the search
+//		 TBD how this will work
+	 }
 }
