@@ -7,6 +7,8 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -29,6 +31,7 @@ import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 import com.thelocalmarketplace.GUI.customComponents.RoundPanel;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+import com.thelocalmarketplace.hardware.external.ProductDatabases;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -41,7 +44,6 @@ public class HardwareGUI {
 	private JFrame hardwareFrame;
 	private JPanel content;
 	private JPanel screens;
-	private CardLayout cards;
 	private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	private int width;
 	private int height;
@@ -54,8 +56,14 @@ public class HardwareGUI {
 	private DefaultListModel<ItemObject> itemsInBaggingArea = new DefaultListModel<>();
 	private JPanel baggingPanel;
 	
+	private DefaultListModel<ItemObject> lastModel = new DefaultListModel<>();
+	private ItemObject lastObject = null;
+	
 	public HardwareGUI(AbstractSelfCheckoutStation scs) {
 		this.scs = scs;
+		
+		populateItems();
+		
 		width = (int) screenSize.getWidth();
 		height = (int) screenSize.getHeight();
 		
@@ -88,6 +96,19 @@ public class HardwareGUI {
 		hardwareFrame.setVisible(true);
 	}
 	
+	public void populateItems() {
+		BarcodedItem bitem1 = new BarcodedItem(new Barcode(new Numeral[] { Numeral.one}), new Mass(300.0));
+		ItemObject item1 = new ItemObject(bitem1, "Baaakini1");
+		itemsInCart.addElement(item1);
+		
+		BarcodedItem bitem2 = new BarcodedItem(new Barcode(new Numeral[] { Numeral.one}), new Mass(300.0));
+		ItemObject item2 = new ItemObject(bitem1, "Baaakini2");
+		itemsInCart.addElement(item2);
+		
+		BarcodedItem bitem3 = new BarcodedItem(new Barcode(new Numeral[] { Numeral.one}), new Mass(300.0));
+		ItemObject item3 = new ItemObject(bitem1, "Baaakini3");
+		itemsInCart.addElement(item3);
+	}
 	
 	public JPanel introPanel() {
 		JPanel panel = new JPanel();
@@ -171,8 +192,6 @@ public class HardwareGUI {
 		thisPanel.add(items, BorderLayout.CENTER);
 		
 		BarcodedItem item1 = new BarcodedItem(new Barcode(new Numeral[] { Numeral.valueOf((byte) 1) }), new Mass(20.0));
-		ItemObject item = new ItemObject(item1, "Item 1");
-		listModel.addElement(item);
 		JList<ItemObject> list = new JList<>(listModel);
 		ItemObject prototype = new ItemObject(item1, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
 		list.setPrototypeCellValue(prototype);
@@ -187,6 +206,27 @@ public class HardwareGUI {
 		return thisPanel;
 	}
 	
+	public void addData(ItemObject data, DefaultListModel<ItemObject> listModel) {
+		System.out.println("HI");
+		if(listModel == itemsInScanningArea) {
+        	//System.out.println("removed from scanning area");
+        	scs.getScanningArea().addAnItem(data.getItem());
+        }
+        else if(listModel == itemsInBaggingArea) {
+        	scs.getBaggingArea().addAnItem(data.getItem());
+        }
+	}
+	
+	public void removeData(ItemObject data, DefaultListModel<ItemObject> listModel) {
+		if(listModel == itemsInScanningArea) {
+        	//System.out.println("removed from scanning area");
+        	scs.getScanningArea().removeAnItem(data.getItem());
+        }
+        else if(listModel == itemsInBaggingArea) {
+        	scs.getBaggingArea().removeAnItem(data.getItem());
+        }
+	}
+	
 	public class ListTransferHandler extends TransferHandler {
         private int[] indices = null;
         private int addIndex = -1; //Location where items were added
@@ -197,9 +237,9 @@ public class HardwareGUI {
          */
         public boolean canImport(TransferHandler.TransferSupport info) {
             // Check for String flavor
-            //if (!info.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-            //    return false;
-            //}
+            if (!info.isDataFlavorSupported(ItemObject.flavor)) {
+               return false;
+            }
             return true;
        }
 
@@ -208,7 +248,7 @@ public class HardwareGUI {
          * Each line is separated by a newline.
          */
         protected Transferable createTransferable(JComponent c) {
-            JList list = (JList)c;
+            JList<ItemObject> list = (JList<ItemObject>)c;
             indices = list.getSelectedIndices();
             Object[] values = list.getSelectedValues();
             
@@ -217,10 +257,10 @@ public class HardwareGUI {
         }
         
         /**
-         * We support both copy and move actions.
+         * We support move actions.
          */
         public int getSourceActions(JComponent c) {
-            return TransferHandler.COPY_OR_MOVE;
+            return TransferHandler.MOVE;
         }
         
         /**
@@ -231,13 +271,9 @@ public class HardwareGUI {
                 return false;
             }
 
-            JList list = (JList)info.getComponent();
-            DefaultListModel listModel = (DefaultListModel)list.getModel();
+            JList<ItemObject> list = (JList<ItemObject>) info.getComponent();
+            DefaultListModel<ItemObject> listModel = (DefaultListModel<ItemObject>)list.getModel();
             JList.DropLocation dl = (JList.DropLocation)info.getDropLocation();
-            Object addedObject = null;
-            int index = dl.getIndex();
-            boolean insert = dl.isInsert();
-
             // Get the string that is being dropped.
             Transferable t = info.getTransferable();
             ItemObject data;
@@ -245,42 +281,15 @@ public class HardwareGUI {
                 data = (ItemObject) t.getTransferData(ItemObject.flavor);
             } 
             catch (Exception e) { return false; }
-                                    
-            // Wherever there is a newline in the incoming data,
-            // break it into a separate item in the list.
-            /*String[] values = data.split("\n");
             
-            addIndex = index;
-            addCount = values.length;
+            if(data == null) return false;
             
-            // Perform the actual import.  
-            for (int i = 0; i < values.length; i++) {
-                if (insert) {
-                    listModel.add(index++, values[i]);
-                } else {
-                    // If the items go beyond the end of the current
-                    // list, add them in.
-                    if (index < listModel.getSize()) {
-                        listModel.set(index++, values[i]);
-                    } else {
-                        listModel.add(index++, values[i]);
-                    }
-                }
-            }
-            */
             listModel.addElement(data);
-            addedObject = data;
-            System.out.println(addedObject.getClass());
-            if(addedObject instanceof ItemObject) {
-            	Item item = ((ItemObject) addedObject).getItem();
-	            if(list.getName().equals("Items in scanning area")) {
-	            	scs.getScanningArea().addAnItem(item);
-	            	//System.out.println("added to scanning area");
-	            }
-	            else if(list.getName().equals("Items in bagging area")) {
-	            	scs.getBaggingArea().addAnItem(item);
-	            }
-            }
+	        //addData(data, listModel);
+            lastModel = listModel;
+            lastObject = data;
+            
+            System.out.println("Loop");
             return true;
         }
 
@@ -288,28 +297,22 @@ public class HardwareGUI {
          * Remove the items moved from the list.
          */
         protected void exportDone(JComponent c, Transferable data, int action) {
-            JList source = (JList)c;
-            DefaultListModel listModel  = (DefaultListModel)source.getModel();
-            Object removedObject = null;
+            JList<ItemObject> source = (JList<ItemObject>)c;
+            DefaultListModel<ItemObject> listModel  = (DefaultListModel<ItemObject>)source.getModel();
+            ItemObject removedObject = null;
 
+            //System.out.println(action);
             if (action == TransferHandler.MOVE) {
+            	//System.out.println("move");
                 for (int i = indices.length - 1; i >= 0; i--) {
                 	removedObject = listModel.elementAt(indices[i]);
                     listModel.remove(indices[i]);
                 }
             }
             
-            System.out.println(removedObject.getClass());
-            if(removedObject instanceof ItemObject) {
-            	Item item = ((ItemObject) removedObject).getItem();
-	            if(source.getName().equals("Items in scanning area")) {
-	            	//System.out.println("removed from scanning area");
-	            	scs.getScanningArea().removeAnItem(item);
-	            }
-	            else if(source.getName().equals("Items in bagging area")) {
-	            	scs.getBaggingArea().removeAnItem(item);
-	            }
-            }
+            addData(lastObject, listModel);
+            removeData(lastObject, listModel);
+            
             
             indices = null;
             addCount = 0;
