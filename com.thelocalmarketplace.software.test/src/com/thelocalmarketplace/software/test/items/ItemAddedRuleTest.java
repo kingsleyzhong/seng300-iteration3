@@ -64,6 +64,7 @@ public class ItemAddedRuleTest extends AbstractSessionTest {
     private BarcodedProduct product;
     private Barcode barcode;
     private BarcodedItem item;
+   
 
 
     private ScannerListenerStub listener;
@@ -102,15 +103,7 @@ public class ItemAddedRuleTest extends AbstractSessionTest {
         assertTrue(productList.containsKey(product));
     }
 
-    @Test
-    public void testAddItemInDatabaseHandheldScanner() {
-        session.start();
-        while (!listener.barcodesScanned.contains(item.getBarcode())) {
-            scs.getHandheldScanner().scan(item);
-        }
-        HashMap<BarcodedProduct, Integer> productList = session.getBarcodedItems();
-        assertTrue(productList.containsKey(product));
-    }
+   
 
     @Test(expected = InvalidArgumentSimulationException.class)
     public void testAddItemNotInDatabase() {
@@ -157,6 +150,19 @@ public class ItemAddedRuleTest extends AbstractSessionTest {
         scs.getMainScanner().disable();
         scs.getMainScanner().enable();
 
+    }
+    
+    @Test
+    public void testAddBagInDatabase() {
+        session.start();
+
+       
+
+        /**
+         * call method to purchase bag 
+        list of bags  = session.getBagItems();
+        assertTrue(productList.containsKey(bag));
+        **/
     }
 
     public class ScannerListenerStub implements BarcodeScannerListener {

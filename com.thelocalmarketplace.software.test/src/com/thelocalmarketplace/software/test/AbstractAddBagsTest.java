@@ -19,10 +19,7 @@ import com.thelocalmarketplace.software.weight.Weight;
 import StubClasses.BagStub;
 import powerutility.PowerGrid;
 
-public abstract class AbstractAddBagsTest {
-	private AbstractSelfCheckoutStation scs;
-	private Funds funds;
-	private PowerGrid powergrid;
+public abstract class AbstractAddBagsTest extends AbstractSessionTest {
 	private Mass bagMass;
 	private Mass overweightBagMass;
 	private Mass weightLimitBagMass;
@@ -31,30 +28,26 @@ public abstract class AbstractAddBagsTest {
 	private BagStub overweightBag;
 	private BagStub weightLimitBag;
 	private BagStub notBag;
-	private Session session;
-	private Weight weight;
-	private ItemManager itemManager;
-	private Receipt receipt;
 	private double BAG_MASS_LIMIT = 250.00;
 	
-	// This is done this way for JUnit best practices -StackOverflow
-	protected abstract AbstractSelfCheckoutStation createInstance();
+	public AbstractAddBagsTest(String testName, AbstractSelfCheckoutStation scs) {
+		super(testName, scs);
+		// TODO Auto-generated constructor stub
+	}
 	
-	//TO DO: 
-	//attendantApprove does not handle bags too heavy requests. Only bulky item. 
-	//need a function like addBulkyItem to resolve weight discrepancies caused by bags inside Session. 
+	protected abstract AbstractSelfCheckoutStation createInstance();
+
 	
 	@Before
 	public void setup() {
-		AbstractSelfCheckoutStation.resetConfigurationToDefaults();
-		scs = createInstance();	
+		basicDefaultSetup();
 		scs.resetConfigurationToDefaults();
    
     	// power on the self checkout station
-    	powergrid = PowerGrid.instance();
-    	powergrid.engageUninterruptiblePowerSource();
+    	powerGrid = PowerGrid.instance();
+    	powerGrid.engageUninterruptiblePowerSource();
 		
-    	scs.plugIn(powergrid);
+    	scs.plugIn(powerGrid);
     	// turn on the self checkout station
 		scs.turnOn();
 
@@ -77,9 +70,9 @@ public abstract class AbstractAddBagsTest {
         funds = new Funds(scs);
         weight = new Weight(scs.getBaggingArea());
         itemManager = new ItemManager(session);
-        receipt = new Receipt(scs.getPrinter());
+        receiptPrinter = new Receipt(scs.getPrinter());
 		// Tell Session about the rest of the system
-        session.setup(itemManager, funds, weight, receipt, scs);
+        session.setup(itemManager, funds, weight, receiptPrinter, scs);
 
         // make sure the session is not active before you run the tests
         session.cancel();
