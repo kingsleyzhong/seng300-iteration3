@@ -1,4 +1,17 @@
 package com.thelocalmarketplace.software.attendant;
+
+import com.jjjwelectronics.printer.IReceiptPrinter;
+import com.tdc.banknote.AbstractBanknoteDispenser;
+import com.tdc.banknote.IBanknoteDispenser;
+import com.tdc.coin.AbstractCoinDispenser;
+import com.tdc.coin.ICoinDispenser;
+import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+import com.thelocalmarketplace.software.Session;
+import com.thelocalmarketplace.software.SessionState;
+
+import java.math.BigDecimal;
+import java.util.Map;
+
 /**
  * Simulation of an attendant performing minuteness and preventative care on self checkout stations
  * 
@@ -27,5 +40,19 @@ package com.thelocalmarketplace.software.attendant;
  * Kingsley Zhong 			: 30197260 
  */
 public class MaintenanceManager {
-
+    private boolean isOpen = false;
+    private SessionState state;
+    private IReceiptPrinter receiptPrinter;
+    private Map<BigDecimal, IBanknoteDispenser> banknoteDispensers;
+    private Map<BigDecimal, ICoinDispenser> coinDispensers;
+    private AbstractSelfCheckoutStation scs;
+    private Session session;
+    public MaintenanceManager(Session session) {
+        this.session = session;
+        state = session.getState();
+        scs = session.getStation();
+        receiptPrinter = scs.getPrinter();
+        banknoteDispensers = scs.getBanknoteDispensers();
+        coinDispensers = scs.getCoinDispensers();
+    }
 }
