@@ -11,6 +11,7 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -20,13 +21,17 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
+import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.screen.ITouchScreen;
 import com.thelocalmarketplace.GUI.Simulation;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 import com.thelocalmarketplace.GUI.startscreen.StartScreenGUI;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
+import com.thelocalmarketplace.software.SessionListener;
+
 import javax.swing.SwingConstants;
 
 public class SoftwareGUI{
@@ -51,11 +56,12 @@ public class SoftwareGUI{
 	// Panel components of JFrame
 	JPanel orangePanel;
 	JPanel cartInfoPanel;
-	JPanel cartItemsPanel;
+	private AddedProducts cartItemsPanel;
 	JPanel buttonPanel;
 	
 	// Buttons
 	public SoftwareGUI(Session session) {
+		session.register(new InnerListener());
 		frame = session.getStation().getScreen().getFrame();
 		// Setting window size
 		width = (int) screenSize.getWidth();
@@ -174,21 +180,9 @@ public class SoftwareGUI{
 		cartInfoPanel.add(infoTop, BorderLayout.NORTH);
 		cartInfoPanel.add(infoBottom, BorderLayout.SOUTH);
 		
-		cartItemsPanel = new JPanel();
-		cartItemsPanel.setBackground(Colors.color3);
+		cartItemsPanel = new AddedProducts(session);
+		//cartItemsPanel.setBackground(Colors.color3);
 		cartItemsPanel.setPreferredSize(new Dimension( 2 * (width/3), height));
-				
-		
-		
-		
-		
-		// EMILY INSERT YOUR STUFF AROUND HERE EMILY INSERT YOUR STUFF AROUND HERE EMILY INSERT YOUR STUFF AROUND HERE EMILY INSERT YOUR STUFF AROUND HERE
-		// EMILY INSERT YOUR STUFF AROUND HERE EMILY INSERT YOUR STUFF AROUND HERE EMILY INSERT YOUR STUFF AROUND HERE EMILY INSERT YOUR STUFF AROUND HERE
-		// EMILY INSERT YOUR STUFF AROUND HERE EMILY INSERT YOUR STUFF AROUND HERE EMILY INSERT YOUR STUFF AROUND HERE EMILY INSERT YOUR STUFF AROUND HERE
-		// EMILY INSERT YOUR STUFF AROUND HERE EMILY INSERT YOUR STUFF AROUND HERE EMILY INSERT YOUR STUFF AROUND HERE EMILY INSERT YOUR STUFF AROUND HERE
-		// EMILY INSERT YOUR STUFF AROUND HERE EMILY INSERT YOUR STUFF AROUND HERE EMILY INSERT YOUR STUFF AROUND HERE EMILY INSERT YOUR STUFF AROUND HERE
-		// WORK WITH THE cartItemsPanel that is above
-		
 		
 		// BUTTON PANEL FOR BOTTOM OF SCREEN:
 		buttonPanel = new JPanel();
@@ -263,6 +257,55 @@ public class SoftwareGUI{
 			// TODO Auto-generated method stub
 			
 		}
+		
+	}
+	
+	private class InnerListener implements SessionListener{
+
+		@Override
+		public void itemAdded(Product product, Mass ofProduct, Mass currentExpectedWeight,
+				BigDecimal currentExpectedPrice) {
+			cartItemsPanel.addProduct(product, ofProduct);
+			
+		}
+
+		@Override
+		public void itemRemoved(Product product, Mass ofProduct, Mass currentExpectedMass,
+				BigDecimal currentExpectedPrice) {
+			cartItemsPanel.removeProduct(product, ofProduct);
+			
+		}
+
+		@Override
+		public void addItemToScaleDiscrepancy() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void removeItemFromScaleDiscrepancy() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void discrepancy(String message) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void discrepancyResolved() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void pricePaidUpdated() {
+			// TODO Auto-generated method stub
+			
+		}
+
 		
 	}
 }

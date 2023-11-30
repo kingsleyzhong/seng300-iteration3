@@ -75,6 +75,8 @@ public class HardwareGUI {
 	private DefaultListModel<ItemObject> lastModel = new DefaultListModel<>();
 	private ItemObject lastObject = null;
 	protected ItemObject lastItem;
+	private JList<ItemObject> importList;
+    private JList<ItemObject> exportList;
 	
 	public HardwareGUI(AbstractSelfCheckoutStation scs) {
 		this.scs = scs;
@@ -189,6 +191,8 @@ public class HardwareGUI {
 
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
+				addData(lastObject, importList);
+	            removeData(lastObject, exportList);
 				JList<ItemObject> list = (JList<ItemObject>) e.getSource();
 				if(list == cartList) {
 					scanningList.clearSelection();
@@ -229,20 +233,20 @@ public class HardwareGUI {
 		return thisPanel;
 	}
 	
-	public void addData(ItemObject data, DefaultListModel<ItemObject> listModel) {
-		if(listModel == itemsInScanningArea) {
+	public void addData(ItemObject data, JList<ItemObject> list) {
+		if(list == scanningList) {
         	scs.getScanningArea().addAnItem(data.getItem());
         }
-        else if(listModel == itemsInBaggingArea) {
+        else if(list == baggingList) {
         	scs.getBaggingArea().addAnItem(data.getItem());
         }
 	}
 	
-	public void removeData(ItemObject data, DefaultListModel<ItemObject> listModel) {
-		if(listModel == itemsInScanningArea) {
+	public void removeData(ItemObject data, JList<ItemObject> list) {
+		if(list == scanningList) {
         	scs.getScanningArea().removeAnItem(data.getItem());
         }
-        else if(listModel == itemsInBaggingArea) {
+        else if(list == baggingList) {
         	scs.getBaggingArea().removeAnItem(data.getItem());
         }
 	}
@@ -343,7 +347,7 @@ public class HardwareGUI {
             
             listModel.addElement(data);
 	        //addData(data, listModel);
-            lastModel = listModel;
+            importList = list;
             lastObject = data;
             
             return true;
@@ -363,9 +367,10 @@ public class HardwareGUI {
                     listModel.remove(indices[i]);
                 }
             }
+            exportList = source;
             
-            addData(lastObject, listModel);
-            removeData(lastObject, listModel);
+            //addData(lastObject, importList);
+            //removeData(lastObject, source);
             
             
             indices = null;
