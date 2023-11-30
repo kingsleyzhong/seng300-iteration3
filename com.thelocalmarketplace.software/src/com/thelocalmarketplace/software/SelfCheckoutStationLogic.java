@@ -27,38 +27,38 @@ import com.thelocalmarketplace.software.weight.Weight;
  * 
  * Project Iteration 3 Group 1
  *
- * Derek Atabayev : 30177060
- * Enioluwafe Balogun : 30174298
- * Subeg Chahal : 30196531
- * Jun Heo : 30173430
- * Emily Kiddle : 30122331
- * Anthony Kostal-Vazquez : 30048301
- * Jessica Li : 30180801
- * Sua Lim : 30177039
- * Savitur Maharaj : 30152888
- * Nick McCamis : 30192610
- * Ethan McCorquodale : 30125353
- * Katelan Ng : 30144672
- * Arcleah Pascual : 30056034
- * Dvij Raval : 30024340
- * Chloe Robitaille : 30022887
- * Danissa Sandykbayeva : 30200531
- * Emily Stein : 30149842
- * Thi My Tuyen Tran : 30193980
- * Aoi Ueki : 30179305
- * Ethan Woo : 30172855
- * Kingsley Zhong : 30197260
+ * Derek Atabayev 			: 30177060 
+ * Enioluwafe Balogun 		: 30174298 
+ * Subeg Chahal 			: 30196531 
+ * Jun Heo 					: 30173430 
+ * Emily Kiddle 			: 30122331 
+ * Anthony Kostal-Vazquez 	: 30048301 
+ * Jessica Li 				: 30180801 
+ * Sua Lim 					: 30177039 
+ * Savitur Maharaj 			: 30152888 
+ * Nick McCamis 			: 30192610 
+ * Ethan McCorquodale 		: 30125353 
+ * Katelan Ng 				: 30144672 
+ * Arcleah Pascual 			: 30056034 
+ * Dvij Raval 				: 30024340 
+ * Chloe Robitaille 		: 30022887 
+ * Danissa Sandykbayeva 	: 30200531 
+ * Emily Stein 				: 30149842 
+ * Thi My Tuyen Tran 		: 30193980 
+ * Aoi Ueki 				: 30179305 
+ * Ethan Woo 				: 30172855 
+ * Kingsley Zhong 			: 30197260 
  */
 
 public class SelfCheckoutStationLogic {
 
 	private static Attendant attendant;
 	private Session session;
-
+	
 	public static void installAttendantStation(AttendantStation as) {
 		attendant = new Attendant(as);
 	}
-
+	
 	/**
 	 * Installs an instance of the logic on the selfCheckoutStation and the session
 	 * run on the station
@@ -91,23 +91,22 @@ public class SelfCheckoutStationLogic {
 		new PayByCard(scs.getCardReader(), funds);
 		Weight weight = new Weight(scs.getBaggingArea());
 		Receipt receiptPrinter = new Receipt(scs.getPrinter());
-		ItemManager itemManager = new ItemManager(session);
+		ItemManager itemManager = new ItemManager(session); 
 		// Will also need the touch screen/ keyboard for GUI interaction
-		session.setup(itemManager, funds, weight, receiptPrinter, scs);
+		session.setup(itemManager, funds, weight, receiptPrinter, scs); 
 		new ItemAddedRule(scs.getMainScanner(), scs.getHandheldScanner(), itemManager);
 	}
-
+	
 	public static Attendant getAttendant() {
 		return attendant;
 	}
-
+	
 	public Session getSession() {
 		return session;
 	}
-
+	
 	/**
 	 * populates the database with a barcode and barcoded product into the inventory
-	 * 
 	 * @param barcode
 	 * @param product
 	 */
@@ -115,13 +114,13 @@ public class SelfCheckoutStationLogic {
 		Map<Product, Integer> inventory = ProductDatabases.INVENTORY;
 		Map<Barcode, BarcodedProduct> barcodedProducts = ProductDatabases.BARCODED_PRODUCT_DATABASE;
 		inventory.put(product, amount);
-		barcodedProducts.put(barcode, product);
+		barcodedProducts.put(barcode, product);	
 	}
-
+	
 	public static void populateDatabase(PriceLookUpCode plu, PLUCodedProduct product, int amount) {
 		Map<Product, Integer> inventory = ProductDatabases.INVENTORY;
 		Map<PriceLookUpCode, PLUCodedProduct> pluProducts = ProductDatabases.PLU_PRODUCT_DATABASE;
 		inventory.put(product, amount);
-		pluProducts.put(plu, product);
+		pluProducts.put(plu, product);	
 	}
 }
