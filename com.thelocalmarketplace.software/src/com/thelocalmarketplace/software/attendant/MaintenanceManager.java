@@ -1,5 +1,6 @@
 package com.thelocalmarketplace.software.attendant;
 
+import com.jjjwelectronics.OverloadedDevice;
 import com.jjjwelectronics.printer.IReceiptPrinter;
 import com.tdc.CashOverloadException;
 import com.tdc.banknote.Banknote;
@@ -187,6 +188,48 @@ public class MaintenanceManager {
         receiptPrinter = null;
         banknoteDispensers = null;
         coinDispensers = null;
+    }
+
+
+    // Ink
+    public void refillInk(int amount) throws NotDisabledSessionException, OverloadedDevice {
+        int maxAmount = 1 << 20;
+
+        this.openHardware(session);
+
+        if (this.receiptPrinter.inkRemaining() == 0) {
+            this.receiptPrinter.addInk(maxAmount);
+        } else {
+            if (this.receiptPrinter.inkRemaining() + amount > maxAmount) {
+                throw new OverloadedDevice("Too much ink!");
+            }
+
+            this.receiptPrinter.addInk(amount);
+        }
+
+        this.closeHardware();
+
+        // inkRemaining() is not supported in ReceiptPrinterBronze
+    }
+
+    public void refillPaper(int amount) throws NotDisabledSessionException, OverloadedDevice {
+        int maxAmount = 1 << 10;
+
+        this.openHardware(session);
+
+        if (this.receiptPrinter.paperRemaining() == 0) {
+            this.receiptPrinter.addPaper(maxAmount);
+        } else {
+            if (this.receiptPrinter.paperRemaining() + amount > maxAmount) {
+                throw new OverloadedDevice("Too much paper!");
+            }
+
+            this.receiptPrinter.addPaper(amount);
+        }
+
+        this.closeHardware();
+
+        // paperRemaining() is not supported in ReceiptPrinterBronze
     }
 
 }
