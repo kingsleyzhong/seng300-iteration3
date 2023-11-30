@@ -99,12 +99,7 @@ public class HardwareGUI {
 		cashInput = new CashPanel();
 		cashInput.setBackground(Colors.color1);
 		
-		
-		
-		
-		
-		
-		card = new CardPanel();
+		card = new CardPanel(scs);
 		card.setBackground(Colors.color1);
 		
 		screens = new JPanel();
