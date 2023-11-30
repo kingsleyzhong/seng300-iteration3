@@ -5,6 +5,8 @@ import java.awt.GridLayout;
 import javax.swing.JPanel;
 
 import com.thelocalmarketplace.GUI.customComponents.Colors;
+import java.awt.Color;
+import javax.swing.JLabel;
 
 public class CashPanel extends JPanel{
 	private static final long serialVersionUID = 1L;
@@ -19,9 +21,15 @@ public class CashPanel extends JPanel{
 		setLayout(new GridLayout(1, 0, 0, 0));
 		
 		
-		JPanel cash_panel = new JPanel();
+		JPanel Bills = new JPanel();
+		Bills.setBackground(Color.GREEN);
 		this.setBackground(Colors.color5);
-		add(cash_panel);
+		add(Bills);
+		Bills.setLayout(new GridLayout(0, 1, 0, 0));
+		
+		JPanel Coins = new JPanel();
+		Coins.setBackground(Color.YELLOW);
+		add(Coins);
 		
 		
 		
