@@ -41,8 +41,8 @@ import com.thelocalmarketplace.software.receipt.ReceiptListener;
  * Ethan Woo 				: 30172855 
  * Kingsley Zhong 			: 30197260 
  */
-public abstract class PredictionManager  {
-	public ArrayList<PredictionListener> listeners = new ArrayList<>();
+public abstract class IssuePredictor  {
+	public ArrayList<IssuePredictorListener> listeners = new ArrayList<>();
 
 	private Session s;
 	private IReceiptPrinter receiptPrinter;
@@ -54,7 +54,7 @@ public abstract class PredictionManager  {
 	private SessionState state;
 	
 	
-	public PredictionManager(Session s) {
+	public IssuePredictor(Session s) {
 		this.s = s;
 		receiptPrinter = s.getStation().getPrinter();
 		coinStorage = s.getStation().getCoinStorage();
@@ -63,6 +63,11 @@ public abstract class PredictionManager  {
 		coinDispensers = s.getStation().getCoinDispensers();
 	}
 	
+	/**
+	 * Predict if an issue may occur with not enough ink inside the printer
+	 * The current amount of ink in the printer should be above 
+	 * a threshold = N/A. If an issue is found, announce a low ink event.
+	 */
     public void checkLowInk() {
     	state = s.getState();
     	
@@ -76,6 +81,12 @@ public abstract class PredictionManager  {
     	} 
     }
     
+    /**
+     * Predict if an issue may occur with not enough paper inside the printer.
+     * The current amount of paper in the printer should be 
+     * above a threshold = N/A. If an issue is found, announce 
+     * a low paper event.
+     */
     public void checkLowPaper() {
     	state = s.getState();
     	
@@ -87,9 +98,14 @@ public abstract class PredictionManager  {
 	    		notifyLowPaper();
 	    	}
     	}
-    	
     }
     
+    /**
+     * Predict if an issue may occur with not having enough coins to 
+     * dispense as change. The current amount of coins in the dispenser 
+     * should be above a threshold = N/A. If an issue is found, 
+     * announce a low coins event
+     */
     public void checkLowCoins() {
     	state = s.getState();
     	
@@ -105,6 +121,12 @@ public abstract class PredictionManager  {
     	}
     }
     
+    /**
+     * Predict if an issue may occur with not having enough bank notes to 
+     * dispense as change. The current amount of bank notes in the dispenser
+     * should be above a threshold = N/A. If an issue is found, announce
+     * a low banknotes event.
+     */
     public void checkLowBanknotes() {
     	state = s.getState();
     	
@@ -120,6 +142,12 @@ public abstract class PredictionManager  {
     	}
     }
     
+    /**
+     * Predict if an issue may occur with the coin storage unit being full, 
+     * and thus the customer may not be able to insert any coins. The current 
+     * amount of coins in the storage unit should be below a threshold = N/A.
+     * If an issue is found, announce a coins full event.
+     */
     public void checkCoinsFull() {
     	state = s.getState();
     	
@@ -133,6 +161,12 @@ public abstract class PredictionManager  {
     	}
     }
     
+    /**
+     * Predict if an issue may occur with the banknote storage unit being full,
+     * and thus the customer may not be able to insert any banknotes. The
+     * current amount of banknotes in the storage unit should be below a 
+     * threshold = N/A. If an issue is found, announce a banknotes full event.
+     */
     public void checkBanknotesFull() {
     	state = s.getState();
     	
@@ -147,36 +181,36 @@ public abstract class PredictionManager  {
     }
     
     private void notifyLowInk() {
-    	for (PredictionListener l : listeners) 
+    	for (IssuePredictorListener l : listeners) 
 			l.notifyPredictLowInk();
     }
     
     private void notifyLowPaper() {
-    	for (PredictionListener l : listeners) 
+    	for (IssuePredictorListener l : listeners) 
 			l.notifyPredictLowPaper();
     }
     
     private void notifyCoinsLow() {
-    	for (PredictionListener l : listeners)
+    	for (IssuePredictorListener l : listeners)
 			l.notifyPredictLowCoins();
     }
     
     private void notifyBanknotesLow() {
-    	for (PredictionListener l : listeners)
+    	for (IssuePredictorListener l : listeners)
 			l.notifyPredictLowBanknotes();
     }
     
     private void notifyCoinsFull() {
-    	for (PredictionListener l : listeners) 
+    	for (IssuePredictorListener l : listeners) 
 			l.notifyPredictCoinsFull();
     }
     
     private void notifyBanknotesFull() {
-    	for (PredictionListener l : listeners)
+    	for (IssuePredictorListener l : listeners)
 			l.notifyPredictBanknotesFull();
     }
     
-	public synchronized boolean deregister(PredictionListener listener) {
+	public synchronized boolean deregister(IssuePredictorListener listener) {
 		return listeners.remove(listener);
 	}
 
@@ -184,7 +218,7 @@ public abstract class PredictionManager  {
 		listeners.clear();
 	}
 
-	public final synchronized void register(PredictionListener listener) {
+	public final synchronized void register(IssuePredictorListener listener) {
 		listeners.add(listener);
 	}
 	

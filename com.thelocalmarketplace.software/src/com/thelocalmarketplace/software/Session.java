@@ -13,8 +13,8 @@ import com.tdc.banknote.BanknoteInsertionSlot;
 import com.tdc.coin.CoinSlot;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
-import com.thelocalmarketplace.software.attendant.PredictionManager;
-import com.thelocalmarketplace.software.attendant.PredictionListener;
+import com.thelocalmarketplace.software.attendant.IssuePredictor;
+import com.thelocalmarketplace.software.attendant.IssuePredictorListener;
 import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
 import com.thelocalmarketplace.software.funds.Funds;
@@ -75,7 +75,7 @@ public class Session {
 	private Weight weight;
 	private ItemManager manager;
 	private Receipt receiptPrinter;
-	private PredictionManager predictionManager;
+	private IssuePredictor predictionManager;
 	private boolean requestApproved = false;
 
 	private class ItemManagerListener implements ItemListener {
@@ -94,38 +94,66 @@ public class Session {
 
 	}
 	
-	private class PredictIssueListener implements PredictionListener {
+	private class PredictIssueListener implements IssuePredictorListener {
 
+		/**
+		 * Notify the attendant that a low ink issue will shortly occur.
+		 * Disable the customer station on which the issue has been predicted.
+		 */
 		@Override
 		public void notifyPredictLowInk() {
 			notifyAttendant(Requests.LOW_INK);
 			block();
 		}
 
+		/**
+		 * Notify the attendant that a low paper issue will shortly occur.
+		 * Disable the customer station on which the issue has been predicted.
+		 */
 		@Override
 		public void notifyPredictLowPaper() {
 			notifyAttendant(Requests.LOW_PAPER);
 			block();
 		}
 
+		/**
+		 * Notify the attendant that a coin storage full issue will shortly 
+		 * occur. Disable the customer station on which the issue has been 
+		 * predicted.
+		 */
 		@Override
 		public void notifyPredictCoinsFull() {
 			notifyAttendant(Requests.COINS_FULL);
 			block();
 		}
 
+		/**
+		 * Notify the attendant that a banknote storage full issue will shortly
+		 * occur. Disable the customer station on which the issue has been 
+		 * predicted.
+		 */
 		@Override
 		public void notifyPredictBanknotesFull() {
 			notifyAttendant(Requests.BANKNOTES_FULL);
 			block();
 		}
 
+		/**
+		 * Notify the attendant that a low coins in dispenser issue will 
+		 * shortly occur. Disable the customer station on which the issue 
+		 * has been predicted.
+		 */
 		@Override
 		public void notifyPredictLowCoins() {
 			notifyAttendant(Requests.LOW_COINS);
 			block();
 		}
 
+		/** 
+		 * Notify the attendant that a low banknotes in dispenser issue will
+		 * shortly occur. Disable the customer station on which the issue 
+		 * has been predicted.
+		 */
 		@Override
 		public void notifyPredictLowBanknotes() {
 			notifyAttendant(Requests.LOW_BANKNOTES);
@@ -280,7 +308,7 @@ public class Session {
 	 * @param Receipt
 	 *                      The PrintReceipt behavior
 	 */
-	public void setup(PredictionManager predictionManager, ItemManager manager, 
+	public void setup(IssuePredictor predictionManager, ItemManager manager, 
 			Funds funds, Weight weight, Receipt receiptPrinter,
 			AbstractSelfCheckoutStation scs) {
 		this.manager = manager;

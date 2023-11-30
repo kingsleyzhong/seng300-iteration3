@@ -25,37 +25,37 @@ package com.thelocalmarketplace.software.attendant;
  * Ethan Woo 				: 30172855 
  * Kingsley Zhong 			: 30197260 
  */
-public interface PredictionListener {
+public interface IssuePredictorListener {
 	
-	/*
+	/**
 	 * Signals an event that a low ink issue will shortly occur
 	 */
 	void notifyPredictLowInk();
 	
 	
-	/*
+	/**
 	 * Signals an event that a low paper issue will shortly occur
 	 */
 	void notifyPredictLowPaper();
 	
  
-	/*
+	/**
 	 * Signals an event that a coins full issue will shortly occur
 	 */
 	void notifyPredictCoinsFull();
 	
 	
-	/*
+	/**
 	 * Signals an event that a bank notes full issue will shortly occur
 	 */
 	void notifyPredictBanknotesFull();
 	
-	/* 
+	/**
 	 * Signals an event that a low coins issue will shortly occur
 	 */
 	void notifyPredictLowCoins();
 	
-	/*
+	/**
 	 * Signals an event that a low bank notes issue will shortly occur
 	 */
 	void notifyPredictLowBanknotes();
