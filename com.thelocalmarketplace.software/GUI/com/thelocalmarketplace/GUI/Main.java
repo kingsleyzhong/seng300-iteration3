@@ -1,5 +1,6 @@
 package com.thelocalmarketplace.GUI;
 
+import com.thelocalmarketplace.GUI.session.SoftwareGUI;
 import com.thelocalmarketplace.GUI.startscreen.StartScreenGUI;
 
 public class Main {
