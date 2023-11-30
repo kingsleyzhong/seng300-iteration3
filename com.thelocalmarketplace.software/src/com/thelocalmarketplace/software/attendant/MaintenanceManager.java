@@ -72,6 +72,13 @@ public class MaintenanceManager {
     }
 
     /**
+     * Exception class - Thrown when changes are attempted to be made to a station that is closed
+     */
+    private class ClosedHardwareException extends Exception {
+        public ClosedHardwareException(String str) {super(str);}
+    }
+
+    /**
      * Constructor for MaintenanceManager
      */
     public MaintenanceManager() {
@@ -94,6 +101,7 @@ public class MaintenanceManager {
             coinDispensers = scs.getCoinDispensers();
             banknoteStorage = scs.getBanknoteStorage();
             coinStorage = scs.getCoinStorage();
+            isOpen = true;
         }
         else {
             throw new NotDisabledSessionException("Session is not disabled!");
@@ -104,28 +112,41 @@ public class MaintenanceManager {
      * Simulates placing coins within a Coin Dispenser
      * @param cd the denomination of the Coin Dispenser
      * @param coins the coins to be placed inside
+     * @throws IncorrectDenominationException when the denomination of an input coin does not match the denomination of the Dispenser
+     * @throws ClosedHardwareException if hardware is not open
      */
-    public void addCoins(BigDecimal cd, Coin... coins) throws IncorrectDenominationException {
-        if (coinDenominations.contains(cd)) {
-            for (Coin c : coins) {
-                if (c.getValue() != cd) {
-                    throw new IncorrectDenominationException("Incorrect coin was input!");
+    public void addCoins(BigDecimal cd, Coin... coins) throws IncorrectDenominationException, ClosedHardwareException {
+        if (isOpen) {
+            if (coinDenominations.contains(cd)) {
+                for (Coin c : coins) {
+                    if (c.getValue() != cd) {
+                        throw new IncorrectDenominationException("Incorrect coin was input!");
+                    }
+                }
+                try {
+                    coinDispensers.get(cd).load(coins);
+                } catch (CashOverloadException e) {
+                    throw new RuntimeException(e);
                 }
             }
-            try {
-                coinDispensers.get(cd).load(coins);
-            } catch (CashOverloadException e) {
-                throw new RuntimeException(e);
-            }
+        }
+        else {
+            throw new ClosedHardwareException("Hardware is closed!");
         }
     }
 
     /**
      * Simulates removing coins from Coin Storage
      * @return the coins that are removed
+     * @throws ClosedHardwareException if hardware is not open
      */
-    public List<Coin> removeCoins() {
-        return coinStorage.unload();
+    public List<Coin> removeCoins() throws ClosedHardwareException {
+        if (isOpen) {
+            return coinStorage.unload();
+        }
+        else {
+            throw new ClosedHardwareException("Hardware is closed!");
+        }
     }
 
     /**
@@ -147,28 +168,40 @@ public class MaintenanceManager {
      * @param bd denomination of the specified Banknote Dispenser
      * @param banknotes banknotes to be added to the dispenser
      * @throws IncorrectDenominationException if an incorrect banknote denomination is attempted to be input
+     * @throws ClosedHardwareException if station is not open
      */
-    public void addBanknotes(BigDecimal bd, Banknote... banknotes) throws IncorrectDenominationException {
-        if (verifyBanknoteDenomination(bd)) {
-            for (Banknote b : banknotes) {
-                if (b.getDenomination() != bd) {
-                    throw new IncorrectDenominationException("Incorrect banknote was input!");
+    public void addBanknotes(BigDecimal bd, Banknote... banknotes) throws IncorrectDenominationException, ClosedHardwareException {
+        if (isOpen) {
+            if (verifyBanknoteDenomination(bd) && isOpen) {
+                for (Banknote b : banknotes) {
+                    if (b.getDenomination() != bd) {
+                        throw new IncorrectDenominationException("Incorrect banknote was input!");
+                    }
+                }
+                try {
+                    banknoteDispensers.get(bd).load(banknotes);
+                } catch (CashOverloadException e) {
+                    throw new RuntimeException(e);
                 }
             }
-            try {
-                banknoteDispensers.get(bd).load(banknotes);
-            } catch (CashOverloadException e) {
-                throw new RuntimeException(e);
-            }
+        }
+        else {
+            throw new ClosedHardwareException("Hardware is closed!");
         }
     }
 
     /**
      * Simulates removing banknotes from Banknote Storage
      * @return the removed banknotes
+     * @throws ClosedHardwareException if the hardware is not open
      */
-    public List<Banknote> removeBanknotes() {
-        return banknoteStorage.unload();
+    public List<Banknote> removeBanknotes() throws ClosedHardwareException {
+        if (isOpen) {
+            return banknoteStorage.unload();
+        }
+        else {
+            throw new ClosedHardwareException("Hardware is closed!");
+        }
     }
 
     /**
@@ -184,6 +217,7 @@ public class MaintenanceManager {
         receiptPrinter = null;
         banknoteDispensers = null;
         coinDispensers = null;
+        isOpen = false;
     }
 
 
