@@ -45,7 +45,7 @@ import java.awt.Insets;
 
 public class HardwareGUI {
 	private AbstractSelfCheckoutStation scs;
-	private JFrame hardwareFrame;
+	private static JFrame hardwareFrame;
 	private JPanel content;
 	private JPanel screens;
 	private JPanel cashInput;
@@ -363,11 +363,7 @@ public class HardwareGUI {
         }
     }
 	
-	public void hide() {
-    	hardwareFrame.setVisible(false);
-    }
-	
-	public void unhide() {
-		hardwareFrame.setVisible(true);
+	public static void setVisibility(boolean visibility) {
+		hardwareFrame.setVisible(visibility);
 	}
 }

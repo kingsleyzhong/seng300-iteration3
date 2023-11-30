@@ -24,10 +24,14 @@ public class CardPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	private Card cardSelected;
+	private String cardSelectedString = "Credit Card";
 	private Card debitCard;
 	private Card creditCard;
 	private Card invalidCard;
 	private Card membershipCard;
+	
+	private JLabel infoLabel;
+	private JPanel panel2;
 	/**
 	 * Create the panel.
 	 */
@@ -54,6 +58,7 @@ public class CardPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cardSelected = creditCard;
+				cardSelectedString = "Credit Card";
 				updateSelection();
 			}
 			
@@ -66,6 +71,7 @@ public class CardPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cardSelected = debitCard;
+				cardSelectedString = "Debit Card";
 				updateSelection();
 			}
 			
@@ -78,6 +84,7 @@ public class CardPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cardSelected = invalidCard;
+				cardSelectedString = "Invalid Card";
 				updateSelection();
 			}
 			
@@ -90,20 +97,25 @@ public class CardPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cardSelected = membershipCard;
+				cardSelectedString = "Membership Card";
 				updateSelection();
 			}
 			
 		});
 		panel.add(membershipCardButton);
 		
-		JPanel panel2 = new JPanel();
+		panel2 = new JPanel();
 		panel2.setBackground(Colors.color1);
 		add(panel2);
+		
+		infoLabel = new JLabel("Card Selected:\n" + cardSelectedString);
+		panel2.add(infoLabel);
 	}
 	
 	protected void updateSelection() {
-		// TODO Auto-generated method stub
-		
+		String s = "Card Selected:\n" + cardSelectedString;
+		infoLabel.setText(s);
+		infoLabel.revalidate();
 	}
 
 	public void setupCardData() {
@@ -138,5 +150,7 @@ public class CardPanel extends JPanel {
 		ci2.addCardData(creditCard.number, creditCard.cardholder, exp, creditCard.cvv, 7500);
 		ci3.addCardData("0", invalidCard.cardholder, exp, invalidCard.cvv, 1000);
 		ci4.addCardData(membershipCard.number, membershipCard.cardholder, exp, membershipCard.cvv, 2000);
+		
+		cardSelected = creditCard;
 	}
 }

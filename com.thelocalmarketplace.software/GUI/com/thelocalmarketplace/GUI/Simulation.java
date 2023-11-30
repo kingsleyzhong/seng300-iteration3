@@ -58,7 +58,7 @@ public class Simulation {
 		softwareGUI = new SoftwareGUI(session);
 		
 		// hidden by default
-		hardwareGUI.hide();
+		HardwareGUI.setVisibility(false);
 	}
 	
 	/**
@@ -75,6 +75,6 @@ public class Simulation {
 	}
 	
 	public void unhide() {
-		hardwareGUI.unhide();
+		HardwareGUI.setVisibility(true);
 	}
 }
