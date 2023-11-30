@@ -328,8 +328,6 @@ public class Session {
 		this.scs = scs;
 		this.predictor = new IssuePredictor();
 		this.predictor.register(new PredictIssueListener());
-		
-		predictionCheck();
 	}
 	
 	private void predictionCheck() {

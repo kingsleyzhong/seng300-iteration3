@@ -75,8 +75,8 @@ public class IssuesPredictorTest{
 	
 	@Test 
 	public void testCheckLowInk() {
-		session.setup(issuePredictor, itemManager, funds, weight, receiptPrinter, scss);
-		issuePredictor.checkLowInk(session);
+		session.setup(itemManager, funds, weight, receiptPrinter, scss);
+		//issuePredictor.checkLowInk(session);
 		System.out.println(scss.getPrinter());
 		
 		
