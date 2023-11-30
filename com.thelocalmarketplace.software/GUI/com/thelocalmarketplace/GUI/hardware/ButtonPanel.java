@@ -6,10 +6,13 @@ import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
+
+import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
 
 public class ButtonPanel extends JPanel implements ActionListener {
 	JButton mainScanner;
@@ -41,7 +44,7 @@ public class ButtonPanel extends JPanel implements ActionListener {
 		coinTray.addActionListener(this);
 		banknoteOutput = new PlainButton("Banknote Output", Colors.color4);
 		banknoteOutput.addActionListener(this);
-		receiptPrinter = new PlainButton("Receipt Printer", Colors.color4);
+		receiptPrinter = new PlainButton("Collect Receipt", Colors.color4);
 		receiptPrinter.addActionListener(this);
 		cardDevice = new PlainButton("Card Device", Colors.color4);
 		cardDevice.addActionListener(this);
@@ -54,7 +57,7 @@ public class ButtonPanel extends JPanel implements ActionListener {
 		startButton.addActionListener(this);
 		
 		this.setBackground(Colors.color2);
-		GridLayout layout = new GridLayout(2,0,0,0);
+		GridLayout layout = new GridLayout(0,5,0,0);
 		layout.setHgap(20);
 		layout.setVgap(20);
 		this.setLayout(layout);
@@ -68,14 +71,9 @@ public class ButtonPanel extends JPanel implements ActionListener {
 		this.repaint();
 		
 		this.add(mainScanner);
-		this.add(coinSlot);
-		this.add(coinTray);
+		this.add(handheldScanner);
 		this.add(receiptPrinter);
 		this.add(sessionScreen);
-		this.add(handheldScanner);
-		this.add(banknoteInput);
-		this.add(banknoteOutput);
-		this.add(cardDevice);
 		this.add(attendantScreen);
 		this.revalidate();
 	}
@@ -92,6 +90,15 @@ public class ButtonPanel extends JPanel implements ActionListener {
 		}
 		else if(e.getSource() == handheldScanner) {
 			gui.handScan();
+		}
+		else if(e.getSource() == receiptPrinter) {
+			String receipt = "";
+			try {
+				receipt = gui.getStation().getPrinter().removeReceipt();
+				JOptionPane.showMessageDialog(null, receipt);
+			} catch(InvalidArgumentSimulationException e1) {
+				JOptionPane.showMessageDialog(null, "There is no receipt to collect.");
+			}
 		}
 		else if(e.getSource() == sessionScreen) {
 			gui.getStation().getScreen().getFrame().setVisible(true);

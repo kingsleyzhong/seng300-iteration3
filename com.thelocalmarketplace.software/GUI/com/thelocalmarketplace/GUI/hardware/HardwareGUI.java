@@ -83,8 +83,7 @@ public class HardwareGUI {
 		hardwareFrame = new JFrame();
 		hardwareFrame.setTitle("Hardware GUI");
 		hardwareFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		hardwareFrame.setSize(new Dimension(width, height));
-		//hardwareFrame.setSize(screenSize);
+		hardwareFrame.getContentPane().setBackground(Colors.color1);
 		hardwareFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		hardwareFrame.getContentPane().setLayout(new BorderLayout(0, 0));
 		hardwareFrame.getContentPane().setBackground(Colors.color1);
@@ -100,14 +99,14 @@ public class HardwareGUI {
 		cashInput = new JPanel();
 		cashInput.setBackground(Colors.color1);
 		
-		card = new JPanel();
+		card = new CardPanel();
 		card.setBackground(Colors.color1);
 		
 		screens = new JPanel();
 		screens.setLayout(new GridLayout(0,1));
+		screens.setBackground(Colors.color1);
 		screens.add(cashInput);
 		screens.add(card);
-		screens.setBorder(BorderFactory.createEmptyBorder());
 		
 		hardwareFrame.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
 		hardwareFrame.getContentPane().add(content, BorderLayout.CENTER);
@@ -136,16 +135,6 @@ public class HardwareGUI {
 		layout.setHgap(20);
 		panel.setLayout(layout);
 		panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-		JButton addButton = new PlainButton("+", Colors.color4);
-		addButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-		});
 		cartPanel = itemPanel("Items in cart", cartList);
 		JPanel panel2 = new JPanel();
 		panel2.setBackground(Colors.color1);
@@ -221,6 +210,7 @@ public class HardwareGUI {
 		list.setTransferHandler(new ListTransferHandler());
 		list.setMinimumSize(new Dimension(20,20));
 		list.setName(title);
+		list.setBackground(Colors.color3);
 		items.add(new JScrollPane(list));
 		
 
