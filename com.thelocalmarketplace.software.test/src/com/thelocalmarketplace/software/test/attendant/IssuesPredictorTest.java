@@ -9,6 +9,7 @@ import com.jjjwelectronics.scale.IElectronicScale;
 import com.jjjwelectronics.scanner.Barcode;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.hardware.SelfCheckoutStationSilver;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.attendant.IssuePredictor;
@@ -18,7 +19,9 @@ import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.test.AbstractTest;
 import com.thelocalmarketplace.software.weight.Weight;
 
-public class IssuesPredictorTest extends AbstractTest{
+import powerutility.PowerGrid;
+
+public class IssuesPredictorTest{
 
 	private Session session;
 	byte num;
@@ -33,14 +36,23 @@ public class IssuesPredictorTest extends AbstractTest{
 	private Weight weight;
 	private Receipt receiptPrinter;
 	private IssuePredictor issuePredictor;
+	private SelfCheckoutStationSilver scss;
+	private PowerGrid powerGrid;
 
-	public IssuesPredictorTest(String testName, AbstractSelfCheckoutStation scs) {
-		super(testName, scs);
-	}
+//	public IssuesPredictorTest(String testName, AbstractSelfCheckoutStation scs) {
+//		super(testName, scs);
+//	}
 	
 	@Before
 	public void setUp() {
-		basicDefaultSetup();
+		AbstractSelfCheckoutStation.resetConfigurationToDefaults();
+    	PowerGrid.engageUninterruptiblePowerSource();
+    	powerGrid = PowerGrid.instance();
+    	scss = new SelfCheckoutStationSilver();
+    	
+    	scss.plugIn(powerGrid);
+		scss.turnOn();
+		
 		
 		session = new Session();
         num = 1;
@@ -50,21 +62,22 @@ public class IssuesPredictorTest extends AbstractTest{
         barcode2 = new Barcode(new Numeral[] { numeral });
         product = new BarcodedProduct(barcode, "Sample Product", 10, 100.0);
         product2 = new BarcodedProduct(barcode2, "Sample Product 2", 15, 20.0);
-        funds = new Funds(scs);
+        funds = new Funds(scss);
         itemManager = new ItemManager(session);
 
-        IElectronicScale baggingArea = scs.getBaggingArea();
+        IElectronicScale baggingArea = scss.getBaggingArea();
         weight = new Weight(baggingArea);
 
-        IReceiptPrinter printer = scs.getPrinter();
+        IReceiptPrinter printer = scss.getPrinter();
         receiptPrinter = new Receipt(printer);
+        issuePredictor = new IssuePredictor();
 	}
 	
-	@Test
+	@Test 
 	public void testCheckLowInk() {
-		session.setup(itemManager, funds, weight, receiptPrinter, scs);
-		IssuePredictor issuePredictor = new IssuePredictor(session);
-		issuePredictor.checkLowInk();
+		session.setup(issuePredictor, itemManager, funds, weight, receiptPrinter, scss);
+		issuePredictor.checkLowInk(session);
+		System.out.println(scss.getPrinter());
 		
 		
 	}
