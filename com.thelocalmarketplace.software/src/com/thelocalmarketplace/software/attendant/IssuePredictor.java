@@ -50,7 +50,6 @@ import com.thelocalmarketplace.software.receipt.ReceiptListener;
 public class IssuePredictor  {
 	public ArrayList<IssuePredictorListener> listeners = new ArrayList<>();
 
-	private Session s;
 	private IReceiptPrinter receiptPrinter;
 	private CoinStorageUnit coinStorage;
 	private BanknoteStorageUnit banknoteStorage;
@@ -60,13 +59,7 @@ public class IssuePredictor  {
 	private SessionState state;
 	
 	
-	public IssuePredictor(Session s) {
-		this.s = s;
-		receiptPrinter = s.getStation().getPrinter();
-		coinStorage = s.getStation().getCoinStorage();
-		banknoteStorage = s.getStation().getBanknoteStorage();
-		banknoteDispensers = s.getStation().getBanknoteDispensers();
-		coinDispensers = s.getStation().getCoinDispensers();
+	public IssuePredictor() {
 	}
 	
 	/*
@@ -74,8 +67,10 @@ public class IssuePredictor  {
 	 * The current amount of ink in the printer should be above 
 	 * a threshold = N/A. If an issue is found, announce a low ink event.
 	 */
-    public void checkLowInk() {
+    public void checkLowInk(Session s) {
+    	receiptPrinter = s.getStation().getPrinter();
     	state = s.getState();
+    	
     	if (!(state == SessionState.PRE_SESSION)) 
     		return;
     	
@@ -109,8 +104,10 @@ public class IssuePredictor  {
      * above a threshold = N/A. If an issue is found, announce 
      * a low paper event.
      */
-    public void checkLowPaper() {
+    public void checkLowPaper(Session s) {
+    	receiptPrinter = s.getStation().getPrinter();
     	state = s.getState();
+    	
     	if (!(state == SessionState.PRE_SESSION)) 
     		return;
     		
@@ -144,7 +141,8 @@ public class IssuePredictor  {
      * should be above a threshold = N/A. If an issue is found, 
      * announce a low coins event
      */
-    public void checkLowCoins() {
+    public void checkLowCoins(Session s) {
+    	coinDispensers = s.getStation().getCoinDispensers();
     	state = s.getState();
     	
 		if (!(state == SessionState.PRE_SESSION)) 
@@ -162,7 +160,8 @@ public class IssuePredictor  {
      * should be above a threshold = N/A. If an issue is found, announce
      * a low banknotes event.
      */
-    public void checkLowBanknotes() {
+    public void checkLowBanknotes(Session s) {
+    	banknoteDispensers = s.getStation().getBanknoteDispensers();
     	state = s.getState();
     	
     	if (!(state == SessionState.PRE_SESSION))  
@@ -189,7 +188,8 @@ public class IssuePredictor  {
      * amount of coins in the storage unit should be below a threshold = N/A.
      * If an issue is found, announce a coins full event.
      */
-    public void checkCoinsFull() {
+    public void checkCoinsFull(Session s) {
+    	coinStorage = s.getStation().getCoinStorage();
     	state = s.getState();
     	
     	if (!(state == SessionState.PRE_SESSION)) 
@@ -205,7 +205,8 @@ public class IssuePredictor  {
      * current amount of banknotes in the storage unit should be below a 
      * threshold = N/A. If an issue is found, announce a banknotes full event.
      */
-    public void checkBanknotesFull() {
+    public void checkBanknotesFull(Session s) {
+    	banknoteStorage = s.getStation().getBanknoteStorage();
     	state = s.getState();
     	
     	if (!(state == SessionState.PRE_SESSION)) 
