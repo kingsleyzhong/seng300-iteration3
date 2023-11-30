@@ -35,8 +35,9 @@ public enum SessionState {
     ADDING_BAGS(false), // User signaled they want to add bags to the bagging area
     BULKY_ITEM(false), // User signaled they don't want to bag an item
     PAY_BY_CASH(true), // User signaled they want to pay using cash (one of the pay states)
-    PAY_BY_CARD(true);// User signaled they want to pay by card (one of the pay states)
+    PAY_BY_CARD(true),// User signaled they want to pay by card (one of the pay states)
     
+    ADD_PLU_ITEM(false); //Signal customer is adding plu code item 
 	
 	
     // This is to simplify checking if the state is a pay state

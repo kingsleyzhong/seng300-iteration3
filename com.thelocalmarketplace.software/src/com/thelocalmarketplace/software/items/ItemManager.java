@@ -1,11 +1,15 @@
 package com.thelocalmarketplace.software.items;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.jjjwelectronics.Mass;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.hardware.PLUCodedItem;
+import com.thelocalmarketplace.hardware.PLUCodedProduct;
+import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.exceptions.ProductNotFoundException;
 import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
@@ -40,7 +44,7 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 
 public class ItemManager {
 	protected ArrayList<ItemListener> listeners = new ArrayList<>();
-	private HashMap<BarcodedProduct, Integer> barcodedItems = new HashMap<BarcodedProduct, Integer>();
+	private HashMap<Product, BigInteger> addedProducts = new HashMap<Product, BigInteger>(); //hashMap for both barcodedProduct and PLUCodedProduct
 	private HashMap<BarcodedProduct, Integer> bulkyItems = new HashMap<BarcodedProduct, Integer>();
 	private BarcodedProduct lastProduct;
 	private Session session;
@@ -55,7 +59,7 @@ public class ItemManager {
 	}
 
 	/**
-	 * Adds a barcoded product to the hashMap of the barcoded products. Updates the
+	 * Adds a barcoded product to the hashMap of the products. Updates the
 	 * expected weight and price
 	 * of the system based on the weight and price of the product.
 	 *
@@ -64,10 +68,10 @@ public class ItemManager {
 	 */
 	public void addItem(BarcodedProduct product) {
 		if (addItems) {
-			if (barcodedItems.containsKey(product)) {
-				barcodedItems.replace(product, barcodedItems.get(product) + 1);
+			if (addedProducts.containsKey(product)) {
+				addedProducts.replace(product, addedProducts.get(product).add(BigInteger.valueOf(1)));
 			} else {
-				barcodedItems.put(product, 1);
+				addedProducts.put(product, BigInteger.valueOf(1));
 			}
 			double weight = product.getExpectedWeight();
 			long price = product.getPrice();
@@ -75,6 +79,21 @@ public class ItemManager {
 			BigDecimal itemPrice = new BigDecimal(price);
 			lastProduct = product;
 
+			notifyItemAdded(mass, itemPrice);
+		}
+	}
+	
+	
+	//Method for adding PLU coded item
+	public void addItem(PLUCodedProduct product, Mass mass) {
+		if(addItems) {
+			addedProducts.put(product, mass.inMicrograms());
+			
+			BigDecimal price = new BigDecimal(product.getPrice());
+			final int MICROGRAM_PER_KILOGRAM = 1_000_000_000;
+			BigDecimal weightInKilogram = BigDecimal.valueOf(mass.inMicrograms().doubleValue()/MICROGRAM_PER_KILOGRAM);
+			BigDecimal itemPrice = price.multiply(weightInKilogram);
+			
 			notifyItemAdded(mass, itemPrice);
 		}
 	}
@@ -100,10 +119,10 @@ public class ItemManager {
 		Mass mass = new Mass(weight);
 		BigDecimal itemPrice = new BigDecimal(price);
 
-		if (barcodedItems.containsKey(product) && barcodedItems.get(product) > 1) {
-			barcodedItems.replace(product, barcodedItems.get(product) - 1);
-		} else if (barcodedItems.containsKey(product) && barcodedItems.get(product) == 1) {
-			barcodedItems.remove(product);
+		if (addedProducts.containsKey(product) && addedProducts.get(product).intValue() > 1) {
+			addedProducts.replace(product, addedProducts.get(product).subtract(BigInteger.valueOf(1)));
+		} else if (addedProducts.containsKey(product) && addedProducts.get(product).intValue() == 1) {
+			addedProducts.remove(product);
 		} else {
 			throw new ProductNotFoundException("Item not found");
 		}
@@ -151,8 +170,8 @@ public class ItemManager {
 		listeners.add(listener);
 	}
 
-	public HashMap<BarcodedProduct, Integer> getItems() {
-		return barcodedItems;
+	public HashMap<Product, BigInteger> getItems() {
+		return addedProducts;
 	}
 
 	public HashMap<BarcodedProduct, Integer> getBulkyItems() {

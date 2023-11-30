@@ -1,6 +1,7 @@
 package com.thelocalmarketplace.software;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +14,8 @@ import com.tdc.banknote.BanknoteInsertionSlot;
 import com.tdc.coin.CoinSlot;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.hardware.PriceLookUpCode;
+import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
 import com.thelocalmarketplace.software.funds.Funds;
@@ -69,6 +72,7 @@ public class Session {
 	private SessionState sessionState;
 	private SessionState prevState;
 	private BarcodedProduct lastProduct;
+	private PriceLookUpCode lastPLUcode;
 	private Funds funds;
 	private Weight weight;
 	private ItemManager manager;
@@ -76,6 +80,17 @@ public class Session {
 	private Requests request = Requests.NO_REQUEST;
 	private boolean requestApproved = false;
 
+	
+	public PriceLookUpCode getLastPLUcode() {
+		return lastPLUcode;
+	}
+
+
+	
+	public void setLastPLUcode(PriceLookUpCode lastPLUcode) {
+		this.lastPLUcode = lastPLUcode;
+	}
+	
 	private class ItemManagerListener implements ItemListener {
 
 		@Override
@@ -353,7 +368,13 @@ public class Session {
 		// attendant.getRequest(request);
 		attendantApprove(request);
 	}
-
+	
+	//GUI called this method when customer enter a PLU code
+	public void addPLUCodedItem(PriceLookUpCode code) {
+		this.setLastPLUcode(code);
+		sessionState = SessionState.ADD_PLU_ITEM;
+	}
+	
 	/**
 	 * getter methods
 	 */
@@ -361,7 +382,7 @@ public class Session {
 		return this.requestApproved;
 	}
 
-	public HashMap<BarcodedProduct, Integer> getBarcodedItems() {
+	public HashMap<Product, BigInteger> getItems() {
 		return manager.getItems();
 	}
 
