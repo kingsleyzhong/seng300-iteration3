@@ -4,6 +4,8 @@ import java.awt.GridLayout;
 
 import javax.swing.JPanel;
 
+import com.tdc.CashOverloadException;
+import com.tdc.DisabledException;
 import com.tdc.banknote.Banknote;
 import com.tdc.coin.Coin;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
@@ -11,6 +13,7 @@ import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 
 import java.awt.Color;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.border.LineBorder;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
@@ -70,6 +73,11 @@ public class CashPanel extends JPanel{
 		JButton btnBill = new JButton("5$ Bill");
 		btnBill.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				try {
+					scs.getBanknoteInput().receive(Five_Dollar_Bill);
+				} catch (DisabledException | CashOverloadException e1) {
+					JOptionPane.showMessageDialog(null, "Bill Not Accepted");
+				}
 			}
 		});
 		Bills.add(btnBill);
