@@ -36,7 +36,6 @@ public enum SessionState {
     BULKY_ITEM(false), // User signaled they don't want to bag an item
     PAY_BY_CASH(true), // User signaled they want to pay using cash (one of the pay states)
     PAY_BY_CARD(true);// User signaled they want to pay by card (one of the pay states)
-    
 	
 	
     // This is to simplify checking if the state is a pay state

@@ -13,6 +13,8 @@ import com.tdc.banknote.BanknoteInsertionSlot;
 import com.tdc.coin.CoinSlot;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.software.attendant.PredictionManager;
+import com.thelocalmarketplace.software.attendant.PredictionListener;
 import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
 import com.thelocalmarketplace.software.funds.Funds;
@@ -73,6 +75,7 @@ public class Session {
 	private Weight weight;
 	private ItemManager manager;
 	private Receipt receiptPrinter;
+	private PredictionManager predictionManager;
 	private boolean requestApproved = false;
 
 	private class ItemManagerListener implements ItemListener {
@@ -89,6 +92,45 @@ public class Session {
 			funds.removeItemPrice(price);
 		}
 
+	}
+	
+	private class PredictIssueListener implements PredictionListener {
+
+		@Override
+		public void notifyPredictLowInk() {
+			notifyAttendant(Requests.LOW_INK);
+			block();
+		}
+
+		@Override
+		public void notifyPredictLowPaper() {
+			notifyAttendant(Requests.LOW_PAPER);
+			block();
+		}
+
+		@Override
+		public void notifyPredictCoinsFull() {
+			notifyAttendant(Requests.COINS_FULL);
+			block();
+		}
+
+		@Override
+		public void notifyPredictBanknotesFull() {
+			notifyAttendant(Requests.BANKNOTES_FULL);
+			block();
+		}
+
+		@Override
+		public void notifyPredictLowCoins() {
+			notifyAttendant(Requests.LOW_COINS);
+			block();
+		}
+
+		@Override
+		public void notifyPredictLowBanknotes() {
+			notifyAttendant(Requests.LOW_BANKNOTES);
+			block();
+		}
 	}
 
 	private class WeightDiscrepancyListener implements WeightListener {
@@ -238,17 +280,21 @@ public class Session {
 	 * @param Receipt
 	 *                      The PrintReceipt behavior
 	 */
-	public void setup(ItemManager manager, Funds funds, Weight weight, Receipt receiptPrinter,
+	public void setup(PredictionManager predictionManager, ItemManager manager, 
+			Funds funds, Weight weight, Receipt receiptPrinter,
 			AbstractSelfCheckoutStation scs) {
 		this.manager = manager;
 		this.funds = funds;
 		this.weight = weight;
+		this.predictionManager = predictionManager;
+		this.predictionManager.register(new PredictIssueListener());
 		this.weight.register(new WeightDiscrepancyListener());
 		this.funds.register(new PayListener());
 		this.manager.register(new ItemManagerListener());
 		this.receiptPrinter = receiptPrinter;
 		this.receiptPrinter.register(new PrinterListener());
 		this.scs = scs;
+	 
 	}
 
 	/**
