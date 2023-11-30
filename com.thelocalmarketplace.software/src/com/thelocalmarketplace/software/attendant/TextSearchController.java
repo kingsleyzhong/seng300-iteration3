@@ -1,9 +1,24 @@
 package com.thelocalmarketplace.software.attendant;
 
+import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
 import com.jjjwelectronics.IDevice;
 import com.jjjwelectronics.IDeviceListener;
 import com.jjjwelectronics.keyboard.KeyboardListener;
+import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.screen.TouchScreenListener;
+import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.hardware.PLUCodedProduct;
+import com.thelocalmarketplace.hardware.PriceLookUpCode;
+import com.thelocalmarketplace.hardware.Product;
+import com.thelocalmarketplace.hardware.external.ProductDatabases;
+import com.thelocalmarketplace.software.exceptions.InvalidActionException;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * <p>Simulation of an attendant searching for items using a physical keyboard via keyword search.</p>
@@ -34,7 +49,9 @@ import com.jjjwelectronics.screen.TouchScreenListener;
  */
 public class TextSearchController {
 	private String searchField;
+	private ArrayList<Product> searchResults = new ArrayList<>();
 	private boolean shift;
+
 	private class InnerListener implements TouchScreenListener, KeyboardListener {
 
 		@Override
@@ -65,12 +82,9 @@ public class TextSearchController {
 		public void aKeyHasBeenPressed(String label) {
 			// TODO This software must decide what is done with the key press here
 			// This will only do something for meta keys like shift
+			// Only meta keys trigger something in this model
 			if (label.equals("Shift (Right)") || label.equals("Shift (Left)")) {
 				shift = true;
-//			} else if (escape key) {
-//				// If escape does anything without being released
-//			} else if (enter key) {
-//				// If enter does anything without being released
 			} else {
 				//Do nothing? Unfortunately we can't make this realistic so every key actions on release
 			}
@@ -81,18 +95,17 @@ public class TextSearchController {
 		public void aKeyHasBeenReleased(String label) {
 			// TODO This software must decide what is done when the key is released here
 			// We could have something like:
-			if (yada yada yada && !shift){
-				// This is a caharacter key with shift not pressed
+			if (label.equals("WHAT GOES HERE?") && !shift){
+				// This is a character key with shift not pressed
 
 				searchField += label;
-			} else if (yada yada yada && shift) {
-					// This is a character key with shift pressed
+			} else if (label.equals("WHAT GOES HERE?") && shift){
+				// This is a character key with shift pressed
 
-					searchField += label; // Will need
-//			} else if (escape key) {
-//				// Cancel the search event? These kinds of key press events usually are actioned on release
-//			} else if (enter key) {
-//				// textSearchProduct(searchField); // These kinds of key press events usually are actioned on release
+				searchField += label.charAt(label.length() - 1); // Does this work?
+			} else if (label.equals("Escape")) {
+				searchField = "";
+				// Cancel the search event? These kinds of key press events usually are actioned on release
 			} else if (label.equals("Shift (Right)") || label.equals("Shift (Left)")) {
 				shift = false;
 			} else if (label.equals("Enter")) {
@@ -104,8 +117,50 @@ public class TextSearchController {
 		}
 	}
 
-	 private void textSearchProduct(String label) {
-//		 This is some kind of method that may action the search
-//		 TBD how this will work
-	 }
+	private ArrayList<Product> textSearchProduct(String label) {
+		// This is some kind of method that may action the search
+		// WIP!!
+
+		ArrayList<Product> searchResults = new ArrayList<>();
+//		Map<Barcode, BarcodedProduct> database = ProductDatabases.INVENTORY;
+		Map<Barcode, BarcodedProduct> databaseBC = ProductDatabases.BARCODED_PRODUCT_DATABASE;
+		Map<PriceLookUpCode, PLUCodedProduct> databasePLU = ProductDatabases.PLU_PRODUCT_DATABASE;
+
+		Pattern regexPattern = Pattern.compile(label, Pattern.CASE_INSENSITIVE);
+
+		// Products in INVENTORY?
+		// Now why may this not work the same way?
+//		for (HashMap.Entry<Product, Integer> entry: database.entrySet()) {
+//			String itemQuery = database.get(entry.getValue()).getDescription();
+//			Matcher regexMatcher = regexPattern.matcher(itemQuery);
+//			if (regexMatcher.find()) {
+//				searchResults.add(entry.getValue());
+//			}
+//		}
+
+		// Barcoded Products?
+		for (HashMap.Entry<Barcode, BarcodedProduct> entry: databaseBC.entrySet()) {
+			String itemQuery = databaseBC.get(entry.getValue()).getDescription();
+			Matcher regexMatcher = regexPattern.matcher(itemQuery);
+			if (regexMatcher.find()) {
+				searchResults.add(entry.getValue());
+			}
+		}
+
+  		// Products with PLU?
+		for (HashMap.Entry<PriceLookUpCode, PLUCodedProduct> entry: databasePLU.entrySet()) {
+			String itemQuery = databasePLU.get(entry.getValue()).getDescription();
+			Matcher regexMatcher = regexPattern.matcher(itemQuery);
+			if (regexMatcher.find()) {
+				searchResults.add(entry.getValue());
+			}
+		}
+
+		if (searchResults == null){
+			throw new InvalidActionException("No Results");
+		} else {
+			return searchResults;
+		}
+
+	}
 }
