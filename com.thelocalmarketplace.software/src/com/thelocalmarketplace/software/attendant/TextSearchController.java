@@ -88,32 +88,38 @@ public class TextSearchController {
 			} else {
 				//Do nothing? Unfortunately we can't make this realistic so every key actions on release
 			}
-			// Note this is very rough/inaccurate implementation
 		}
 
 		@Override
 		public void aKeyHasBeenReleased(String label) {
 			// TODO This software must decide what is done when the key is released here
 			// We could have something like:
-			if (label.equals("WHAT GOES HERE?") && !shift){
-				// This is a character key with shift not pressed
+			if (label.length() == 1 && !shift){
+				searchField += label.toLowerCase();
 
+			} else if (label.length() == 1 && shift){
 				searchField += label;
-			} else if (label.equals("WHAT GOES HERE?") && shift){
-				// This is a character key with shift pressed
 
-				searchField += label.charAt(label.length() - 1); // Does this work?
-			} else if (label.equals("Escape")) {
+			} else if (label.length() == 3 && !shift){
+				searchField += label.charAt(0); // Does this work?
+
+			} else if (label.length() == 3 && shift){
+				searchField += label.charAt(2); // Does this work?
+
+			} else if (label.equals("Spacebar")){
+				searchField += " ";
+
+			} else if (label.equals("FnLock Esc")) {
 				searchField = "";
-				// Cancel the search event? These kinds of key press events usually are actioned on release
+
 			} else if (label.equals("Shift (Right)") || label.equals("Shift (Left)")) {
 				shift = false;
+
 			} else if (label.equals("Enter")) {
 				textSearchProduct(label);
 			} else {
 				//Do nothing? These are keys that are not characters and do not have bindings in the software
 			}
-			// Note this is very rough/inaccurate implementation
 		}
 	}
 
