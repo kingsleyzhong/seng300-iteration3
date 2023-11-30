@@ -2,6 +2,7 @@
 
 **/.metadata/*
 **/.vscode/*
+**/.idea/*
 **/bin/*
 seng300-iteration3.iws
 seng300-iteration3.ipr
