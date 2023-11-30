@@ -12,6 +12,7 @@ import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.attendant.Attendant;
+import com.thelocalmarketplace.software.attendant.IssuePredictor;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.funds.PayByCard;
 import com.thelocalmarketplace.software.funds.PayByCash;
@@ -87,13 +88,14 @@ public class SelfCheckoutStationLogic {
 		session = new Session();
 		attendant.registerOn(session);
 		Funds funds = new Funds(scs);
+		IssuePredictor predictionManager = new IssuePredictor();
 		new PayByCash(scs.getCoinValidator(), scs.getBanknoteValidator(), funds);
 		new PayByCard(scs.getCardReader(), funds);
 		Weight weight = new Weight(scs.getBaggingArea());
 		Receipt receiptPrinter = new Receipt(scs.getPrinter());
 		ItemManager itemManager = new ItemManager(session); 
 		// Will also need the touch screen/ keyboard for GUI interaction
-		session.setup(itemManager, funds, weight, receiptPrinter, scs); 
+		session.setup(predictionManager, itemManager, funds, weight, receiptPrinter, scs); 
 		new ItemAddedRule(scs.getMainScanner(), scs.getHandheldScanner(), itemManager);
 	}
 	
