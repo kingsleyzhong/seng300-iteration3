@@ -1,12 +1,17 @@
 package com.thelocalmarketplace.software.attendant;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Map;
 
 import com.jjjwelectronics.printer.IReceiptPrinter;
 import com.tdc.banknote.BanknoteDispensationSlot;
 import com.tdc.banknote.BanknoteStorageUnit;
+import com.tdc.banknote.IBanknoteDispenser;
+import com.tdc.coin.AbstractCoinDispenser;
 import com.tdc.coin.CoinSlot;
 import com.tdc.coin.CoinStorageUnit;
+import com.tdc.coin.ICoinDispenser;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.receipt.ReceiptListener;
@@ -41,10 +46,10 @@ public abstract class PredictionManager  {
 
 	private Session s;
 	private IReceiptPrinter receiptPrinter;
-	private CoinSlot coinSlot;
-	private BanknoteDispensationSlot banknoteSlot;
-	private BanknoteStorageUnit banknoteStorage;
 	private CoinStorageUnit coinStorage;
+	private BanknoteStorageUnit banknoteStorage;
+	private Map<BigDecimal, IBanknoteDispenser> banknoteDispensers;
+	private Map<BigDecimal, ICoinDispenser> coinDispensers;
 	
 	private SessionState state;
 	
@@ -52,62 +57,123 @@ public abstract class PredictionManager  {
 	public PredictionManager(Session s) {
 		this.s = s;
 		receiptPrinter = s.getStation().getPrinter();
-		coinSlot = s.getStation().getCoinSlot();
-		banknoteSlot = s.getStation().getBanknoteOutput();
-		banknoteStorage = s.getStation().getBanknoteStorage();
 		coinStorage = s.getStation().getCoinStorage();
-	}
-	
-	public void signalAttendant(Requests request) {
-		// temporary thing i guess 
-
-		System.out.println(request);
-		
+		banknoteStorage = s.getStation().getBanknoteStorage();
+		banknoteDispensers = s.getStation().getBanknoteDispensers();
+		coinDispensers = s.getStation().getCoinDispensers();
 	}
 	
     public void checkLowInk() {
     	state = s.getState();
+    	
     	if (state == SessionState.PRE_SESSION) {
 	    	int currentInk = receiptPrinter.inkRemaining();
+	    	int threshold = 0; // how i get minimum from AbstractReceiptPaper??
 	    	
-	    	int threshhold = 0; // how i get minimum from AbstractReceiptPaper??
-	    	
-	    	if (currentInk <= threshhold * 0.1) {
-	    		for (PredictionListener l : listeners) 
-	    			l.notifyPredictLowInk();
-	    		
+	    	if (currentInk <= threshold * 0.1) {
+	    		notifyLowInk();
 	    	}
-	    
-    	} else {
-    		// announce session is already started 
-    	}
+    	} 
     }
     
     public void checkLowPaper() {
-    	int currentPaper = receiptPrinter.paperRemaining();
-    	int threshhold = 0;
+    	state = s.getState();
     	
-    	if (currentPaper == threshhold) {
-    		for (PredictionListener l : listeners) 
-    			l.notifyPredictLowPaper();
+    	if (state == SessionState.PRE_SESSION) {
+	    	int currentPaper = receiptPrinter.paperRemaining();
+	    	int threshold = 0;
+	    	
+	    	if (currentPaper == threshold) {
+	    		notifyLowPaper();
+	    	}
     	}
     	
     }
     
     public void checkLowCoins() {
+    	state = s.getState();
     	
+    	if (state == SessionState.PRE_SESSION) {		
+	    	for (ICoinDispenser dispenser : coinDispensers.values()) {
+	    		int currentCoins = dispenser.size();
+	    		int threshold = 0;
+	    		
+	    		if (currentCoins == threshold) {
+	    			notifyCoinsLow();
+	    		}
+	    	}
+    	}
     }
     
     public void checkLowBanknotes() {
+    	state = s.getState();
     	
+    	if (state == SessionState.PRE_SESSION) {    		
+	    	for (IBanknoteDispenser dispenser : banknoteDispensers.values()) {
+	    		int currentBanknotes = dispenser.size();
+	    		int threshold = 0;
+	    		
+	    		if (currentBanknotes == threshold) {
+	    			notifyBanknotesLow();
+	    		}
+	    	}
+    	}
     }
     
     public void checkCoinsFull() {
+    	state = s.getState();
     	
+    	if (state == SessionState.PRE_SESSION) {    		
+	    	int currentCoins = coinStorage.getCoinCount();
+	    	int threshold = coinStorage.getCapacity();
+	    	
+	    	if (currentCoins == threshold) {
+	    		notifyCoinsFull();
+	    	}
+    	}
     }
     
     public void checkBanknotesFull() {
+    	state = s.getState();
     	
+    	if (state == SessionState.PRE_SESSION) {    		
+	    	int currentCoins = banknoteStorage.getBanknoteCount();
+	    	int threshold = banknoteStorage.getCapacity();
+	    	
+	    	if (currentCoins == threshold) {
+	    		notifyBanknotesFull();
+	    	}
+    	}
+    }
+    
+    private void notifyLowInk() {
+    	for (PredictionListener l : listeners) 
+			l.notifyPredictLowInk();
+    }
+    
+    private void notifyLowPaper() {
+    	for (PredictionListener l : listeners) 
+			l.notifyPredictLowPaper();
+    }
+    
+    private void notifyCoinsLow() {
+    	for (PredictionListener l : listeners)
+			l.notifyPredictLowCoins();
+    }
+    
+    private void notifyBanknotesLow() {
+    	for (PredictionListener l : listeners)
+			l.notifyPredictLowBanknotes();
+    }
+    
+    private void notifyCoinsFull() {
+    	for (PredictionListener l : listeners) 
+			l.notifyPredictCoinsFull();
+    }
+    
+    private void notifyBanknotesFull() {
+    	for (PredictionListener l : listeners)
+			l.notifyPredictBanknotesFull();
     }
     
 	public synchronized boolean deregister(PredictionListener listener) {
