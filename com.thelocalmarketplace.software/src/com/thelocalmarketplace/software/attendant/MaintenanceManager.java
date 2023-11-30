@@ -188,40 +188,38 @@ public class MaintenanceManager {
 
 
     // Ink
-    public void refillInk(int amount) throws NotDisabledSessionException, OverloadedDevice {
+    public void refillInk(int amount) throws OverloadedDevice {
         int maxAmount = 1 << 20;
 
-        this.openHardware(session);
+        if (amount > maxAmount) {
+            throw new OverloadedDevice("Too much ink!");
+        } else if (this.receiptPrinter.inkRemaining() + amount > maxAmount) {
+            throw new OverloadedDevice("Too much ink!");
+        }  // or just fill it up to max?
 
-//        if (this.receiptPrinter.inkRemaining() == 0) {
-//            this.receiptPrinter.addInk(maxAmount);
-//        } else {
-            if (this.receiptPrinter.inkRemaining() + amount > maxAmount) {
-                throw new OverloadedDevice("Too much ink!");
-            }
-
+        try {
             this.receiptPrinter.addInk(amount);
-
-        this.closeHardware();
+        } catch (OverloadedDevice e) {
+            throw new RuntimeException(e);
+        }
 
         // inkRemaining() is not supported in ReceiptPrinterBronze
     }
 
-    public void refillPaper(int amount) throws NotDisabledSessionException, OverloadedDevice {
+    public void refillPaper(int amount) throws OverloadedDevice {
         int maxAmount = 1 << 10;
 
-        this.openHardware(session);
+        if (amount > maxAmount) {
+            throw new OverloadedDevice("Too much paper!");
+        } else if (this.receiptPrinter.paperRemaining() + amount > maxAmount) {
+            throw new OverloadedDevice("Too much paper!");
+        }  // or just fill it up to max?
 
-//        if (this.receiptPrinter.paperRemaining() == 0) {
-//            this.receiptPrinter.addPaper(maxAmount);
-//        } else {
-            if (this.receiptPrinter.paperRemaining() + amount > maxAmount) {
-                throw new OverloadedDevice("Too much paper!");
-            }
-
+        try {
             this.receiptPrinter.addPaper(amount);
-
-        this.closeHardware();
+        } catch (OverloadedDevice e) {
+            throw new RuntimeException(e);
+        }
 
         // paperRemaining() is not supported in ReceiptPrinterBronze
     }
