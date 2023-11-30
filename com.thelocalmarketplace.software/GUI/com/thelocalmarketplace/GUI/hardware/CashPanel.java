@@ -4,7 +4,11 @@ import java.awt.GridLayout;
 
 import javax.swing.JPanel;
 
+import com.tdc.banknote.Banknote;
+import com.tdc.coin.Coin;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
+import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+
 import java.awt.Color;
 import javax.swing.JLabel;
 import javax.swing.border.LineBorder;
@@ -14,16 +18,43 @@ import javax.swing.border.TitledBorder;
 import javax.swing.border.MatteBorder;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
+import java.util.Currency;
+import java.util.Locale;
 import java.awt.event.ActionEvent;
 
 public class CashPanel extends JPanel{
 	private static final long serialVersionUID = 1L;
-	
-	private JPanel panel2;
-	
+	private AbstractSelfCheckoutStation scs;
 	
 	
-	public CashPanel() {
+	//coins
+	private Coin One_Cent_Coin;
+	private Coin Five_Cent_Coin;
+	private Coin Ten_Cent_Coin;
+	private Coin TwentyFive_Cent_Coin;
+	
+	private Coin One_Dollar_Coin;
+	private Coin Two_Dollar_Coin;
+	
+	private Coin Non_Coin;
+	
+	//bills
+	private Banknote Five_Dollar_Bill;
+	private Banknote Ten_Dollar_Bill;
+	private Banknote Twenty_Dollar_Bill;
+	private Banknote Fifty_Dollar_Bill;
+	private Banknote Hundred_Dollar_Bill;
+	
+	private Banknote Non_Bill;
+	
+	
+	public CashPanel(AbstractSelfCheckoutStation scs) {
+		this.scs = scs;
+		
+		setUpCashData();
+		
+		
 		setBorder(new LineBorder(Colors.color1, 20));
 		
 		this.setBackground(Colors.color1);
@@ -74,6 +105,11 @@ public class CashPanel extends JPanel{
 		JButton button = new JButton("1¢");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
+				
+				
+				
+				
 			}
 		});
 		Coins.add(button);
@@ -112,6 +148,35 @@ public class CashPanel extends JPanel{
 		//hanging bill via popup event
 		
 		
+	
+		
+	}
+	
+	public void setUpCashData() {
+		Currency currency = Currency.getInstance(Locale.CANADA);
+		
+		One_Cent_Coin = new Coin(currency, BigDecimal.valueOf(0.01));
+		
+		Five_Cent_Coin = new Coin(currency, BigDecimal.valueOf(0.05));
+		
+		Ten_Cent_Coin  = new Coin(currency, BigDecimal.valueOf(0.10));
+		TwentyFive_Cent_Coin  = new Coin(currency, BigDecimal.valueOf(0.25));
+		
+		One_Dollar_Coin  = new Coin(currency, BigDecimal.valueOf(1.00));
+		Two_Dollar_Coin  = new Coin(currency, BigDecimal.valueOf(2.00));
+		
+		//Coin that should be rejected
+		//Coin Non_Coin  = new Coin(Currency.getInstance(Locale.CHINESE), BigDecimal.valueOf(1.05));
+		
+		//bills
+		Five_Dollar_Bill = new Banknote(currency, BigDecimal.valueOf(5.00));
+		Ten_Dollar_Bill  = new Banknote(currency, BigDecimal.valueOf(10.00));
+		Twenty_Dollar_Bill  = new Banknote(currency, BigDecimal.valueOf(20.00));
+		Fifty_Dollar_Bill  = new Banknote(currency, BigDecimal.valueOf(50.00));
+		Hundred_Dollar_Bill  = new Banknote(currency, BigDecimal.valueOf(100.00));
+		
+		//Bill that should be rejected
+		//Non_Bill  = new Banknote(Currency.getInstance( Locale.CHINESE )   , BigDecimal.valueOf(5.00));
 		
 		
 		

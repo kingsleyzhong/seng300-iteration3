@@ -96,8 +96,12 @@ public class HardwareGUI {
 		content.setLayout(new GridLayout(1,0));
 		
 		//ANTHONY FOR YOU... PLEASE ADD YOUR THINGS TO THIS SPECIFIC PANEL
-		cashInput = new CashPanel();
+		cashInput = new CashPanel(scs);
 		cashInput.setBackground(Colors.color1);
+		//ANTHONYS STUFF ABOVE
+		
+		
+		
 		
 		card = new CardPanel(scs);
 		card.setBackground(Colors.color1);
