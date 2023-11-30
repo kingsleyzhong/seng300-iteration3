@@ -26,6 +26,7 @@ import com.jjjwelectronics.screen.ITouchScreen;
 import com.thelocalmarketplace.GUI.Simulation;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
+import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
 import com.thelocalmarketplace.GUI.startscreen.StartScreenGUI;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.Product;
@@ -79,8 +80,21 @@ public class SoftwareGUI{
 		orangePanel.setBackground(Colors.color5);
 		orangePanel.setLayout(new BorderLayout());
 		
+		JButton hardwareButton = new PlainButton("Hardware GUI", Colors.color5);
+		hardwareButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				HardwareGUI.setVisibility(true);
+				
+			}
+			
+		});
+		
 		JPanel oLeft = new JPanel();
 		oLeft.setBackground(Colors.color5);
+		oLeft.setLayout(new FlowLayout());
+		oLeft.add(hardwareButton);
 		oLeft.setPreferredSize(new Dimension(width/3, height/13));
 		
 		JPanel oRight = new JPanel();

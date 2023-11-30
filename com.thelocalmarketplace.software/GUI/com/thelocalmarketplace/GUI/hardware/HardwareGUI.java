@@ -103,7 +103,7 @@ public class HardwareGUI {
 		hardwareFrame.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
 		hardwareFrame.getContentPane().add(content, BorderLayout.CENTER);
 		
-		//hardwareFrame.setUndecorated(true);
+		hardwareFrame.setUndecorated(true);
 	}
 	
 	public void populateItems() {
