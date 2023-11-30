@@ -13,6 +13,8 @@ import com.tdc.banknote.BanknoteInsertionSlot;
 import com.tdc.coin.CoinSlot;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.software.attendant.IssuePredictor;
+import com.thelocalmarketplace.software.attendant.IssuePredictorListener;
 import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
 import com.thelocalmarketplace.software.funds.Funds;
@@ -73,7 +75,7 @@ public class Session {
 	private Weight weight;
 	private ItemManager manager;
 	private Receipt receiptPrinter;
-	private Requests request = Requests.NO_REQUEST;
+	private IssuePredictor predictionManager;
 	private boolean requestApproved = false;
 	
 	private class ItemManagerListener implements ItemListener{
@@ -91,6 +93,79 @@ public class Session {
 		}
 		
 	}
+	
+	private class PredictIssueListener implements IssuePredictorListener {
+
+		@Override
+		public void notifyPredictUnsupportedFeature(Requests request) {
+			notifyAttendant(request);
+		}
+		
+		/**
+		 * Notify the attendant that a low ink issue will shortly occur.
+		 * Disable the customer station on which the issue has been predicted.
+		 */
+		@Override
+		public void notifyPredictLowInk() {
+			notifyAttendant(Requests.LOW_INK);
+			block();
+		}
+
+		/**
+		 * Notify the attendant that a low paper issue will shortly occur.
+		 * Disable the customer station on which the issue has been predicted.
+		 */
+		@Override
+		public void notifyPredictLowPaper() {
+			notifyAttendant(Requests.LOW_PAPER);
+			block();
+		}
+
+		/**
+		 * Notify the attendant that a coin storage full issue will shortly 
+		 * occur. Disable the customer station on which the issue has been 
+		 * predicted.
+		 */
+		@Override
+		public void notifyPredictCoinsFull() {
+			notifyAttendant(Requests.COINS_FULL);
+			block();
+		}
+
+		/**
+		 * Notify the attendant that a banknote storage full issue will shortly
+		 * occur. Disable the customer station on which the issue has been 
+		 * predicted.
+		 */
+		@Override
+		public void notifyPredictBanknotesFull() {
+			notifyAttendant(Requests.BANKNOTES_FULL);
+			block();
+		}
+
+		/**
+		 * Notify the attendant that a low coins in dispenser issue will 
+		 * shortly occur. Disable the customer station on which the issue 
+		 * has been predicted.
+		 */
+		@Override
+		public void notifyPredictLowCoins() {
+			notifyAttendant(Requests.LOW_COINS);
+			block();
+		}
+
+		/** 
+		 * Notify the attendant that a low banknotes in dispenser issue will
+		 * shortly occur. Disable the customer station on which the issue 
+		 * has been predicted.
+		 */
+		@Override
+		public void notifyPredictLowBanknotes() {
+			notifyAttendant(Requests.LOW_BANKNOTES);
+			block();
+		}
+
+	}
 
 	private class WeightDiscrepancyListener implements WeightListener {
 
@@ -98,8 +173,7 @@ public class Session {
 		 * Upon a weightDiscrepancy, session should freeze
 		 * 
 		 * If the Customer has declared their intention to add bags to the scale, then
-		 * checks
-		 * the bags instead.
+		 * checks the bags instead.
 		 */
 		@Override
 		public void notifyDiscrepancy() {
@@ -110,6 +184,9 @@ public class Session {
 				//instead we need another call that notifies bags too heavyS
 				return;
 			}
+			
+			// signal attendent(s)
+			notifyAttendant(Requests.WEIGHT_DISCREPANCY);			
 			block();
 		}
 
@@ -121,6 +198,15 @@ public class Session {
 			resume();
 		}
 
+		@Override
+		public void notifyBagsTooHeavy() {
+			// tell attendant
+			notifyAttendant(Requests.BAGS_TOO_HEAVY);
+			block();
+
+		}
+
+		
 	}
 
 	private class PayListener implements FundsListener {
@@ -133,6 +219,17 @@ public class Session {
 		public void notifyPaid() {
 			sessionState = SessionState.PRE_SESSION;
 		}
+		
+		/**
+		 * Called when there is not enough change (of any kind) avalaiable to handle payment
+		 */
+		@Override
+		public void notifyInsufficentChange() {
+			// notify attendant
+			notifyAttendant(Requests.CANT_MAKE_CHANGE);
+			block();
+
+		}
 
 	}
 	
@@ -140,11 +237,13 @@ public class Session {
 
 		@Override
 		public void notifiyOutOfPaper() {
+			notifyAttendant(Requests.CANT_PRINT_RECEIPT);
 			block();
 		}
 
 		@Override
 		public void notifiyOutOfInk() {
+			notifyAttendant(Requests.CANT_PRINT_RECEIPT);
 			block();
 		}
 
@@ -216,17 +315,21 @@ public class Session {
 	 * @param Receipt 
 	 * 						The PrintReceipt behavior
 	 */
-	public void setup(ItemManager manager, Funds funds, Weight weight, Receipt receiptPrinter,
+	public void setup(IssuePredictor predictionManager, ItemManager manager, 
+			Funds funds, Weight weight, Receipt receiptPrinter,
 			AbstractSelfCheckoutStation scs) {
 		this.manager = manager;
 		this.funds = funds;
 		this.weight = weight;
+		this.predictionManager = predictionManager;
+		this.predictionManager.register(new PredictIssueListener());
 		this.weight.register(new WeightDiscrepancyListener());
 		this.funds.register(new PayListener());
 		this.manager.register(new ItemManagerListener());
 		this.receiptPrinter = receiptPrinter;
 		this.receiptPrinter.register(new PrinterListener());
 		this.scs = scs;
+	 
 	}
 	
 	/**
@@ -339,10 +442,8 @@ public class Session {
 		// Only able to add when in a discrepancy after adding bags
 		if(sessionState == SessionState.BLOCKED) {
 			sessionState = SessionState.BULKY_ITEM;
-			request = Requests.BULKY_ITEM;
-			notifyAttendant();
-		}
-		else if (sessionState == SessionState.BULKY_ITEM) {
+			notifyAttendant(Requests.BULKY_ITEM);
+		} else if (sessionState == SessionState.BULKY_ITEM) {
 			if (requestApproved) {
 				requestApproved = false;
 				// subtract the bulky item weight from total weight if assistant has approved
@@ -368,10 +469,24 @@ public class Session {
 			addBulkyItem();
 		}
 	}
+
+	/**
+	 * Abstract notification method that tells any registered listeners about the request of Session.
+	 * This is done to reduce redundancy, as there are many possible requests that could be made of the attendant
+
+	 * @param request specific instance of the Requests ennum related to the current issues within Session
+	 */
+	public void notifyAttendant(Requests request) {
+		for(SessionListener l:listeners) {
+			l.getRequest(this, request);
+		}
+	}
 	
-	public void notifyAttendant() {
-		// attendant.getRequest(request);
-		attendantApprove(request);
+	/**
+	 * User demonstrates they wish to ask the attendent for help
+	 */
+	public void askForHelp() {
+		notifyAttendant(Requests.HELP_REQUESTED);
 	}
 	
 	/**

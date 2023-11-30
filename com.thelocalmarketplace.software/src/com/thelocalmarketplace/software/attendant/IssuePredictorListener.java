@@ -1,6 +1,5 @@
 package com.thelocalmarketplace.software.attendant;
-/**
- * Possible "requests" that can be sent from a Customer Session to an Attendant 
+/*
  * 
  * Project Iteration 3 Group 1
  *
@@ -26,31 +25,41 @@ package com.thelocalmarketplace.software.attendant;
  * Ethan Woo 				: 30172855 
  * Kingsley Zhong 			: 30197260 
  */
-public enum Requests {
-	// core requests based on Use case version 3
-	WEIGHT_DISCREPANCY,
-	BAGS_TOO_HEAVY,
-	BULKY_ITEM,
-	CANT_MAKE_CHANGE,
-	CANT_PRINT_RECEIPT,
-	ADD_ITEM_SEARCH,
-	HELP_REQUESTED,
-	LOW_INK,
-	LOW_PAPER,
-	COINS_FULL,
-	BANKNOTES_FULL,
-	LOW_COINS,
-	LOW_BANKNOTES,
-	LOW_INK_CHECK_UNSUPPORTED,
-	LOW_PAPER_CHECK_UNSUPPORTED,
-	LOW_BANKNOTE_CHECK_UNSUPPORTED;
+public interface IssuePredictorListener {
+	 
+	void notifyPredictUnsupportedFeature(Requests request);
 	
-	// requests that would be cool to have but arent needed for core functionality
-	// allow the Attendant to track Session better
-	// SESSION_STARTED,
-	// SESSION_ENDED,
-	// ADDED_ITEM,
-	// IS_PAYING;
+	/**
+	 * Signals an event that a low ink issue will shortly occur
+	 */
+	void notifyPredictLowInk();
 	
 	
+	/**
+	 * Signals an event that a low paper issue will shortly occur
+	 */
+	void notifyPredictLowPaper();
+	
+ 
+	/**
+	 * Signals an event that a coins full issue will shortly occur
+	 */
+	void notifyPredictCoinsFull();
+	
+	
+	/**
+	 * Signals an event that a bank notes full issue will shortly occur
+	 */
+	void notifyPredictBanknotesFull();
+	
+	/**
+	 * Signals an event that a low coins issue will shortly occur
+	 */
+	void notifyPredictLowCoins();
+	
+	/**
+	 * Signals an event that a low bank notes issue will shortly occur
+	 */
+	void notifyPredictLowBanknotes();
+
 }

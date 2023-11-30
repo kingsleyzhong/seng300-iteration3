@@ -1,9 +1,6 @@
 package com.thelocalmarketplace.software;
 
-import java.math.BigDecimal;
-
-import com.jjjwelectronics.Mass;
-import com.thelocalmarketplace.hardware.Product;
+import com.thelocalmarketplace.software.attendant.Requests;
 
 /**
  * Project Iteration 3 Group 1
@@ -28,23 +25,15 @@ import com.thelocalmarketplace.hardware.Product;
  * Thi My Tuyen Tran 		: 30193980 
  * Aoi Ueki 				: 30179305 
  * Ethan Woo 				: 30172855 
- * Kingsley Zhong 			: 30197260 
+ * Kingsley Zhong 		   	: 30197260 
  */
 
 public interface SessionListener {
-
-	void itemAdded(Product product, Mass ofProduct, Mass currentExpectedWeight, BigDecimal currentExpectedPrice);
-	
-	void itemRemoved(Product product, Mass ofProduct, Mass currentExpectedMass, BigDecimal currentExpectedPrice);
-	
-	void addItemToScaleDiscrepancy();
-	
-	void removeItemFromScaleDiscrepancy();
-	
-	void discrepancy(String message);
-	
-	void discrepancyResolved();
-	
-	void pricePaidUpdated();
-	
+	/**
+	 * Example of how getRequest could be written. It should include the request and the session the request comes from.
+	 * Not you will also have to add any of these methods to Attendent's InnerListener along with the @Override keyword
+	 * @param session
+	 * @param request
+	 */
+	public void getRequest(Session session, Requests request);
 }
