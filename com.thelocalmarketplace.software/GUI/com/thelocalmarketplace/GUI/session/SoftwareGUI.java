@@ -55,7 +55,6 @@ public class SoftwareGUI{
 	JPanel buttonPanel;
 	
 	// Buttons
-	
 	public SoftwareGUI(Session session) {
 		frame = session.getStation().getScreen().getFrame();
 		// Setting window size
