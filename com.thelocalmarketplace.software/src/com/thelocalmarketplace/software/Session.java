@@ -13,6 +13,7 @@ import com.tdc.banknote.BanknoteInsertionSlot;
 import com.tdc.coin.CoinSlot;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
 import com.thelocalmarketplace.software.funds.Funds;
@@ -79,15 +80,22 @@ public class Session {
 	private class ItemManagerListener implements ItemListener{
 
 		@Override
-		public void anItemHasBeenAdded(Mass mass, BigDecimal price) {
+		public void anItemHasBeenAdded(Product product, Mass mass, BigDecimal price) {
 			weight.update(mass);
 			funds.update(price);
+			for (SessionListener l : listeners) {
+				l.itemAdded(product, mass, weight.getExpectedWeight(), funds.getItemsPrice());
+			}
+			System.out.println("Added");
 		}
 
 		@Override
-		public void anItemHasBeenRemoved(Mass mass, BigDecimal price) {
+		public void anItemHasBeenRemoved(Product product, Mass mass, BigDecimal price) {
 			weight.removeItemWeightUpdate(mass);
 			funds.removeItemPrice(price);
+			for (SessionListener l : listeners) {
+				l.itemRemoved(product, mass, weight.getExpectedWeight(), funds.getItemsPrice());
+			}
 		}
 		
 	}

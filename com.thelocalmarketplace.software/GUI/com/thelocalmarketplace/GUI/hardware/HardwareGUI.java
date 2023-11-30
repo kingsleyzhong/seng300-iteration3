@@ -1,27 +1,13 @@
 package com.thelocalmarketplace.GUI.hardware;
 
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Transferable;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.DropMode;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -38,17 +24,10 @@ import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.scanner.BarcodedItem;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
-import com.thelocalmarketplace.GUI.customComponents.PlainButton;
-import com.thelocalmarketplace.GUI.customComponents.RoundPanel;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
-import com.thelocalmarketplace.hardware.external.ProductDatabases;
-
 import java.awt.BorderLayout;
-import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Insets;
 
 public class HardwareGUI {
 	private AbstractSelfCheckoutStation scs;
@@ -133,11 +112,11 @@ public class HardwareGUI {
 		itemsInCart.addElement(item1);
 		
 		BarcodedItem bitem2 = new BarcodedItem(new Barcode(new Numeral[] { Numeral.one}), new Mass(300.0));
-		ItemObject item2 = new ItemObject(bitem1, "Baaakini2");
+		ItemObject item2 = new ItemObject(bitem2, "Baaakini2");
 		itemsInCart.addElement(item2);
 		
 		BarcodedItem bitem3 = new BarcodedItem(new Barcode(new Numeral[] { Numeral.one}), new Mass(300.0));
-		ItemObject item3 = new ItemObject(bitem1, "Baaakini3");
+		ItemObject item3 = new ItemObject(bitem3, "Baaakini3");
 		itemsInCart.addElement(item3);
 	}
 	
@@ -191,12 +170,10 @@ public class HardwareGUI {
 
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-				addData(lastObject, importList);
-	            removeData(lastObject, exportList);
 				JList<ItemObject> list = (JList<ItemObject>) e.getSource();
 				if(list == cartList) {
-					scanningList.clearSelection();
-					baggingList.clearSelection();
+					//scanningList.clearSelection();
+					//baggingList.clearSelection();
 					int index = list.getSelectedIndex();
 					if(index == -1) {
 						lastItem = null;
@@ -205,14 +182,14 @@ public class HardwareGUI {
 						lastItem = list.getModel().getElementAt(index);
 					}
 				}
-				else if(list == scanningList) {
-					cartList.clearSelection();
-					baggingList.clearSelection();
-				}
-				else if(list == baggingList) {
-					cartList.clearSelection();
-					scanningList.clearSelection();
-				}
+				//else if(list == scanningList) {
+					//cartList.clearSelection();
+					//baggingList.clearSelection();
+				//}
+				//else if(list == baggingList) {
+				//	cartList.clearSelection();
+				//	scanningList.clearSelection();
+				//}
 			}
 			
 		});
@@ -289,7 +266,7 @@ public class HardwareGUI {
 	 * Class that handles moving ItemObjects between JLists
 	 */
 	public class ListTransferHandler extends TransferHandler {
-        private int[] indices = null;
+        private int index = -1;
         private int addIndex = -1; //Location where items were added
         private int addCount = 0;  //Number of items added.
                 
@@ -310,11 +287,9 @@ public class HardwareGUI {
          */
         protected Transferable createTransferable(JComponent c) {
             JList<ItemObject> list = (JList<ItemObject>)c;
-            indices = list.getSelectedIndices();
-            Object[] values = list.getSelectedValues();
-            
-            Object buff = values[0];
-            return ItemObject.createTransferable(buff);
+            index = list.getSelectedIndex();
+            Object value = list.getModel().getElementAt(index);
+            return ItemObject.createTransferable(value);
         }
         
         /**
@@ -346,7 +321,6 @@ public class HardwareGUI {
             if(data == null) return false;
             
             listModel.addElement(data);
-	        //addData(data, listModel);
             importList = list;
             lastObject = data;
             
@@ -362,18 +336,15 @@ public class HardwareGUI {
             ItemObject removedObject = null;
 
             if (action == TransferHandler.MOVE) {
-                for (int i = indices.length - 1; i >= 0; i--) {
-                	removedObject = listModel.elementAt(indices[i]);
-                    listModel.remove(indices[i]);
-                }
+                removedObject = listModel.elementAt(index);
+                listModel.remove(index);
             }
             exportList = source;
             
-            //addData(lastObject, importList);
-            //removeData(lastObject, source);
+            addData(lastObject, importList);
+            removeData(lastObject, exportList);
             
-            
-            indices = null;
+            index = -1;
             addCount = 0;
             addIndex = -1;
         }
