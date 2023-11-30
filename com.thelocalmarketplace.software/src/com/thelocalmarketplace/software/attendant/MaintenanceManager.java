@@ -193,15 +193,14 @@ public class MaintenanceManager {
 
         this.openHardware(session);
 
-        if (this.receiptPrinter.inkRemaining() == 0) {
-            this.receiptPrinter.addInk(maxAmount);
-        } else {
+//        if (this.receiptPrinter.inkRemaining() == 0) {
+//            this.receiptPrinter.addInk(maxAmount);
+//        } else {
             if (this.receiptPrinter.inkRemaining() + amount > maxAmount) {
                 throw new OverloadedDevice("Too much ink!");
             }
 
             this.receiptPrinter.addInk(amount);
-        }
 
         this.closeHardware();
 
@@ -213,15 +212,14 @@ public class MaintenanceManager {
 
         this.openHardware(session);
 
-        if (this.receiptPrinter.paperRemaining() == 0) {
-            this.receiptPrinter.addPaper(maxAmount);
-        } else {
+//        if (this.receiptPrinter.paperRemaining() == 0) {
+//            this.receiptPrinter.addPaper(maxAmount);
+//        } else {
             if (this.receiptPrinter.paperRemaining() + amount > maxAmount) {
                 throw new OverloadedDevice("Too much paper!");
             }
 
             this.receiptPrinter.addPaper(amount);
-        }
 
         this.closeHardware();
 
