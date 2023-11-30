@@ -55,7 +55,7 @@ public class Simulation {
 		
 		hardwareGUI = new HardwareGUI(scs);
 		//attendantGUI = new AttendantGUI(attendant, as.screen);
-		//softwareGUI = new SoftwareGUI();
+		softwareGUI = new SoftwareGUI(session);
 		
 		// hidden by default
 		hardwareGUI.hide();

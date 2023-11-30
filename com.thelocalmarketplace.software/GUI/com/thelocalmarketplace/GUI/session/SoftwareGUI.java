@@ -23,11 +23,13 @@ import javax.swing.border.Border;
 import com.jjjwelectronics.screen.ITouchScreen;
 import com.thelocalmarketplace.GUI.Simulation;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
+import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 import com.thelocalmarketplace.GUI.startscreen.StartScreenGUI;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.software.Session;
+import javax.swing.SwingConstants;
 
-public class SoftwareGUI extends JFrame implements ActionListener{
+public class SoftwareGUI{
 	JFrame frame;
 	Session session;
 	
@@ -54,17 +56,17 @@ public class SoftwareGUI extends JFrame implements ActionListener{
 	
 	// Buttons
 	
-	public SoftwareGUI() {
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+	public SoftwareGUI(Session session) {
+		frame = session.getStation().getScreen().getFrame();
 		// Setting window size
 		width = (int) screenSize.getWidth();
 		height = (int) screenSize.getHeight();
 		
-		this.setSize(width, height);
-		this.setTitle("Software GUI");
-		this.setLayout(new BorderLayout());
-		this.setVisible(true);
+		frame.setSize(width, height);
+		frame.setTitle("Software GUI");
+		frame.getContentPane().setLayout(new BorderLayout());
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		frame.setVisible(true);
 		
 		
 		// ORANGE PANEL FOR ITEM DETAILS:
@@ -110,39 +112,41 @@ public class SoftwareGUI extends JFrame implements ActionListener{
 		JPanel infoTop = new JPanel();
 		infoTop.setBackground(Colors.color4);
 		infoTop.setPreferredSize(new Dimension(width, 300));
-		infoTop.setLayout(new GridLayout(3,1));
+		infoTop.setLayout(new GridLayout(0,1,20,20));
+		infoTop.setBorder(BorderFactory.createEmptyBorder(20,50,20,50));
 	
 		JPanel infoTop1 = new JPanel();
-		infoTop1.setLayout(new FlowLayout(FlowLayout.CENTER,230,25));
+		infoTop1.setLayout(new BorderLayout());
 		infoTop1.setBackground(Colors.color4);
 		JLabel infoQtyString = new JLabel("Quantity");
 		infoQtyString.setFont(new Font("Dialog", Font.BOLD,20));
 		JLabel infoQtyNumber = new JLabel("0");
 		infoQtyNumber.setFont(new Font("Dialog", Font.BOLD,20));
-		infoTop1.add(infoQtyString);
-		infoTop1.add(infoQtyNumber);
+		infoTop1.setLayout(new BorderLayout(0, 0));
+		infoTop1.add(infoQtyString, BorderLayout.WEST);
+		infoTop1.add(infoQtyNumber, BorderLayout.EAST);
 		
 		JPanel infoTop2 = new JPanel();
 		infoTop2.setBackground(Colors.color4);
-		infoTop2.setLayout(new FlowLayout(FlowLayout.CENTER,210,50));
+		infoTop2.setLayout(new BorderLayout());
 		infoTop2.setBackground(Colors.color4);
 		JLabel infoItemString = new JLabel("Item Count");
 		infoItemString.setFont(new Font("Dialog", Font.BOLD,20));
 		JLabel infoItemNumber = new JLabel("0");
 		infoItemNumber.setFont(new Font("Dialog", Font.BOLD,20));
-		infoTop2.add(infoItemString);
-		infoTop2.add(infoItemNumber);
+		infoTop2.add(infoItemString, BorderLayout.WEST);
+		infoTop2.add(infoItemNumber, BorderLayout.EAST);
 		
 		JPanel infoTop3 = new JPanel();
 		infoTop3.setBackground(Colors.color4);
-		infoTop3.setLayout(new FlowLayout(FlowLayout.CENTER,230,50));
+		infoTop3.setLayout(new BorderLayout());
 		infoTop3.setBackground(Colors.color4);
 		JLabel infoWeightString = new JLabel("Weight");
 		infoWeightString.setFont(new Font("Dialog", Font.BOLD,20));
 		JLabel infoWeightNumber = new JLabel("0kg");
 		infoWeightNumber.setFont(new Font("Dialog", Font.BOLD,20));
-		infoTop3.add(infoWeightString);
-		infoTop3.add(infoWeightNumber);
+		infoTop3.add(infoWeightString, BorderLayout.WEST);
+		infoTop3.add(infoWeightNumber, BorderLayout.EAST);
 		
 		infoTop.add(infoTop1);
 		infoTop.add(infoTop2);
@@ -150,17 +154,23 @@ public class SoftwareGUI extends JFrame implements ActionListener{
 		
 		JPanel infoBottom = new JPanel();
 		infoBottom.setBackground(Colors.color4);
+		infoBottom.setLayout(new GridLayout(0,1));
 		infoBottom.setBorder(BorderFactory.createMatteBorder(3, 0, 0, 0, Colors.color1));
-		infoBottom.setLayout(new FlowLayout(FlowLayout.CENTER,160,75));
-		infoBottom.setPreferredSize(new Dimension(width, 200));
+		
+		JPanel infoBottomInner = new JPanel();
+		infoBottomInner.setLayout(new BorderLayout());
+		infoBottomInner.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+		infoBottomInner.setBackground(Colors.color4);
 		
 		JLabel cartTotalString = new JLabel("Cart Total");
 		cartTotalString.setFont(new Font("Dialog", Font.BOLD, 20));
 		JLabel cartTotalInDollars = new JLabel("$0.00");
 		cartTotalInDollars.setFont(new Font("Dialog", Font.BOLD,40));
 		
-		infoBottom.add(cartTotalString);
-		infoBottom.add(cartTotalInDollars);
+		infoBottomInner.add(cartTotalString, BorderLayout.WEST);
+		infoBottomInner.add(cartTotalInDollars, BorderLayout.EAST);
+		
+		infoBottom.add(infoBottomInner);
 		
 		cartInfoPanel.add(infoTop, BorderLayout.NORTH);
 		cartInfoPanel.add(infoBottom, BorderLayout.SOUTH);
@@ -184,53 +194,25 @@ public class SoftwareGUI extends JFrame implements ActionListener{
 		// BUTTON PANEL FOR BOTTOM OF SCREEN:
 		buttonPanel = new JPanel();
 		buttonPanel.setBackground(Colors.color2);
-		buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 50, height/24));
+		buttonPanel.setLayout(new GridLayout(1,0, 20,0));
 		
 		// Create buttons
-		exit = new JButton();
-		addBags = new JButton();
-		pluCode = new JButton();
-		searchCatalogue = new JButton();
-		callAttendant = new JButton();
-		pay = new JButton();
-		
-		// Set button text
-		exit.setText("Exit session");
-		addBags.setText("Add Bags");
-		pluCode.setText("<html>Enter PLU <br/>&nbsp;&nbsp;&nbsp;Code</html>");
-		searchCatalogue.setText("<html>&nbsp;&nbsp;Search <br/>Catalogue</html>");
-		callAttendant.setText("<html>&nbsp;&nbsp;&nbsp;Call <br/>Attendant</html>");
-		pay.setText("PAY");
-		
-		// Set button colors
-		exit.setBackground(Colors.color4);
-		exit.setOpaque(true);
-		exit.setBorderPainted(false);
-		addBags.setBackground(Colors.color4);
-		addBags.setOpaque(true);
-		addBags.setBorderPainted(false);
-		pluCode.setBackground(Colors.color4);
-		pluCode.setOpaque(true);
-		pluCode.setBorderPainted(false);
-		searchCatalogue.setBackground(Colors.color4);
-		searchCatalogue.setOpaque(true);
-		searchCatalogue.setBorderPainted(false);
-		callAttendant.setBackground(Colors.color4);
-		callAttendant.setOpaque(true);
-		callAttendant.setBorderPainted(false);
-		pay.setBackground(Colors.color4);
-		pay.setOpaque(true);
-		pay.setBorderPainted(false);
+		exit = new PlainButton("Exit session", Colors.color4);
+		addBags = new PlainButton("Add Bags", Colors.color4);
+		pluCode = new PlainButton("<html>Enter PLU <br/>&nbsp;&nbsp;&nbsp;Code</html>", Colors.color4);
+		searchCatalogue = new PlainButton("<html>&nbsp;&nbsp;Search <br/>Catalogue</html>", Colors.color4);
+		callAttendant = new PlainButton("<html>&nbsp;&nbsp;&nbsp;Call <br/>Attendant</html>", Colors.color4);
+		pay = new PlainButton("PAY", Colors.color4);
 	
-		// Add action listeners to buttons
-		exit.addActionListener(this);
-		addBags.addActionListener(this);
-		pluCode.addActionListener(this);
-		searchCatalogue.addActionListener(this);
-		callAttendant.addActionListener(this);
-		pay.addActionListener(this);
+		//Add action listeners to buttons
+		exit.addActionListener(new ButtonListener());
+		addBags.addActionListener(new ButtonListener());
+		pluCode.addActionListener(new ButtonListener());
+		searchCatalogue.addActionListener(new ButtonListener());
+		callAttendant.addActionListener(new ButtonListener());
+		pay.addActionListener(new ButtonListener());
 		
-		// Set button sizes
+		//Set button sizes
 		exit.setFont(new Font("Dialog", Font.BOLD, 30));
 		addBags.setFont(new Font("Dialog", Font.BOLD, 30));
 		pluCode.setFont(new Font("Dialog", Font.BOLD, 30));
@@ -246,6 +228,7 @@ public class SoftwareGUI extends JFrame implements ActionListener{
 		callAttendant.setHorizontalTextPosition(JButton.CENTER);		
 		pay.setHorizontalTextPosition(JButton.CENTER);		
 		
+		buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 		buttonPanel.add(exit);
 		buttonPanel.add(addBags);
 		buttonPanel.add(pluCode);
@@ -259,27 +242,28 @@ public class SoftwareGUI extends JFrame implements ActionListener{
 		buttonPanel.setPreferredSize(new Dimension(width, height/6));
 		
 		// ADD PANELS TO JFRAME:
-		this.add(orangePanel, BorderLayout.NORTH);
-		this.add(cartInfoPanel, BorderLayout.WEST);
-		this.add(cartItemsPanel, BorderLayout.EAST);
-		this.add(buttonPanel, BorderLayout.SOUTH);
+		frame.getContentPane().add(orangePanel, BorderLayout.NORTH);
+		frame.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+		frame.getContentPane().add(cartInfoPanel, BorderLayout.WEST);
+		frame.getContentPane().add(cartItemsPanel, BorderLayout.EAST);
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		
-	}
 	
 	public void hide() {
-    	this.setVisible(false);
+    	frame.setVisible(false);
     }
 	
 	public void unhide() {
-		this.setVisible(true);
+		frame.setVisible(true);
 	}
 	
-	public static void main(String[] args) {
-		new SoftwareGUI();
-	}
+	public class ButtonListener implements ActionListener{
 
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
 }
