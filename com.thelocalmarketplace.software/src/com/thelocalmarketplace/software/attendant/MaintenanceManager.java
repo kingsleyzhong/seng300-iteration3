@@ -1,10 +1,13 @@
 package com.thelocalmarketplace.software.attendant;
 
+import com.jjjwelectronics.OverloadedDevice;
 import com.jjjwelectronics.printer.IReceiptPrinter;
 import com.tdc.CashOverloadException;
 import com.tdc.banknote.Banknote;
+import com.tdc.banknote.BanknoteStorageUnit;
 import com.tdc.banknote.IBanknoteDispenser;
 import com.tdc.coin.Coin;
+import com.tdc.coin.CoinStorageUnit;
 import com.tdc.coin.ICoinDispenser;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.software.Session;
@@ -51,8 +54,8 @@ public class MaintenanceManager {
     private Session session;
     private BigDecimal[] banknoteDenominations;
     private List<BigDecimal> coinDenominations;
-    private ICoinDispenser openCoinDispenser;
-    private IBanknoteDispenser openBanknoteDispenser;
+    private BanknoteStorageUnit banknoteStorage;
+    private CoinStorageUnit coinStorage;
 
     /**
      * Exception class - Thrown when the attendant tries to open the hardware when it is not disabled
@@ -89,6 +92,8 @@ public class MaintenanceManager {
             receiptPrinter = scs.getPrinter();
             banknoteDispensers = scs.getBanknoteDispensers();
             coinDispensers = scs.getCoinDispensers();
+            banknoteStorage = scs.getBanknoteStorage();
+            coinStorage = scs.getCoinStorage();
         }
         else {
             throw new NotDisabledSessionException("Session is not disabled!");
@@ -116,15 +121,11 @@ public class MaintenanceManager {
     }
 
     /**
-     * Simulates removing coins from selected Banknote Dispenser
-     * @param cd the denomination of the Banknote Dispenser
+     * Simulates removing coins from Coin Storage
      * @return the coins that are removed
      */
-    public List<Coin> removeCoins(BigDecimal cd) {
-        if (coinDenominations.contains(cd)) {
-            return coinDispensers.get(cd).unload();
-        }
-        return null;
+    public List<Coin> removeCoins() {
+        return coinStorage.unload();
     }
 
     /**
@@ -163,15 +164,11 @@ public class MaintenanceManager {
     }
 
     /**
-     * Simulates removing banknotes from a specified Banknote Dispenser
-     * @param bd the denomination of the specified Banknote Dispenser
+     * Simulates removing banknotes from Banknote Storage
      * @return the removed banknotes
      */
-    public List<Banknote> removeBanknotes(BigDecimal bd) {
-        if (verifyBanknoteDenomination(bd)) {
-            return banknoteDispensers.get(bd).unload();
-        }
-        return null;
+    public List<Banknote> removeBanknotes() {
+        return banknoteStorage.unload();
     }
 
     /**
@@ -187,6 +184,46 @@ public class MaintenanceManager {
         receiptPrinter = null;
         banknoteDispensers = null;
         coinDispensers = null;
+    }
+
+
+    // Ink
+    public void refillInk(int amount) throws NotDisabledSessionException, OverloadedDevice {
+        int maxAmount = 1 << 20;
+
+        this.openHardware(session);
+
+//        if (this.receiptPrinter.inkRemaining() == 0) {
+//            this.receiptPrinter.addInk(maxAmount);
+//        } else {
+            if (this.receiptPrinter.inkRemaining() + amount > maxAmount) {
+                throw new OverloadedDevice("Too much ink!");
+            }
+
+            this.receiptPrinter.addInk(amount);
+
+        this.closeHardware();
+
+        // inkRemaining() is not supported in ReceiptPrinterBronze
+    }
+
+    public void refillPaper(int amount) throws NotDisabledSessionException, OverloadedDevice {
+        int maxAmount = 1 << 10;
+
+        this.openHardware(session);
+
+//        if (this.receiptPrinter.paperRemaining() == 0) {
+//            this.receiptPrinter.addPaper(maxAmount);
+//        } else {
+            if (this.receiptPrinter.paperRemaining() + amount > maxAmount) {
+                throw new OverloadedDevice("Too much paper!");
+            }
+
+            this.receiptPrinter.addPaper(amount);
+
+        this.closeHardware();
+
+        // paperRemaining() is not supported in ReceiptPrinterBronze
     }
 
 }
