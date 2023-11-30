@@ -188,37 +188,45 @@ public class MaintenanceManager {
 
 
     // Ink
-    public void refillInk(int amount) throws OverloadedDevice {
+    public void refillInk(int amount) {
         int maxAmount = 1 << 20;
 
-        if (amount > maxAmount) {
-            throw new OverloadedDevice("Too much ink!");
-        } else if (this.receiptPrinter.inkRemaining() + amount > maxAmount) {
-            throw new OverloadedDevice("Too much ink!");
-        }  // or just fill it up to max?
+        if (this.receiptPrinter != null) {
+//            if (amount > maxAmount) {
+//                throw new OverloadedDevice("Too much ink!");
+//            } else if (this.receiptPrinter.inkRemaining() + amount > maxAmount) {
+//                throw new OverloadedDevice("Too much ink!");
+//            }  // or just fill it up to max?
 
-        try {
-            this.receiptPrinter.addInk(amount);
-        } catch (OverloadedDevice e) {
-            throw new RuntimeException(e);
+            try {
+                this.receiptPrinter.addInk(amount);
+            } catch (OverloadedDevice e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            throw new NullPointerException("Printer is not initialized");
         }
 
         // inkRemaining() is not supported in ReceiptPrinterBronze
     }
 
-    public void refillPaper(int amount) throws OverloadedDevice {
+    public void refillPaper(int amount) {
         int maxAmount = 1 << 10;
 
-        if (amount > maxAmount) {
-            throw new OverloadedDevice("Too much paper!");
-        } else if (this.receiptPrinter.paperRemaining() + amount > maxAmount) {
-            throw new OverloadedDevice("Too much paper!");
-        }  // or just fill it up to max?
+        if (this.receiptPrinter != null) {
+//            if (amount > maxAmount) {
+//                throw new OverloadedDevice("Too much paper!");
+//            } else if (this.receiptPrinter.paperRemaining() + amount > maxAmount) {
+//                throw new OverloadedDevice("Too much paper!");
+//            }  // or just fill it up to max?
 
-        try {
-            this.receiptPrinter.addPaper(amount);
-        } catch (OverloadedDevice e) {
-            throw new RuntimeException(e);
+            try {
+                this.receiptPrinter.addPaper(amount);
+            } catch (OverloadedDevice e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            throw new NullPointerException("Printer is not initialized");
         }
 
         // paperRemaining() is not supported in ReceiptPrinterBronze
