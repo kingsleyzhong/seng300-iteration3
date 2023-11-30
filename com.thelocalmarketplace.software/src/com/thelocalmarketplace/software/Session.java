@@ -96,6 +96,11 @@ public class Session {
 	
 	private class PredictIssueListener implements IssuePredictorListener {
 
+		@Override
+		public void notifyPredictUnsupportedFeature(Requests request) {
+			notifyAttendant(request);
+		}
+		
 		/**
 		 * Notify the attendant that a low ink issue will shortly occur.
 		 * Disable the customer station on which the issue has been predicted.
@@ -159,6 +164,7 @@ public class Session {
 			notifyAttendant(Requests.LOW_BANKNOTES);
 			block();
 		}
+
 	}
 
 	private class WeightDiscrepancyListener implements WeightListener {

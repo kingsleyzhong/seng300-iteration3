@@ -26,6 +26,8 @@ package com.thelocalmarketplace.software.attendant;
  * Kingsley Zhong 			: 30197260 
  */
 public interface IssuePredictorListener {
+	 
+	void notifyPredictUnsupportedFeature(Requests request);
 	
 	/**
 	 * Signals an event that a low ink issue will shortly occur

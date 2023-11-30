@@ -5,10 +5,16 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import com.jjjwelectronics.printer.IReceiptPrinter;
+import com.jjjwelectronics.printer.ReceiptPrinterBronze;
+import com.jjjwelectronics.printer.ReceiptPrinterGold;
+import com.jjjwelectronics.printer.ReceiptPrinterSilver;
 import com.tdc.banknote.BanknoteDispensationSlot;
+import com.tdc.banknote.BanknoteDispenserBronze;
+import com.tdc.banknote.BanknoteDispenserGold;
 import com.tdc.banknote.BanknoteStorageUnit;
 import com.tdc.banknote.IBanknoteDispenser;
 import com.tdc.coin.AbstractCoinDispenser;
+import com.tdc.coin.CoinDispenserBronze;
 import com.tdc.coin.CoinSlot;
 import com.tdc.coin.CoinStorageUnit;
 import com.tdc.coin.ICoinDispenser;
@@ -41,7 +47,7 @@ import com.thelocalmarketplace.software.receipt.ReceiptListener;
  * Ethan Woo 				: 30172855 
  * Kingsley Zhong 			: 30197260 
  */
-public abstract class IssuePredictor  {
+public class IssuePredictor  {
 	public ArrayList<IssuePredictorListener> listeners = new ArrayList<>();
 
 	private Session s;
@@ -63,25 +69,41 @@ public abstract class IssuePredictor  {
 		coinDispensers = s.getStation().getCoinDispensers();
 	}
 	
-	/**
+	/*
 	 * Predict if an issue may occur with not enough ink inside the printer
 	 * The current amount of ink in the printer should be above 
 	 * a threshold = N/A. If an issue is found, announce a low ink event.
 	 */
     public void checkLowInk() {
     	state = s.getState();
+    	if (!(state == SessionState.PRE_SESSION)) 
+    		return;
     	
-    	if (state == SessionState.PRE_SESSION) {
-	    	int currentInk = receiptPrinter.inkRemaining();
-	    	int threshold = 0; // how i get minimum from AbstractReceiptPaper??
-	    	
-	    	if (currentInk <= threshold * 0.1) {
-	    		notifyLowInk();
-	    	}
-    	} 
+    	int currentInk;
+    	int threshold;
+    	
+    	if (receiptPrinter instanceof ReceiptPrinterBronze) {
+    		notifyUnsupportedFeature(Requests.LOW_INK_CHECK_UNSUPPORTED);
+    	} else if (receiptPrinter instanceof ReceiptPrinterSilver) {
+    		ReceiptPrinterSilver silver = (ReceiptPrinterSilver) receiptPrinter;
+    		
+    		currentInk = silver.inkRemaining();
+    		threshold = silver.MAXIMUM_INK;
+    		
+    		if (currentInk <= threshold * 0.1)
+    			notifyLowInk();
+    	} else {
+    		ReceiptPrinterGold gold = (ReceiptPrinterGold) receiptPrinter;
+    		
+    		currentInk = gold.inkRemaining();
+    		threshold = gold.MAXIMUM_INK;
+    		
+    		if (currentInk <= threshold * 0.1)
+    			notifyLowInk();
+    	}
     }
     
-    /**
+    /*
      * Predict if an issue may occur with not enough paper inside the printer.
      * The current amount of paper in the printer should be 
      * above a threshold = N/A. If an issue is found, announce 
@@ -89,18 +111,34 @@ public abstract class IssuePredictor  {
      */
     public void checkLowPaper() {
     	state = s.getState();
+    	if (!(state == SessionState.PRE_SESSION)) 
+    		return;
+    		
+    	int currentPaper;
+    	int threshold;
     	
-    	if (state == SessionState.PRE_SESSION) {
-	    	int currentPaper = receiptPrinter.paperRemaining();
-	    	int threshold = 0;
-	    	
-	    	if (currentPaper == threshold) {
-	    		notifyLowPaper();
-	    	}
-    	}
+		if (receiptPrinter instanceof ReceiptPrinterBronze) 
+			notifyUnsupportedFeature(Requests.LOW_PAPER_CHECK_UNSUPPORTED);
+		else if (receiptPrinter instanceof ReceiptPrinterSilver) {
+			ReceiptPrinterSilver silver = (ReceiptPrinterSilver) receiptPrinter;
+			
+			currentPaper = silver.paperRemaining();
+			threshold = silver.MAXIMUM_PAPER;
+			
+			if (currentPaper <= threshold * 0.1) 
+				notifyLowPaper();
+		} else {
+			ReceiptPrinterGold gold = (ReceiptPrinterGold) receiptPrinter;
+			
+			currentPaper = gold.paperRemaining();
+			threshold = gold.MAXIMUM_PAPER;
+			
+			if (currentPaper <= threshold * 0.1)
+				notifyLowPaper();
+		}
     }
     
-    /**
+    /*
      * Predict if an issue may occur with not having enough coins to 
      * dispense as change. The current amount of coins in the dispenser 
      * should be above a threshold = N/A. If an issue is found, 
@@ -109,15 +147,12 @@ public abstract class IssuePredictor  {
     public void checkLowCoins() {
     	state = s.getState();
     	
-    	if (state == SessionState.PRE_SESSION) {		
-	    	for (ICoinDispenser dispenser : coinDispensers.values()) {
-	    		int currentCoins = dispenser.size();
-	    		int threshold = 0;
-	    		
-	    		if (currentCoins == threshold) {
-	    			notifyCoinsLow();
-	    		}
-	    	}
+		if (!(state == SessionState.PRE_SESSION)) 
+			return;
+		
+    	for (ICoinDispenser dispenser : coinDispensers.values()) {
+    		if (!dispenser.hasSpace()) 
+    			notifyCoinsLow();
     	}
     }
     
@@ -130,16 +165,22 @@ public abstract class IssuePredictor  {
     public void checkLowBanknotes() {
     	state = s.getState();
     	
-    	if (state == SessionState.PRE_SESSION) {    		
-	    	for (IBanknoteDispenser dispenser : banknoteDispensers.values()) {
-	    		int currentBanknotes = dispenser.size();
-	    		int threshold = 0;
-	    		
-	    		if (currentBanknotes == threshold) {
-	    			notifyBanknotesLow();
-	    		}
-	    	}
-    	}
+    	if (!(state == SessionState.PRE_SESSION))  
+    		return;
+    	
+    	for (IBanknoteDispenser dispenser : banknoteDispensers.values()) {
+    		if (dispenser instanceof BanknoteDispenserBronze) {
+    			int currentBanknotes = dispenser.size();
+    			int threshold = 0;
+    			
+    			if (currentBanknotes == threshold) 
+    				notifyBanknotesLow();
+    		} else if (dispenser instanceof BanknoteDispenserGold){
+				if (((BanknoteDispenserGold) dispenser).hasSpace()) 
+					notifyBanknotesLow();
+			} else 
+				notifyUnsupportedFeature(Requests.LOW_BANKNOTE_CHECK_UNSUPPORTED);
+		}
     }
     
     /**
@@ -151,14 +192,11 @@ public abstract class IssuePredictor  {
     public void checkCoinsFull() {
     	state = s.getState();
     	
-    	if (state == SessionState.PRE_SESSION) {    		
-	    	int currentCoins = coinStorage.getCoinCount();
-	    	int threshold = coinStorage.getCapacity();
-	    	
-	    	if (currentCoins == threshold) {
-	    		notifyCoinsFull();
-	    	}
-    	}
+    	if (!(state == SessionState.PRE_SESSION)) 
+    		return;
+    	
+		if (!coinStorage.hasSpace()) 
+			notifyCoinsFull();
     }
     
     /**
@@ -170,14 +208,16 @@ public abstract class IssuePredictor  {
     public void checkBanknotesFull() {
     	state = s.getState();
     	
-    	if (state == SessionState.PRE_SESSION) {    		
-	    	int currentCoins = banknoteStorage.getBanknoteCount();
-	    	int threshold = banknoteStorage.getCapacity();
-	    	
-	    	if (currentCoins == threshold) {
-	    		notifyBanknotesFull();
-	    	}
-    	}
+    	if (!(state == SessionState.PRE_SESSION)) 
+    		return;
+    	
+    	if (!banknoteStorage.hasSpace()) 
+    		notifyBanknotesFull();   	
+    }
+    
+    private void notifyUnsupportedFeature(Requests request) {
+    	for (IssuePredictorListener l : listeners)
+    		l.notifyPredictUnsupportedFeature(request);
     }
     
     private void notifyLowInk() {
