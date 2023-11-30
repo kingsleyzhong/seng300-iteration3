@@ -67,8 +67,8 @@ public class IssuePredictor  {
 	 * The current amount of ink in the printer should be above 
 	 * a threshold = N/A. If an issue is found, announce a low ink event.
 	 */
-    public void checkLowInk(Session s) {
-    	receiptPrinter = s.getStation().getPrinter();
+    public void checkLowInk(Session s, IReceiptPrinter printer) {
+    	receiptPrinter = printer;
     	state = s.getState();
     	
     	if (!(state == SessionState.PRE_SESSION)) 
@@ -104,8 +104,8 @@ public class IssuePredictor  {
      * above a threshold = N/A. If an issue is found, announce 
      * a low paper event.
      */
-    public void checkLowPaper(Session s) {
-    	receiptPrinter = s.getStation().getPrinter();
+    public void checkLowPaper(Session s, IReceiptPrinter printer) {
+    	receiptPrinter = printer;
     	state = s.getState();
     	
     	if (!(state == SessionState.PRE_SESSION)) 
@@ -141,8 +141,9 @@ public class IssuePredictor  {
      * should be above a threshold = N/A. If an issue is found, 
      * announce a low coins event
      */
-    public void checkLowCoins(Session s) {
-    	coinDispensers = s.getStation().getCoinDispensers();
+    public void checkLowCoins(Session s, 
+    		Map<BigDecimal, ICoinDispenser> dispensers) {
+    	coinDispensers = dispensers;
     	state = s.getState();
     	
 		if (!(state == SessionState.PRE_SESSION)) 
@@ -160,8 +161,9 @@ public class IssuePredictor  {
      * should be above a threshold = N/A. If an issue is found, announce
      * a low banknotes event.
      */
-    public void checkLowBanknotes(Session s) {
-    	banknoteDispensers = s.getStation().getBanknoteDispensers();
+    public void checkLowBanknotes(Session s, 
+    		Map<BigDecimal, IBanknoteDispenser> dispensers) {
+    	banknoteDispensers = dispensers;
     	state = s.getState();
     	
     	if (!(state == SessionState.PRE_SESSION))  
@@ -188,8 +190,8 @@ public class IssuePredictor  {
      * amount of coins in the storage unit should be below a threshold = N/A.
      * If an issue is found, announce a coins full event.
      */
-    public void checkCoinsFull(Session s) {
-    	coinStorage = s.getStation().getCoinStorage();
+    public void checkCoinsFull(Session s, CoinStorageUnit storage) {
+    	coinStorage = storage;
     	state = s.getState();
     	
     	if (!(state == SessionState.PRE_SESSION)) 
@@ -205,8 +207,8 @@ public class IssuePredictor  {
      * current amount of banknotes in the storage unit should be below a 
      * threshold = N/A. If an issue is found, announce a banknotes full event.
      */
-    public void checkBanknotesFull(Session s) {
-    	banknoteStorage = s.getStation().getBanknoteStorage();
+    public void checkBanknotesFull(Session s, BanknoteStorageUnit storage) {
+    	banknoteStorage = storage;
     	state = s.getState();
     	
     	if (!(state == SessionState.PRE_SESSION)) 

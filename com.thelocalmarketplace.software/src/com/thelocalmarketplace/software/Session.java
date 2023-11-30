@@ -75,7 +75,7 @@ public class Session {
 	private Weight weight;
 	private ItemManager manager;
 	private Receipt receiptPrinter;
-	private IssuePredictor predictionManager;
+	private IssuePredictor predictor;
 	private boolean requestApproved = false;
 
 	private class ItemManagerListener implements ItemListener {
@@ -215,7 +215,7 @@ public class Session {
 		 */
 		@Override
 		public void notifyPaid() {
-			sessionState = SessionState.PRE_SESSION;
+			end();
 		}
 		
 		/**
@@ -259,7 +259,7 @@ public class Session {
 		public void notifiyReceiptPrinted() {
 			// Should notifyPaid() not wait until receipt is successfully printed to change
 			// to PRE_SESSION?
-			sessionState = SessionState.PRE_SESSION;
+			end();
 		}
 
 	}
@@ -314,33 +314,43 @@ public class Session {
 	 * @param Receipt
 	 *                      The PrintReceipt behavior
 	 */
-	public void setup(IssuePredictor predictionManager, ItemManager manager, 
+	public void setup(ItemManager manager, 
 			Funds funds, Weight weight, Receipt receiptPrinter,
 			AbstractSelfCheckoutStation scs) {
 		this.manager = manager;
 		this.funds = funds;
 		this.weight = weight;
-		this.predictionManager = predictionManager;
-		this.predictionManager.register(new PredictIssueListener());
 		this.weight.register(new WeightDiscrepancyListener());
 		this.funds.register(new PayListener());
 		this.manager.register(new ItemManagerListener());
 		this.receiptPrinter = receiptPrinter;
 		this.receiptPrinter.register(new PrinterListener());
 		this.scs = scs;
-	 
+		this.predictor = new IssuePredictor();
+		this.predictor.register(new PredictIssueListener());
+		
+		predictionCheck();
 	}
-
+	
+	private void predictionCheck() {
+		predictor.checkLowInk(this, scs.getPrinter());
+		predictor.checkLowPaper(this, scs.getPrinter());
+		predictor.checkLowCoins(this, scs.getCoinDispensers());
+		predictor.checkLowBanknotes(this, scs.getBanknoteDispensers());
+		predictor.checkCoinsFull(this, scs.getCoinStorage());
+		predictor.checkBanknotesFull(this, scs.getBanknoteStorage());
+	}
 	/**
 	 * Sets the session to have started, allowing customer to interact with station
 	 */
-	public void start() {
+	public void start() {		
 		sessionState = SessionState.IN_SESSION;
 		manager.setAddItems(true);
 		// manager.clear();
 		// funds.clear();
 		// weight.clear();
 	}
+	
 
 	/**
 	 * Cancels the current session and resets the current session
@@ -361,6 +371,13 @@ public class Session {
 		prevState = sessionState;
 		sessionState = SessionState.BLOCKED;
 		manager.setAddItems(false);
+	}
+	
+	private void end() {
+		prevState = sessionState;
+		sessionState = SessionState.PRE_SESSION;
+		
+		predictionCheck();
 	}
 
 	/**
