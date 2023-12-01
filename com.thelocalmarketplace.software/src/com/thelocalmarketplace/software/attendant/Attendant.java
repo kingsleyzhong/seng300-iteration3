@@ -35,11 +35,12 @@ import com.thelocalmarketplace.software.weight.WeightListener;
  * Thi My Tuyen Tran 		: 30193980 
  * Aoi Ueki 				: 30179305 
  * Ethan Woo 				: 30172855 
- * Kingsley Zhong 			: 30197260 
+ * Kingsley Zhong 			: 30197260
  */
 
 public class Attendant {
 	private AttendantStation as;
+	private TextSearchController ts;
 	private ArrayList<Session> sessions = new ArrayList<>();
 	
 	/**
@@ -97,7 +98,7 @@ public class Attendant {
 		
 		/**
 		 * Example of how getRequest could be written. It should include the request and the sesssion the request comes from.
-		 * Not you will also have to add any of these methods to SessionListener along with the @Override keyword
+		 * Note you will also have to add any of these methods to SessionListener along with the @Override keyword
 		 * @param session
 		 * @param request
 		 */
@@ -114,5 +115,9 @@ public class Attendant {
 
 	public AttendantStation getStation() {
 		return as;
+	}
+
+	public TextSearchController getTextSearchController() {
+		return ts;
 	}
 }
