@@ -92,6 +92,11 @@ public class CashPanel extends JPanel{
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
+		
+		
+		JButton TenBillBtn = new PlainButton("10$ Bill", Colors.color1);
+		TenBillBtn.setForeground(Colors.color3);
+		Bills.add(TenBillBtn);
 		Bills.add(TwentyBillBtn);
 		
 		JButton FiftyBillBtn = new PlainButton("50$ Bill", Colors.color1);
@@ -121,11 +126,6 @@ public class CashPanel extends JPanel{
 		JButton RemoveChangeBillBtn = new PlainButton("Remove Change Bill", Colors.color1);
 		RemoveChangeBillBtn.setForeground(Colors.color3);
 		Bills.add(RemoveChangeBillBtn);
-		
-		
-		JButton TenBillBtn = new PlainButton("10$ Bill", Colors.color1);
-		TenBillBtn.setForeground(Colors.color3);
-		Bills.add(TenBillBtn);
 
 		
 		
@@ -140,6 +140,13 @@ public class CashPanel extends JPanel{
 		button_five_cent.setForeground(Colors.color3);
 		button_five_cent.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				try {
+					scs.getCoinSlot().receive(Five_Cent_Coin);
+				} catch (DisabledException | CashOverloadException e1) {
+					JOptionPane.showMessageDialog(null, "Coin Not Accepted");
+				}
+				
+				
 			}
 		});
 		Coins.add(button_five_cent);
@@ -168,7 +175,8 @@ public class CashPanel extends JPanel{
 		});
 		Coins.add(btnNoncoin);
 		
-		JButton btn_remove_coins = new JButton("Remove Coin Tray Coins");
+		JButton btn_remove_coins = new PlainButton("Remove Coin Tray Coins", Colors.color1);
+		btn_remove_coins.setForeground(Colors.color3);
 		Coins.add(btn_remove_coins);
 		
 		//coin tray via a popup event

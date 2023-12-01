@@ -284,6 +284,10 @@ public class SoftwareGUI{
 		      @Override
 		       public void actionPerformed(ActionEvent e) {
 		            paymentScreen.popUp();
+		            
+		            //we need to put session into pay mode here//
+		            
+		            
 		       }
 		});
 				
