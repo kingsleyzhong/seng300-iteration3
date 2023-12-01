@@ -153,16 +153,16 @@ public class IssuePredictor  {
     	for (ICoinDispenser dispenser : coinDispensers.values()) {
     		if (dispenser instanceof CoinDispenserBronze) {
     			int currentCoins = dispenser.size();
-    			int threshold = 0;
+    			int threshold = dispenser.getCapacity();
     			
-    			if (currentCoins <= threshold) 
+    			if (currentCoins <= threshold * 0.1) 
     				notifyCoinsLow();
     			
     		} else if (dispenser instanceof CoinDispenserGold) {
     			int currentCoins = dispenser.size();
-    			int threshold = 0;
+    			int threshold = dispenser.getCapacity();
     			
-    			if (currentCoins <= threshold)
+    			if (currentCoins <= threshold * 0.1)
     				notifyCoinsLow();
     		} else 
     			notifyUnsupportedFeature(Requests.LOW_COINS_CHECK_UNSUPPORTED);
@@ -186,15 +186,15 @@ public class IssuePredictor  {
     	for (IBanknoteDispenser dispenser : banknoteDispensers.values()) {
     		if (dispenser instanceof BanknoteDispenserBronze) {
     			int currentBanknotes = dispenser.size();
-    			int threshold = 0;
+    			int threshold = dispenser.getCapacity();
     			
-    			if (currentBanknotes <= threshold) 
+    			if (currentBanknotes <= threshold * 0.1) 
     				notifyBanknotesLow();
     		} else if (dispenser instanceof BanknoteDispenserGold){
     			int currentBanknotes = dispenser.size();
-    			int threshold = 0;
+    			int threshold = dispenser.getCapacity();
     			
-    			if (currentBanknotes <= threshold) 
+    			if (currentBanknotes <= threshold * 0.1) 
     				notifyBanknotesLow();
 			} else 
 				notifyUnsupportedFeature(Requests.LOW_BANKNOTE_CHECK_UNSUPPORTED);
