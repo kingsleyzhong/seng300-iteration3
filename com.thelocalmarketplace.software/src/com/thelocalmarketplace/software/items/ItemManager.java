@@ -46,7 +46,7 @@ public class ItemManager {
 	protected ArrayList<ItemListener> listeners = new ArrayList<>();
 	private HashMap<Product, BigInteger> addedProducts = new HashMap<Product, BigInteger>(); //hashMap for both barcodedProduct and PLUCodedProduct
 	private HashMap<BarcodedProduct, Integer> bulkyItems = new HashMap<BarcodedProduct, Integer>();
-	public HashMap<String, Product> visualCatalogue = new HashMap<String, Product>();
+	private HashMap<String, Product> visualCatalogue = new HashMap<String, Product>();
 	
 	private BarcodedProduct lastProduct;
 	private Session session;
@@ -215,6 +215,10 @@ public class ItemManager {
 
 	public HashMap<BarcodedProduct, Integer> getBulkyItems() {
 		return bulkyItems;
+	}
+
+	public HashMap<String, Product> getVisualCatalogue() {
+		return visualCatalogue;
 	}
 
 }
