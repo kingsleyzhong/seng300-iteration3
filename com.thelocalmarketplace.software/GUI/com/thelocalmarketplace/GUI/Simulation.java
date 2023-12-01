@@ -95,8 +95,7 @@ public class Simulation {
 		AbstractSelfCheckoutStation.configureBanknoteDenominations(new BigDecimal[] {new BigDecimal(100), 
 				new BigDecimal(50), new BigDecimal(20), new BigDecimal(10), new BigDecimal(5) });
 		AbstractSelfCheckoutStation.configureCoinDenominations(new BigDecimal[] { new BigDecimal(2), 
-				BigDecimal.ONE, new BigDecimal(0.25), new BigDecimal(0.10), new BigDecimal(0.05), 
-				new BigDecimal(0.01) });
+				BigDecimal.ONE, new BigDecimal(0.25), new BigDecimal(0.10), new BigDecimal(0.05)});
 	}
 	
 	public void unhide() {
