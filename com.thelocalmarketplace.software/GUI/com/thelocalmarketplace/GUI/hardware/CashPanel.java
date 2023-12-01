@@ -54,6 +54,7 @@ public class CashPanel extends JPanel{
 	
 	public CashPanel(AbstractSelfCheckoutStation scs) {
 		this.scs = scs;
+
 		
 		setUpCashData();
 		
@@ -136,6 +137,8 @@ public class CashPanel extends JPanel{
 		add(Coins);
 		Coins.setLayout(new GridLayout(5, 1, 15, 15));
 		
+		
+		//5 cent coin button
 		JButton button_five_cent = new PlainButton("5¢", Colors.color1);
 		button_five_cent.setForeground(Colors.color3);
 		button_five_cent.addActionListener(new ActionListener() {
@@ -151,19 +154,71 @@ public class CashPanel extends JPanel{
 		});
 		Coins.add(button_five_cent);
 		
+		
+		//TEN CENT COIN
 		JButton button_ten_cent = new PlainButton("10¢", Colors.color1);
 		button_ten_cent.setForeground(Colors.color3);
+		button_ten_cent.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					scs.getCoinSlot().receive( Ten_Cent_Coin );
+				} catch (DisabledException | CashOverloadException e1) {
+					JOptionPane.showMessageDialog(null, "Coin Not Accepted");
+				}
+				
+				
+			}
+		});
 		Coins.add(button_ten_cent);
 		
+		
+		//25 cent coin
 		JButton button_twentyfive_cent = new PlainButton("25¢", Colors.color1);
 		button_twentyfive_cent.setForeground(Colors.color3);
+		button_twentyfive_cent.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					scs.getCoinSlot().receive( TwentyFive_Cent_Coin );
+				} catch (DisabledException | CashOverloadException e1) {
+					JOptionPane.showMessageDialog(null, "Coin Not Accepted");
+				}
+				
+				
+			}
+		});
 		Coins.add(button_twentyfive_cent);
 		
+		
+		//1 Dollar Coin
 		JButton button_one_coin = new PlainButton("$1", Colors.color1);
 		button_one_coin.setForeground(Colors.color3);
+		button_one_coin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					scs.getCoinSlot().receive( One_Dollar_Coin );
+				} catch (DisabledException | CashOverloadException e1) {
+					JOptionPane.showMessageDialog(null, "Coin Not Accepted");
+				}
+				
+				
+			}
+		});
 		Coins.add(button_one_coin);
 		
+		
+		//2 Dollar coin
 		JButton btn_two_coin = new PlainButton("$2", Colors.color1);
+		button_one_coin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					scs.getCoinSlot().receive( Two_Dollar_Coin );
+				} catch (DisabledException | CashOverloadException e1) {
+					JOptionPane.showMessageDialog(null, "Coin Not Accepted");
+				}
+				
+				
+			}
+		});
 		btn_two_coin.setForeground(Colors.color3);
 		Coins.add(btn_two_coin);
 		
@@ -171,6 +226,13 @@ public class CashPanel extends JPanel{
 		btnNoncoin.setForeground(Colors.color3);
 		btnNoncoin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				try {
+					scs.getCoinSlot().receive( Non_Coin );
+				} catch (DisabledException | CashOverloadException e1) {
+					JOptionPane.showMessageDialog(null, "Coin Not Accepted");
+				}
+				
+				
 			}
 		});
 		Coins.add(btnNoncoin);
