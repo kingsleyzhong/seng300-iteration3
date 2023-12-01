@@ -126,7 +126,7 @@ public class IssuePredictor  {
 		}
 
 		@Override
-		public void pricePaidUpdated(Session session) {
+		public void pricePaidUpdated(Session session, BigDecimal amountDue) {
 			// TODO Auto-generated method stub
 			
 		}

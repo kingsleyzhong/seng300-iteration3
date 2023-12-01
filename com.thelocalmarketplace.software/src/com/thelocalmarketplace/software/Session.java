@@ -73,6 +73,8 @@ public class Session {
 	private Receipt receiptPrinter;
 	private boolean requestApproved = false;
 	
+	Session session = this;
+	
 	private class ItemManagerListener implements ItemListener{
 		private Session outerSession;
 		
@@ -166,6 +168,13 @@ public class Session {
 			notifyAttendant(Requests.CANT_MAKE_CHANGE);
 			block();
 
+		}
+
+		@Override
+		public void notifyUpdateAmountDue(BigDecimal amount) {
+			for (SessionListener l : listeners) {
+				l.pricePaidUpdated(session, amount);
+			}
 		}
 
 	}
@@ -308,7 +317,11 @@ public class Session {
 	private void end() {
 		prevState = sessionState;
 		sessionState = SessionState.PRE_SESSION;
+		receiptPrinter.printReceipt(getBarcodedItems());
 		
+		for(SessionListener l:listeners) {
+			l.sessionEnded(this);
+		}
 		// if the session is slated to be disabled, do that
 		if(disableSelf) {
 			disable();
