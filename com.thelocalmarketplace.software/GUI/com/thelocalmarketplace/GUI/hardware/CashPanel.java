@@ -33,7 +33,6 @@ public class CashPanel extends JPanel{
 	
 	
 	//coins
-	private Coin One_Cent_Coin;
 	private Coin Five_Cent_Coin;
 	private Coin Ten_Cent_Coin;
 	private Coin TwentyFive_Cent_Coin;
@@ -108,9 +107,9 @@ public class CashPanel extends JPanel{
 		Bills.add(NonBillBtn);
 		
 		
-		JButton RemoveInputBill = new JButton("Remove Input Bill");
-		RemoveInputBill.setBackground(Color.GREEN);
+		JButton RemoveInputBill = new PlainButton("Remove Input Bill", Colors.color1);
 		RemoveInputBill.setForeground(Colors.color3);
+		
 		RemoveInputBill.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				scs.getBanknoteInput().removeDanglingBanknote();
@@ -118,8 +117,15 @@ public class CashPanel extends JPanel{
 		});
 		Bills.add(RemoveInputBill);
 		
-		JButton RemoveChangeBillBtn = new JButton("Remove Change Bill");
+		
+		JButton RemoveChangeBillBtn = new PlainButton("Remove Change Bill", Colors.color1);
+		RemoveChangeBillBtn.setForeground(Colors.color3);
 		Bills.add(RemoveChangeBillBtn);
+		
+		
+		JButton TenBillBtn = new PlainButton("10$ Bill", Colors.color1);
+		RemoveChangeBillBtn.setForeground(Colors.color3);
+		Bills.add(TenBillBtn);
 
 		
 		
@@ -129,19 +135,6 @@ public class CashPanel extends JPanel{
 		Coins.setBackground(Colors.color3);
 		add(Coins);
 		Coins.setLayout(new GridLayout(5, 1, 15, 15));
-		
-		JButton button = new PlainButton("1¢", Colors.color1);
-		button.setForeground(Colors.color3);
-		button.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-				
-				
-				
-				
-			}
-		});
-		Coins.add(button);
 		
 		JButton button_1 = new PlainButton("5¢", Colors.color1);
 		button_1.setForeground(Colors.color3);
@@ -175,6 +168,9 @@ public class CashPanel extends JPanel{
 		});
 		Coins.add(btnNoncoin);
 		
+		JButton btnNewButton = new JButton("Remove Coin Tray Coins");
+		Coins.add(btnNewButton);
+		
 		//coin tray via a popup event
 		
 		
@@ -190,8 +186,6 @@ public class CashPanel extends JPanel{
 	public void setUpCashData() {
 		Currency currency = Currency.getInstance(Locale.CANADA);
 		
-		One_Cent_Coin = new Coin(currency, BigDecimal.valueOf(0.01));
-		
 		Five_Cent_Coin = new Coin(currency, BigDecimal.valueOf(0.05));
 		
 		Ten_Cent_Coin  = new Coin(currency, BigDecimal.valueOf(0.10));
@@ -201,7 +195,7 @@ public class CashPanel extends JPanel{
 		Two_Dollar_Coin  = new Coin(currency, BigDecimal.valueOf(2.00));
 		
 		//Coin that should be rejected
-		//Coin Non_Coin  = new Coin(Currency.getInstance(Locale.CHINESE), BigDecimal.valueOf(1.05));
+		Coin Non_Coin  = new Coin(currency, BigDecimal.valueOf(0.01));
 		
 		//bills
 		Five_Dollar_Bill = new Banknote(currency, BigDecimal.valueOf(5.00));
@@ -211,7 +205,7 @@ public class CashPanel extends JPanel{
 		Hundred_Dollar_Bill  = new Banknote(currency, BigDecimal.valueOf(100.00));
 		
 		//Bill that should be rejected
-		//Non_Bill  = new Banknote(Currency.getInstance( Locale.CHINESE )   , BigDecimal.valueOf(5.00));
+		Non_Bill  = new Banknote(Currency.getInstance( Locale.CANADA )   , BigDecimal.valueOf(5000.00));
 		
 		
 		
