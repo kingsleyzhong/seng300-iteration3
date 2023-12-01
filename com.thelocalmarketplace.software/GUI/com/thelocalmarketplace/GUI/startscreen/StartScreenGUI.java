@@ -42,7 +42,6 @@ public class StartScreenGUI {
 		frame.setResizable(false);
 		frame.setForeground(Colors.color1);
 		frame.setBackground(Colors.color1);
-		frame.setSize(500,500);
 		frame.setAlwaysOnTop(true);
 		
 		//setting size
