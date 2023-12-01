@@ -108,15 +108,15 @@ public class HardwareGUI {
 	
 	public void populateItems() {
 		BarcodedItem bitem1 = new BarcodedItem(new Barcode(new Numeral[] { Numeral.one}), new Mass(300.0));
-		ItemObject item1 = new ItemObject(bitem1, "Baaakini1");
+		ItemObject item1 = new ItemObject(bitem1, "Baaakini");
 		itemsInCart.addElement(item1);
 		
-		BarcodedItem bitem2 = new BarcodedItem(new Barcode(new Numeral[] { Numeral.one}), new Mass(300.0));
-		ItemObject item2 = new ItemObject(bitem2, "Baaakini2");
+		BarcodedItem bitem2 = new BarcodedItem(new Barcode(new Numeral[] { Numeral.two}), new Mass(1000.0));
+		ItemObject item2 = new ItemObject(bitem2, "Wooly warm blanket");
 		itemsInCart.addElement(item2);
 		
-		BarcodedItem bitem3 = new BarcodedItem(new Barcode(new Numeral[] { Numeral.one}), new Mass(300.0));
-		ItemObject item3 = new ItemObject(bitem3, "Baaakini3");
+		BarcodedItem bitem3 = new BarcodedItem(new Barcode(new Numeral[] { Numeral.three}), new Mass(125.0));
+		ItemObject item3 = new ItemObject(bitem3, "Baaanana bread bites");
 		itemsInCart.addElement(item3);
 	}
 	
