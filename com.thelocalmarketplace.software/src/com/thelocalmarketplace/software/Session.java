@@ -340,7 +340,7 @@ public class Session {
 		this.predictor.register(new PredictIssueListener());
 	}
 	
-	private void predictionCheck() {
+	public void predictionCheck() {
 		predictor.checkLowInk(this, scs.getPrinter());
 		predictor.checkLowPaper(this, scs.getPrinter());
 		predictor.checkLowCoins(this, scs.getCoinDispensers());
