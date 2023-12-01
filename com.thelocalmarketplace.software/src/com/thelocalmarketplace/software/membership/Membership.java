@@ -57,48 +57,56 @@ public class Membership {
         cardReader.register(membershipReader);
     }
     
+    public void typeMembership(String memberCardNumber) {
+    	if (MembershipDatabase.MEMBERSHIP_DATABASE.containsKey(memberCardNumber)) {
+    		notifyMembershipEntered(memberCardNumber);
+    	} 
+    	//else {} Only needed if notifyMemberhsipNotFound() is something that is required in the the listener
+    }
+    
+    public void swipMembership(CardData memberCard) {
+    	String memberCardNumber = memberCard.getNumber();
+    	if (MembershipDatabase.MEMBERSHIP_DATABASE.containsKey(memberCardNumber)) {
+    		notifyMembershipEntered(memberCardNumber);
+    	} 
+    	//else {} Only needed if notifyMemberhsipNotFound() is something that is required in the the listener
+    }
+    
     public class InnerListener implements CardReaderListener{
 
 		@Override
 		public void aDeviceHasBeenEnabled(IDevice<? extends IDeviceListener> device) {
 			// TODO Auto-generated method stub
-			
 		}
 
 		@Override
 		public void aDeviceHasBeenDisabled(IDevice<? extends IDeviceListener> device) {
 			// TODO Auto-generated method stub
-			
 		}
 
 		@Override
 		public void aDeviceHasBeenTurnedOn(IDevice<? extends IDeviceListener> device) {
 			// TODO Auto-generated method stub
-			
 		}
 
 		@Override
 		public void aDeviceHasBeenTurnedOff(IDevice<? extends IDeviceListener> device) {
 			// TODO Auto-generated method stub
-			
 		}
 
 		@Override
 		public void aCardHasBeenInserted() {
 			// TODO Auto-generated method stub
-			
 		}
 
 		@Override
 		public void theCardHasBeenRemoved() {
 			// TODO Auto-generated method stub
-			
 		}
 
 		@Override
 		public void aCardHasBeenTapped() {
 			// TODO Auto-generated method stub
-			
 		}
 
 		@Override
@@ -108,9 +116,8 @@ public class Membership {
 
 		@Override
 		public void theDataFromACardHasBeenRead(CardData data) {
-			// TODO Auto-generated method stub
 			if(addingItems == true && data.getType().contains("Membership")) {
-				notifyMembershipEntered(data.getNumber());
+				swipMembership(data);
 			}
 		}
     	
