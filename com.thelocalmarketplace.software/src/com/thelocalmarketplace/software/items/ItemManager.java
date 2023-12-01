@@ -46,6 +46,8 @@ public class ItemManager {
 	protected ArrayList<ItemListener> listeners = new ArrayList<>();
 	private HashMap<Product, BigInteger> addedProducts = new HashMap<Product, BigInteger>(); //hashMap for both barcodedProduct and PLUCodedProduct
 	private HashMap<BarcodedProduct, Integer> bulkyItems = new HashMap<BarcodedProduct, Integer>();
+	public HashMap<String, Product> visualCatalogue = new HashMap<String, Product>();
+	
 	private BarcodedProduct lastProduct;
 	private Session session;
 	private boolean addItems = false;
@@ -102,6 +104,35 @@ public class ItemManager {
 			BigDecimal itemPrice = price.multiply(weightInKilogram);
 			
 			notifyItemAdded(mass, itemPrice);
+		}
+	}
+
+	/**
+	 * Adds an item from the visual catalogue. Assumes that only instances of PLUCodedProduct and BarcodedProduct are possible.
+	 *
+	 * @param description
+	 *                The text from the GUI representing the product in the catalogue.
+	 */
+	public void addVisualItem(String description) {
+		if (addItems) {
+			// Check if the product with given description exists in the catalogue
+			if (visualCatalogue.containsKey(description)) {
+				Product selectedProduct = visualCatalogue.get(description);
+
+				// The product could be a Barcoded Product
+				if (selectedProduct instanceof BarcodedProduct) {
+					this.addItem((BarcodedProduct) selectedProduct);
+				}
+
+				// The product could be a PLU Coded Product
+				else if (selectedProduct instanceof PLUCodedProduct) {
+					// to be complete
+				}
+			} else {
+				// Product not found in the visual catalogue
+				throw new ProductNotFoundException("Item not found");
+			}
+			
 		}
 	}
 
