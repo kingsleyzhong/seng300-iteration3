@@ -43,7 +43,8 @@ public enum Requests {
 	LOW_BANKNOTES,
 	LOW_INK_CHECK_UNSUPPORTED,
 	LOW_PAPER_CHECK_UNSUPPORTED,
-	LOW_BANKNOTE_CHECK_UNSUPPORTED;
+	LOW_BANKNOTE_CHECK_UNSUPPORTED,
+	LOW_COINS_CHECK_UNSUPPORTED;;
 	
 	// requests that would be cool to have but arent needed for core functionality
 	// allow the Attendant to track Session better
