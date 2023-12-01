@@ -1,6 +1,9 @@
 package com.thelocalmarketplace.software;
 
 import com.thelocalmarketplace.software.attendant.Requests;
+import java.math.BigDecimal;
+import com.jjjwelectronics.Mass;
+import com.thelocalmarketplace.hardware.Product;
 
 /**
  * Project Iteration 3 Group 1
@@ -36,4 +39,18 @@ public interface SessionListener {
 	 * @param request
 	 */
 	public void getRequest(Session session, Requests request);
+	void itemAdded(Product product, Mass ofProduct, Mass currentExpectedWeight, BigDecimal currentExpectedPrice);
+	
+	void itemRemoved(Product product, Mass ofProduct, Mass currentExpectedMass, BigDecimal currentExpectedPrice);
+	
+	void addItemToScaleDiscrepancy();
+	
+	void removeItemFromScaleDiscrepancy();
+	
+	void discrepancy(String message);
+	
+	void discrepancyResolved();
+	
+	void pricePaidUpdated();
+	
 }
