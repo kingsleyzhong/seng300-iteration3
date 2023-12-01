@@ -17,6 +17,7 @@ import com.thelocalmarketplace.software.funds.PayByCard;
 import com.thelocalmarketplace.software.funds.PayByCash;
 import com.thelocalmarketplace.software.items.ItemAddedRule;
 import com.thelocalmarketplace.software.items.ItemManager;
+import com.thelocalmarketplace.software.items.PLUItemAddedRule;
 import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.weight.Weight;
 
@@ -95,6 +96,7 @@ public class SelfCheckoutStationLogic {
 		// Will also need the touch screen/ keyboard for GUI interaction
 		session.setup(itemManager, funds, weight, receiptPrinter, scs);
 		new ItemAddedRule(scs.getMainScanner(), scs.getHandheldScanner(), itemManager);
+		new PLUItemAddedRule(scs.getScanningArea(), itemManager, session);
 	}
 
 	public static Attendant getAttendant() {

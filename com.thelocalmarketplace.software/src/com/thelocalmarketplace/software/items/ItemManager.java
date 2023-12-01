@@ -87,7 +87,11 @@ public class ItemManager {
 	//Method for adding PLU coded item
 	public void addItem(PLUCodedProduct product, Mass mass) {
 		if(addItems) {
-			addedProducts.put(product, mass.inMicrograms());
+			if (addedProducts.containsKey(product)) {
+				addedProducts.replace(product, addedProducts.get(product).add(mass.inMicrograms()));
+			} else {
+				addedProducts.put(product, mass.inMicrograms());
+			}
 			
 			BigDecimal price = new BigDecimal(product.getPrice());
 			final int MICROGRAM_PER_KILOGRAM = 1_000_000_000;
