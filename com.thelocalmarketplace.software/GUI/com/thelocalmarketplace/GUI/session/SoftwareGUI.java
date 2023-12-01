@@ -38,6 +38,7 @@ import javax.swing.SwingConstants;
 
 public class SoftwareGUI{
 	JFrame frame;
+	JFrame catalogue;
 	Session session;
 	
 	// Buttons for user to interact with:
@@ -67,6 +68,8 @@ public class SoftwareGUI{
 	public SoftwareGUI(Session session) {
 		session.register(new InnerListener());
 		frame = session.getStation().getScreen().getFrame();
+		catalogue = new SearchCatalogue(session);
+		
 		// Setting window size
 		width = (int) screenSize.getWidth();
 		height = (int) screenSize.getHeight();
@@ -278,7 +281,10 @@ public class SoftwareGUI{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
+			JButton source = (JButton) e.getSource();
+			if(source == searchCatalogue) {
+				catalogue.setVisible(true);
+			}
 			
 		}
 		
