@@ -73,6 +73,7 @@ public class MembershipTest extends AbstractSessionTest {
         StubListener stubListener2 = new StubListener();
         membership.register(stubListener2);
         membership.deregisterAll();
+        membership.typeMembership(membershipNumber);
         Assert.assertNull(stubListener.membershipNumber);
         Assert.assertNull(stubListener2.membershipNumber);
     }
