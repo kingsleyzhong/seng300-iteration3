@@ -12,6 +12,9 @@ import com.tdc.coin.ICoinDispenser;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionState;
+import com.thelocalmarketplace.software.exceptions.ClosedHardwareException;
+import com.thelocalmarketplace.software.exceptions.IncorrectDenominationException;
+import com.thelocalmarketplace.software.exceptions.NotDisabledSessionException;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -56,27 +59,6 @@ public class MaintenanceManager {
     private List<BigDecimal> coinDenominations;
     private BanknoteStorageUnit banknoteStorage;
     private CoinStorageUnit coinStorage;
-
-    /**
-     * Exception class - Thrown when the attendant tries to open the hardware when it is not disabled
-     */
-    private class NotDisabledSessionException extends Exception {
-        public NotDisabledSessionException(String str) {super(str);}
-    }
-
-    /**
-     * Exception class - Thrown when a coin/banknote of incorrect denomination is attempted to be input into a dispenser
-     */
-    private class IncorrectDenominationException extends Exception {
-        public IncorrectDenominationException(String str) {super(str);}
-    }
-
-    /**
-     * Exception class - Thrown when changes are attempted to be made to a station that is closed
-     */
-    private class ClosedHardwareException extends Exception {
-        public ClosedHardwareException(String str) {super(str);}
-    }
 
     /**
      * Constructor for MaintenanceManager
@@ -222,48 +204,36 @@ public class MaintenanceManager {
 
 
     // Ink
-    public void refillInk(int amount) {
+    public void refillInk(int amount) throws ClosedHardwareException {
         int maxAmount = 1 << 20;
 
-        if (this.receiptPrinter != null) {
-//            if (amount > maxAmount) {
-//                throw new OverloadedDevice("Too much ink!");
-//            } else if (this.receiptPrinter.inkRemaining() + amount > maxAmount) {
-//                throw new OverloadedDevice("Too much ink!");
-//            }  // or just fill it up to max?
+        if (isOpen) {
 
             try {
                 this.receiptPrinter.addInk(amount);
             } catch (OverloadedDevice e) {
                 throw new RuntimeException(e);
             }
-        } else {
-            throw new NullPointerException("Printer is not initialized");
-        }
 
-        // inkRemaining() is not supported in ReceiptPrinterBronze
+        } else {
+            throw new ClosedHardwareException("Hardware is closed!");
+        }
     }
 
-    public void refillPaper(int amount) {
+    public void refillPaper(int amount) throws ClosedHardwareException {
         int maxAmount = 1 << 10;
 
-        if (this.receiptPrinter != null) {
-//            if (amount > maxAmount) {
-//                throw new OverloadedDevice("Too much paper!");
-//            } else if (this.receiptPrinter.paperRemaining() + amount > maxAmount) {
-//                throw new OverloadedDevice("Too much paper!");
-//            }  // or just fill it up to max?
+        if (isOpen) {
 
             try {
                 this.receiptPrinter.addPaper(amount);
             } catch (OverloadedDevice e) {
                 throw new RuntimeException(e);
             }
-        } else {
-            throw new NullPointerException("Printer is not initialized");
-        }
 
-        // paperRemaining() is not supported in ReceiptPrinterBronze
+        } else {
+            throw new ClosedHardwareException("Hardware is closed!");
+        }
     }
 
 }
