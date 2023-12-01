@@ -104,13 +104,13 @@ public class PaymentPopup {
             public void actionPerformed(ActionEvent e) {
             	try {
             		session.payByCash();
+            		paymentTypeLabel.setText("Payment Selected: Cash");
             	}
             	catch(CartEmptyException e1) {
-					frame.hide();
-                    JOptionPane.showMessageDialog(cashButton, "Cannot Pay for Empty Order");
+					frame.setVisible(false);
+                    JOptionPane.showMessageDialog(null, "Cannot Pay for Empty Order");
               
             	}
-            	paymentTypeLabel.setText("Payment Selected: Cash");
 
 
             }
@@ -122,9 +122,10 @@ public class PaymentPopup {
 		cardButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            	paymentTypeLabel.setText("Payment Selected: Card");
+            	//paymentTypeLabel.setText("Payment Selected: Card");
             	try {
 					session.payByCard();
+					paymentTypeLabel.setText("Payment Selected: Card");
 				} catch (CashOverloadException e1) 
             	{
 					//session.notifyAttendant();
@@ -133,10 +134,9 @@ public class PaymentPopup {
 				} catch (DisabledException e1) {
 					//session.notifyAttendant();
 				} catch(CartEmptyException e1) {
-					frame.hide();
-                    JOptionPane.showMessageDialog(cashButton, "Cannot Pay for Empty Order");
+					frame.setVisible(false);
+                    JOptionPane.showMessageDialog(null, "Cannot Pay for Empty Order");
             	}
-            	paymentTypeLabel.setText("Payment Selected: Card");
 
             	
             }
