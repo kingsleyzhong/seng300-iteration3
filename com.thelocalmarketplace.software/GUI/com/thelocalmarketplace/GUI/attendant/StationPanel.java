@@ -25,11 +25,16 @@ import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
 import com.thelocalmarketplace.hardware.ISelfCheckoutStation;
 import com.thelocalmarketplace.software.Session;
+import com.thelocalmarketplace.software.attendant.IssuePredictorListener;
+import com.thelocalmarketplace.software.attendant.Issues;
 
 import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
 import javax.swing.SwingConstants;
 
 public class StationPanel extends JPanel implements ActionListener {
+	
+	private final Color warningColor = new Color(191, 114, 13);
+	private final Color urgentColor = new Color(161, 40, 40);
 	int statusN;
 	Boolean enabled;
 	ISelfCheckoutStation station;
@@ -102,6 +107,51 @@ public class StationPanel extends JPanel implements ActionListener {
 				power.setBackground(new Color(205, 92, 92));
 			}
 			
+		}
+	}
+	
+	private class InnerListener implements IssuePredictorListener{
+
+		@Override
+		public void notifyPredictUnsupportedFeature(Session session, Issues issue) {
+			// what is unsupported feature??			
+		}
+
+		@Override
+		public void notifyPredictLowInk(Session session) {
+			info.setText("WARNING: Predicting low ink");
+			info.setForeground(warningColor);
+			status.setText("");
+		}
+
+		@Override
+		public void notifyPredictLowPaper(Session session) {
+			info.setText("WARNING: Predicting low paper");
+			info.setForeground(urgentColor);
+		}
+
+		@Override
+		public void notifyPredictCoinsFull(Session session) {
+			info.setText("WARNING: Predicting coin overflow");
+			info.setForeground(urgentColor);
+		}
+
+		@Override
+		public void notifyPredictBanknotesFull(Session session) {
+			info.setText("WARNING: Predicting banknote overflow");
+			info.setForeground(urgentColor);
+		}
+
+		@Override
+		public void notifyPredictLowCoins(Session session) {
+			info.setText("WARNING: Predicting insufficient coins");
+			info.setForeground(urgentColor);
+		}
+
+		@Override
+		public void notifyPredictLowBanknotes(Session session) {
+			info.setText("WARNING: Predicting insufficient banknotes");
+			info.setForeground(urgentColor);
 		}
 		
 	}

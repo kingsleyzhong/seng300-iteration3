@@ -21,6 +21,8 @@ import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.AttendantStation;
 import com.thelocalmarketplace.hardware.ISelfCheckoutStation;
 import com.thelocalmarketplace.software.attendant.Attendant;
+import com.thelocalmarketplace.software.attendant.IssuePredictorListener;
+import com.thelocalmarketplace.software.attendant.Issues;
 
 public class AttendantGUI {
 	AttendantStation attendant;
@@ -53,7 +55,6 @@ public class AttendantGUI {
 		attendant.screen.getFrame().getContentPane().setBackground(Colors.color1);
 		
 		this.attendant = attendant;
-		// temporarily creating empty sessions
 		
 		populateSessions();
 		attendant.screen.setVisible(false);
@@ -63,7 +64,6 @@ public class AttendantGUI {
 		int val = 0;
 		if (stations.size() != 0) {
 		while(val < stations.size()) {
-			// add a session panel
 			JPanel panel = new StationPanel(stations.get(val));
 			stationPanels.add(panel);
 			panel.setPreferredSize(new Dimension(width/6, width/6));
@@ -74,7 +74,6 @@ public class AttendantGUI {
 			panel.setPreferredSize(new Dimension(width/6, width/6));
 			attendant.screen.getFrame().getContentPane().add(panel, BorderLayout.SOUTH);
 		}
-		
 	}
 	
 	public void hide() {
@@ -84,4 +83,6 @@ public class AttendantGUI {
 	public void unhide() {
 		attendant.screen.getFrame().setVisible(true);
 	}
+	
+	
 }
