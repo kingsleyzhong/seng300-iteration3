@@ -78,11 +78,6 @@ public class AttendantTest extends AbstractTest{
     	Attendant tempAttendant = new Attendant(station);
     	assertNotNull(tempAttendant);
     }
-
-    @Test
-    public void openNotDisabledStation() {
-
-    }
     
 }
 
