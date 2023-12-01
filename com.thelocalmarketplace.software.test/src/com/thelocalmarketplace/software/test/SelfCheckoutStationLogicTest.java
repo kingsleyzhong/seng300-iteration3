@@ -1,8 +1,18 @@
+
 package com.thelocalmarketplace.software.test;
 
 import static org.junit.Assert.*;
+
+import java.util.Arrays;
+import java.util.Collection;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+
+import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+import com.thelocalmarketplace.hardware.AttendantStation;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationSilver;
@@ -11,77 +21,71 @@ import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.weight.Weight;
 
+import powerutility.PowerGrid;
+
 /**
  * Unit Testing for SelfCheckoutStation logic
  * 
- * Project iteration 2 group members:
- * Aj Sallh : 30023811
- * Anthony Kostal-Vazquez : 30048301
- * Chloe Robitaille : 30022887
- * Dvij Raval : 30024340
+ * Project Iteration 3 Group 1
+ *
+ * Derek Atabayev : 30177060
+ * Enioluwafe Balogun : 30174298
+ * Subeg Chahal : 30196531
+ * Jun Heo : 30173430
  * Emily Kiddle : 30122331
- * Katelan NG : 30144672
- * Kingsley Zhong : 30197260
- * Nick McCamis : 30192610
+ * Anthony Kostal-Vazquez : 30048301
+ * Jessica Li : 30180801
  * Sua Lim : 30177039
- * Subeg CHAHAL : 30196531
+ * Savitur Maharaj : 30152888
+ * Nick McCamis : 30192610
+ * Ethan McCorquodale : 30125353
+ * Katelan Ng : 30144672
+ * Arcleah Pascual : 30056034
+ * Dvij Raval : 30024340
+ * Chloe Robitaille : 30022887
+ * Danissa Sandykbayeva : 30200531
+ * Emily Stein : 30149842
+ * Thi My Tuyen Tran : 30193980
+ * Aoi Ueki : 30179305
+ * Ethan Woo : 30172855
+ * Kingsley Zhong : 30197260
+ * 
  */
-public class SelfCheckoutStationLogicTest {
 
-    private SelfCheckoutStationBronze scsb;
-    private SelfCheckoutStationSilver scss;
-    private SelfCheckoutStationGold scsg;
-    private Session session;
+public class SelfCheckoutStationLogicTest extends AbstractTest {
+
     private SelfCheckoutStationLogic logic;
+    private AttendantStation station;
+
+    public SelfCheckoutStationLogicTest(String testName, AbstractSelfCheckoutStation scs) {
+        super(testName, scs);
+    }
 
     @Before
-    public void setUp() {
-    	// updated to Hardware 2.2 and fixed to make it a static call
-    	SelfCheckoutStationBronze.resetConfigurationToDefaults();
-    	SelfCheckoutStationSilver.resetConfigurationToDefaults();
-    	SelfCheckoutStationGold.resetConfigurationToDefaults();
-    	
-        scsb = new SelfCheckoutStationBronze();
-        scss = new SelfCheckoutStationSilver();
-        scsg = new SelfCheckoutStationGold();
-        session = new Session();
+    public void setup() {
+        basicDefaultSetup();
+
+        station = new AttendantStation();
     }
 
     @Test
     public void testInstallation() {
-        logic = SelfCheckoutStationLogic.installOn(scsb, session);
+        SelfCheckoutStationLogic.installAttendantStation(station);
+        logic = SelfCheckoutStationLogic.installOn(scs);
         assertNotNull(logic);
     }
 
     @Test
-    public void testInstallationComponentsBronze() {
+    public void testInstallationComponents() {
         // Check that the logic has installed Funds, Weight, and ItemAddedRule on the
-        // session and scsb.
-        SelfCheckoutStationLogic.installOn(scsb, session);
-        Funds funds = session.getFunds();
-        Weight weight = session.getWeight();
+        // session and scs.
+        SelfCheckoutStationLogic.installAttendantStation(station);
 
-        assertNotNull(funds);
-        assertNotNull(weight);
-    }
+        logic = SelfCheckoutStationLogic.installOn(scs);
+        Session session = logic.getSession();
 
-    @Test
-    public void testInstallationComponentsSilver() {
-        // Check that the logic has installed Funds, Weight, and ItemAddedRule on the
-        // session and scsb.
-        SelfCheckoutStationLogic.installOn(scss, session);
-        Funds funds = session.getFunds();
-        Weight weight = session.getWeight();
+        assertNotNull(session);
 
-        assertNotNull(funds);
-        assertNotNull(weight);
-    }
-
-    @Test
-    public void testInstallationComponentsGold() {
-        // Check that the logic has installed Funds, Weight, and ItemAddedRule on the
-        // session and scsb.
-        SelfCheckoutStationLogic.installOn(scsg, session);
         Funds funds = session.getFunds();
         Weight weight = session.getWeight();
 

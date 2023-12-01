@@ -52,6 +52,10 @@ public class TextSearchController {
 	private ArrayList<Product> searchResults = new ArrayList<>();
 	private boolean shift;
 
+	public String getSearchField() {
+		return searchField;
+	}
+
 	private class InnerListener implements TouchScreenListener, KeyboardListener {
 
 		@Override
@@ -128,23 +132,12 @@ public class TextSearchController {
 		// WIP!!
 
 		ArrayList<Product> searchResults = new ArrayList<>();
-//		Map<Barcode, BarcodedProduct> database = ProductDatabases.INVENTORY;
 		Map<Barcode, BarcodedProduct> databaseBC = ProductDatabases.BARCODED_PRODUCT_DATABASE;
 		Map<PriceLookUpCode, PLUCodedProduct> databasePLU = ProductDatabases.PLU_PRODUCT_DATABASE;
 
 		Pattern regexPattern = Pattern.compile(label, Pattern.CASE_INSENSITIVE);
 
-		// Products in INVENTORY?
-		// Now why may this not work the same way?
-//		for (HashMap.Entry<Product, Integer> entry: database.entrySet()) {
-//			String itemQuery = database.get(entry.getValue()).getDescription();
-//			Matcher regexMatcher = regexPattern.matcher(itemQuery);
-//			if (regexMatcher.find()) {
-//				searchResults.add(entry.getValue());
-//			}
-//		}
-
-		// Barcoded Products?
+		// Barcoded Products
 		for (HashMap.Entry<Barcode, BarcodedProduct> entry: databaseBC.entrySet()) {
 			String itemQuery = databaseBC.get(entry.getValue()).getDescription();
 			Matcher regexMatcher = regexPattern.matcher(itemQuery);
@@ -153,9 +146,18 @@ public class TextSearchController {
 			}
 		}
 
-  		// Products with PLU?
+  		// Products with PLU by description
 		for (HashMap.Entry<PriceLookUpCode, PLUCodedProduct> entry: databasePLU.entrySet()) {
 			String itemQuery = databasePLU.get(entry.getValue()).getDescription();
+			Matcher regexMatcher = regexPattern.matcher(itemQuery);
+			if (regexMatcher.find()) {
+				searchResults.add(entry.getValue());
+			}
+		}
+
+		// Products with PLU by PLU
+		for (HashMap.Entry<PriceLookUpCode, PLUCodedProduct> entry: databasePLU.entrySet()) {
+			String itemQuery = String.valueOf(databasePLU.get(entry.getKey()));
 			Matcher regexMatcher = regexPattern.matcher(itemQuery);
 			if (regexMatcher.find()) {
 				searchResults.add(entry.getValue());

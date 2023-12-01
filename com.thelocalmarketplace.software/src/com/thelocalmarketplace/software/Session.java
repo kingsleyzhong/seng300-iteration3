@@ -3,18 +3,13 @@ package com.thelocalmarketplace.software;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
-
 import com.jjjwelectronics.Mass;
 import com.tdc.CashOverloadException;
 import com.tdc.DisabledException;
 import com.tdc.NoCashAvailableException;
-import com.tdc.banknote.BanknoteInsertionSlot;
-import com.tdc.coin.CoinSlot;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
-import com.thelocalmarketplace.software.attendant.IssuePredictor;
-import com.thelocalmarketplace.software.attendant.IssuePredictorListener;
+import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
 import com.thelocalmarketplace.software.funds.Funds;
@@ -70,103 +65,42 @@ public class Session {
 	private AbstractSelfCheckoutStation scs;
 	private SessionState sessionState;
 	private SessionState prevState;
+	private boolean disableSelf = false; // when true: disable the Session when it ends
 	private BarcodedProduct lastProduct;
 	private Funds funds;
 	private Weight weight;
 	private ItemManager manager;
 	private Receipt receiptPrinter;
-	private IssuePredictor predictionManager;
 	private boolean requestApproved = false;
 	
 	private class ItemManagerListener implements ItemListener{
-
+		private Session outerSession;
+		
+		private ItemManagerListener(Session s) {
+			outerSession = s;
+		}
+		
 		@Override
-		public void anItemHasBeenAdded(Mass mass, BigDecimal price) {
+		public void anItemHasBeenAdded(Product product, Mass mass, BigDecimal price) {
 			weight.update(mass);
 			funds.update(price);
+			for (SessionListener l : listeners) {
+				l.itemAdded(outerSession, product, mass, weight.getExpectedWeight(), funds.getItemsPrice());
+			}
 		}
 
 		@Override
-		public void anItemHasBeenRemoved(Mass mass, BigDecimal price) {
+		public void anItemHasBeenRemoved(Product product, Mass mass, BigDecimal price) {
 			weight.removeItemWeightUpdate(mass);
 			funds.removeItemPrice(price);
+			for (SessionListener l : listeners) {
+				l.itemRemoved(outerSession, product, mass, weight.getExpectedWeight(), funds.getItemsPrice());
+			}
 		}
-		
+
 	}
+	 
 	
-	private class PredictIssueListener implements IssuePredictorListener {
-
-		@Override
-		public void notifyPredictUnsupportedFeature(Requests request) {
-			notifyAttendant(request);
-		}
-		
-		/**
-		 * Notify the attendant that a low ink issue will shortly occur.
-		 * Disable the customer station on which the issue has been predicted.
-		 */
-		@Override
-		public void notifyPredictLowInk() {
-			notifyAttendant(Requests.LOW_INK);
-			block();
-		}
-
-		/**
-		 * Notify the attendant that a low paper issue will shortly occur.
-		 * Disable the customer station on which the issue has been predicted.
-		 */
-		@Override
-		public void notifyPredictLowPaper() {
-			notifyAttendant(Requests.LOW_PAPER);
-			block();
-		}
-
-		/**
-		 * Notify the attendant that a coin storage full issue will shortly 
-		 * occur. Disable the customer station on which the issue has been 
-		 * predicted.
-		 */
-		@Override
-		public void notifyPredictCoinsFull() {
-			notifyAttendant(Requests.COINS_FULL);
-			block();
-		}
-
-		/**
-		 * Notify the attendant that a banknote storage full issue will shortly
-		 * occur. Disable the customer station on which the issue has been 
-		 * predicted.
-		 */
-		@Override
-		public void notifyPredictBanknotesFull() {
-			notifyAttendant(Requests.BANKNOTES_FULL);
-			block();
-		}
-
-		/**
-		 * Notify the attendant that a low coins in dispenser issue will 
-		 * shortly occur. Disable the customer station on which the issue 
-		 * has been predicted.
-		 */
-		@Override
-		public void notifyPredictLowCoins() {
-			notifyAttendant(Requests.LOW_COINS);
-			block();
-		}
-
-		/** 
-		 * Notify the attendant that a low banknotes in dispenser issue will
-		 * shortly occur. Disable the customer station on which the issue 
-		 * has been predicted.
-		 */
-		@Override
-		public void notifyPredictLowBanknotes() {
-			notifyAttendant(Requests.LOW_BANKNOTES);
-			block();
-		}
-
-	}
-
 	private class WeightDiscrepancyListener implements WeightListener {
 
 		/**
@@ -185,8 +119,11 @@ public class Session {
 				return;
 			}
 			
-			// signal attendent(s)
-			notifyAttendant(Requests.WEIGHT_DISCREPANCY);			
+			// signal attendant(s)
+			notifyAttendant(Requests.WEIGHT_DISCREPANCY);	
+			
+			// signal a discrepancy
+			
 			block();
 		}
 
@@ -217,7 +154,7 @@ public class Session {
 		 */
 		@Override
 		public void notifyPaid() {
-			sessionState = SessionState.PRE_SESSION;
+			end();
 		}
 		
 		/**
@@ -259,8 +196,9 @@ public class Session {
 
 		@Override
 		public void notifiyReceiptPrinted() {
-			// Should notifyPaid() not wait until receipt is successfully printed to change to PRE_SESSION?
-			sessionState = SessionState.PRE_SESSION;
+			// Should notifyPaid() not wait until receipt is successfully printed to change
+			// to PRE_SESSION?
+			end();
 		}
 		
 	}
@@ -312,36 +250,38 @@ public class Session {
 	 *                      The weight of the items and actual weight on the scale
 	 *                      during the session
 	 *                      
-	 * @param Receipt 
+	 * @param receipt 
 	 * 						The PrintReceipt behavior
+	 * 
+	 * @param IremManager
+	 * 						The software for managing adding and removing items
 	 */
-	public void setup(IssuePredictor predictionManager, ItemManager manager, 
+	public void setup(ItemManager manager, 
 			Funds funds, Weight weight, Receipt receiptPrinter,
 			AbstractSelfCheckoutStation scs) {
 		this.manager = manager;
 		this.funds = funds;
 		this.weight = weight;
-		this.predictionManager = predictionManager;
-		this.predictionManager.register(new PredictIssueListener());
 		this.weight.register(new WeightDiscrepancyListener());
 		this.funds.register(new PayListener());
-		this.manager.register(new ItemManagerListener());
+		this.manager.register(new ItemManagerListener(this));
 		this.receiptPrinter = receiptPrinter;
 		this.receiptPrinter.register(new PrinterListener());
 		this.scs = scs;
-	 
 	}
 	
+
 	/**
 	 * Sets the session to have started, allowing customer to interact with station
 	 */
-	public void start() {
+	public void start() {		
+		// signal about to start + wait for prediction to finish?
+		
 		sessionState = SessionState.IN_SESSION;
 		manager.setAddItems(true);
-		// manager.clear();
-		// funds.clear();
-		// weight.clear();
+
 	}
+	
 
 	/**
 	 * Cancels the current session and resets the current session
@@ -364,6 +304,16 @@ public class Session {
 		sessionState = SessionState.BLOCKED;
 		manager.setAddItems(false);
 	}
+	
+	private void end() {
+		prevState = sessionState;
+		sessionState = SessionState.PRE_SESSION;
+		
+		// if the session is slated to be disabled, do that
+		if(disableSelf) {
+			disable();
+		}
+	}
 
 	/**
 	 * Resumes the session, allowing the customer to continue interaction
@@ -378,6 +328,37 @@ public class Session {
 		}
 	}
 
+	/**
+	 * Places a previously disabled session into the PRE_SESSION state
+	 * For use after clearing hardware issues that left the station disabled.
+	 */
+	public void enable() {
+		// sets the session's state to PRE_SESSION
+		if(this.sessionState == SessionState.DISABLED) {
+			this.sessionState = SessionState.PRE_SESSION;
+			disableSelf = false;
+		}
+	}
+
+	
+	/**
+	 * Places this session into the DISABLED state. While in the DISABLED state no functions
+	 * should be able to occur.
+	 * 
+	 * If the session is currently running/active than the session cannot be disabled until it
+	 * has finished running
+	 *  
+	 */
+	public void disable() {
+		// sets the session's state to DISABLED
+		if(this.sessionState == SessionState.PRE_SESSION) {
+			this.sessionState = SessionState.DISABLED;
+		}
+		else {
+			disableSelf = true; 
+		}
+	}
+	
 	/**
 	 * Enters the cash payment mode for the customer. Prevents customer from adding further
 	 * items by freezing session.
@@ -468,6 +449,25 @@ public class Session {
 		if (request == Requests.BULKY_ITEM) {
 			addBulkyItem();
 		}
+		switch(request) {
+		case ADD_ITEM_SEARCH:
+			break;
+		case BAGS_TOO_HEAVY:
+			break;
+		case BULKY_ITEM:
+			break;
+		case CANT_MAKE_CHANGE:
+			break;
+		case CANT_PRINT_RECEIPT:
+			break;
+		case HELP_REQUESTED:
+			break;
+		case WEIGHT_DISCREPANCY:
+			break;
+		default:
+			break;
+		
+		}
 	}
 
 	/**
@@ -488,7 +488,6 @@ public class Session {
 	public void askForHelp() {
 		notifyAttendant(Requests.HELP_REQUESTED);
 	}
-	
 	/**
 	 * getter methods
 	 */
@@ -539,4 +538,5 @@ public class Session {
 			throw new NullPointerSimulationException("listener");
 			listeners.remove(listener);
 	}
+
 }

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Map;
 
+import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.printer.IReceiptPrinter;
 import com.jjjwelectronics.printer.ReceiptPrinterBronze;
 import com.jjjwelectronics.printer.ReceiptPrinterGold;
@@ -15,10 +16,14 @@ import com.tdc.banknote.BanknoteStorageUnit;
 import com.tdc.banknote.IBanknoteDispenser;
 import com.tdc.coin.AbstractCoinDispenser;
 import com.tdc.coin.CoinDispenserBronze;
+import com.tdc.coin.CoinDispenserGold;
 import com.tdc.coin.CoinSlot;
 import com.tdc.coin.CoinStorageUnit;
 import com.tdc.coin.ICoinDispenser;
+import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
+import com.thelocalmarketplace.software.SessionListener;
 import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.receipt.ReceiptListener;
 /*
@@ -50,26 +55,117 @@ import com.thelocalmarketplace.software.receipt.ReceiptListener;
 public class IssuePredictor  {
 	public ArrayList<IssuePredictorListener> listeners = new ArrayList<>();
 
+	// the associated instance of Session
+	private Session session;
+	
+	// hardware of the associated session
 	private IReceiptPrinter receiptPrinter;
 	private CoinStorageUnit coinStorage;
 	private BanknoteStorageUnit banknoteStorage;
 	private Map<BigDecimal, IBanknoteDispenser> banknoteDispensers;
 	private Map<BigDecimal, ICoinDispenser> coinDispensers;
 	
-	private SessionState state;
 	
-	
-	public IssuePredictor() {
+	public IssuePredictor(Session session, AbstractSelfCheckoutStation scs) {
+		this.session = session;
+		// register IssuePredictor as a listener to the session
+		session.register(new InnerSessionListener());
+		
+		// save references to the hardware associated with session?`
+		receiptPrinter = scs.getPrinter();
+		coinStorage = scs.getCoinStorage();
+		banknoteStorage = scs.getBanknoteStorage();
+		banknoteDispensers = scs.getBanknoteDispensers();
+		coinDispensers = scs.getCoinDispensers();
 	}
+	
+	private class InnerSessionListener implements SessionListener{
+
+		@Override
+		public void getRequest(Session session, Requests request) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void itemAdded(Session session, Product product, Mass ofProduct, Mass currentExpectedWeight,
+				BigDecimal currentExpectedPrice) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void itemRemoved(Session session, Product product, Mass ofProduct, Mass currentExpectedMass,
+				BigDecimal currentExpectedPrice) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void addItemToScaleDiscrepancy(Session session) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void removeItemFromScaleDiscrepancy(Session session) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void discrepancy(Session session, String message) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void discrepancyResolved(Session session) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void pricePaidUpdated(Session session) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void sessionAboutToStart(Session session) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void sessionEnded(Session session) {
+			// run the prediction algorithm
+			predictionCheck(session);
+		}
+		
+	}
+	
+	/**
+	 * Runs all checks on a given session
+	 */
+	private void predictionCheck(Session session) {
+		checkLowInk(session, receiptPrinter);
+		checkLowPaper(session, receiptPrinter);
+		checkLowCoins(session,coinDispensers);
+		checkLowBanknotes(session, banknoteDispensers);
+		checkCoinsFull(session, coinStorage);
+		checkBanknotesFull(session, banknoteStorage);
+	}
+	
 	
 	/*
 	 * Predict if an issue may occur with not enough ink inside the printer
 	 * The current amount of ink in the printer should be above 
 	 * a threshold = N/A. If an issue is found, announce a low ink event.
 	 */
-    public void checkLowInk(Session s) {
-    	receiptPrinter = s.getStation().getPrinter();
-    	state = s.getState();
+    public void checkLowInk(Session s, IReceiptPrinter printer) {
+    	receiptPrinter = printer;
+    	SessionState state = s.getState();
     	
     	if (!(state == SessionState.PRE_SESSION)) 
     		return;
@@ -78,7 +174,7 @@ public class IssuePredictor  {
     	int threshold;
     	
     	if (receiptPrinter instanceof ReceiptPrinterBronze) {
-    		notifyUnsupportedFeature(Requests.LOW_INK_CHECK_UNSUPPORTED);
+    		notifyUnsupportedFeature(s, Issues.LOW_INK_CHECK_UNSUPPORTED);
     	} else if (receiptPrinter instanceof ReceiptPrinterSilver) {
     		ReceiptPrinterSilver silver = (ReceiptPrinterSilver) receiptPrinter;
     		
@@ -86,7 +182,7 @@ public class IssuePredictor  {
     		threshold = silver.MAXIMUM_INK;
     		
     		if (currentInk <= threshold * 0.1)
-    			notifyLowInk();
+    			notifyLowInk(s);
     	} else {
     		ReceiptPrinterGold gold = (ReceiptPrinterGold) receiptPrinter;
     		
@@ -94,7 +190,7 @@ public class IssuePredictor  {
     		threshold = gold.MAXIMUM_INK;
     		
     		if (currentInk <= threshold * 0.1)
-    			notifyLowInk();
+    			notifyLowInk(s);
     	}
     }
     
@@ -104,9 +200,9 @@ public class IssuePredictor  {
      * above a threshold = N/A. If an issue is found, announce 
      * a low paper event.
      */
-    public void checkLowPaper(Session s) {
-    	receiptPrinter = s.getStation().getPrinter();
-    	state = s.getState();
+    public void checkLowPaper(Session s, IReceiptPrinter printer) {
+    	receiptPrinter = printer;
+    	SessionState state = s.getState();
     	
     	if (!(state == SessionState.PRE_SESSION)) 
     		return;
@@ -115,7 +211,7 @@ public class IssuePredictor  {
     	int threshold;
     	
 		if (receiptPrinter instanceof ReceiptPrinterBronze) 
-			notifyUnsupportedFeature(Requests.LOW_PAPER_CHECK_UNSUPPORTED);
+			notifyUnsupportedFeature(s, Issues.LOW_PAPER_CHECK_UNSUPPORTED);
 		else if (receiptPrinter instanceof ReceiptPrinterSilver) {
 			ReceiptPrinterSilver silver = (ReceiptPrinterSilver) receiptPrinter;
 			
@@ -123,7 +219,7 @@ public class IssuePredictor  {
 			threshold = silver.MAXIMUM_PAPER;
 			
 			if (currentPaper <= threshold * 0.1) 
-				notifyLowPaper();
+				notifyLowPaper(s);
 		} else {
 			ReceiptPrinterGold gold = (ReceiptPrinterGold) receiptPrinter;
 			
@@ -131,7 +227,7 @@ public class IssuePredictor  {
 			threshold = gold.MAXIMUM_PAPER;
 			
 			if (currentPaper <= threshold * 0.1)
-				notifyLowPaper();
+				notifyLowPaper(s);
 		}
     }
     
@@ -141,16 +237,30 @@ public class IssuePredictor  {
      * should be above a threshold = N/A. If an issue is found, 
      * announce a low coins event
      */
-    public void checkLowCoins(Session s) {
-    	coinDispensers = s.getStation().getCoinDispensers();
-    	state = s.getState();
+    public void checkLowCoins(Session s, 
+    		Map<BigDecimal, ICoinDispenser> dispensers) {
+    	coinDispensers = dispensers;
+    	SessionState state = s.getState();
     	
 		if (!(state == SessionState.PRE_SESSION)) 
 			return;
 		
     	for (ICoinDispenser dispenser : coinDispensers.values()) {
-    		if (!dispenser.hasSpace()) 
-    			notifyCoinsLow();
+    		if (dispenser instanceof CoinDispenserBronze) {
+    			int currentCoins = dispenser.size();
+    			int threshold = dispenser.getCapacity();
+    			
+    			if (currentCoins <= threshold * 0.1) 
+    				notifyCoinsLow(s);
+    			
+    		} else if (dispenser instanceof CoinDispenserGold) {
+    			int currentCoins = dispenser.size();
+    			int threshold = dispenser.getCapacity();
+    			
+    			if (currentCoins <= threshold * 0.1)
+    				notifyCoinsLow(s);
+    		} else 
+    			notifyUnsupportedFeature(s, Issues.LOW_COINS_CHECK_UNSUPPORTED);
     	}
     }
     
@@ -160,9 +270,10 @@ public class IssuePredictor  {
      * should be above a threshold = N/A. If an issue is found, announce
      * a low banknotes event.
      */
-    public void checkLowBanknotes(Session s) {
-    	banknoteDispensers = s.getStation().getBanknoteDispensers();
-    	state = s.getState();
+    public void checkLowBanknotes(Session s, 
+    		Map<BigDecimal, IBanknoteDispenser> dispensers) {
+    	banknoteDispensers = dispensers;
+    	SessionState state = s.getState();
     	
     	if (!(state == SessionState.PRE_SESSION))  
     		return;
@@ -170,15 +281,18 @@ public class IssuePredictor  {
     	for (IBanknoteDispenser dispenser : banknoteDispensers.values()) {
     		if (dispenser instanceof BanknoteDispenserBronze) {
     			int currentBanknotes = dispenser.size();
-    			int threshold = 0;
+    			int threshold = dispenser.getCapacity();
     			
-    			if (currentBanknotes == threshold) 
-    				notifyBanknotesLow();
+    			if (currentBanknotes <= threshold * 0.1) 
+    				notifyBanknotesLow(s);
     		} else if (dispenser instanceof BanknoteDispenserGold){
-				if (((BanknoteDispenserGold) dispenser).hasSpace()) 
-					notifyBanknotesLow();
+    			int currentBanknotes = dispenser.size();
+    			int threshold = dispenser.getCapacity();
+    			
+    			if (currentBanknotes <= threshold * 0.1) 
+    				notifyBanknotesLow(s);
 			} else 
-				notifyUnsupportedFeature(Requests.LOW_BANKNOTE_CHECK_UNSUPPORTED);
+				notifyUnsupportedFeature(s, Issues.LOW_BANKNOTE_CHECK_UNSUPPORTED);
 		}
     }
     
@@ -188,15 +302,15 @@ public class IssuePredictor  {
      * amount of coins in the storage unit should be below a threshold = N/A.
      * If an issue is found, announce a coins full event.
      */
-    public void checkCoinsFull(Session s) {
-    	coinStorage = s.getStation().getCoinStorage();
-    	state = s.getState();
+    public void checkCoinsFull(Session s, CoinStorageUnit storage) {
+    	coinStorage = storage;
+    	SessionState state = s.getState();
     	
     	if (!(state == SessionState.PRE_SESSION)) 
     		return;
     	
 		if (!coinStorage.hasSpace()) 
-			notifyCoinsFull();
+			notifyCoinsFull(s);
     }
     
     /**
@@ -205,50 +319,50 @@ public class IssuePredictor  {
      * current amount of banknotes in the storage unit should be below a 
      * threshold = N/A. If an issue is found, announce a banknotes full event.
      */
-    public void checkBanknotesFull(Session s) {
-    	banknoteStorage = s.getStation().getBanknoteStorage();
-    	state = s.getState();
+    public void checkBanknotesFull(Session s, BanknoteStorageUnit storage) {
+    	banknoteStorage = storage;
+    	SessionState state = s.getState();
     	
     	if (!(state == SessionState.PRE_SESSION)) 
     		return;
     	
     	if (!banknoteStorage.hasSpace()) 
-    		notifyBanknotesFull();   	
+    		notifyBanknotesFull(s);   	
     }
     
-    private void notifyUnsupportedFeature(Requests request) {
+    private void notifyUnsupportedFeature(Session session, Issues issue) {
     	for (IssuePredictorListener l : listeners)
-    		l.notifyPredictUnsupportedFeature(request);
+    		l.notifyPredictUnsupportedFeature(session, issue);
     }
     
-    private void notifyLowInk() {
+    private void notifyLowInk(Session session) {
     	for (IssuePredictorListener l : listeners) 
-			l.notifyPredictLowInk();
+			l.notifyPredictLowInk(session);
     }
     
-    private void notifyLowPaper() {
+    private void notifyLowPaper(Session session) {
     	for (IssuePredictorListener l : listeners) 
-			l.notifyPredictLowPaper();
+			l.notifyPredictLowPaper(session);
     }
     
-    private void notifyCoinsLow() {
+    private void notifyCoinsLow(Session session) {
     	for (IssuePredictorListener l : listeners)
-			l.notifyPredictLowCoins();
+			l.notifyPredictLowCoins(session);
     }
     
-    private void notifyBanknotesLow() {
+    private void notifyBanknotesLow(Session session) {
     	for (IssuePredictorListener l : listeners)
-			l.notifyPredictLowBanknotes();
+			l.notifyPredictLowBanknotes(session);
     }
     
-    private void notifyCoinsFull() {
+    private void notifyCoinsFull(Session session) {
     	for (IssuePredictorListener l : listeners) 
-			l.notifyPredictCoinsFull();
+			l.notifyPredictCoinsFull(session);
     }
     
-    private void notifyBanknotesFull() {
+    private void notifyBanknotesFull(Session session) {
     	for (IssuePredictorListener l : listeners)
-			l.notifyPredictBanknotesFull();
+			l.notifyPredictBanknotesFull(session);
     }
     
 	public synchronized boolean deregister(IssuePredictorListener listener) {

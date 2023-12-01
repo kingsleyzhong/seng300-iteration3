@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import com.jjjwelectronics.Mass;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.exceptions.ProductNotFoundException;
 import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
@@ -76,7 +77,7 @@ public class ItemManager {
 			BigDecimal itemPrice = new BigDecimal(price);
 			lastProduct = product;
 			
-			notifyItemAdded(mass, itemPrice);
+			notifyItemAdded(product, mass, itemPrice);
 		}
 	}
 	
@@ -118,17 +119,17 @@ public class ItemManager {
 			mass = new Mass(0);
 		}
 		
-		notifyItemRemoved(mass, itemPrice);
+		notifyItemRemoved(product, mass, itemPrice);
 	} 
 	
-	public void notifyItemAdded(Mass mass, BigDecimal price) {
+	public void notifyItemAdded(Product product, Mass mass, BigDecimal price) {
 		for (ItemListener l : listeners)
-			l.anItemHasBeenAdded(mass, price);
+			l.anItemHasBeenAdded(product, mass, price);
 	}
 	
-	public void notifyItemRemoved(Mass mass, BigDecimal price) {
+	public void notifyItemRemoved(Product product, Mass mass, BigDecimal price) {
 		for (ItemListener l : listeners)
-			l.anItemHasBeenRemoved(mass, price);
+			l.anItemHasBeenRemoved(product, mass, price);
 	}
 	
 	

@@ -1,4 +1,7 @@
 package com.thelocalmarketplace.software.attendant;
+
+import com.thelocalmarketplace.software.Session;
+
 /*
  * 
  * Project Iteration 3 Group 1
@@ -27,39 +30,39 @@ package com.thelocalmarketplace.software.attendant;
  */
 public interface IssuePredictorListener {
 	 
-	void notifyPredictUnsupportedFeature(Requests request);
+	void notifyPredictUnsupportedFeature(Session session, Issues issue);
 	
 	/**
 	 * Signals an event that a low ink issue will shortly occur
 	 */
-	void notifyPredictLowInk();
+	void notifyPredictLowInk(Session session);
 	
 	
 	/**
 	 * Signals an event that a low paper issue will shortly occur
 	 */
-	void notifyPredictLowPaper();
+	void notifyPredictLowPaper(Session session);
 	
  
 	/**
 	 * Signals an event that a coins full issue will shortly occur
 	 */
-	void notifyPredictCoinsFull();
+	void notifyPredictCoinsFull(Session session);
 	
 	
 	/**
 	 * Signals an event that a bank notes full issue will shortly occur
 	 */
-	void notifyPredictBanknotesFull();
+	void notifyPredictBanknotesFull(Session session);
 	
 	/**
 	 * Signals an event that a low coins issue will shortly occur
 	 */
-	void notifyPredictLowCoins();
+	void notifyPredictLowCoins(Session session);
 	
 	/**
 	 * Signals an event that a low bank notes issue will shortly occur
 	 */
-	void notifyPredictLowBanknotes();
+	void notifyPredictLowBanknotes(Session session);
 
 }

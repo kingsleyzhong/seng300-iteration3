@@ -24,6 +24,8 @@ import com.thelocalmarketplace.software.weight.Weight;
 /**
  * A facade for the logic, supporting its installation on a self checkout
  * station.
+ * Creates and associates Attendants and Sessions.
+ * 
  * Allows for a database to be constructed
  * 
  * Project Iteration 3 Group 1
@@ -85,27 +87,42 @@ public class SelfCheckoutStationLogic {
 	 *                The session that the logic shall be installed on
 	 */
 	private SelfCheckoutStationLogic(AbstractSelfCheckoutStation scs) {
+		// creates a new Session
 		session = new Session();
+		
+		// Registers the attendant with the session
 		attendant.registerOn(session);
+		
+		// create Funds, Weight, Receipt, and ItemManger classes to associate w/ Session
 		Funds funds = new Funds(scs);
 		IssuePredictor predictionManager = new IssuePredictor();
 		new PayByCash(scs.getCoinValidator(), scs.getBanknoteValidator(), funds);
 		new PayByCard(scs.getCardReader(), funds);
 		Weight weight = new Weight(scs.getBaggingArea());
-		Receipt receiptPrinter = new Receipt(scs.getPrinter());
+		Receipt receipt = new Receipt(scs.getPrinter());
 		ItemManager itemManager = new ItemManager(session); 
+		session.setup(itemManager, funds, weight, receipt, scs); 
+
 		// Will also need the touch screen/ keyboard for GUI interaction
 		session.setup(predictionManager, itemManager, funds, weight, receiptPrinter, scs); 
 		new ItemAddedRule(scs.getMainScanner(), scs.getHandheldScanner(), itemManager);
+
+		// Register IssuePredictor with Session
+		IssuePredictor predictor = new IssuePredictor(session, scs); 
+		// tell the Attendant about the Predictor
+		attendant.addIssuePrediction(predictor); 
+	
 	}
 	
 	public static Attendant getAttendant() {
 		return attendant;
 	}
 	
+	
 	public Session getSession() {
 		return session;
 	}
+	
 	
 	/**
 	 * populates the database with a barcode and barcoded product into the inventory
