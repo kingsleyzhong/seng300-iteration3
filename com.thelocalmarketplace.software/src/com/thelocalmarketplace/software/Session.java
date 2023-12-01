@@ -13,6 +13,7 @@ import com.tdc.banknote.BanknoteInsertionSlot;
 import com.tdc.coin.CoinSlot;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
 import com.thelocalmarketplace.software.exceptions.InvalidActionException;
@@ -43,27 +44,27 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
  *
  * Project Iteration 3 Group 1
  *
- * Derek Atabayev : 30177060
- * Enioluwafe Balogun : 30174298
- * Subeg Chahal : 30196531
- * Jun Heo : 30173430
- * Emily Kiddle : 30122331
- * Anthony Kostal-Vazquez : 30048301
- * Jessica Li : 30180801
- * Sua Lim : 30177039
- * Savitur Maharaj : 30152888
- * Nick McCamis : 30192610
- * Ethan McCorquodale : 30125353
- * Katelan Ng : 30144672
- * Arcleah Pascual : 30056034
- * Dvij Raval : 30024340
- * Chloe Robitaille : 30022887
- * Danissa Sandykbayeva : 30200531
- * Emily Stein : 30149842
- * Thi My Tuyen Tran : 30193980
- * Aoi Ueki : 30179305
- * Ethan Woo : 30172855
- * Kingsley Zhong : 30197260
+ * Derek Atabayev 			: 30177060
+ * Enioluwafe Balogun 		: 30174298
+ * Subeg Chahal 			: 30196531
+ * Jun Heo 					: 30173430
+ * Emily Kiddle 			: 30122331
+ * Anthony Kostal-Vazquez 	: 30048301
+ * Jessica Li 				: 30180801
+ * Sua Lim 					: 30177039
+ * Savitur Maharaj 			: 30152888
+ * Nick McCamis 			: 30192610
+ * Ethan McCorquodale 		: 30125353
+ * Katelan Ng 				: 30144672
+ * Arcleah Pascual 			: 30056034
+ * Dvij Raval 				: 30024340
+ * Chloe Robitaille 		: 30022887
+ * Danissa Sandykbayeva 	: 30200531
+ * Emily Stein 				: 30149842
+ * Thi My Tuyen Tran 		: 30193980
+ * Aoi Ueki 				: 30179305
+ * Ethan Woo 				: 30172855
+ * Kingsley Zhong 			: 30197260
  *
  */
 public class Session {
@@ -82,18 +83,25 @@ public class Session {
 	private Requests request = Requests.NO_REQUEST;
 	private boolean requestApproved = false;
 
-	private class ItemManagerListener implements ItemListener {
+	private class ItemManagerListener implements ItemListener{
 
 		@Override
-		public void anItemHasBeenAdded(Mass mass, BigDecimal price) {
+		public void anItemHasBeenAdded(Product product, Mass mass, BigDecimal price) {
 			weight.update(mass);
 			funds.update(price);
+			for (SessionListener l : listeners) {
+				l.itemAdded(product, mass, weight.getExpectedWeight(), funds.getItemsPrice());
+			}
+			System.out.println("Added");
 		}
 
 		@Override
-		public void anItemHasBeenRemoved(Mass mass, BigDecimal price) {
+		public void anItemHasBeenRemoved(Product product, Mass mass, BigDecimal price) {
 			weight.removeItemWeightUpdate(mass);
 			funds.removeItemPrice(price);
+			for (SessionListener l : listeners) {
+				l.itemRemoved(product, mass, weight.getExpectedWeight(), funds.getItemsPrice());
+			}
 		}
 
 	}
@@ -112,8 +120,8 @@ public class Session {
 			// Only needed when the customer wants to add their own bags (this is how
 			// Session knows the bags' weight)
 			if (sessionState == SessionState.ADDING_BAGS) {
-				// This means that the bags are too heavy. Something should happen here. Perhaps
-				// instead we need another call that notifies bags too heavyS
+				//This means that the bags are too heavy. Something should happen here. Perhaps
+				//instead we need another call that notifies bags too heavyS
 				return;
 			}
 			block();
@@ -166,8 +174,7 @@ public class Session {
 
 		@Override
 		public void notifiyReceiptPrinted() {
-			// Should notifyPaid() not wait until receipt is successfully printed to change
-			// to PRE_SESSION?
+			// Should notifyPaid() not wait until receipt is successfully printed to change to PRE_SESSION?
 			sessionState = SessionState.PRE_SESSION;
 		}
 
@@ -264,9 +271,10 @@ public class Session {
 	 * Cancels the current session and resets the current session
 	 */
 	public void cancel() {
-		if (sessionState == SessionState.IN_SESSION) {
+		if(sessionState == SessionState.IN_SESSION) {
 			sessionState = SessionState.PRE_SESSION;
-		} else if (sessionState != SessionState.BLOCKED) {
+		}
+		else if(sessionState != SessionState.BLOCKED) {
 			sessionState = SessionState.IN_SESSION;
 			weight.cancel();
 		}
@@ -285,17 +293,18 @@ public class Session {
 	 * Resumes the session, allowing the customer to continue interaction
 	 */
 	private void resume() {
-		if (funds.isPay()) {
+		if(funds.isPay()) {
 			sessionState = prevState;
-		} else {
+		}
+		else {
 			sessionState = SessionState.IN_SESSION;
 			manager.setAddItems(true);
 		}
 	}
-	
+
 	/**
 	 * Enters the adding membership mode for the customer.
-	 * 
+	 *
 	 * @throws InvalidActionException
 	 */
 	public void enteringMembership() {
@@ -305,11 +314,10 @@ public class Session {
 				throw new InvalidActionException("Cannot enter membership if session is not in adding items state");
 			}
 	}
-	
+
 
 	/**
-	 * Enters the cash payment mode for the customer. Prevents customer from adding
-	 * further
+	 * Enters the cash payment mode for the customer. Prevents customer from adding further
 	 * items by freezing session.
 	 */
 	public void payByCash() {
@@ -326,10 +334,8 @@ public class Session {
 	}
 
 	/**
-	 * Enters the card payment mode for the customer. Prevents customer from adding
-	 * further
+	 * Enters the card payment mode for the customer. Prevents customer from adding further
 	 * items by freezing session.
-	 * 
 	 * @throws DisabledException
 	 * @throws NoCashAvailableException
 	 * @throws CashOverloadException
@@ -360,8 +366,7 @@ public class Session {
 		// else: nothing changes about the Session's state
 	}
 
-	// Move to receiptPrinter class (possible rename of receiptPrinter to just
-	// reciept
+	// Move to receiptPrinter class (possible rename of receiptPrinter to just reciept
 	public void printReceipt() {
 		receiptPrinter.printReceipt(manager.getItems());
 	}
@@ -373,11 +378,12 @@ public class Session {
 	 */
 	public void addBulkyItem() {
 		// Only able to add when in a discrepancy after adding bags
-		if (sessionState == SessionState.BLOCKED) {
+		if(sessionState == SessionState.BLOCKED) {
 			sessionState = SessionState.BULKY_ITEM;
 			request = Requests.BULKY_ITEM;
 			notifyAttendant();
-		} else if (sessionState == SessionState.BULKY_ITEM) {
+		}
+		else if (sessionState == SessionState.BULKY_ITEM) {
 			if (requestApproved) {
 				requestApproved = false;
 				// subtract the bulky item weight from total weight if assistant has approved
@@ -420,7 +426,7 @@ public class Session {
 		return manager.getItems();
 	}
 
-	public HashMap<BarcodedProduct, Integer> getBulkyItems() {
+    public HashMap<BarcodedProduct, Integer> getBulkyItems() {
 		return manager.getBulkyItems();
 	}
 
@@ -443,6 +449,7 @@ public class Session {
 	public boolean membershipEntered() {
 		return hasMembership;
 	}
+
 
 	public AbstractSelfCheckoutStation getStation() {
 		return scs;

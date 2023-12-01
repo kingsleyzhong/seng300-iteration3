@@ -1,5 +1,10 @@
 package com.thelocalmarketplace.software;
 
+import java.math.BigDecimal;
+
+import com.jjjwelectronics.Mass;
+import com.thelocalmarketplace.hardware.Product;
+
 /**
  * Project Iteration 3 Group 1
  *
@@ -28,4 +33,18 @@ package com.thelocalmarketplace.software;
 
 public interface SessionListener {
 
+	void itemAdded(Product product, Mass ofProduct, Mass currentExpectedWeight, BigDecimal currentExpectedPrice);
+	
+	void itemRemoved(Product product, Mass ofProduct, Mass currentExpectedMass, BigDecimal currentExpectedPrice);
+	
+	void addItemToScaleDiscrepancy();
+	
+	void removeItemFromScaleDiscrepancy();
+	
+	void discrepancy(String message);
+	
+	void discrepancyResolved();
+	
+	void pricePaidUpdated();
+	
 }
