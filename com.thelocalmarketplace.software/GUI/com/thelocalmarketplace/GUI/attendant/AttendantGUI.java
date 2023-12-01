@@ -54,6 +54,7 @@ public class AttendantGUI {
 		
 		this.attendant = attendant;
 		//populateSessions();
+		
 		JPanel panel = new StationPanel(null);
 		panel.setPreferredSize(new Dimension(width/6, width/6));
 		attendant.screen.getFrame().add(panel, BorderLayout.SOUTH);

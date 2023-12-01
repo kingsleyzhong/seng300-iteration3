@@ -36,7 +36,6 @@ public class StationPanel extends JPanel implements ActionListener {
 	JPanel sidePanel;
 	JLabel stationName = new JLabel("");
 	JLabel status = new JLabel("");
-	JButton details;
 	Color detailsColor;
 	JButton power;	
 	Color powerColor;
@@ -45,28 +44,32 @@ public class StationPanel extends JPanel implements ActionListener {
 	private JLabel lblNewLabel;
 	
 	public StationPanel(ISelfCheckoutStation station) {
-		this.station = station;		
+		this.station = station;	
+		
+		if (station != null) {
+			enabled = true;
+		} else {
+			enabled = false;
+		}
+		
 		GridLayout layout = new GridLayout(1,5,0,0);
 		layout.setHgap(20);
 		layout.setVgap(20);
 		setLayout(layout);
 		setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
 		
-		stationName.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		stationName.setFont(new Font("Tahoma", Font.BOLD, 18));
 		stationName.setHorizontalAlignment(SwingConstants.LEFT);
-		stationName.setText("Station name: Station 1");
+		stationName.setText("STATION 1");
 		
-		status.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		status.setForeground(new Color(60, 179, 113));
+		status.setFont(new Font("Tahoma", Font.BOLD, 16));
 		status.setHorizontalAlignment(SwingConstants.LEFT);
-		status.setText("Station status: IDLE(?)");
+		status.setText("STATUS: IDLE");
 		
-		power = new PlainButton("Enable", Colors.color4);
-		power.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		power = new PlainButton("OFF", new Color(205, 92, 92));
+		power.setFont(new Font("Tahoma", Font.BOLD, 18));
 		power.addActionListener(this);
-		
-		details = new PlainButton("Details", Colors.color4);
-		details.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		details.addActionListener(this);
 		
 		add(stationName);
 		add(status);
@@ -76,29 +79,19 @@ public class StationPanel extends JPanel implements ActionListener {
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		add(lblNewLabel);
 		add(power);
-		add(details);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == details) {
-			// pop-up with details 
-			if (statusN == 0) {
-				// nothing displayed
-			} else if (statusN == 1) {
-				// warning (prediction)
-			} else if (statusN == 2) {
-				// problem Display message from the station
-			}
-		} else if (e.getSource() == power) {
+		if (e.getSource() == power) {
 			if(enabled) {
 				station.turnOff();
-				power.setText("Enable");
-				power.setBackground(new Color(248, 144, 144));
+				power.setText("ON");
+				power.setBackground(new Color(158, 228, 144));
 			} else {
 				station.turnOn();
-				power.setText("Disable");
-				power.setBackground(new Color(158, 228, 144));
+				power.setText("OFF");
+				power.setBackground(new Color(205, 92, 92));
 			}
 			
 		}
