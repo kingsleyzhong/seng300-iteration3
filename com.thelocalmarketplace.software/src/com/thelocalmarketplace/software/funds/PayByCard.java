@@ -49,9 +49,6 @@ public class PayByCard {
 	
 	//private Card card;
 	private double amountDue;
-	boolean cardSwiped;
-	boolean cardTapped;
-	boolean cardInserted;
 	boolean posted;
 	private Funds funds;
 	
