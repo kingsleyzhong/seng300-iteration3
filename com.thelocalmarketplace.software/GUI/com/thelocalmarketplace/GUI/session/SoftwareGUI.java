@@ -430,12 +430,6 @@ public class SoftwareGUI{
 		}
 
 		@Override
-		public void getRequest(Session session, Requests request) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
 		public void sessionAboutToStart(Session session) {
 			// TODO Auto-generated method stub
 			
@@ -452,6 +446,7 @@ public class SoftwareGUI{
 			// TODO Auto-generated method stub
 			
 		}
+
 
 	}
 }

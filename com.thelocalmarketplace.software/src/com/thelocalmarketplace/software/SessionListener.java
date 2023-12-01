@@ -52,4 +52,6 @@ public interface SessionListener {
 	
 	void sessionEnded(Session session);
 	
+	void getRequest(Session session, Requests request);
+	
 }

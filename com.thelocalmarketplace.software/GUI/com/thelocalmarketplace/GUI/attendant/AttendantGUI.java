@@ -53,25 +53,28 @@ public class AttendantGUI {
 		attendant.screen.getFrame().getContentPane().setBackground(Colors.color1);
 		
 		this.attendant = attendant;
-		//populateSessions();
+		// temporarily creating empty sessions
 		
-		JPanel panel = new StationPanel(null);
-		panel.setPreferredSize(new Dimension(width/6, width/6));
-		attendant.screen.getFrame().add(panel, BorderLayout.SOUTH);
+		populateSessions();
 		attendant.screen.setVisible(false);
 	}
 	
 	public void populateSessions() {
 		int val = 0;
+		if (stations.size() != 0) {
 		while(val < stations.size()) {
 			// add a session panel
 			JPanel panel = new StationPanel(stations.get(val));
 			stationPanels.add(panel);
 			panel.setPreferredSize(new Dimension(width/6, width/6));
-			
-			panel.setBackground(Colors.color1);
 			attendant.screen.getFrame().getContentPane().add(panel, BorderLayout.SOUTH);
 		}
+		} else {
+			JPanel panel = new StationPanel(null);
+			panel.setPreferredSize(new Dimension(width/6, width/6));
+			attendant.screen.getFrame().getContentPane().add(panel, BorderLayout.SOUTH);
+		}
+		
 	}
 	
 	public void hide() {

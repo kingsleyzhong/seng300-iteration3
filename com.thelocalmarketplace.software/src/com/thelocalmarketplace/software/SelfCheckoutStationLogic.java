@@ -95,7 +95,7 @@ public class SelfCheckoutStationLogic {
 		
 		// create Funds, Weight, Receipt, and ItemManger classes to associate w/ Session
 		Funds funds = new Funds(scs);
-		IssuePredictor predictionManager = new IssuePredictor();
+		IssuePredictor predictionManager = new IssuePredictor(session, scs);
 		new PayByCash(scs.getCoinValidator(), scs.getBanknoteValidator(), funds);
 		new PayByCard(scs.getCardReader(), funds);
 		Weight weight = new Weight(scs.getBaggingArea());
@@ -104,7 +104,6 @@ public class SelfCheckoutStationLogic {
 		session.setup(itemManager, funds, weight, receipt, scs); 
 
 		// Will also need the touch screen/ keyboard for GUI interaction
-		session.setup(predictionManager, itemManager, funds, weight, receiptPrinter, scs); 
 		new ItemAddedRule(scs.getMainScanner(), scs.getHandheldScanner(), itemManager);
 
 		// Register IssuePredictor with Session

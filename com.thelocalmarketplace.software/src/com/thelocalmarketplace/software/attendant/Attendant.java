@@ -106,45 +106,13 @@ public class Attendant {
 		}
 
 		@Override
-		public void itemAdded(Product product, Mass ofProduct, Mass currentExpectedWeight,
-				BigDecimal currentExpectedPrice) {
+		public void sessionAboutToStart(Session session) {
 			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
-		public void itemRemoved(Product product, Mass ofProduct, Mass currentExpectedMass,
-				BigDecimal currentExpectedPrice) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void addItemToScaleDiscrepancy() {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void removeItemFromScaleDiscrepancy() {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void discrepancy(String message) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void discrepancyResolved() {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void pricePaidUpdated() {
+		public void sessionEnded(Session session) {
 			// TODO Auto-generated method stub
 			
 		}

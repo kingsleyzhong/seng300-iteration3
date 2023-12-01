@@ -36,20 +36,21 @@ public class StationPanel extends JPanel implements ActionListener {
 	JPanel sidePanel;
 	JLabel stationName = new JLabel("");
 	JLabel status = new JLabel("");
+	JLabel info = new JLabel("");
 	Color detailsColor;
 	JButton power;	
+	JButton resolve;
 	Color powerColor;
 	
 	private static final long serialVersionUID = 1L;
-	private JLabel lblNewLabel;
 	
 	public StationPanel(ISelfCheckoutStation station) {
 		this.station = station;	
 		
 		if (station != null) {
-			enabled = true;
-		} else {
 			enabled = false;
+		} else {
+			enabled = true;
 		}
 		
 		GridLayout layout = new GridLayout(1,5,0,0);
@@ -71,13 +72,18 @@ public class StationPanel extends JPanel implements ActionListener {
 		power.setFont(new Font("Tahoma", Font.BOLD, 18));
 		power.addActionListener(this);
 		
+		resolve = new PlainButton("Mark resolved", Colors.color4);
+		resolve.setFont(new Font("Tahoma", Font.BOLD, 18));
+		resolve.addActionListener(this);
+		
 		add(stationName);
 		add(status);
 		
-		lblNewLabel = new JLabel("Sample text for the display of a warning or error message when the problem occurs (empty otherwise)");
-		lblNewLabel.setVerticalAlignment(SwingConstants.TOP);
-		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		add(lblNewLabel);
+		info = new JLabel("Sample text for the display of a warning or error message when the problem occurs (empty otherwise)");
+		info.setVerticalAlignment(SwingConstants.TOP);
+		info.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		add(info);
+		add(resolve);
 		add(power);
 	}
 
