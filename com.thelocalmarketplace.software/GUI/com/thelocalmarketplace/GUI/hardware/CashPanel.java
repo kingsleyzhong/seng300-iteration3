@@ -182,11 +182,7 @@ public class CashPanel extends JPanel{
 		RemoveChangeBillBtn.setForeground(Colors.color3);
 		RemoveChangeBillBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//HELP
-				//HELP
-				//I have no idea how to make this work
-				//HELP
-				//HELP
+				scs.getBanknoteOutput().removeDanglingBanknotes();
 			}
 		});
 		Bills.add(RemoveChangeBillBtn);
@@ -327,11 +323,7 @@ public class CashPanel extends JPanel{
 		btn_remove_coins.setForeground(Colors.color3);
 		btn_remove_coins.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//HELP
-				//HELP
-				//I have no idea how to make this work
-				//HELP
-				//HELP
+				scs.getCoinTray().collectCoins();
 			}
 		});
 		Coins.add(btn_remove_coins);
