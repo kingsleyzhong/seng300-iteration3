@@ -1,10 +1,12 @@
 package com.thelocalmarketplace.GUI.session;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -68,6 +70,7 @@ public class AddedProducts extends JPanel {
 		if(current == null || !(product instanceof BarcodedProduct)) {
 			CartProduct newPanel = new CartProduct(product, session, mass);
 			centralPanel.add(newPanel);
+			centralPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 			centralPanel.repaint();
 			centralPanel.revalidate();
 			products.add(temp);

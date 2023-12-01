@@ -70,6 +70,14 @@ public class Simulation {
 		BarcodedProduct product1 = new BarcodedProduct(barcode1, "baaakini", 15, 300.0);
 		SelfCheckoutStationLogic.populateDatabase(barcode1, product1, 10);
 		
+		Barcode barcode2 = new Barcode(new Numeral[] {Numeral.two});
+		BarcodedProduct product2 = new BarcodedProduct(barcode2, "wooly warm blanket", 60, 1000.0);
+		SelfCheckoutStationLogic.populateDatabase(barcode2, product2, 5);
+		
+		Barcode barcode3 = new Barcode(new Numeral[] {Numeral.three});
+		BarcodedProduct product3 = new BarcodedProduct(barcode3, "baaanana bread bites", 5, 125.0);
+		SelfCheckoutStationLogic.populateDatabase(barcode3, product3, 20);
+		
 		PriceLookUpCode plu1 = new PriceLookUpCode(new String("0000"));
 		PLUCodedProduct pluProduct1 = new PLUCodedProduct(plu1, "baaananas", 10);
 		SelfCheckoutStationLogic.populateDatabase(plu1, pluProduct1, 10);
