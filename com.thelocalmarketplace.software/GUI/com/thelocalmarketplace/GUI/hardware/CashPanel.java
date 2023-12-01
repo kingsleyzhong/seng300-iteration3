@@ -9,6 +9,7 @@ import com.tdc.DisabledException;
 import com.tdc.banknote.Banknote;
 import com.tdc.coin.Coin;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
+import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 
 import java.awt.Color;
@@ -68,9 +69,10 @@ public class CashPanel extends JPanel{
 		Bills.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Bill Acceptor", TitledBorder.CENTER, TitledBorder.TOP, null, new Color(51, 51, 51)));
 		Bills.setBackground(Colors.color3);
 		add(Bills);
-		Bills.setLayout(new GridLayout(5, 1, 20, 20));
+		Bills.setLayout(new GridLayout(5, 1, 15, 15));
 		
-		JButton btnBill = new JButton("5$ Bill");
+		JButton btnBill = new PlainButton("5$ Bill", Colors.color1);
+		btnBill.setForeground(Colors.color3);
 		btnBill.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -82,23 +84,27 @@ public class CashPanel extends JPanel{
 		});
 		Bills.add(btnBill);
 		
-		JButton btnBill_1 = new JButton("10$ Bill");
-		Bills.add(btnBill_1);
+		JButton btnBill_1 = new PlainButton("10$ Bill", Colors.color1);
+		btnBill_1.setForeground(Colors.color3);
 		
-		JButton btnNewButton = new JButton("20$ Bill");
+		JButton btnNewButton = new PlainButton("20$ Bill", Colors.color1);
+		btnNewButton.setForeground(Colors.color3);
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
 		Bills.add(btnNewButton);
 		
-		JButton btnBill_2 = new JButton("50$ Bill");
+		JButton btnBill_2 = new PlainButton("50$ Bill", Colors.color1);
+		btnBill_2.setForeground(Colors.color3);
 		Bills.add(btnBill_2);
 		
-		JButton btnBill_3 = new JButton("100$ Bill");
+		JButton btnBill_3 = new PlainButton("100$ Bill", Colors.color1);
+		btnBill_3.setForeground(Colors.color3);
 		Bills.add(btnBill_3);
 		
-		JButton btnNonbill = new JButton("Non-Bill");
+		JButton btnNonbill = new PlainButton("Non-Bill", Colors.color1);
+		btnNonbill.setForeground(Colors.color3);
 		Bills.add(btnNonbill);
 
 		
@@ -108,9 +114,10 @@ public class CashPanel extends JPanel{
 		Coins.setBorder(new TitledBorder(null, "COINS", TitledBorder.CENTER, TitledBorder.TOP, null, null));
 		Coins.setBackground(Colors.color3);
 		add(Coins);
-		Coins.setLayout(new GridLayout(5, 1, 20, 20));
+		Coins.setLayout(new GridLayout(5, 1, 15, 15));
 		
-		JButton button = new JButton("1¢");
+		JButton button = new PlainButton("1¢", Colors.color1);
+		button.setForeground(Colors.color3);
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -122,26 +129,32 @@ public class CashPanel extends JPanel{
 		});
 		Coins.add(button);
 		
-		JButton button_1 = new JButton("5¢");
+		JButton button_1 = new PlainButton("5¢", Colors.color1);
+		button_1.setForeground(Colors.color3);
 		button_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
 		Coins.add(button_1);
 		
-		JButton button_2 = new JButton("10¢");
+		JButton button_2 = new PlainButton("10¢", Colors.color1);
+		button_2.setForeground(Colors.color3);
 		Coins.add(button_2);
 		
-		JButton button_3 = new JButton("25¢");
+		JButton button_3 = new PlainButton("25¢", Colors.color1);
+		button_3.setForeground(Colors.color3);
 		Coins.add(button_3);
 		
-		JButton button_4 = new JButton("1$");
+		JButton button_4 = new PlainButton("$1", Colors.color1);
+		button_4.setForeground(Colors.color3);
 		Coins.add(button_4);
 		
-		JButton button_5 = new JButton("2$");
+		JButton button_5 = new PlainButton("$2", Colors.color1);
+		button_5.setForeground(Colors.color3);
 		Coins.add(button_5);
 		
-		JButton btnNoncoin = new JButton("Non-Coin");
+		JButton btnNoncoin = new PlainButton("Non-coin", Colors.color1);
+		btnNoncoin.setForeground(Colors.color3);
 		btnNoncoin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
