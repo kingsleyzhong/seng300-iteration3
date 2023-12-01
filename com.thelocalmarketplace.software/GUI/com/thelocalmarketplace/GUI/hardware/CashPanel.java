@@ -124,7 +124,7 @@ public class CashPanel extends JPanel{
 		
 		
 		JButton TenBillBtn = new PlainButton("10$ Bill", Colors.color1);
-		RemoveChangeBillBtn.setForeground(Colors.color3);
+		TenBillBtn.setForeground(Colors.color3);
 		Bills.add(TenBillBtn);
 
 		
@@ -136,29 +136,29 @@ public class CashPanel extends JPanel{
 		add(Coins);
 		Coins.setLayout(new GridLayout(5, 1, 15, 15));
 		
-		JButton button_1 = new PlainButton("5¢", Colors.color1);
-		button_1.setForeground(Colors.color3);
-		button_1.addActionListener(new ActionListener() {
+		JButton button_five_cent = new PlainButton("5¢", Colors.color1);
+		button_five_cent.setForeground(Colors.color3);
+		button_five_cent.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		Coins.add(button_1);
+		Coins.add(button_five_cent);
 		
-		JButton button_2 = new PlainButton("10¢", Colors.color1);
-		button_2.setForeground(Colors.color3);
-		Coins.add(button_2);
+		JButton button_ten_cent = new PlainButton("10¢", Colors.color1);
+		button_ten_cent.setForeground(Colors.color3);
+		Coins.add(button_ten_cent);
 		
-		JButton button_3 = new PlainButton("25¢", Colors.color1);
-		button_3.setForeground(Colors.color3);
-		Coins.add(button_3);
+		JButton button_twentyfive_cent = new PlainButton("25¢", Colors.color1);
+		button_twentyfive_cent.setForeground(Colors.color3);
+		Coins.add(button_twentyfive_cent);
 		
-		JButton button_4 = new PlainButton("$1", Colors.color1);
-		button_4.setForeground(Colors.color3);
-		Coins.add(button_4);
+		JButton button_one_coin = new PlainButton("$1", Colors.color1);
+		button_one_coin.setForeground(Colors.color3);
+		Coins.add(button_one_coin);
 		
-		JButton button_5 = new PlainButton("$2", Colors.color1);
-		button_5.setForeground(Colors.color3);
-		Coins.add(button_5);
+		JButton btn_two_coin = new PlainButton("$2", Colors.color1);
+		btn_two_coin.setForeground(Colors.color3);
+		Coins.add(btn_two_coin);
 		
 		JButton btnNoncoin = new PlainButton("Non-coin", Colors.color1);
 		btnNoncoin.setForeground(Colors.color3);
@@ -168,8 +168,8 @@ public class CashPanel extends JPanel{
 		});
 		Coins.add(btnNoncoin);
 		
-		JButton btnNewButton = new JButton("Remove Coin Tray Coins");
-		Coins.add(btnNewButton);
+		JButton btn_remove_coins = new JButton("Remove Coin Tray Coins");
+		Coins.add(btn_remove_coins);
 		
 		//coin tray via a popup event
 		
