@@ -33,4 +33,11 @@ import java.util.Map;
 public class MembershipDatabase {
     private MembershipDatabase() {}
     public static final Map<String, Member> MEMBERSHIP_DATABASE = new HashMap<>();
+
+    /** Registers a new member into the membership database.
+     * @param membershipNumber The member's membership number.
+     * @param memberName The member's name. */
+    public static void registerMember(String membershipNumber, String memberName) {
+        MEMBERSHIP_DATABASE.put(membershipNumber, new Member(memberName));
+    }
 }
