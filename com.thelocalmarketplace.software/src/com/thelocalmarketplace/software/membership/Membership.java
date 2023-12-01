@@ -7,7 +7,6 @@ import com.jjjwelectronics.IDeviceListener;
 import com.jjjwelectronics.card.Card.CardData;
 import com.jjjwelectronics.card.CardReaderListener;
 import com.jjjwelectronics.card.ICardReader;
-import com.jjjwelectronics.scanner.IBarcodeScanner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,22 +40,25 @@ import java.util.List;
 public class Membership {
     protected final List<MembershipListener> listeners;
     private final ICardReader cardReader;
-    private final List<IBarcodeScanner> barcodeScanners;
     private boolean addingItems = false;
 
 
 	/** Initializes a new instance of a Membership facade that provides the checkout station logic with a
      * user-inputted membership number.
-     * @param cardReader The card reader to read membership cards.
-     * @param barcodeScanners The barcode scanners to scan membership barcodes. */
-    public Membership(ICardReader cardReader, IBarcodeScanner... barcodeScanners) {
+     * @param cardReader The card reader to read membership cards. */
+    public Membership(ICardReader cardReader) {
+    	if (cardReader == null) {
+            throw new IllegalArgumentException("Card Reader should not be null.");
+        }
         listeners = new ArrayList<>();
         this.cardReader = cardReader;
-        this.barcodeScanners = List.of(barcodeScanners);
         InnerListener membershipReader = new InnerListener();
         cardReader.register(membershipReader);
     }
     
+    /** Checks to see if the provided card number is contained within the memberships database. If the 
+     * membership number is present, then listeners are notified.
+     * @param memberCardNumber The card number which will be checked */
     public void typeMembership(String memberCardNumber) {
     	if (MembershipDatabase.MEMBERSHIP_DATABASE.containsKey(memberCardNumber)) {
     		notifyMembershipEntered(memberCardNumber);
@@ -64,6 +66,9 @@ public class Membership {
     	//else {} Only needed if notifyMemberhsipNotFound() is something that is required in the the listener
     }
     
+    /** Checks to see if the provided card data has a card number contained in the the memberships database. 
+     * If the membership number is present, then listeners are notified.
+     * @param memberCard The member card to be examined for its card number */
     public void swipMembership(CardData memberCard) {
     	String memberCardNumber = memberCard.getNumber();
     	if (MembershipDatabase.MEMBERSHIP_DATABASE.containsKey(memberCardNumber)) {
@@ -114,14 +119,13 @@ public class Membership {
 			// TODO Auto-generated method stub
 		}
 
+		// Listens for card data which has been successfully read by the card reader
 		@Override
 		public void theDataFromACardHasBeenRead(CardData data) {
 			if(addingItems == true && data.getType().contains("Membership")) {
 				swipMembership(data);
 			}
 		}
-    	
-		
     }
     
     //setter for adding items
