@@ -1,5 +1,7 @@
 package com.thelocalmarketplace.GUI;
 
+import java.math.BigDecimal;
+
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.scanner.Barcode;
 import com.thelocalmarketplace.GUI.attendant.AttendantGUI;
@@ -30,8 +32,8 @@ public class Simulation {
 	private SoftwareGUI softwareGUI;
 	
 	public Simulation() {
-		setupLogic();
 		setupData();
+		setupLogic();
 	}
 	
 	/**
@@ -57,8 +59,11 @@ public class Simulation {
 		softwareGUI = new SoftwareGUI(session);
 		
 		// hidden by default
-		HardwareGUI.setVisibility(false);
-		softwareGUI.hide();
+		//HardwareGUI.setVisibility(false);
+		//softwareGUI.hide();
+		
+		//Pop visibility to top
+		HardwareGUI.setVisibility(true);
 	}
 	
 	/**
@@ -69,9 +74,27 @@ public class Simulation {
 		BarcodedProduct product1 = new BarcodedProduct(barcode1, "baaakini", 15, 300.0);
 		SelfCheckoutStationLogic.populateDatabase(barcode1, product1, 10);
 		
+		Barcode barcode2 = new Barcode(new Numeral[] {Numeral.two});
+		BarcodedProduct product2 = new BarcodedProduct(barcode2, "wooly warm blanket", 60, 1000.0);
+		SelfCheckoutStationLogic.populateDatabase(barcode2, product2, 5);
+		
+		Barcode barcode3 = new Barcode(new Numeral[] {Numeral.three});
+		BarcodedProduct product3 = new BarcodedProduct(barcode3, "baaanana bread bites", 5, 125.0);
+		SelfCheckoutStationLogic.populateDatabase(barcode3, product3, 20);
+		
 		PriceLookUpCode plu1 = new PriceLookUpCode(new String("0000"));
 		PLUCodedProduct pluProduct1 = new PLUCodedProduct(plu1, "baaananas", 10);
 		SelfCheckoutStationLogic.populateDatabase(plu1, pluProduct1, 10);
+		
+		PriceLookUpCode plu2 = new PriceLookUpCode(new String("0001"));
+		PLUCodedProduct pluProduct2 = new PLUCodedProduct(plu2, "baaakliva", 20);
+		SelfCheckoutStationLogic.populateDatabase(plu2, pluProduct2, 10);
+		
+		//Denominations of the SCS
+		AbstractSelfCheckoutStation.configureBanknoteDenominations(new BigDecimal[] {new BigDecimal(100), 
+				new BigDecimal(50), new BigDecimal(20), new BigDecimal(10), new BigDecimal(5) });
+		AbstractSelfCheckoutStation.configureCoinDenominations(new BigDecimal[] { new BigDecimal(2), 
+				BigDecimal.ONE, new BigDecimal(0.25), new BigDecimal(0.10), new BigDecimal(0.05)});
 	}
 	
 	public void unhide() {

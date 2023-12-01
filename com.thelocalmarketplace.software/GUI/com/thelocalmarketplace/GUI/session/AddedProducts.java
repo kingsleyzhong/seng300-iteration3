@@ -1,16 +1,19 @@
 package com.thelocalmarketplace.GUI.session;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import com.jjjwelectronics.Mass;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
+import com.thelocalmarketplace.GUI.customComponents.CustomBarUI;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
@@ -25,26 +28,20 @@ public class AddedProducts extends JPanel {
 	private HashMap<ArrayList<Object>, CartProduct> productList = new HashMap<ArrayList<Object>, CartProduct>();
 	private ArrayList<ArrayList<Object>> products = new ArrayList<ArrayList<Object>>();
 	private ArrayList<CartProduct> panels = new ArrayList<CartProduct>();
-	
-	private boolean first = true;
 
 	/**
 	 * Create the panel.
 	 */
 	public AddedProducts(Session session) {
 		this.session = session;
-		//Barcode barcode1 = new Barcode(new Numeral[] { Numeral.one});
-		//BarcodedProduct product1 = new BarcodedProduct(barcode1, "baaakini", 15, 300.0);
-		//SelfCheckoutStationLogic.populateDatabase(barcode1, product1, 10);
 		
 		centralPanel = new JPanel();
     	centralPanel.setLayout(new BoxLayout(centralPanel, BoxLayout.Y_AXIS));
     	centralPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 20));
-    	//centralPanel.add(new CartProduct(product1, session, new Mass(product1.getExpectedWeight())));
-    	//centralPanel.add(Box.createRigidArea(new Dimension(0, 20)));
     	centralPanel.setBackground(Colors.color1);
     	JScrollPane scroll = new JScrollPane(centralPanel);
     	scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    	scroll.getVerticalScrollBar().setUI(new CustomBarUI());
     	scroll.setBackground(Colors.color1);
     	this.setLayout(new BorderLayout());
     	add(scroll, BorderLayout.CENTER);
@@ -62,10 +59,6 @@ public class AddedProducts extends JPanel {
 				current = panels.get(i);
 			}
 		}
-		
-		if(!first) {
-			System.out.println("here");
-		}
 		/*
 		if(productList.containsKey(temp)) {
 			current = productList.get(temp);
@@ -74,6 +67,7 @@ public class AddedProducts extends JPanel {
 		if(current == null || !(product instanceof BarcodedProduct)) {
 			CartProduct newPanel = new CartProduct(product, session, mass);
 			centralPanel.add(newPanel);
+			centralPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 			centralPanel.repaint();
 			centralPanel.revalidate();
 			products.add(temp);
@@ -82,7 +76,6 @@ public class AddedProducts extends JPanel {
 		else {
 			current.addProduct();
 		}
-		first = false;
 	}
 
 	public void removeProduct(Product product, Mass mass) {
