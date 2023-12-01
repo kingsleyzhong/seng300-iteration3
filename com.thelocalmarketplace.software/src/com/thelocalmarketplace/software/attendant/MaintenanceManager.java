@@ -23,33 +23,35 @@ import java.util.Map;
 
 /**
  * Simulation of an attendant performing minuteness and preventative care on self checkout stations
- * 
+ *
  * Project Iteration 3 Group 1
  *
- * Derek Atabayev 			: 30177060 
- * Enioluwafe Balogun 		: 30174298 
- * Subeg Chahal 			: 30196531 
- * Jun Heo 					: 30173430 
- * Emily Kiddle 			: 30122331 
- * Anthony Kostal-Vazquez 	: 30048301 
- * Jessica Li 				: 30180801 
- * Sua Lim 					: 30177039 
- * Savitur Maharaj 			: 30152888 
- * Nick McCamis 			: 30192610 
- * Ethan McCorquodale 		: 30125353 
- * Katelan Ng 				: 30144672 
- * Arcleah Pascual 			: 30056034 
- * Dvij Raval 				: 30024340 
- * Chloe Robitaille 		: 30022887 
- * Danissa Sandykbayeva 	: 30200531 
- * Emily Stein 				: 30149842 
- * Thi My Tuyen Tran 		: 30193980 
- * Aoi Ueki 				: 30179305 
- * Ethan Woo 				: 30172855 
- * Kingsley Zhong 			: 30197260 
+ * Derek Atabayev 			: 30177060
+ * Enioluwafe Balogun 		: 30174298
+ * Subeg Chahal 			: 30196531
+ * Jun Heo 					: 30173430
+ * Emily Kiddle 			: 30122331
+ * Anthony Kostal-Vazquez 	: 30048301
+ * Jessica Li 				: 30180801
+ * Sua Lim 					: 30177039
+ * Savitur Maharaj 			: 30152888
+ * Nick McCamis 			: 30192610
+ * Ethan McCorquodale 		: 30125353
+ * Katelan Ng 				: 30144672
+ * Arcleah Pascual 			: 30056034
+ * Dvij Raval 				: 30024340
+ * Chloe Robitaille 		: 30022887
+ * Danissa Sandykbayeva 	: 30200531
+ * Emily Stein 				: 30149842
+ * Thi My Tuyen Tran 		: 30193980
+ * Aoi Ueki 				: 30179305
+ * Ethan Woo 				: 30172855
+ * Kingsley Zhong 			: 30197260
  */
 public class MaintenanceManager {
     private boolean isOpen = false;
+    private int amountOfInkRefilled = 0;
+    private int amountOfPaperRefilled = 0;
     private SessionState state;
     private IReceiptPrinter receiptPrinter;
     private Map<BigDecimal, IBanknoteDispenser> banknoteDispensers;
@@ -198,14 +200,17 @@ public class MaintenanceManager {
     }
 
 
-    // Ink
+    /**
+     * Simulates the act of refilling ink to printer
+     * @param amount amount of ink to be refilled
+     * @throws ClosedHardwareException if hardware is not opened
+     */
     public void refillInk(int amount) throws ClosedHardwareException {
-        int maxAmount = 1 << 20;
-
         if (isOpen) {
 
             try {
                 this.receiptPrinter.addInk(amount);
+                this.amountOfInkRefilled += amount;
             } catch (OverloadedDevice e) {
                 throw new RuntimeException(e);
             }
@@ -215,13 +220,17 @@ public class MaintenanceManager {
         }
     }
 
+    /**
+     * Simulates the act of refilling paper to printer
+     * @param amount amount of paper to be refilled
+     * @throws ClosedHardwareException if hardware is not opened
+     */
     public void refillPaper(int amount) throws ClosedHardwareException {
-        int maxAmount = 1 << 10;
-
         if (isOpen) {
 
             try {
                 this.receiptPrinter.addPaper(amount);
+                this.amountOfPaperRefilled += amount;
             } catch (OverloadedDevice e) {
                 throw new RuntimeException(e);
             }
@@ -229,6 +238,14 @@ public class MaintenanceManager {
         } else {
             throw new ClosedHardwareException("Hardware is closed!");
         }
+    }
+
+    public int getCurrentAmountOfInk() {
+        return this.amountOfInkRefilled;
+    }
+
+    public int getCurrentAmountOfPaper() {
+        return this.amountOfPaperRefilled;
     }
 
 }

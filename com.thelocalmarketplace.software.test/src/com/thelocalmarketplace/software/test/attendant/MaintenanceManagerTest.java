@@ -22,6 +22,7 @@ import com.thelocalmarketplace.software.test.AbstractSessionTest;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import powerutility.PowerGrid;
 
 import java.math.BigDecimal;
 import java.util.Currency;
@@ -83,20 +84,24 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     @Before
     public void setup() {
         basicDefaultSetup();
+        PowerGrid.engageUninterruptiblePowerSource();
+        powerGrid = PowerGrid.instance();
+        station = new AttendantStation();
+        station.plugIn(powerGrid);
+        station.turnOn();
+
         Coin.DEFAULT_CURRENCY = Currency.getInstance(Locale.CANADA);
         nickel = new Coin(new BigDecimal(0.05));
         dime = new Coin(new BigDecimal(0.1));
         five = new Banknote(cad, new BigDecimal(5));
         ten = new Banknote(cad, new BigDecimal(10));
 
-        station = new AttendantStation();
         attendant = new Attendant(station);
         maintenanceManager = new MaintenanceManager();
     }
 
     @Test
     public void testConstructor() {
-        // Attendant tempAttendant = new Attendant();
         Attendant tempAttendant = new Attendant(station);
         maintenanceManager = new MaintenanceManager();
         assertNotNull(maintenanceManager);
@@ -111,6 +116,7 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     public void testAddInkWhenLow() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException {
         // low on ink
         session.getStation().getPrinter().addInk(10);
+        // maintenanceManager.refillInk(10);
 
         // add ink when it is low
         // need to disable
@@ -119,25 +125,22 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         maintenanceManager.closeHardware();
 
         int expected = 110;
-        // how to get actual
-        int actual = session.getStation().getPrinter().inkRemaining();
+        int actual = maintenanceManager.getCurrentAmountOfInk() + 10;
         Assert.assertEquals(expected, actual);
     }
 
     @Test
     public void testAddInkWhenEmpty() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException {
-        // no ink
-        session.getStation().getPrinter().addInk(0);
+        // no ink; when printer is first initialized, there are no ink
 
-        // add ink when it is low
+        // add ink when empty
         // need to disable
         maintenanceManager.openHardware(session);
         maintenanceManager.refillInk(100);
         maintenanceManager.closeHardware();
 
         int expected = 100;
-        // how to get actual?
-        int actual = session.getStation().getPrinter().inkRemaining();
+        int actual = maintenanceManager.getCurrentAmountOfInk();
         Assert.assertEquals(expected, actual);
     }
 
@@ -145,8 +148,9 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     public void testAddInkWhenFull() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException {
         // full on ink
         session.getStation().getPrinter().addInk(1 << 20);
+        // maintenanceManager.refillInk(1 << 20);
 
-        // add ink when it is low
+        // add ink when full
         // need to disable
         maintenanceManager.openHardware(session);
         maintenanceManager.refillInk(100);
@@ -156,6 +160,7 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     public void testAddInkMoreThanMax() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException {
         // add ink so that amount + remaining > max
         session.getStation().getPrinter().addInk(10);
+        // maintenanceManager.refillInk(10);
 
         // add ink
         // need to disable
@@ -165,21 +170,79 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
 
     @Test (expected = NotDisabledSessionException.class)
     public void testAddInkPrinterNotOpened() throws OverloadedDevice, ClosedHardwareException {
-        // add ink when printer is not initialized
-        session.getStation().getPrinter().addInk(10);
+        // add ink when printer is not opened
 
         maintenanceManager.refillInk(100);
     }
 
-    @Test (expected = NotDisabledSessionException.class)
-    public void testAddInkWhenHardwareNotDisabled() throws OverloadedDevice, NotDisabledSessionException {
-        session.getStation().getPrinter().addInk(10);
+    // test cases for detecting change
 
-        // add ink
-        // DON'T disable
+
+    @Test
+    public void testAddPaperWhenLow() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException {
+        // low on paper
+        session.getStation().getPrinter().addInk(10);
+        // maintenanceManager.refillPaper(10);
+
+        // add paper
+        // need to disable
         maintenanceManager.openHardware(session);
+        maintenanceManager.refillPaper(100);
+        maintenanceManager.closeHardware();
+
+        int expected = 110;
+        int actual = maintenanceManager.getCurrentAmountOfPaper() + 10;
+        Assert.assertEquals(expected, actual);
     }
-    
+
+    @Test
+    public void testAddPaperWhenEmpty() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException {
+        // no ink; when printer is initialized, there is no paper
+
+        // add paper
+        // need to disable
+        maintenanceManager.openHardware(session);
+        maintenanceManager.refillPaper(100);
+        maintenanceManager.closeHardware();
+
+        int expected = 100;
+        int actual = maintenanceManager.getCurrentAmountOfPaper();
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test (expected = OverloadedDevice.class)
+    public void testAddPaperWhenFull() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException {
+        // full on ink
+        session.getStation().getPrinter().addPaper(1 << 10);
+        // maintenanceManager.refillPaper(1 << 10);
+
+        // add paper
+        // need to disable
+        maintenanceManager.openHardware(session);
+        maintenanceManager.refillPaper(100);
+    }
+
+    @Test (expected = OverloadedDevice.class)
+    public void testAddPaperMoreThanMax() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException {
+        // add paper so that amount + remaining > max
+        session.getStation().getPrinter().addPaper(10);
+        // maintenanceManager.refillPaper(10);
+
+        // add paper
+        // need to disable
+        maintenanceManager.openHardware(session);
+        maintenanceManager.refillPaper(1 << 10);
+    }
+
+    @Test (expected = NotDisabledSessionException.class)
+    public void testAddPaperPrinterNotOpened() throws OverloadedDevice, ClosedHardwareException {
+        // add ink when printer is not opened
+
+        maintenanceManager.refillPaper(100);
+    }
+
+    // test cases for detecting change
+
     @Test
     public void testAddCoin() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException, IncorrectDenominationException {
         ICoinDispenser tempDispenser = session.getStation().getCoinDispensers().get(new BigDecimal(0.05));
