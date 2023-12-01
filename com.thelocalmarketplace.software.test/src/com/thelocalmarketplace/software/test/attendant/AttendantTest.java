@@ -69,16 +69,20 @@ public class AttendantTest extends AbstractTest{
     @Before
     public void setup() {
     	basicDefaultSetup();
-    	
     	station = new AttendantStation();
+        attendant = new Attendant(station);
     }
     
     @Test
     public void testConstructor() {
-    	attendant = new Attendant(station);
-    	assertNotNull(attendant);
+    	Attendant tempAttendant = new Attendant(station);
+    	assertNotNull(tempAttendant);
     }
 
+    @Test
+    public void openNotDisabledStation() {
+
+    }
     
 }
 
