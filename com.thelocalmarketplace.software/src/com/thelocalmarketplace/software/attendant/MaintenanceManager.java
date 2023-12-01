@@ -1,5 +1,6 @@
 package com.thelocalmarketplace.software.attendant;
 
+import ca.ucalgary.seng300.simulation.SimulationException;
 import com.jjjwelectronics.OverloadedDevice;
 import com.jjjwelectronics.printer.IReceiptPrinter;
 import com.tdc.CashOverloadException;
@@ -96,8 +97,9 @@ public class MaintenanceManager {
      * @param coins the coins to be placed inside
      * @throws IncorrectDenominationException when the denomination of an input coin does not match the denomination of the Dispenser
      * @throws ClosedHardwareException if hardware is not open
+     * @throws CashOverloadException if too many coins are added
      */
-    public void addCoins(BigDecimal cd, Coin... coins) throws IncorrectDenominationException, ClosedHardwareException {
+    public void addCoins(BigDecimal cd, Coin... coins) throws IncorrectDenominationException, ClosedHardwareException, CashOverloadException {
         if (isOpen) {
             if (coinDenominations.contains(cd)) {
                 for (Coin c : coins) {
@@ -105,11 +107,7 @@ public class MaintenanceManager {
                         throw new IncorrectDenominationException("Incorrect coin was input!");
                     }
                 }
-                try {
-                    coinDispensers.get(cd).load(coins);
-                } catch (CashOverloadException e) {
-                    throw new RuntimeException(e);
-                }
+                coinDispensers.get(cd).load(coins);
             }
         }
         else {
@@ -151,8 +149,9 @@ public class MaintenanceManager {
      * @param banknotes banknotes to be added to the dispenser
      * @throws IncorrectDenominationException if an incorrect banknote denomination is attempted to be input
      * @throws ClosedHardwareException if station is not open
+     * @throws CashOverloadException if too many banknotes are added
      */
-    public void addBanknotes(BigDecimal bd, Banknote... banknotes) throws IncorrectDenominationException, ClosedHardwareException {
+    public void addBanknotes(BigDecimal bd, Banknote... banknotes) throws IncorrectDenominationException, ClosedHardwareException, CashOverloadException {
         if (isOpen) {
             if (verifyBanknoteDenomination(bd) && isOpen) {
                 for (Banknote b : banknotes) {
@@ -160,11 +159,7 @@ public class MaintenanceManager {
                         throw new IncorrectDenominationException("Incorrect banknote was input!");
                     }
                 }
-                try {
-                    banknoteDispensers.get(bd).load(banknotes);
-                } catch (CashOverloadException e) {
-                    throw new RuntimeException(e);
-                }
+                banknoteDispensers.get(bd).load(banknotes);
             }
         }
         else {
