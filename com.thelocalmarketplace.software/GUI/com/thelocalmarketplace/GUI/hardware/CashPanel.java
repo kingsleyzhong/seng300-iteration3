@@ -106,6 +106,16 @@ public class CashPanel extends JPanel{
 		JButton btnNonbill = new PlainButton("Non-Bill", Colors.color1);
 		btnNonbill.setForeground(Colors.color3);
 		Bills.add(btnNonbill);
+		
+		
+		JButton btnRemoveDanglingNote = new JButton("Remove Dangling Note");
+		btnRemoveDanglingNote.setForeground(Colors.color3);
+		btnRemoveDanglingNote.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				scs.getBanknoteInput().removeDanglingBanknote();
+			}
+		});
+		Bills.add(btnRemoveDanglingNote);
 
 		
 		
