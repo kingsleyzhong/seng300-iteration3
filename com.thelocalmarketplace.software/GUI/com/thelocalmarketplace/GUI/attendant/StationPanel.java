@@ -85,11 +85,13 @@ public class StationPanel extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == power) {
 			if(enabled) {
-				station.turnOff();
+				//station.turnOff();
+				enabled = false;
 				power.setText("ON");
 				power.setBackground(new Color(158, 228, 144));
 			} else {
-				station.turnOn();
+				//station.turnOn();
+				enabled = true;
 				power.setText("OFF");
 				power.setBackground(new Color(205, 92, 92));
 			}
