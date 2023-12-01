@@ -3,31 +3,38 @@ package com.thelocalmarketplace.GUI.session;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 
-import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 
 import java.awt.BorderLayout;
+import javax.swing.BoxLayout;
+import javax.swing.JSplitPane;
 import java.awt.Component;
+import javax.swing.JButton;
 import javax.swing.JPanel;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.RowSpec;
+import javax.swing.SpringLayout;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import java.awt.Font;
+import java.awt.FlowLayout;
 import javax.swing.SwingConstants;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.GridLayout;
 
 public class PaymentPopup {
 	
 	JFrame frame;
+	
+	PlainButton cashButton;
+	PlainButton cardButton;
+	PlainButton cancelPaymentButton;
 	
 	JLabel amountLabel;
 	JLabel paymentTypeLabel;
@@ -36,33 +43,24 @@ public class PaymentPopup {
 	private int width;
 	private int height;
 	private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-	private JPanel panel;
-	private JLabel paymentOptionsLabel;
-	private PlainButton cashButton;
-	private PlainButton cardButton;
-	private PlainButton cancelPaymentButton;
 	
 	public PaymentPopup() {
 		
 		width = (int) screenSize.getWidth();
 		height = (int) screenSize.getHeight();
 		
-		frame = new JFrame();
-		frame.setResizable(true);
-		frame.setSize(new Dimension(900,500));
-		frame.setLocationRelativeTo(null);
+		this.frame = new JFrame();
+		frame.setResizable(false);
+		this.frame.setSize(width/2,height/2);
+		this.frame.setLocation(width/2-this.frame.getSize().width/2, height/2-this.frame.getSize().height/2);
 		
-		frame.getContentPane().setBackground(Colors.color2);
-		frame.getContentPane().setLayout(new GridLayout(1, 0, 0, 0));
-		
-		JPanel main = new JPanel();
-		main.setBackground(Colors.color2);
-		main.setLayout(new GridLayout(1,0,30,10));
-		main.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+		this.frame.getContentPane().setBackground(Colors.color2);
+		frame.getContentPane().setLayout(null);
 		
 		JPanel totalDisplay = new JPanel();
-		main.add(totalDisplay);
-		totalDisplay.setLayout(new GridLayout(0,1));
+		totalDisplay.setBounds(100, 56, 363, 387);
+		frame.getContentPane().add(totalDisplay);
+		totalDisplay.setLayout(new BorderLayout(0, 0));
 		totalDisplay.setBackground(Colors.color4);
 		
 		JLabel totalRemainingLabel = new JLabel("Total Remaining:");
@@ -71,50 +69,43 @@ public class PaymentPopup {
 		totalDisplay.add(totalRemainingLabel, BorderLayout.NORTH);
 		totalRemainingLabel.setFont(new Font("Tahoma", Font.PLAIN, 30));
 		
-		amountLabel = new JLabel("$ 0.00");
+		this.amountLabel = new JLabel("$ 0.00");
 		amountLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		amountLabel.setFont(new Font("Tahoma", Font.PLAIN, 45));
 		totalDisplay.add(amountLabel, BorderLayout.CENTER);
 		
-		paymentTypeLabel = new JLabel("Payment Selected: None");
+		this.paymentTypeLabel = new JLabel("Payment Selected: None");
 		paymentTypeLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		paymentTypeLabel.setFont(new Font("Tahoma", Font.PLAIN, 30));
 		totalDisplay.add(paymentTypeLabel, BorderLayout.SOUTH);
 		
-		panel = new JPanel();
-		panel.setBackground(Colors.color2);
-		main.add(panel);
-		panel.setLayout(new GridLayout(0, 1, 20, 20));
-		
-		paymentOptionsLabel = new JLabel("Payment Options:");
-		paymentOptionsLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		paymentOptionsLabel.setFont(new Font("Tahoma", Font.PLAIN, 30));
-		panel.add(paymentOptionsLabel);
-		
-		cashButton = new PlainButton("Cash", new Color(220, 196, 132));
+		this.cashButton = new PlainButton("Cash", Colors.color4);
 		cashButton.setFont(new Font("Tahoma", Font.PLAIN, 30));
-		cashButton.addActionListener(new ActionListener() {
+		cashButton.setBounds(545, 127, 301, 86);
+		frame.getContentPane().add(cashButton);
+        cashButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
             	paymentTypeLabel.setText("Payment Selected: Cash");
-
+               
             }
         });
-		panel.add(cashButton);
 		
-		cardButton = new PlainButton("Debit/Credit", new Color(220, 196, 132));
+        this.cardButton = new PlainButton("Debit/Credit", new Color(220, 196, 132));
 		cardButton.setFont(new Font("Tahoma", Font.PLAIN, 30));
-		cardButton.addActionListener(new ActionListener() {
+		cardButton.setBounds(545, 242, 301, 86);
+		frame.getContentPane().add(cardButton);
+        cardButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
             	paymentTypeLabel.setText("Payment Selected: Card");
             }
-        });
-		panel.add(cardButton);
-		
-		cancelPaymentButton = new PlainButton("New button", new Color(220, 196, 132));
+        });		
+        this.cancelPaymentButton = new PlainButton("New button", new Color(220, 196, 132));
 		cancelPaymentButton.setText("Cancel Payment");
 		cancelPaymentButton.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		cancelPaymentButton.setBounds(545, 357, 301, 86);
+		frame.getContentPane().add(cancelPaymentButton);
 		cancelPaymentButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -123,14 +114,18 @@ public class PaymentPopup {
                 frame.setVisible(false);
             }
         });
-		panel.add(cancelPaymentButton);
 		
-		frame.getContentPane().add(main);
-}
+		JLabel paymentOptionsLabel = new JLabel("Payment Options:");
+		paymentOptionsLabel.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		paymentOptionsLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		paymentOptionsLabel.setBounds(565, 57, 263, 40);
+		frame.getContentPane().add(paymentOptionsLabel);
+		
+
+	}
 	
 	public void popUp() {
 		
 		this.frame.setVisible(true);
-		this.frame.setAlwaysOnTop(true);
 	}
 }
