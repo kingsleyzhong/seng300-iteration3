@@ -94,6 +94,15 @@ public class CashPanel extends JPanel{
 		//10 Dollar Bill logic
 		JButton TenBillBtn = new PlainButton("10$ Bill", Colors.color1);
 		TenBillBtn.setForeground(Colors.color3);
+		TenBillBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					scs.getBanknoteInput().receive(Ten_Dollar_Bill);
+				} catch (DisabledException | CashOverloadException e1) {
+					JOptionPane.showMessageDialog(null, "Bill Not Accepted");
+				}
+			}
+		});
 		Bills.add(TenBillBtn);
 		
 		
@@ -102,6 +111,11 @@ public class CashPanel extends JPanel{
 		TwentyBillBtn.setForeground(Colors.color3);
 		TwentyBillBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				try {
+					scs.getBanknoteInput().receive(Twenty_Dollar_Bill);
+				} catch (DisabledException | CashOverloadException e1) {
+					JOptionPane.showMessageDialog(null, "Bill Not Accepted");
+				}
 			}
 		});
 		Bills.add(TwentyBillBtn);
@@ -110,18 +124,45 @@ public class CashPanel extends JPanel{
 		//50 Dollar Bill logic
 		JButton FiftyBillBtn = new PlainButton("50$ Bill", Colors.color1);
 		FiftyBillBtn.setForeground(Colors.color3);
+		FiftyBillBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					scs.getBanknoteInput().receive(Fifty_Dollar_Bill);
+				} catch (DisabledException | CashOverloadException e1) {
+					JOptionPane.showMessageDialog(null, "Bill Not Accepted");
+				}
+			}
+		});
 		Bills.add(FiftyBillBtn);
 		
 		
 		//100 Dollar Bill logic
 		JButton HundredBillButton = new PlainButton("100$ Bill", Colors.color1);
 		HundredBillButton.setForeground(Colors.color3);
+		HundredBillButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					scs.getBanknoteInput().receive(Hundred_Dollar_Bill);
+				} catch (DisabledException | CashOverloadException e1) {
+					JOptionPane.showMessageDialog(null, "Bill Not Accepted");
+				}
+			}
+		});
 		Bills.add(HundredBillButton);
 		
 		
 		//NON-Bill Logic
 		JButton NonBillBtn = new PlainButton("Non-Bill", Colors.color1);
 		NonBillBtn.setForeground(Colors.color3);
+		NonBillBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					scs.getBanknoteInput().receive(Non_Bill);
+				} catch (DisabledException | CashOverloadException e1) {
+					JOptionPane.showMessageDialog(null, "Bill Not Accepted");
+				}
+			}
+		});
 		Bills.add(NonBillBtn);
 		
 		
@@ -139,6 +180,15 @@ public class CashPanel extends JPanel{
 		//remove output bill
 		JButton RemoveChangeBillBtn = new PlainButton("Remove Change Bill", Colors.color1);
 		RemoveChangeBillBtn.setForeground(Colors.color3);
+		RemoveChangeBillBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//HELP
+				//HELP
+				//I have no idea how to make this work
+				//HELP
+				//HELP
+			}
+		});
 		Bills.add(RemoveChangeBillBtn);
 
 		
@@ -275,6 +325,15 @@ public class CashPanel extends JPanel{
 		//REMOVE COINS FROM TRAY
 		JButton btn_remove_coins = new PlainButton("Remove Coin Tray Coins", Colors.color1);
 		btn_remove_coins.setForeground(Colors.color3);
+		btn_remove_coins.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//HELP
+				//HELP
+				//I have no idea how to make this work
+				//HELP
+				//HELP
+			}
+		});
 		Coins.add(btn_remove_coins);
 
 		
