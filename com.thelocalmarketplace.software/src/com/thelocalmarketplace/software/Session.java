@@ -59,7 +59,7 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
  * Dvij Raval : 30024340
  * Chloe Robitaille : 30022887
  * Danissa Sandykbayeva : 30200531
- * Emily Stein : 30149842
+ * Emily Stein : 30149842f
  * Thi My Tuyen Tran : 30193980
  * Aoi Ueki : 30179305
  * Ethan Woo : 30172855
@@ -80,6 +80,7 @@ public class Session {
 	private Requests request = Requests.NO_REQUEST;
 	private boolean requestApproved = false;
 
+	
 	
 	public PriceLookUpCode getLastPLUcode() {
 		return lastPLUcode;

@@ -3,6 +3,7 @@ package com.thelocalmarketplace.software.test.items;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -19,7 +20,7 @@ import com.jjjwelectronics.scanner.BarcodedItem;
 import com.jjjwelectronics.scanner.IBarcodeScanner;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
-
+import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.items.ItemAddedRule;
 import com.thelocalmarketplace.software.items.ItemManager;
@@ -69,6 +70,7 @@ public class ItemAddedRuleTest extends AbstractSessionTest {
 
     private ScannerListenerStub listener;
 
+    
     @Before
     public void setup() {
     	basicDefaultSetup();
@@ -93,13 +95,13 @@ public class ItemAddedRuleTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testAddItemInDatabase() {
+    public void testAddBarcodeItemInDatabase() {
         session.start();
 
         while (!listener.barcodesScanned.contains(item.getBarcode())) {
             scs.getMainScanner().scan(item);
         }
-        HashMap<BarcodedProduct, Integer> productList = session.getBarcodedItems();
+        HashMap<Product, BigInteger> productList = session.getItems();
         assertTrue(productList.containsKey(product));
     }
 
@@ -120,7 +122,7 @@ public class ItemAddedRuleTest extends AbstractSessionTest {
     @Test
     public void testSessionNotOn() {
         scs.getMainScanner().scan(item);
-        HashMap<BarcodedProduct, Integer> productList = session.getBarcodedItems();
+        HashMap<Product, BigInteger> productList = session.getItems();
         assertFalse(productList.containsKey(product));
     }
 
@@ -138,7 +140,7 @@ public class ItemAddedRuleTest extends AbstractSessionTest {
 
         scs.getMainScanner().scan(newItem);
 
-        HashMap<BarcodedProduct, Integer> productList = session.getBarcodedItems();
+        HashMap<Product, BigInteger> productList = session.getItems();
         assertTrue(productList.containsKey(product));
         assertFalse(productList.containsKey(newProduct));
     }

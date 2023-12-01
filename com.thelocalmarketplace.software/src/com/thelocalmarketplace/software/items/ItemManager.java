@@ -53,6 +53,7 @@ public class ItemManager {
 	public ItemManager(Session session) {
 		this.session = session;
 	}
+	
 
 	public void setAddItems(boolean value) {
 		addItems = value;
@@ -67,7 +68,9 @@ public class ItemManager {
 	 *                The product to be added to the HashMap.
 	 */
 	public void addItem(BarcodedProduct product) {
+		System.out.println(addItems);
 		if (addItems) {
+			
 			if (addedProducts.containsKey(product)) {
 				addedProducts.replace(product, addedProducts.get(product).add(BigInteger.valueOf(1)));
 			} else {
@@ -123,6 +126,7 @@ public class ItemManager {
 		Mass mass = new Mass(weight);
 		BigDecimal itemPrice = new BigDecimal(price);
 
+		
 		if (addedProducts.containsKey(product) && addedProducts.get(product).intValue() > 1) {
 			addedProducts.replace(product, addedProducts.get(product).subtract(BigInteger.valueOf(1)));
 		} else if (addedProducts.containsKey(product) && addedProducts.get(product).intValue() == 1) {
