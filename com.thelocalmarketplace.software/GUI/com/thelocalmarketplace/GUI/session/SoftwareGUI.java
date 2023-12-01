@@ -31,6 +31,7 @@ import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionListener;
+import com.thelocalmarketplace.software.attendant.Requests;
 
 import javax.swing.SwingConstants;
 
@@ -306,6 +307,11 @@ public class SoftwareGUI{
 			
 		}
 
-		
+		@Override
+		public void getRequest(Session session, Requests request) {
+			// TODO Auto-generated method stub
+			
+		}
+
 	}
 }

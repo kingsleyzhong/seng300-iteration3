@@ -1,8 +1,11 @@
 package com.thelocalmarketplace.software.attendant;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
+import com.jjjwelectronics.Mass;
 import com.thelocalmarketplace.hardware.AttendantStation;
+import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionListener;
 import com.thelocalmarketplace.software.weight.WeightListener;
@@ -58,11 +61,56 @@ public class Attendant {
 		public void getRequest(Session session, Requests request) {
 			
 		}
+
+		@Override
+		public void itemAdded(Product product, Mass ofProduct, Mass currentExpectedWeight,
+				BigDecimal currentExpectedPrice) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void itemRemoved(Product product, Mass ofProduct, Mass currentExpectedMass,
+				BigDecimal currentExpectedPrice) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void addItemToScaleDiscrepancy() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void removeItemFromScaleDiscrepancy() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void discrepancy(String message) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void discrepancyResolved() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void pricePaidUpdated() {
+			// TODO Auto-generated method stub
+			
+		}
 	}
 	
 	public void registerOn(Session session) {
 		session.register(new InnerListener());
 		sessions.add(session);
+		as.supervisedStations();
 	}
 
 	public AttendantStation getStation() {

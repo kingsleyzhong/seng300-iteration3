@@ -12,17 +12,18 @@ import java.util.List;
 import javax.swing.JPanel;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 import com.jjjwelectronics.screen.ITouchScreen;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+import com.thelocalmarketplace.hardware.AttendantStation;
 import com.thelocalmarketplace.hardware.ISelfCheckoutStation;
 import com.thelocalmarketplace.software.attendant.Attendant;
 
 public class AttendantGUI {
-	Attendant attendant;
-	ITouchScreen screen;
+	AttendantStation attendant;
 	List<ISelfCheckoutStation> stations;
 	List<JPanel> stationPanels;
 	
@@ -34,34 +35,29 @@ public class AttendantGUI {
 	/**
 	 * @wbp.parser.entryPoint
 	 */
-	public AttendantGUI(Attendant attendant, ITouchScreen screen) {
-		stations = attendant.getStations();
+	public AttendantGUI(AttendantStation attendant) {
+		
+		stations = attendant.supervisedStations();
 		width = (int) screenSize.getWidth();
 		height = (int) screenSize.getHeight();
 		
 		width = 1500;
 		height = 800;
 		
-		screen.getFrame().setTitle("Attendant Screen GUI");
-		screen.getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		screen.getFrame().setSize(new Dimension(width, height));
-		screen.getFrame().setExtendedState(JFrame.MAXIMIZED_BOTH);
-		screen.getFrame().getContentPane().setLayout(new BorderLayout(0,0));
+		attendant.screen.getFrame().setTitle("Attendant Screen GUI");
+		attendant.screen.getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		attendant.screen.getFrame().setSize(new Dimension(width, height));
+		attendant.screen.getFrame().setExtendedState(JFrame.MAXIMIZED_BOTH);
+		attendant.screen.getFrame().getContentPane().setLayout(new GridLayout(6,0,0,0));
 		
-		screen.getFrame().getContentPane().setBackground(Colors.color1);
-		screen.getFrame().getContentPane().add(new PlainButton("test", Colors.color4));
-		screen.getFrame().getContentPane().add(new PlainButton("test", Colors.color4));
-		
-		JPanel panel = new StationPanel(attendant.getStation().supervisedStations().get(0));
-		stationPanels.add(panel);
-		panel.setPreferredSize(new Dimension(width/6, width/6));
-		
-		panel.setBackground(Colors.color1);
-		screen.getFrame().getContentPane().add(panel, BorderLayout.SOUTH);
+		attendant.screen.getFrame().getContentPane().setBackground(Colors.color1);
 		
 		this.attendant = attendant;
 		//populateSessions();
-		screen.setVisible(true);
+		JPanel panel = new StationPanel(null);
+		panel.setPreferredSize(new Dimension(width/6, width/6));
+		attendant.screen.getFrame().add(panel, BorderLayout.SOUTH);
+		attendant.screen.setVisible(false);
 	}
 	
 	public void populateSessions() {
@@ -73,15 +69,15 @@ public class AttendantGUI {
 			panel.setPreferredSize(new Dimension(width/6, width/6));
 			
 			panel.setBackground(Colors.color1);
-			screen.getFrame().getContentPane().add(panel, BorderLayout.SOUTH);
+			attendant.screen.getFrame().getContentPane().add(panel, BorderLayout.SOUTH);
 		}
 	}
 	
 	public void hide() {
-		screen.getFrame().setVisible(false);
+		attendant.screen.getFrame().setVisible(false);
 	}
 	
 	public void unhide() {
-		screen.getFrame().setVisible(true);
+		attendant.screen.getFrame().setVisible(true);
 	}
 }

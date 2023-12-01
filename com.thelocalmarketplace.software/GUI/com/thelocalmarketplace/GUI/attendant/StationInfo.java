@@ -1,35 +1,24 @@
 package com.thelocalmarketplace.GUI.attendant;
 
-import java.awt.Canvas;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
-import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
 import com.thelocalmarketplace.hardware.ISelfCheckoutStation;
-import com.thelocalmarketplace.software.Session;
-
-import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
 import javax.swing.SwingConstants;
+import java.awt.Font;
+import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 
-public class StationPanel extends JPanel implements ActionListener {
+public class StationInfo extends JPanel implements ActionListener{
 	int statusN;
 	Boolean enabled;
 	ISelfCheckoutStation station;
@@ -44,7 +33,7 @@ public class StationPanel extends JPanel implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	private JLabel lblNewLabel;
 	
-	public StationPanel(ISelfCheckoutStation station) {
+	public StationInfo(ISelfCheckoutStation station) {
 		this.station = station;		
 		GridLayout layout = new GridLayout(1,5,0,0);
 		layout.setHgap(20);

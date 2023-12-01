@@ -24,7 +24,6 @@ public class Simulation {
 	private AttendantStation as;
 	private Session session;
 	private ItemManager itemManager;
-	private Attendant attendant;
 	
 	private HardwareGUI hardwareGUI;
 	private AttendantGUI attendantGUI;
@@ -51,10 +50,10 @@ public class Simulation {
 		SelfCheckoutStationLogic.installAttendantStation(as);
 		SelfCheckoutStationLogic logic = SelfCheckoutStationLogic.installOn(scs);
 		session = logic.getSession();
-		attendant = SelfCheckoutStationLogic.getAttendant();
+		session.getStation().setSupervisor(as);
 		
-		hardwareGUI = new HardwareGUI(scs);
-		//attendantGUI = new AttendantGUI(attendant, as.screen);
+		hardwareGUI = new HardwareGUI(scs, as);
+		attendantGUI = new AttendantGUI(as);
 		softwareGUI = new SoftwareGUI(session);
 		
 		// hidden by default
