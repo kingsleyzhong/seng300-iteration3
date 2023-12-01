@@ -71,9 +71,9 @@ public class CashPanel extends JPanel{
 		add(Bills);
 		Bills.setLayout(new GridLayout(5, 1, 15, 15));
 		
-		JButton btnBill = new PlainButton("5$ Bill", Colors.color1);
-		btnBill.setForeground(Colors.color3);
-		btnBill.addActionListener(new ActionListener() {
+		JButton FiveBillBtn = new PlainButton("5$ Bill", Colors.color1);
+		FiveBillBtn.setForeground(Colors.color3);
+		FiveBillBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					scs.getBanknoteInput().receive(Five_Dollar_Bill);
@@ -82,40 +82,44 @@ public class CashPanel extends JPanel{
 				}
 			}
 		});
-		Bills.add(btnBill);
+		Bills.add(FiveBillBtn);
 		
 		JButton btnBill_1 = new PlainButton("10$ Bill", Colors.color1);
 		btnBill_1.setForeground(Colors.color3);
 		
-		JButton btnNewButton = new PlainButton("20$ Bill", Colors.color1);
-		btnNewButton.setForeground(Colors.color3);
-		btnNewButton.addActionListener(new ActionListener() {
+		JButton TwentyBillBtn = new PlainButton("20$ Bill", Colors.color1);
+		TwentyBillBtn.setForeground(Colors.color3);
+		TwentyBillBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		Bills.add(btnNewButton);
+		Bills.add(TwentyBillBtn);
 		
-		JButton btnBill_2 = new PlainButton("50$ Bill", Colors.color1);
-		btnBill_2.setForeground(Colors.color3);
-		Bills.add(btnBill_2);
+		JButton FiftyBillBtn = new PlainButton("50$ Bill", Colors.color1);
+		FiftyBillBtn.setForeground(Colors.color3);
+		Bills.add(FiftyBillBtn);
 		
-		JButton btnBill_3 = new PlainButton("100$ Bill", Colors.color1);
-		btnBill_3.setForeground(Colors.color3);
-		Bills.add(btnBill_3);
+		JButton HundredBillButton = new PlainButton("100$ Bill", Colors.color1);
+		HundredBillButton.setForeground(Colors.color3);
+		Bills.add(HundredBillButton);
 		
-		JButton btnNonbill = new PlainButton("Non-Bill", Colors.color1);
-		btnNonbill.setForeground(Colors.color3);
-		Bills.add(btnNonbill);
+		JButton NonBillBtn = new PlainButton("Non-Bill", Colors.color1);
+		NonBillBtn.setForeground(Colors.color3);
+		Bills.add(NonBillBtn);
 		
 		
-		JButton btnRemoveDanglingNote = new JButton("Remove Dangling Note");
-		btnRemoveDanglingNote.setForeground(Colors.color3);
-		btnRemoveDanglingNote.addActionListener(new ActionListener() {
+		JButton RemoveInputBill = new JButton("Remove Input Bill");
+		RemoveInputBill.setBackground(Color.GREEN);
+		RemoveInputBill.setForeground(Colors.color3);
+		RemoveInputBill.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				scs.getBanknoteInput().removeDanglingBanknote();
 			}
 		});
-		Bills.add(btnRemoveDanglingNote);
+		Bills.add(RemoveInputBill);
+		
+		JButton RemoveChangeBillBtn = new JButton("Remove Change Bill");
+		Bills.add(RemoveChangeBillBtn);
 
 		
 		
