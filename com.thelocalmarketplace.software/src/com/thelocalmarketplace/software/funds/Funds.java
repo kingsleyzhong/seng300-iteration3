@@ -149,6 +149,8 @@ public class Funds {
 
 		this.amountDue = this.itemsPrice.subtract(amountPaid);
 
+		for (FundsListener l : listeners)
+			l.notifyUpdateAmountDue(this.amountDue);
 		// To account for any rounding errors, checks if less that 0.0005 rather than
 		// just 0
 		if (amountDue.intValue() <= 0.0005 && isPay) {

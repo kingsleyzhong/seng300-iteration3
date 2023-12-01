@@ -19,6 +19,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
@@ -34,6 +35,7 @@ import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionListener;
+import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.attendant.Requests;
 
 import javax.swing.SwingConstants;
@@ -48,7 +50,7 @@ public class SoftwareGUI{
 	Session session;
 	
 	// Buttons for user to interact with:
-	JButton exit;
+	JButton cancel;
 	JButton addBags;
 	JButton pluCode;
 	JButton searchCatalogue;
@@ -92,10 +94,6 @@ public class SoftwareGUI{
 		frame.getContentPane().setLayout(new BorderLayout());
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setVisible(true);
-		
-		mainPane = mainPanel();
-		startPane = start();
-		//endPane = end();
 		
 		displayStart();
 	}
@@ -266,7 +264,7 @@ public class SoftwareGUI{
 		buttonPanel.setLayout(new GridLayout(1,0, 20,0));
 			
 		// Create buttons
-		exit = new PlainButton("Exit session", Colors.color4);
+		cancel = new PlainButton("Cancel", Colors.color4);
 		addBags = new PlainButton("Add Bags", Colors.color4);
 		pluCode = new PlainButton("<html>Enter PLU <br/>&nbsp;&nbsp;&nbsp;Code</html>", Colors.color4);
 		searchCatalogue = new PlainButton("<html>&nbsp;&nbsp;Search <br/>Catalogue</html>", Colors.color4);
@@ -274,7 +272,7 @@ public class SoftwareGUI{
 		pay = new PlainButton("PAY", Colors.color4);
 		
 		//Add action listeners to buttons
-		exit.addActionListener(new ButtonListener());
+		cancel.addActionListener(new ButtonListener());
 		addBags.addActionListener(new ButtonListener());
 		pluCode.addActionListener(new ButtonListener());
 		searchCatalogue.addActionListener(new ButtonListener());
@@ -293,7 +291,7 @@ public class SoftwareGUI{
 		});
 				
 		//Set button sizes
-		exit.setFont(new Font("Dialog", Font.BOLD, 30));
+		cancel.setFont(new Font("Dialog", Font.BOLD, 30));
 		addBags.setFont(new Font("Dialog", Font.BOLD, 30));
 		pluCode.setFont(new Font("Dialog", Font.BOLD, 30));
 		searchCatalogue.setFont(new Font("Dialog", Font.BOLD, 30));
@@ -301,7 +299,7 @@ public class SoftwareGUI{
 		pay.setFont(new Font("Dialog", Font.BOLD, 75));
 			
 		// Align texts for buttons
-		exit.setHorizontalTextPosition(JButton.CENTER);
+		cancel.setHorizontalTextPosition(JButton.CENTER);
 		addBags.setHorizontalTextPosition(JButton.CENTER);		
 		pluCode.setHorizontalTextPosition(JButton.CENTER);		
 		searchCatalogue.setHorizontalTextPosition(JButton.CENTER);		
@@ -309,7 +307,7 @@ public class SoftwareGUI{
 		pay.setHorizontalTextPosition(JButton.CENTER);		
 			
 		buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-		buttonPanel.add(exit);
+		buttonPanel.add(cancel);
 		buttonPanel.add(addBags);
 		buttonPanel.add(pluCode);
 		buttonPanel.add(searchCatalogue);
@@ -332,6 +330,7 @@ public class SoftwareGUI{
 	
 	public void displayStart() {
 		frame.getContentPane().removeAll();
+		startPane = start();
 		frame.getContentPane().add(startPane, BorderLayout.CENTER);
 		frame.getContentPane().revalidate();
 		frame.getContentPane().repaint();
@@ -339,6 +338,7 @@ public class SoftwareGUI{
 	
 	public void displayMain() {
 		frame.getContentPane().removeAll();
+		mainPane = mainPanel();
 		frame.getContentPane().add(mainPane, BorderLayout.CENTER);
 		frame.getContentPane().revalidate();
 		frame.getContentPane().repaint();
@@ -346,6 +346,7 @@ public class SoftwareGUI{
 	
 	public void displayEnd() {
 		frame.getContentPane().removeAll();
+		//endPane = end();
 		frame.getContentPane().add(endPane);
 		frame.getContentPane().revalidate();
 		frame.getContentPane().repaint();
@@ -378,6 +379,15 @@ public class SoftwareGUI{
 			JButton source = (JButton) e.getSource();
 			if(source == searchCatalogue) {
 				catalogue.setVisible(true);
+			}
+			else if(source == cancel) {
+				if(session.getState() == SessionState.IN_SESSION) {
+					displayStart();
+				}
+				else if(session.getState() == SessionState.BLOCKED) {
+					JOptionPane.showMessageDialog(null, "Cannot cancel. Please resolve discrepancy on weight scale.");
+				}
+				session.cancel();
 			}
 			
 		}	
@@ -424,7 +434,7 @@ public class SoftwareGUI{
 		}
 
 		@Override
-		public void pricePaidUpdated(Session session) {
+		public void pricePaidUpdated(Session session, BigDecimal amountDue) {
 			// TODO Auto-generated method stub
 			
 		}
