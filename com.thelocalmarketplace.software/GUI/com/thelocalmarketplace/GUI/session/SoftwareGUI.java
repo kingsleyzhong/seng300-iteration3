@@ -217,7 +217,14 @@ public class SoftwareGUI{
 		pluCode.addActionListener(new ButtonListener());
 		searchCatalogue.addActionListener(new ButtonListener());
 		callAttendant.addActionListener(new ButtonListener());
-		pay.addActionListener(new ButtonListener());
+		pay.addActionListener(new ButtonListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                PaymentPopup paymentScreen = new PaymentPopup();
+                paymentScreen.popUp();
+               
+            }
+        });
 		
 		//Set button sizes
 		exit.setFont(new Font("Dialog", Font.BOLD, 30));
