@@ -37,9 +37,12 @@ import java.util.List;
  * Ethan Woo 				: 30172855
  * Kingsley Zhong 			: 30197260
  */
+
+/** Facade class responsible for facilitating transfer of membership numbers between hardware and the business logic.
+ * Provides functionality for entering membership numbers as a String (through the user interface), or from the card
+ * reader. Membership cards should have "membership" as their type. */
 public class Membership {
-    protected final List<MembershipListener> listeners;
-    private final ICardReader cardReader;
+    private final List<MembershipListener> listeners = new ArrayList<>();
     private boolean addingItems = false;
 
 
@@ -47,88 +50,65 @@ public class Membership {
      * user-inputted membership number.
      * @param cardReader The card reader to read membership cards. */
     public Membership(ICardReader cardReader) {
-    	if (cardReader == null) {
-            throw new IllegalArgumentException("Card Reader should not be null.");
-        }
-        listeners = new ArrayList<>();
-        this.cardReader = cardReader;
-        InnerListener membershipReader = new InnerListener();
-        cardReader.register(membershipReader);
+    	if (cardReader == null)
+            throw new NullPointerSimulationException("card reader");
+        cardReader.register(new InnerListener());
     }
     
-    /** Checks to see if the provided card number is contained within the memberships database. If the 
-     * membership number is present, then listeners are notified.
+    /** Checks to see if the provided card number is contained within the membership database. If the
+     * membership number is present, then listeners are notified. For use with the virtual GUI keyboard.
      * @param memberCardNumber The card number which will be checked */
     public void typeMembership(String memberCardNumber) {
-    	if (MembershipDatabase.MEMBERSHIP_DATABASE.containsKey(memberCardNumber)) {
+    	if (addingItems & MembershipDatabase.MEMBERSHIP_DATABASE.containsKey(memberCardNumber))
     		notifyMembershipEntered(memberCardNumber);
-    	} 
-    	//else {} Only needed if notifyMemberhsipNotFound() is something that is required in the the listener
+    	//else {} Only needed if notifyMembershipNotFound() is something that is required in the listener
     }
     
-    /** Checks to see if the provided card data has a card number contained in the the memberships database. 
+    /** Checks to see if the provided card data has a card number contained in the membership database.
      * If the membership number is present, then listeners are notified.
      * @param memberCard The member card to be examined for its card number */
-    public void swipMembership(CardData memberCard) {
+    private void swipeMembership(CardData memberCard) {
     	String memberCardNumber = memberCard.getNumber();
-    	if (MembershipDatabase.MEMBERSHIP_DATABASE.containsKey(memberCardNumber)) {
+    	if (MembershipDatabase.MEMBERSHIP_DATABASE.containsKey(memberCardNumber))
     		notifyMembershipEntered(memberCardNumber);
-    	} 
-    	//else {} Only needed if notifyMemberhsipNotFound() is something that is required in the the listener
+    	//else {} Only needed if notifyMembershipNotFound() is something that is required in the listener
     }
-    
-    public class InnerListener implements CardReaderListener{
+
+    private class InnerListener implements CardReaderListener {
 
 		@Override
-		public void aDeviceHasBeenEnabled(IDevice<? extends IDeviceListener> device) {
-			// TODO Auto-generated method stub
-		}
+		public void aDeviceHasBeenEnabled(IDevice<? extends IDeviceListener> device) {}
 
 		@Override
-		public void aDeviceHasBeenDisabled(IDevice<? extends IDeviceListener> device) {
-			// TODO Auto-generated method stub
-		}
+		public void aDeviceHasBeenDisabled(IDevice<? extends IDeviceListener> device) {}
 
 		@Override
-		public void aDeviceHasBeenTurnedOn(IDevice<? extends IDeviceListener> device) {
-			// TODO Auto-generated method stub
-		}
+		public void aDeviceHasBeenTurnedOn(IDevice<? extends IDeviceListener> device) {}
 
 		@Override
-		public void aDeviceHasBeenTurnedOff(IDevice<? extends IDeviceListener> device) {
-			// TODO Auto-generated method stub
-		}
+		public void aDeviceHasBeenTurnedOff(IDevice<? extends IDeviceListener> device) {}
 
 		@Override
-		public void aCardHasBeenInserted() {
-			// TODO Auto-generated method stub
-		}
+		public void aCardHasBeenInserted() {}
 
 		@Override
-		public void theCardHasBeenRemoved() {
-			// TODO Auto-generated method stub
-		}
+		public void theCardHasBeenRemoved() {}
 
 		@Override
-		public void aCardHasBeenTapped() {
-			// TODO Auto-generated method stub
-		}
+		public void aCardHasBeenTapped() {}
 
 		@Override
-		public void aCardHasBeenSwiped() {
-			// TODO Auto-generated method stub
-		}
+		public void aCardHasBeenSwiped() {}
 
 		// Listens for card data which has been successfully read by the card reader
 		@Override
 		public void theDataFromACardHasBeenRead(CardData data) {
-			if(addingItems == true && data.getType().contains("Membership")) {
-				swipMembership(data);
-			}
+			if (addingItems && data.getType().equalsIgnoreCase("membership"))
+				swipeMembership(data);
 		}
     }
     
-    //setter for adding items
+    /** Enables the Membership facade to listen for membership entry. */
     public void setAddingItems(boolean addingItems) {
 		this.addingItems = addingItems;
 	}
@@ -137,7 +117,7 @@ public class Membership {
      * @param listener The MembershipListener to register.*/
     public void register(MembershipListener listener) {
         if (listener == null)
-            throw new NullPointerSimulationException("membership");
+            throw new NullPointerSimulationException("membership listener");
         listeners.add(listener);
     }
 
@@ -145,7 +125,7 @@ public class Membership {
      * @param listener The MembershipListener to Deregister.*/
     public boolean deregister(MembershipListener listener) {
         if (listener == null)
-            throw new NullPointerSimulationException("membership");
+            throw new NullPointerSimulationException("membership listener");
         return listeners.remove(listener);
     }
 

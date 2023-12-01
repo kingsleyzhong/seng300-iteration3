@@ -59,7 +59,7 @@ abstract public class AbstractSessionTest extends AbstractTest {
 		weight = new Weight(scs.getBaggingArea());
 		funds = new Funds(scs);
 		receiptPrinter = new Receipt(scs.getPrinter());
-		membership = new Membership(scs.getCardReader(), scs.getHandheldScanner(), scs.getMainScanner());
+		membership = new Membership(scs.getCardReader());
 
 		session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
 	}

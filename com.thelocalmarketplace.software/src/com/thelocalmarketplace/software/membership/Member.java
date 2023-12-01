@@ -51,5 +51,7 @@ public class Member {
      * @param delta The amount to change the points by. Can be positive to add, or negative to subtract. */
     public void changePoints(int delta) {
         points += delta;
+        if (points < 0)
+            points = 0;
     }
 }
