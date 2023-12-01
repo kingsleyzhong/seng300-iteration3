@@ -3,14 +3,10 @@ package com.thelocalmarketplace.software;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
-
 import com.jjjwelectronics.Mass;
 import com.tdc.CashOverloadException;
 import com.tdc.DisabledException;
 import com.tdc.NoCashAvailableException;
-import com.tdc.banknote.BanknoteInsertionSlot;
-import com.tdc.coin.CoinSlot;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.Product;
@@ -69,24 +65,28 @@ public class Session {
 	private AbstractSelfCheckoutStation scs;
 	private SessionState sessionState;
 	private SessionState prevState;
+	private boolean disableSelf = false; // when true: disable the Session when it ends
 	private BarcodedProduct lastProduct;
 	private Funds funds;
 	private Weight weight;
 	private ItemManager manager;
 	private Receipt receiptPrinter;
-	private Requests request = Requests.NO_REQUEST;
 	private boolean requestApproved = false;
 	
 	private class ItemManagerListener implements ItemListener{
-
+		private Session outerSession;
+		
+		private ItemManagerListener(Session s) {
+			outerSession = s;
+		}
+		
 		@Override
 		public void anItemHasBeenAdded(Product product, Mass mass, BigDecimal price) {
 			weight.update(mass);
 			funds.update(price);
 			for (SessionListener l : listeners) {
-				l.itemAdded(product, mass, weight.getExpectedWeight(), funds.getItemsPrice());
+				l.itemAdded(outerSession, product, mass, weight.getExpectedWeight(), funds.getItemsPrice());
 			}
-			System.out.println("Added");
 		}
 
 		@Override
@@ -94,20 +94,20 @@ public class Session {
 			weight.removeItemWeightUpdate(mass);
 			funds.removeItemPrice(price);
 			for (SessionListener l : listeners) {
-				l.itemRemoved(product, mass, weight.getExpectedWeight(), funds.getItemsPrice());
+				l.itemRemoved(outerSession, product, mass, weight.getExpectedWeight(), funds.getItemsPrice());
 			}
 		}
-		
-	}
 
+	}
+	 
+	
 	private class WeightDiscrepancyListener implements WeightListener {
 
 		/**
 		 * Upon a weightDiscrepancy, session should freeze
 		 * 
 		 * If the Customer has declared their intention to add bags to the scale, then
-		 * checks
-		 * the bags instead.
+		 * checks the bags instead.
 		 */
 		@Override
 		public void notifyDiscrepancy() {
@@ -118,6 +118,12 @@ public class Session {
 				//instead we need another call that notifies bags too heavyS
 				return;
 			}
+			
+			// signal attendant(s)
+			notifyAttendant(Requests.WEIGHT_DISCREPANCY);	
+			
+			// signal a discrepancy
+			
 			block();
 		}
 
@@ -129,6 +135,15 @@ public class Session {
 			resume();
 		}
 
+		@Override
+		public void notifyBagsTooHeavy() {
+			// tell attendant
+			notifyAttendant(Requests.BAGS_TOO_HEAVY);
+			block();
+
+		}
+
+		
 	}
 
 	private class PayListener implements FundsListener {
@@ -139,7 +154,18 @@ public class Session {
 		 */
 		@Override
 		public void notifyPaid() {
-			sessionState = SessionState.PRE_SESSION;
+			end();
+		}
+		
+		/**
+		 * Called when there is not enough change (of any kind) avalaiable to handle payment
+		 */
+		@Override
+		public void notifyInsufficentChange() {
+			// notify attendant
+			notifyAttendant(Requests.CANT_MAKE_CHANGE);
+			block();
+
 		}
 
 	}
@@ -148,11 +174,13 @@ public class Session {
 
 		@Override
 		public void notifiyOutOfPaper() {
+			notifyAttendant(Requests.CANT_PRINT_RECEIPT);
 			block();
 		}
 
 		@Override
 		public void notifiyOutOfInk() {
+			notifyAttendant(Requests.CANT_PRINT_RECEIPT);
 			block();
 		}
 
@@ -168,8 +196,9 @@ public class Session {
 
 		@Override
 		public void notifiyReceiptPrinted() {
-			// Should notifyPaid() not wait until receipt is successfully printed to change to PRE_SESSION?
-			sessionState = SessionState.PRE_SESSION;
+			// Should notifyPaid() not wait until receipt is successfully printed to change
+			// to PRE_SESSION?
+			end();
 		}
 		
 	}
@@ -221,32 +250,38 @@ public class Session {
 	 *                      The weight of the items and actual weight on the scale
 	 *                      during the session
 	 *                      
-	 * @param Receipt 
+	 * @param receipt 
 	 * 						The PrintReceipt behavior
+	 * 
+	 * @param IremManager
+	 * 						The software for managing adding and removing items
 	 */
-	public void setup(ItemManager manager, Funds funds, Weight weight, Receipt receiptPrinter,
+	public void setup(ItemManager manager, 
+			Funds funds, Weight weight, Receipt receiptPrinter,
 			AbstractSelfCheckoutStation scs) {
 		this.manager = manager;
 		this.funds = funds;
 		this.weight = weight;
 		this.weight.register(new WeightDiscrepancyListener());
 		this.funds.register(new PayListener());
-		this.manager.register(new ItemManagerListener());
+		this.manager.register(new ItemManagerListener(this));
 		this.receiptPrinter = receiptPrinter;
 		this.receiptPrinter.register(new PrinterListener());
 		this.scs = scs;
 	}
 	
+
 	/**
 	 * Sets the session to have started, allowing customer to interact with station
 	 */
-	public void start() {
+	public void start() {		
+		// signal about to start + wait for prediction to finish?
+		
 		sessionState = SessionState.IN_SESSION;
 		manager.setAddItems(true);
-		// manager.clear();
-		// funds.clear();
-		// weight.clear();
+
 	}
+	
 
 	/**
 	 * Cancels the current session and resets the current session
@@ -269,6 +304,16 @@ public class Session {
 		sessionState = SessionState.BLOCKED;
 		manager.setAddItems(false);
 	}
+	
+	private void end() {
+		prevState = sessionState;
+		sessionState = SessionState.PRE_SESSION;
+		
+		// if the session is slated to be disabled, do that
+		if(disableSelf) {
+			disable();
+		}
+	}
 
 	/**
 	 * Resumes the session, allowing the customer to continue interaction
@@ -283,6 +328,37 @@ public class Session {
 		}
 	}
 
+	/**
+	 * Places a previously disabled session into the PRE_SESSION state
+	 * For use after clearing hardware issues that left the station disabled.
+	 */
+	public void enable() {
+		// sets the session's state to PRE_SESSION
+		if(this.sessionState == SessionState.DISABLED) {
+			this.sessionState = SessionState.PRE_SESSION;
+			disableSelf = false;
+		}
+	}
+
+	
+	/**
+	 * Places this session into the DISABLED state. While in the DISABLED state no functions
+	 * should be able to occur.
+	 * 
+	 * If the session is currently running/active than the session cannot be disabled until it
+	 * has finished running
+	 *  
+	 */
+	public void disable() {
+		// sets the session's state to DISABLED
+		if(this.sessionState == SessionState.PRE_SESSION) {
+			this.sessionState = SessionState.DISABLED;
+		}
+		else {
+			disableSelf = true; 
+		}
+	}
+	
 	/**
 	 * Enters the cash payment mode for the customer. Prevents customer from adding further
 	 * items by freezing session.
@@ -347,10 +423,8 @@ public class Session {
 		// Only able to add when in a discrepancy after adding bags
 		if(sessionState == SessionState.BLOCKED) {
 			sessionState = SessionState.BULKY_ITEM;
-			request = Requests.BULKY_ITEM;
-			notifyAttendant();
-		}
-		else if (sessionState == SessionState.BULKY_ITEM) {
+			notifyAttendant(Requests.BULKY_ITEM);
+		} else if (sessionState == SessionState.BULKY_ITEM) {
 			if (requestApproved) {
 				requestApproved = false;
 				// subtract the bulky item weight from total weight if assistant has approved
@@ -376,12 +450,26 @@ public class Session {
 			addBulkyItem();
 		}
 	}
-	
-	public void notifyAttendant() {
-		// attendant.getRequest(request);
-		attendantApprove(request);
+
+	/**
+	 * Abstract notification method that tells any registered listeners about the request of Session.
+	 * This is done to reduce redundancy, as there are many possible requests that could be made of the attendant
+
+	 * @param request specific instance of the Requests ennum related to the current issues within Session
+	 */
+	public void notifyAttendant(Requests request) {
+		for(SessionListener l:listeners) {
+			l.getRequest(this, request);
+		}
 	}
 	
+	/**
+	 * User demonstrates they wish to ask the attendent for help
+	 */
+	public void askForHelp() {
+		notifyAttendant(Requests.HELP_REQUESTED);
+	}
+
 	/**
 	 * getter methods
 	 */
@@ -432,4 +520,5 @@ public class Session {
 			throw new NullPointerSimulationException("listener");
 			listeners.remove(listener);
 	}
+
 }
