@@ -48,6 +48,8 @@ public class SoftwareGUI{
 	JButton callAttendant;
 	JButton pay;
 	
+    PaymentPopup paymentScreen;
+
 	
 	// JFrame size
 	private int width;
@@ -218,13 +220,13 @@ public class SoftwareGUI{
 		pluCode.addActionListener(new ButtonListener());
 		searchCatalogue.addActionListener(new ButtonListener());
 		callAttendant.addActionListener(new ButtonListener());
+		
+        paymentScreen = new PaymentPopup(session);
 		pay.addActionListener(new ButtonListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
-                PaymentPopup paymentScreen = new PaymentPopup();
                 paymentScreen.popUp();
-               
-            }
+                       }
         });
 		
 		//Set button sizes

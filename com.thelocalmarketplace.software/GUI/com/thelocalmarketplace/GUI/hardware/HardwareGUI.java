@@ -82,6 +82,8 @@ public class HardwareGUI {
 		hardwareFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		hardwareFrame.getContentPane().setLayout(new BorderLayout(0, 0));
 		hardwareFrame.getContentPane().setBackground(Colors.color1);
+		hardwareFrame.setUndecorated(true);
+
 		
 		JPanel buttonPanel = new ButtonPanel(this);
 		buttonPanel.setPreferredSize(new Dimension(width, height/4));
@@ -153,7 +155,6 @@ public class HardwareGUI {
 		hardwareFrame.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
 		hardwareFrame.getContentPane().add(content, BorderLayout.CENTER);
 		
-		hardwareFrame.setUndecorated(true);
 	}
 	
 	public void populateItems() {

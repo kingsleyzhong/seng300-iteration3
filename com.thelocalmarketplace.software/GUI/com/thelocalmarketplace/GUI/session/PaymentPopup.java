@@ -6,8 +6,14 @@ import java.awt.Toolkit;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 
+import com.tdc.CashOverloadException;
+import com.tdc.DisabledException;
+import com.tdc.NoCashAvailableException;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
+import com.thelocalmarketplace.software.Session;
+import com.thelocalmarketplace.software.SessionState;
+import com.thelocalmarketplace.software.exceptions.CartEmptyException;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -42,7 +48,7 @@ public class PaymentPopup {
 	private PlainButton cardButton;
 	private PlainButton cancelPaymentButton;
 	
-	public PaymentPopup() {
+	public PaymentPopup(Session session) {
 		
 		width = (int) screenSize.getWidth();
 		height = (int) screenSize.getHeight();
@@ -96,7 +102,16 @@ public class PaymentPopup {
 		cashButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+            	try {
+            		session.payByCash();
+            	}
+            	catch(CartEmptyException e1) {
+					frame.hide();
+                    JOptionPane.showMessageDialog(cashButton, "Cannot Pay for Empty Order");
+              
+            	}
             	paymentTypeLabel.setText("Payment Selected: Cash");
+
 
             }
         });
@@ -108,6 +123,22 @@ public class PaymentPopup {
             @Override
             public void actionPerformed(ActionEvent e) {
             	paymentTypeLabel.setText("Payment Selected: Card");
+            	try {
+					session.payByCard();
+				} catch (CashOverloadException e1) 
+            	{
+					//session.notifyAttendant();
+				} catch (NoCashAvailableException e1) {
+					//session.notifyAttendant();
+				} catch (DisabledException e1) {
+					//session.notifyAttendant();
+				} catch(CartEmptyException e1) {
+					frame.hide();
+                    JOptionPane.showMessageDialog(cashButton, "Cannot Pay for Empty Order");
+            	}
+            	paymentTypeLabel.setText("Payment Selected: Card");
+
+            	
             }
         });
 		panel.add(cardButton);
@@ -118,7 +149,6 @@ public class PaymentPopup {
 		cancelPaymentButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Handle card payment logic here
                 JOptionPane.showMessageDialog(cancelPaymentButton, "Payment Cancelled. All change inserted during payment session will be returned shortly.");
                 frame.setVisible(false);
             }
@@ -132,5 +162,9 @@ public class PaymentPopup {
 		
 		this.frame.setVisible(true);
 		this.frame.setAlwaysOnTop(true);
+	}
+	
+	public void hide() {
+		this.frame.setVisible(false);
 	}
 }
