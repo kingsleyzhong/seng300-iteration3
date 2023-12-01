@@ -31,8 +31,8 @@ public class Simulation {
 	private SoftwareGUI softwareGUI;
 	
 	public Simulation() {
-		setupLogic();
 		setupData();
+		setupLogic();
 	}
 	
 	/**
@@ -84,6 +84,10 @@ public class Simulation {
 		PriceLookUpCode plu1 = new PriceLookUpCode(new String("0000"));
 		PLUCodedProduct pluProduct1 = new PLUCodedProduct(plu1, "baaananas", 10);
 		SelfCheckoutStationLogic.populateDatabase(plu1, pluProduct1, 10);
+		
+		PriceLookUpCode plu2 = new PriceLookUpCode(new String("0001"));
+		PLUCodedProduct pluProduct2 = new PLUCodedProduct(plu2, "baaakliva", 20);
+		SelfCheckoutStationLogic.populateDatabase(plu2, pluProduct2, 10);
 	}
 	
 	public void unhide() {

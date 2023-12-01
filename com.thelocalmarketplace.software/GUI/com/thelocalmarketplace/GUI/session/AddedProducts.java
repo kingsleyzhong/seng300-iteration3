@@ -13,6 +13,7 @@ import javax.swing.JScrollPane;
 
 import com.jjjwelectronics.Mass;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
+import com.thelocalmarketplace.GUI.customComponents.CustomBarUI;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
@@ -33,18 +34,14 @@ public class AddedProducts extends JPanel {
 	 */
 	public AddedProducts(Session session) {
 		this.session = session;
-		//Barcode barcode1 = new Barcode(new Numeral[] { Numeral.one});
-		//BarcodedProduct product1 = new BarcodedProduct(barcode1, "baaakini", 15, 300.0);
-		//SelfCheckoutStationLogic.populateDatabase(barcode1, product1, 10);
 		
 		centralPanel = new JPanel();
     	centralPanel.setLayout(new BoxLayout(centralPanel, BoxLayout.Y_AXIS));
     	centralPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 20));
-    	//centralPanel.add(new CartProduct(product1, session, new Mass(product1.getExpectedWeight())));
-    	//centralPanel.add(Box.createRigidArea(new Dimension(0, 20)));
     	centralPanel.setBackground(Colors.color1);
     	JScrollPane scroll = new JScrollPane(centralPanel);
     	scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    	scroll.getVerticalScrollBar().setUI(new CustomBarUI());
     	scroll.setBackground(Colors.color1);
     	this.setLayout(new BorderLayout());
     	add(scroll, BorderLayout.CENTER);
