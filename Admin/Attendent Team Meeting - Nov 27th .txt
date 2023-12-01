@@ -1,0 +1,39 @@
+Attendent Team Meeting - Nov 27th 
+
+Add your work to the Attendant -dev branch (if you need to split off from this branch you can but try to work off this branch if possible) (will make this branch tonight! Pull from the remote) 
+I will check up on my sheep around the 2nd to make sure things are in order to be finished by the deadline
+IF POSSIBLE WRITE TEST CASES FOR YOUR OWN CODE! Ask around if you need help though.
+	- Tests go in software.test.src. Attendant Tests (when it exists)
+
+Attendant Use Cases:
+	- Prediction/error handling team: 2 (Arcleah Pascual, Aoi Ueki)
+	- Maintenance: 2 (Sua Lim, Jun Heo)
+	- Disabled/Enabled: 1 (Chloe Robitaille)
+	- Add Item by Text Search: 1 (Nicholas McCamis)
+
+Attendant Class + InnerListener: 
+	- prediction/error handling  
+	- is alerted about errors through the InnerListener
+	- Errors or "requests" are passed by Session to the Listener using the Requests ennum
+	- Errors to support (in no particular order):
+		- Bulky Item
+		- Weight Discrepancy
+		- Bags too Heavy
+		- Pay with Cash BUT not enough change available
+		- Print Receipt BUT printer runs out of ink/paper
+		- Help wanted/Signal for Attendants Attention
+	- Predictions to support are on the use case diagram
+	- no knowledge of hardware (?) so predictions should be based on what information Session has told it and some internal "running concept" of what money/ink/paper is (for an example see vending machine 3)
+
+"maintenance" class:
+	- knows about hardware (somehow) (this can be done i the SelfCheckoutLogic class, during setup)
+	- Attendant "sees" it
+	- mocks a "real" attendant performing maintenance on the physical hardware (listed in use case diagram)
+	- Maintenance stuff
+	- enable/disable Customer Station stuff might also go in here as it probably needs to know about hardware
+
+"add item by text search" implements KeyboardListener:
+	- would need too construct the string being entered character by character using the characters it is notified are being typed up
+	- then does something with a database
+	- issue: keyboard might not work ASK WALKER?!
+	- Attendant would signal when this class is "active"

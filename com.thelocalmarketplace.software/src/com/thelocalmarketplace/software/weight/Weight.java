@@ -145,7 +145,7 @@ public class Weight {
 	private void bagsTooHeavy() {
 		isDiscrepancy = true;
 		for (WeightListener l : listeners) {
-			l.notifyDiscrepancy();
+			l.notifyBagsTooHeavy();
 		}
 	}
 	

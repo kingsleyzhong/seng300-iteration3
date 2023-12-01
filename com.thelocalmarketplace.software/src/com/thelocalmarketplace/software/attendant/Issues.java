@@ -1,6 +1,6 @@
 package com.thelocalmarketplace.software.attendant;
 /**
- * Possible "requests" that can be sent from a Customer Session to an Attendant 
+ * Possible issues that could be predicted by the Prediction software
  * 
  * Project Iteration 3 Group 1
  *
@@ -26,14 +26,15 @@ package com.thelocalmarketplace.software.attendant;
  * Ethan Woo 				: 30172855 
  * Kingsley Zhong 			: 30197260 
  */
-public enum Requests {
-	// core requests based on Use case version 3
-	WEIGHT_DISCREPANCY,
-	BAGS_TOO_HEAVY,
-	BULKY_ITEM,
-	CANT_MAKE_CHANGE,
-	CANT_PRINT_RECEIPT,
-	ADD_ITEM_SEARCH,
-	HELP_REQUESTED;
-
+public enum Issues {
+	LOW_INK,
+	LOW_PAPER,
+	COINS_FULL,
+	BANKNOTES_FULL,
+	LOW_COINS,
+	LOW_BANKNOTES,
+	LOW_INK_CHECK_UNSUPPORTED,
+	LOW_PAPER_CHECK_UNSUPPORTED,
+	LOW_BANKNOTE_CHECK_UNSUPPORTED,
+	LOW_COINS_CHECK_UNSUPPORTED;;
 }
