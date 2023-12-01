@@ -1,5 +1,7 @@
 package com.thelocalmarketplace.GUI;
 
+import java.math.BigDecimal;
+
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.scanner.Barcode;
 import com.thelocalmarketplace.GUI.attendant.AttendantGUI;
@@ -88,6 +90,13 @@ public class Simulation {
 		PriceLookUpCode plu2 = new PriceLookUpCode(new String("0001"));
 		PLUCodedProduct pluProduct2 = new PLUCodedProduct(plu2, "baaakliva", 20);
 		SelfCheckoutStationLogic.populateDatabase(plu2, pluProduct2, 10);
+		
+		//Denominations of the SCS
+		AbstractSelfCheckoutStation.configureBanknoteDenominations(new BigDecimal[] {new BigDecimal(100), 
+				new BigDecimal(50), new BigDecimal(20), new BigDecimal(10), new BigDecimal(5) });
+		AbstractSelfCheckoutStation.configureCoinDenominations(new BigDecimal[] { new BigDecimal(2), 
+				BigDecimal.ONE, new BigDecimal(0.25), new BigDecimal(0.10), new BigDecimal(0.05), 
+				new BigDecimal(0.01) });
 	}
 	
 	public void unhide() {
