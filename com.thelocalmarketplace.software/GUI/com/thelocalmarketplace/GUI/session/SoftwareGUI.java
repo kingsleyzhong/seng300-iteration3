@@ -12,6 +12,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -56,6 +57,12 @@ public class SoftwareGUI{
 	
     PaymentPopup paymentScreen;
 
+    String quantity;
+    String itemCount;
+    String weight;
+    JLabel infoWeightNumber;
+    String cartPrice;
+    JLabel cartTotalInDollars;
 	
 	// JFrame size
 	private int width;
@@ -217,7 +224,7 @@ public class SoftwareGUI{
 		infoTop3.setBackground(Colors.color4);
 		JLabel infoWeightString = new JLabel("Weight");
 		infoWeightString.setFont(new Font("Dialog", Font.BOLD,20));
-		JLabel infoWeightNumber = new JLabel("0kg");
+		infoWeightNumber = new JLabel("0kg");
 		infoWeightNumber.setFont(new Font("Dialog", Font.BOLD,20));
 		infoTop3.add(infoWeightString, BorderLayout.WEST);
 		infoTop3.add(infoWeightNumber, BorderLayout.EAST);
@@ -238,7 +245,7 @@ public class SoftwareGUI{
 				
 		JLabel cartTotalString = new JLabel("Cart Total");
 		cartTotalString.setFont(new Font("Dialog", Font.BOLD, 20));
-		JLabel cartTotalInDollars = new JLabel("$0.00");
+		cartTotalInDollars = new JLabel("$0.00");
 		cartTotalInDollars.setFont(new Font("Dialog", Font.BOLD,40));
 			
 		infoBottomInner.add(cartTotalString, BorderLayout.WEST);
@@ -340,6 +347,18 @@ public class SoftwareGUI{
 		frame.getContentPane().repaint();
 	}
 	
+	public void update(double price, double mass) {
+		DecimalFormat df = new DecimalFormat("#.00");
+		cartPrice = "$" + df.format(price);
+		cartTotalInDollars.setText(cartPrice);
+		if(mass>=1000) {
+			double temp = mass/1000;
+			weight = df.format(temp) + "kg";
+		}
+		else weight = df.format(mass) + "g";
+		infoWeightNumber.setText(weight);
+	}
+	
 	public void hide() {
     	frame.setVisible(false);
     }
@@ -357,17 +376,16 @@ public class SoftwareGUI{
 				catalogue.setVisible(true);
 			}
 			
-		}
-		
+		}	
 	}
 	
 	private class InnerListener implements SessionListener{
-
+		
 		@Override
 		public void itemAdded(Session session, Product product, Mass ofProduct, Mass currentExpectedWeight,
 				BigDecimal currentExpectedPrice) {
 			cartItemsPanel.addProduct(product, ofProduct);
-			
+			update(currentExpectedPrice.doubleValue(), currentExpectedWeight.inGrams().doubleValue());
 		}
 
 		@Override
