@@ -449,25 +449,6 @@ public class Session {
 		if (request == Requests.BULKY_ITEM) {
 			addBulkyItem();
 		}
-		switch(request) {
-		case ADD_ITEM_SEARCH:
-			break;
-		case BAGS_TOO_HEAVY:
-			break;
-		case BULKY_ITEM:
-			break;
-		case CANT_MAKE_CHANGE:
-			break;
-		case CANT_PRINT_RECEIPT:
-			break;
-		case HELP_REQUESTED:
-			break;
-		case WEIGHT_DISCREPANCY:
-			break;
-		default:
-			break;
-		
-		}
 	}
 
 	/**
