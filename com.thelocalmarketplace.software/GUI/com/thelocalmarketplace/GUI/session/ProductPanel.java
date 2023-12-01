@@ -1,13 +1,29 @@
 package com.thelocalmarketplace.GUI.session;
 
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.thelocalmarketplace.GUI.customComponents.Colors;
+import com.thelocalmarketplace.GUI.customComponents.PlainButton;
+import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import javax.swing.JButton;
 
 public class ProductPanel extends JPanel {
 
@@ -24,18 +40,140 @@ public class ProductPanel extends JPanel {
 		this.session = session;
 		
 		this.setSize(250, 400);
+		this.setBackground(Colors.color1);
+		
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		gridBagLayout.columnWidths = new int[]{250, 0};
+		gridBagLayout.rowHeights = new int[]{200, 69, 63, 93, 0};
+		gridBagLayout.columnWeights = new double[]{1.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+		setLayout(gridBagLayout);
 		
 		ImageIcon image = new ImageIcon(new ImageIcon("images/sheepIcon.png").getImage().getScaledInstance(200, 200, Image.SCALE_DEFAULT));
 		JLabel label = new JLabel(image);
-		add(label);
+		GridBagConstraints gbc_label = new GridBagConstraints();
+		gbc_label.fill = GridBagConstraints.BOTH;
+		gbc_label.insets = new Insets(0, 0, 5, 0);
+		gbc_label.gridx = 0;
+		gbc_label.gridy = 0;
+		add(label, gbc_label);
+		
+		String productDescription;
+		if(product instanceof BarcodedProduct) {
+			productDescription = ((BarcodedProduct) product).getDescription();
+		} 
+		else if(product instanceof PLUCodedProduct) {
+			productDescription = ((PLUCodedProduct) product).getDescription();
+		}
+		else productDescription = "Some product";
+		
+		JLabel description = new JLabel("<html><p style=\"width:100px\">"+productDescription+"</p></html>");
+		description.setHorizontalAlignment(JLabel.CENTER);
+		GridBagConstraints gbc_description = new GridBagConstraints();
+		gbc_description.fill = GridBagConstraints.BOTH;
+		gbc_description.insets = new Insets(0, 0, 5, 0);
+		gbc_description.gridx = 0;
+		gbc_description.gridy = 1;
+		add(description, gbc_description);
+		
+		String price;
+		String per;
+		if(product.isPerUnit()) {
+			per = "/unit";
+		}
+		else per = "/kg";
+		price = product.getPrice() + per;
+		
+		JLabel priceLbl = new JLabel("$"+price);
+		priceLbl.setHorizontalAlignment(JLabel.CENTER);
+		GridBagConstraints gbc_priceLbl = new GridBagConstraints();
+		gbc_priceLbl.insets = new Insets(0, 0, 5, 0);
+		gbc_priceLbl.fill = GridBagConstraints.BOTH;
+		gbc_priceLbl.gridx = 0;
+		gbc_priceLbl.gridy = 2;
+		add(priceLbl, gbc_priceLbl);
+		
+		JButton btnNewButton = new PlainButton("Add", Colors.color2);
+		btnNewButton.setForeground(Colors.color3);
+		btnNewButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//session.getManager.add(product);
+			}
+			
+		});
+		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
+		gbc_btnNewButton.anchor = GridBagConstraints.NORTH;
+		gbc_btnNewButton.gridx = 0;
+		gbc_btnNewButton.gridy = 3;
+		add(btnNewButton, gbc_btnNewButton);
 	}
 	
 	public ProductPanel() {
 		this.setSize(250, 400);
+		this.setBackground(Colors.color1);
 		
 		ImageIcon image = new ImageIcon(new ImageIcon("images/sheepIcon.png").getImage().getScaledInstance(200, 200, Image.SCALE_DEFAULT));
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		gridBagLayout.columnWidths = new int[]{250, 0};
+		gridBagLayout.rowHeights = new int[]{200, 69, 63, 93, 0};
+		gridBagLayout.columnWeights = new double[]{1.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+		setLayout(gridBagLayout);
+		
+		String productDescription = "Some Product Description Goes Here";
 		JLabel label = new JLabel(image);
-		add(label);
+		GridBagConstraints gbc_label = new GridBagConstraints();
+		gbc_label.fill = GridBagConstraints.BOTH;
+		gbc_label.insets = new Insets(0, 0, 5, 0);
+		gbc_label.gridx = 0;
+		gbc_label.gridy = 0;
+		add(label, gbc_label);
+		JLabel description = new JLabel("<html><p style=\"width:100px\">"+productDescription+"</p></html>");
+		description.setHorizontalAlignment(JLabel.CENTER);
+		GridBagConstraints gbc_description = new GridBagConstraints();
+		gbc_description.fill = GridBagConstraints.BOTH;
+		gbc_description.insets = new Insets(0, 0, 5, 0);
+		gbc_description.gridx = 0;
+		gbc_description.gridy = 1;
+		add(description, gbc_description);
+		
+		JLabel priceLbl = new JLabel("$9.99/kg");
+		priceLbl.setHorizontalAlignment(JLabel.CENTER);
+		GridBagConstraints gbc_priceLbl = new GridBagConstraints();
+		gbc_priceLbl.insets = new Insets(0, 0, 5, 0);
+		gbc_priceLbl.fill = GridBagConstraints.BOTH;
+		gbc_priceLbl.gridx = 0;
+		gbc_priceLbl.gridy = 2;
+		add(priceLbl, gbc_priceLbl);
+		
+		JButton btnNewButton = new PlainButton("Add", Colors.color2);
+		btnNewButton.setForeground(Colors.color3);
+		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
+		gbc_btnNewButton.anchor = GridBagConstraints.NORTH;
+		gbc_btnNewButton.gridx = 0;
+		gbc_btnNewButton.gridy = 3;
+		add(btnNewButton, gbc_btnNewButton);
 	}
+	
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Dimension arcs = new Dimension(30, 30);
+        int width = getWidth();
+        int height = getHeight();
+        Graphics2D graphics = (Graphics2D) g;
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        //Draws the rounded panel with borders.
+        
+        graphics.setColor(Colors.color3);
+       
+        graphics.fillRoundRect(0, 0, width-1, height-1, arcs.width, arcs.height); //paint background
+        //graphics.setColor(getForeground());
+        //graphics.drawRoundRect(0, 0, width-1, height-1, arcs.width, arcs.height); //paint border
+    }
 
 }
