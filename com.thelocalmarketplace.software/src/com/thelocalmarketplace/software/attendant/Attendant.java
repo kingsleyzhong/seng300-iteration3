@@ -8,10 +8,11 @@ import com.thelocalmarketplace.hardware.AttendantStation;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionListener;
+import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.weight.WeightListener;
 
 /**
- * Simulation of attendant function and interaction with sessions.
+ * Simulation of attendant station, its functions, and its interactions with customer stations/session
  * 
  * Project Iteration 3 Group 1
  *
@@ -49,49 +50,46 @@ public class Attendant {
 		this.as = as;
 	}
 
-	private class InnerListener implements SessionListener{
+	/**
+	 * Receives updates about changes in instances of Session
+	 * Used to get messages from Customers (eg. weight discrepancy, help request)
+	 */
+	private class InnerSessionListener implements SessionListener{
 
 		@Override
-		public void itemAdded(Product product, Mass ofProduct, Mass currentExpectedWeight,
+		public void itemAdded(Session session, Product product, Mass ofProduct, Mass currentExpectedWeight,
 				BigDecimal currentExpectedPrice) {
-			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
-		public void itemRemoved(Product product, Mass ofProduct, Mass currentExpectedMass,
+		public void itemRemoved(Session session, Product product, Mass ofProduct, Mass currentExpectedMass,
 				BigDecimal currentExpectedPrice) {
-			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
-		public void addItemToScaleDiscrepancy() {
-			// TODO Auto-generated method stub
+		public void addItemToScaleDiscrepancy(Session session) {
 			
 		}
 
 		@Override
-		public void removeItemFromScaleDiscrepancy() {
-			// TODO Auto-generated method stub
+		public void removeItemFromScaleDiscrepancy(Session session) {
 			
 		}
 
 		@Override
-		public void discrepancy(String message) {
-			// TODO Auto-generated method stub
+		public void discrepancy(Session session, String message) {
 			
 		}
 
 		@Override
-		public void discrepancyResolved() {
-			// TODO Auto-generated method stub
+		public void discrepancyResolved(Session session) {
 			
 		}
 
 		@Override
-		public void pricePaidUpdated() {
-			// TODO Auto-generated method stub
+		public void pricePaidUpdated(Session session) {
 			
 		}
 		
@@ -105,13 +103,103 @@ public class Attendant {
 		public void getRequest(Session session, Requests request) {
 			
 		}
+
+		@Override
+		public void sessionAboutToStart(Session session) {
+		}
+
+		@Override
+		public void sessionEnded(Session session) {
+		}
 	}
 	
+
+	/**
+	 * Receives notifications when an issue (eg. low ink, paper, low coins) is likely to occur for a given Session
+	 * Used to let Attendant know when a customer station might have issues before they happen
+	 */
+	private class InnerPredictionListener implements IssuePredictorListener{
+
+		@Override
+		public void notifyPredictUnsupportedFeature(Session session, Issues issue) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void notifyPredictLowInk(Session session) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void notifyPredictLowPaper(Session session) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void notifyPredictCoinsFull(Session session) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void notifyPredictBanknotesFull(Session session) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void notifyPredictLowCoins(Session session) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void notifyPredictLowBanknotes(Session session) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
 	public void registerOn(Session session) {
-		session.register(new InnerListener());
+		session.register(new InnerSessionListener());
 		sessions.add(session);
 	}
 
+	/**
+	 * Method for enabling a Customer SelfCheckoutStation associated with a given session, unlocking the 
+	 * Session and putting it into the PRE_SESSION state
+	 * @param session
+	 * 					a currently disabled session
+	 */
+	public void enableStation(Session session) {
+		session.enable();
+	}
+	
+	/**
+	 * Method for disabling a Customer SelfCheckoutStation associated with a given session.
+	 * Places the session into the DISABLED state, preventing further actions.
+	 * If the session is currently active than waits until the session is finished before disabling it
+	 * 
+	 * @param session
+	 * 						a session that is either running or in the pre-session state
+	 */
+	public void disableStation(Session session) {
+			session.disable();
+	}
+	
+	
+	/**
+	 * Method for associating the Attendant with an instance of IssuePredictor.
+	 * @param predictor
+	 * 						an instance of IssuePredictor
+	 */
+	public void addIssuePrediction(IssuePredictor predictor) {
+		// associates the inner issue predictor class with the predictor
+		predictor.register(new InnerPredictionListener());
+	}
 	public AttendantStation getStation() {
 		return as;
 	}

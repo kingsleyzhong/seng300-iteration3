@@ -67,6 +67,10 @@ public class MaintenanceManager {
     public MaintenanceManager() {
     }
 
+    public void disableStation(Session session){
+    	
+    }
+    
     /**
      * Simulates the act of opening the hardware
      * @param session passed in as the specific machine being opened
@@ -75,7 +79,7 @@ public class MaintenanceManager {
     public void openHardware(Session session) throws NotDisabledSessionException {
         this.session = session;
         state = session.getState();
-        if (state == SessionState.BLOCKED) { // Change check to SessionState.DISABLED when added
+        if (state == SessionState.DISABLED) {
             scs = session.getStation();
             banknoteDenominations = scs.getBanknoteDenominations();
             coinDenominations = scs.getCoinDenominations();

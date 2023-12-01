@@ -1,0 +1,23 @@
+Attendent-related GUI stuff:
+
+Stuff that needs to be shown on the Attendent Station Screen/Window:
+
+	- should show Sessions that are "tracked" (remember, one attendent tracks multiple sessions) 
+		this could be done with just a list, a set of boxes, or each Session could link to a more detailed view.
+
+	- displays information when a notification is recieved from a Session (eg. Session 1 sends a weight discrepency request)
+		this could be done with a popup window. All possible notifications (called "requests") can be found in Attendent.Requests in the attendant-dev branch
+	- displays information when an issue prediction is recieved (eg. low paper prediction about Session 1)
+		this could also be done with a popup window. The potental notifications can be seen in IssuePredictorListener in the attendant-dev branch
+
+	- some kind of interface for text search
+		- this only needs to show up when a Session has requested "add item via text lookup", so this could be a different screen
+		- Nick knows more about this, but it should be similer to the visual catalogue but with a textbox for searching
+		- when an item in this visual catalogue is "clicked" then the screen should go back to the normal attendant screen
+
+	- Some kind of interface for enable/disabling a given Session
+		
+	- "maintence" related buttons (refill ink, paper, coins, banknotes and empty coins and banknotes) for a given sesssion
+
+	- when a maintence task causes an error (eg. overflowed ink) then should show some visual indicator (eg. pop up)
+		these can be best seen in the use case discreptions 

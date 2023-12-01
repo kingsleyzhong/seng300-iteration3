@@ -86,7 +86,7 @@ public class IssuesPredictorTest extends AbstractTest{
         
         printer = scs.getPrinter();
         receiptPrinter = new Receipt(printer);
-        issuePredictor = new IssuePredictor();
+        issuePredictor = new IssuePredictor(session, scs);
        
         // Bronze Printer
         bronzePrinter = new ReceiptPrinterBronze();

@@ -39,18 +39,24 @@ public interface SessionListener {
 	 * @param request
 	 */
 	public void getRequest(Session session, Requests request);
-	void itemAdded(Product product, Mass ofProduct, Mass currentExpectedWeight, BigDecimal currentExpectedPrice);
 	
-	void itemRemoved(Product product, Mass ofProduct, Mass currentExpectedMass, BigDecimal currentExpectedPrice);
 	
-	void addItemToScaleDiscrepancy();
+	void itemAdded(Session session, Product product, Mass ofProduct, Mass currentExpectedWeight, BigDecimal currentExpectedPrice);
 	
-	void removeItemFromScaleDiscrepancy();
+	void itemRemoved(Session session, Product product, Mass ofProduct, Mass currentExpectedMass, BigDecimal currentExpectedPrice);
 	
-	void discrepancy(String message);
+	void addItemToScaleDiscrepancy(Session session);
 	
-	void discrepancyResolved();
+	void removeItemFromScaleDiscrepancy(Session session);
 	
-	void pricePaidUpdated();
+	void discrepancy(Session session, String message);
+	
+	void discrepancyResolved(Session session);
+	
+	void pricePaidUpdated(Session session);
+	
+	void sessionAboutToStart(Session session);
+	
+	void sessionEnded(Session session);
 	
 }

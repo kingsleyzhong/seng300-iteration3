@@ -32,6 +32,7 @@ import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionListener;
+import com.thelocalmarketplace.software.attendant.Requests;
 
 import javax.swing.SwingConstants;
 
@@ -277,45 +278,63 @@ public class SoftwareGUI{
 	private class InnerListener implements SessionListener{
 
 		@Override
-		public void itemAdded(Product product, Mass ofProduct, Mass currentExpectedWeight,
+		public void itemAdded(Session session, Product product, Mass ofProduct, Mass currentExpectedWeight,
 				BigDecimal currentExpectedPrice) {
 			cartItemsPanel.addProduct(product, ofProduct);
 			
 		}
 
 		@Override
-		public void itemRemoved(Product product, Mass ofProduct, Mass currentExpectedMass,
+		public void itemRemoved(Session session, Product product, Mass ofProduct, Mass currentExpectedMass,
 				BigDecimal currentExpectedPrice) {
 			cartItemsPanel.removeProduct(product, ofProduct);
 			
 		}
 
 		@Override
-		public void addItemToScaleDiscrepancy() {
+		public void addItemToScaleDiscrepancy(Session session) {
 			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
-		public void removeItemFromScaleDiscrepancy() {
+		public void removeItemFromScaleDiscrepancy(Session session) {
 			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
-		public void discrepancy(String message) {
+		public void discrepancy(Session session, String message) {
 			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
-		public void discrepancyResolved() {
+		public void discrepancyResolved(Session session) {
 			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
-		public void pricePaidUpdated() {
+		public void pricePaidUpdated(Session session) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void getRequest(Session session, Requests request) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void sessionAboutToStart(Session session) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void sessionEnded(Session session) {
 			// TODO Auto-generated method stub
 			
 		}
