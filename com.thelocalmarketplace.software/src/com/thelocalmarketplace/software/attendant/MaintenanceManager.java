@@ -50,6 +50,8 @@ import java.util.Map;
  */
 public class MaintenanceManager {
     private boolean isOpen = false;
+    private int amountOfInkRefilled = 0;
+    private int amountOfPaperRefilled = 0;
     private SessionState state;
     private IReceiptPrinter receiptPrinter;
     private Map<BigDecimal, IBanknoteDispenser> banknoteDispensers;
@@ -212,6 +214,8 @@ public class MaintenanceManager {
         if (isOpen) {
 
             this.receiptPrinter.addInk(amount);
+            this.amountOfInkRefilled = 0;
+            this.amountOfInkRefilled += amount;
 
         } else {
             throw new ClosedHardwareException("Hardware is closed!");
@@ -227,10 +231,18 @@ public class MaintenanceManager {
         if (isOpen) {
 
             this.receiptPrinter.addPaper(amount);
+            this.amountOfPaperRefilled = 0;
+            this.amountOfPaperRefilled += amount;
 
         } else {
             throw new ClosedHardwareException("Hardware is closed!");
         }
+    }
+
+    public int getCurrentAmountOfInk() { return this.amountOfInkRefilled; }
+
+    public int getCurrentAmountOfPaper() {
+        return this.amountOfPaperRefilled;
     }
 
 }
