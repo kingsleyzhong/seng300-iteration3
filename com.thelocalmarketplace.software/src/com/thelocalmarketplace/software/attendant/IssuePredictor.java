@@ -235,7 +235,8 @@ public class IssuePredictor  {
 	/*
 	 * Predict if an issue may occur with not enough ink inside the printer
 	 * The current amount of ink in the printer should be above 
-	 * a threshold = N/A. If an issue is found, announce a low ink event.
+	 * a threshold = 10% of maximum ink. If an issue is found, announce 
+	 * a low ink event. Otherwise, announce a no issues event.
 	 */
     public void checkLowInk(Session s, IReceiptPrinter printer) {
     	receiptPrinter = printer;
@@ -253,6 +254,9 @@ public class IssuePredictor  {
     		if (estimatedInk <= threshold * 0.1) {
 				notifyLowInk(s);
 				lowInk = true;
+			} else {
+				notifyNoIssues(s);
+				lowInk = false;
 			}
     	} else if (receiptPrinter instanceof ReceiptPrinterSilver) {
     		ReceiptPrinterSilver silver = (ReceiptPrinterSilver) receiptPrinter;
@@ -262,8 +266,7 @@ public class IssuePredictor  {
     		if (currentInk <= threshold * 0.1) {
 				notifyLowInk(s);
 				lowInk = true;
-			}
-    		else {
+			} else {
     			notifyNoIssues(s);
     			lowInk = false;
     		}
@@ -276,8 +279,7 @@ public class IssuePredictor  {
     		if (currentInk <= threshold * 0.1) {
 				notifyLowInk(s);
 				lowInk = true;
-			}
-    		else {
+			} else {
     			notifyNoIssues(s);
     			lowInk = false;
     		}
@@ -287,8 +289,8 @@ public class IssuePredictor  {
     /*
      * Predict if an issue may occur with not enough paper inside the printer.
      * The current amount of paper in the printer should be 
-     * above a threshold = N/A. If an issue is found, announce 
-     * a low paper event.
+     * above a threshold = 10% of maximum paper. If an issue is found, announce 
+     * a low paper event. Otherwise, announce a no issues event.
      */
     public void checkLowPaper(Session s, IReceiptPrinter printer) {
     	receiptPrinter = printer;
@@ -306,9 +308,11 @@ public class IssuePredictor  {
 			if (estimatedInk <= threshold * 0.1) {
 				notifyLowPaper(s);
 				lowPaper = true;
+			} else {
+				notifyNoIssues(s);
+				lowPaper = false;
 			}
-		}
-		else if (receiptPrinter instanceof ReceiptPrinterSilver) {
+		} else if (receiptPrinter instanceof ReceiptPrinterSilver) {
 			ReceiptPrinterSilver silver = (ReceiptPrinterSilver) receiptPrinter;
 			
 			currentPaper = silver.paperRemaining();
@@ -317,8 +321,7 @@ public class IssuePredictor  {
 			if (currentPaper <= threshold * 0.1) {
 				notifyLowPaper(s);
 				lowPaper = true;
-			}
-			else {
+			} else {
     			notifyNoIssues(s);
     			lowPaper = false;
     		}
@@ -331,8 +334,7 @@ public class IssuePredictor  {
 			if (currentPaper <= threshold * 0.1) {
 				notifyLowPaper(s);
 				lowPaper = true;
-			}
-			else {
+			} else {
     			notifyNoIssues(s);
     			lowPaper = false;
     		}
@@ -343,7 +345,7 @@ public class IssuePredictor  {
      * Predict if an issue may occur with not having enough coins to 
      * dispense as change. The current amount of coins in the dispenser 
      * should be above a threshold = N/A. If an issue is found, 
-     * announce a low coins event
+     * announce a low coins event. Otherwise, announce a no issues event.
      */
     public void checkLowCoins(Session s, 
     		Map<BigDecimal, ICoinDispenser> dispensers) {
@@ -384,7 +386,7 @@ public class IssuePredictor  {
      * Predict if an issue may occur with not having enough bank notes to 
      * dispense as change. The current amount of bank notes in the dispenser
      * should be above a threshold = N/A. If an issue is found, announce
-     * a low banknotes event.
+     * a low banknotes event. Otherwise, announce a no issues event.
      */
     public void checkLowBanknotes(Session s, 
     		Map<BigDecimal, IBanknoteDispenser> dispensers) {
@@ -425,9 +427,9 @@ public class IssuePredictor  {
     
     /**
      * Predict if an issue may occur with the coin storage unit being full, 
-     * and thus the customer may not be able to insert any coins. The current 
-     * amount of coins in the storage unit should be below a threshold = N/A.
-     * If an issue is found, announce a coins full event.
+     * and thus the customer may not be able to insert any coins. The coin 
+     * storage unit should have space. If an issue is found, announce a 
+     * coins full event. Otherwise, announce a no issues event.
      */
     public void checkCoinsFull(Session s, CoinStorageUnit storage) {
     	coinStorage = storage;
@@ -439,8 +441,7 @@ public class IssuePredictor  {
 		if (!coinStorage.hasSpace()) {
 			notifyCoinsFull(s);
 			fullCoins = true;
-		}
-		else {
+		} else {
 			notifyNoIssues(s);
 			fullCoins = false;
 		}
@@ -449,8 +450,9 @@ public class IssuePredictor  {
     /**
      * Predict if an issue may occur with the banknote storage unit being full,
      * and thus the customer may not be able to insert any banknotes. The
-     * current amount of banknotes in the storage unit should be below a 
-     * threshold = N/A. If an issue is found, announce a banknotes full event.
+     * banknote storage unit should have space. If an issue is found, 
+     * announce a banknotes full event. Otherwise, announce a no 
+     * issues event.
      */
     public void checkBanknotesFull(Session s, BanknoteStorageUnit storage) {
     	banknoteStorage = storage;
