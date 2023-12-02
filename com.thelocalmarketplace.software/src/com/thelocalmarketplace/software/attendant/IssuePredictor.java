@@ -248,8 +248,8 @@ public class IssuePredictor  {
     	int threshold;
     	
     	if (receiptPrinter instanceof ReceiptPrinterBronze) {
-			ReceiptPrinterBronze bronze = (ReceiptPrinterBronze) receiptPrinter;
-			threshold = bronze.MAXIMUM_INK;
+			threshold = ReceiptPrinterBronze.MAXIMUM_INK;
+			
     		if (estimatedInk <= threshold * 0.1) {
 				notifyLowInk(s);
 				lowInk = true;
@@ -258,7 +258,7 @@ public class IssuePredictor  {
     		ReceiptPrinterSilver silver = (ReceiptPrinterSilver) receiptPrinter;
     		
     		currentInk = silver.inkRemaining();
-    		threshold = silver.MAXIMUM_INK;
+    		threshold = ReceiptPrinterSilver.MAXIMUM_INK;
     		if (currentInk <= threshold * 0.1) {
 				notifyLowInk(s);
 				lowInk = true;
@@ -271,7 +271,7 @@ public class IssuePredictor  {
     		ReceiptPrinterGold gold = (ReceiptPrinterGold) receiptPrinter;
     		
     		currentInk = gold.inkRemaining();
-    		threshold = gold.MAXIMUM_INK;
+    		threshold = ReceiptPrinterGold.MAXIMUM_INK;
     		
     		if (currentInk <= threshold * 0.1) {
 				notifyLowInk(s);
@@ -301,8 +301,8 @@ public class IssuePredictor  {
     	int threshold;
     	
 		if (receiptPrinter instanceof ReceiptPrinterBronze) {
-			ReceiptPrinterBronze bronze = (ReceiptPrinterBronze) receiptPrinter;
-			threshold = bronze.MAXIMUM_PAPER;
+			threshold = ReceiptPrinterBronze.MAXIMUM_PAPER;
+			
 			if (estimatedInk <= threshold * 0.1) {
 				notifyLowPaper(s);
 				lowPaper = true;
@@ -312,7 +312,7 @@ public class IssuePredictor  {
 			ReceiptPrinterSilver silver = (ReceiptPrinterSilver) receiptPrinter;
 			
 			currentPaper = silver.paperRemaining();
-			threshold = silver.MAXIMUM_PAPER;
+			threshold = ReceiptPrinterSilver.MAXIMUM_PAPER;
 			
 			if (currentPaper <= threshold * 0.1) {
 				notifyLowPaper(s);
@@ -326,7 +326,7 @@ public class IssuePredictor  {
 			ReceiptPrinterGold gold = (ReceiptPrinterGold) receiptPrinter;
 			
 			currentPaper = gold.paperRemaining();
-			threshold = gold.MAXIMUM_PAPER;
+			threshold = ReceiptPrinterGold.MAXIMUM_PAPER;
 			
 			if (currentPaper <= threshold * 0.1) {
 				notifyLowPaper(s);
@@ -361,25 +361,22 @@ public class IssuePredictor  {
     			if (currentCoins <= threshold * 0.1) {
 					notifyCoinsLow(s);
 					lowCoins = true;
-				}
-    			else {
+				} else {
         			notifyNoIssues(s);
         			lowCoins = false;
         		}
-    		} else if (dispenser instanceof CoinDispenserGold) {
+    		} else {
     			int currentCoins = dispenser.size();
     			int threshold = dispenser.getCapacity();
     			
     			if (currentCoins <= threshold * 0.1) {
 					notifyCoinsLow(s);
 					lowCoins = true;
-				}
-    			else {
+				} else {
         			notifyNoIssues(s);
         			lowCoins = false;
         		}
-    		} else 
-    			notifyUnsupportedFeature(s, Issues.LOW_COINS_CHECK_UNSUPPORTED);
+    		} 
     	}
     }
     
@@ -410,7 +407,7 @@ public class IssuePredictor  {
         			notifyNoIssues(s);
         			lowBanknotes = false;
         		}
-    		} else if (dispenser instanceof BanknoteDispenserGold){
+    		} else {
     			int currentBanknotes = dispenser.size();
     			int threshold = dispenser.getCapacity();
     			
@@ -422,8 +419,7 @@ public class IssuePredictor  {
         			notifyNoIssues(s);
         			lowBanknotes = false;
         		}
-			} else 
-				notifyUnsupportedFeature(s, Issues.LOW_BANKNOTE_CHECK_UNSUPPORTED);
+			} 
 		}
     }
     
