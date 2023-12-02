@@ -335,13 +335,10 @@ public class Session {
 
 	/**
 	 * Enters the card payment mode for the customer. Prevents customer from adding further
-	 * items by freezing session.
-	 * @throws DisabledException
-	 * @throws NoCashAvailableException
-	 * @throws CashOverloadException
+	 * items by freezing session. Can also enter after paying some cash.
 	 */
-	public void payByCard() throws CashOverloadException, NoCashAvailableException, DisabledException {
-		if (sessionState == SessionState.IN_SESSION) {
+	public void payByCard() {
+		if (sessionState == SessionState.IN_SESSION || sessionState == SessionState.PAY_BY_CASH) {
 			if (!manager.getItems().isEmpty()) {
 				sessionState = SessionState.PAY_BY_CARD;
 				funds.setPay(true);
