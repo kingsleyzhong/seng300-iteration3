@@ -57,9 +57,9 @@ public class SoftwareGUI{
     String quantity;
     String itemCount;
     String weight;
-    JLabel infoWeightNumber;
+    public JLabel infoWeightNumber;
     String cartPrice;
-    JLabel cartTotalInDollars;
+    public JLabel cartTotalInDollars;
 	
 	// JFrame size
 	private int width;

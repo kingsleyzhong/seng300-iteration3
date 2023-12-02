@@ -1,5 +1,6 @@
 package com.thelocalmarketplace.software.GUI;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -15,21 +16,18 @@ import com.thelocalmarketplace.GUI.session.SoftwareGUI;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.AttendantStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
+import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.attendant.Attendant;
-import com.thelocalmarketplace.software.test.AbstractTest;
 
 import powerutility.PowerGrid;
 
-public class SoftwareGUITest extends AbstractTest{
-	public SoftwareGUITest(String testName, AbstractSelfCheckoutStation scs) {
-		super(testName, scs);
-	}
+public class SoftwareGUITest{
 
+	private AbstractSelfCheckoutStation scs;
 	private Attendant attendant;
 	private AttendantStation as;
 	private Session session;
@@ -42,6 +40,7 @@ public class SoftwareGUITest extends AbstractTest{
 	
 	@Before
 	public void setup() {
+		scs = new SelfCheckoutStationGold();
 		as = new AttendantStation();
 		PowerGrid.engageUninterruptiblePowerSource();
 		scs.plugIn(PowerGrid.instance());
@@ -92,5 +91,36 @@ public class SoftwareGUITest extends AbstractTest{
 		softwareGUI.btnStart.doClick();
 		scs.getMainScanner().scan(item);
 		assertTrue(softwareGUI.cartItemsPanel.contains(product));
+		assertEquals("$10.00", softwareGUI.cartTotalInDollars.getText());
+		assertEquals("20.00g", softwareGUI.infoWeightNumber.getText());
+	}
+	
+	public void testAdd2Items() {
+		softwareGUI.btnStart.doClick();
+		scs.getMainScanner().scan(item);
+		scs.getBaggingArea().addAnItem(item);
+		scs.getMainScanner().scan(item2);
+		assertTrue(softwareGUI.cartItemsPanel.contains(product));
+		assertEquals("$20.00", softwareGUI.cartTotalInDollars.getText());
+		assertEquals("40.00g", softwareGUI.infoWeightNumber.getText());
+	}
+	
+	@Test
+	public void testAddItemDoPayCash() {
+		softwareGUI.btnStart.doClick();
+		scs.getMainScanner().scan(item);
+		scs.getBaggingArea().addAnItem(item);
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getCashButton().doClick();
+		assertTrue(session.getState() == SessionState.PAY_BY_CASH);
+	}
+	
+	public void testAddItemDoPayCard() {
+		softwareGUI.btnStart.doClick();
+		scs.getMainScanner().scan(item);
+		scs.getBaggingArea().addAnItem(item);
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getCardButton().doClick();
+		assertTrue(session.getState() == SessionState.PAY_BY_CARD);
 	}
 }
