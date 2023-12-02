@@ -53,6 +53,8 @@ public class SoftwareGUI{
 	public JButton pay;
 	
     public PaymentPopup paymentScreen;
+	public AddBagsPopup addBagsScreen;
+
 
     String quantity;
     String itemCount;
@@ -334,7 +336,14 @@ public class SoftwareGUI{
 		
 		//Add action listeners to buttons
 		cancel.addActionListener(new ButtonListener());
-		addBags.addActionListener(new ButtonListener());
+		
+		addBagsScreen = new AddBagsPopup(session);
+		addBags.addActionListener(new ButtonListener(){
+		      @Override
+		       public void actionPerformed(ActionEvent e) {
+		    	  addBagsScreen.popUp();		          	            	            
+		       }
+		});
 		pluCode.addActionListener(new ButtonListener());
 		searchCatalogue.addActionListener(new ButtonListener());
 		callAttendant.addActionListener(new ButtonListener());
@@ -347,8 +356,7 @@ public class SoftwareGUI{
 		            
 		            //we need to put session into pay mode here//
 		            
-		            
-		       }
+		          }
 		});
 				
 		//Set button sizes
