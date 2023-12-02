@@ -241,8 +241,6 @@ public class MaintenanceManager {
 
     public int getCurrentAmountOfInk() { return this.amountOfInkRefilled; }
 
-    public int getCurrentAmountOfPaper() {
-        return this.amountOfPaperRefilled;
-    }
+    public int getCurrentAmountOfPaper() { return this.amountOfPaperRefilled; }
 
 }
