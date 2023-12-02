@@ -35,7 +35,7 @@ public class PaymentPopup {
 	
 	JFrame frame;
 	
-	JLabel amountLabel;
+	public JLabel amountLabel;
 	JLabel paymentTypeLabel;
 	
 	// JFrame size

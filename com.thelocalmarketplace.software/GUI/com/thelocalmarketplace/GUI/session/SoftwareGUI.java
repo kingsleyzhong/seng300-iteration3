@@ -5,8 +5,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -15,23 +13,16 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.border.Border;
-
 import com.jjjwelectronics.Mass;
-import com.jjjwelectronics.screen.ITouchScreen;
-import com.thelocalmarketplace.GUI.Simulation;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.GradientPanel;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
-import com.thelocalmarketplace.GUI.startscreen.StartScreenGUI;
-import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionListener;
@@ -39,6 +30,7 @@ import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.attendant.Requests;
 
 import javax.swing.SwingConstants;
+import javax.swing.Timer;
 
 public class SoftwareGUI{
 	JFrame frame;
@@ -131,6 +123,40 @@ public class SoftwareGUI{
 		return main;
 	}
 	
+	public JPanel end() {
+		JPanel main = new GradientPanel(Colors.color1, Colors.color2);
+		main.setLayout(new GridLayout(1, 0, 0, 0));
+		
+		Timer timer = new Timer(20000, new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				displayStart();
+			}
+			
+		});
+		timer.setRepeats(false);
+		timer.start();
+		
+		JButton thankYouButton = new PlainButton("<html>Thanks For Shopping!<br><br>Please Collect Your Receipt</html>", Colors.color1);
+		thankYouButton.setOpaque(false);
+		thankYouButton.setFont(new Font("Dialog", Font.BOLD, 40));
+		thankYouButton.setForeground(Colors.color3);
+		thankYouButton.setBorder(BorderFactory.createEmptyBorder());
+		thankYouButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				displayStart();
+				timer.stop();
+			}
+			
+		});
+		
+		main.add(thankYouButton);
+		
+		return main;
+	}
 	
 	public JPanel mainPanel() {
 		JPanel main = new JPanel();
@@ -334,6 +360,7 @@ public class SoftwareGUI{
 		frame.getContentPane().add(startPane, BorderLayout.CENTER);
 		frame.getContentPane().revalidate();
 		frame.getContentPane().repaint();
+		frame.setVisible(true);
 	}
 	
 	public void displayMain() {
@@ -342,14 +369,16 @@ public class SoftwareGUI{
 		frame.getContentPane().add(mainPane, BorderLayout.CENTER);
 		frame.getContentPane().revalidate();
 		frame.getContentPane().repaint();
+		frame.setVisible(true);
 	}
 	
 	public void displayEnd() {
 		frame.getContentPane().removeAll();
-		//endPane = end();
+		endPane = end();
 		frame.getContentPane().add(endPane);
 		frame.getContentPane().revalidate();
 		frame.getContentPane().repaint();
+		frame.setVisible(true);
 	}
 	
 	public void update(double price, double mass) {
@@ -435,7 +464,9 @@ public class SoftwareGUI{
 
 		@Override
 		public void pricePaidUpdated(Session session, BigDecimal amountDue) {
-			// TODO Auto-generated method stub
+			DecimalFormat df = new DecimalFormat("#.00");
+			String s = "$" + df.format(amountDue);
+			paymentScreen.amountLabel.setText(s);
 			
 		}
 
@@ -453,8 +484,8 @@ public class SoftwareGUI{
 
 		@Override
 		public void sessionEnded(Session session) {
-			// TODO Auto-generated method stub
-			
+			paymentScreen.hide();
+			displayEnd();
 		}
 
 		
