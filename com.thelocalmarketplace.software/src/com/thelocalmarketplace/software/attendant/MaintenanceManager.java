@@ -83,6 +83,7 @@ public class MaintenanceManager {
         state = session.getState();
         if (state == SessionState.DISABLED) {
             scs = session.getStation();
+            session.openHardware();
             banknoteDenominations = scs.getBanknoteDenominations();
             coinDenominations = scs.getCoinDenominations();
             receiptPrinter = scs.getPrinter();
@@ -191,7 +192,7 @@ public class MaintenanceManager {
      * Simulates closing the hardware
      */
     public void closeHardware() {
-        // still needs code to handle updating session state
+        session.closeHardware();
         session = null;
         state = null;
         scs = null;

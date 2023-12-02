@@ -4,27 +4,22 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Map;
 
+import com.jjjwelectronics.IDevice;
+import com.jjjwelectronics.IDeviceListener;
 import com.jjjwelectronics.Mass;
-import com.jjjwelectronics.printer.IReceiptPrinter;
-import com.jjjwelectronics.printer.ReceiptPrinterBronze;
-import com.jjjwelectronics.printer.ReceiptPrinterGold;
-import com.jjjwelectronics.printer.ReceiptPrinterSilver;
+import com.jjjwelectronics.printer.*;
 import com.tdc.banknote.BanknoteDispensationSlot;
 import com.tdc.banknote.BanknoteDispenserBronze;
 import com.tdc.banknote.BanknoteDispenserGold;
 import com.tdc.banknote.BanknoteStorageUnit;
 import com.tdc.banknote.IBanknoteDispenser;
-import com.tdc.coin.AbstractCoinDispenser;
-import com.tdc.coin.CoinDispenserBronze;
-import com.tdc.coin.CoinDispenserGold;
-import com.tdc.coin.CoinSlot;
-import com.tdc.coin.CoinStorageUnit;
-import com.tdc.coin.ICoinDispenser;
+import com.tdc.coin.*;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionListener;
 import com.thelocalmarketplace.software.SessionState;
+import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.receipt.ReceiptListener;
 /*
  * 
@@ -64,19 +59,47 @@ public class IssuePredictor  {
 	private BanknoteStorageUnit banknoteStorage;
 	private Map<BigDecimal, IBanknoteDispenser> banknoteDispensers;
 	private Map<BigDecimal, ICoinDispenser> coinDispensers;
+	private Receipt receipt;
+	private int estimatedInk;
+	private int estimatedPaper;
+
+	private boolean lowInk;
+	private boolean lowPaper;
+	private boolean lowCoins;
+	private boolean fullCoins;
+	private boolean lowBanknotes;
+	private boolean fullBanknotes;
+	private boolean[] issues = {lowInk, lowPaper, lowCoins, fullCoins, lowBanknotes, fullBanknotes};
 	
 	
-	public IssuePredictor(Session session, AbstractSelfCheckoutStation scs) {
+	public IssuePredictor(Session session, AbstractSelfCheckoutStation scs, Receipt receipt) {
 		this.session = session;
 		// register IssuePredictor as a listener to the session
 		session.register(new InnerSessionListener());
-		
+		session.registerHardwareListener(new InnerHardwareListener());
+
 		// save references to the hardware associated with session?`
 		receiptPrinter = scs.getPrinter();
 		coinStorage = scs.getCoinStorage();
 		banknoteStorage = scs.getBanknoteStorage();
 		banknoteDispensers = scs.getBanknoteDispensers();
 		coinDispensers = scs.getCoinDispensers();
+		receiptPrinter.register((ReceiptPrinterListener) new InnerReceiptPrinterListener());
+		this.receipt = receipt;
+		this.receipt.registerPrintListener(new PrintTracker());
+		estimatedInk = 0;
+		estimatedPaper = 0;
+	}
+
+	private class InnerHardwareListener implements HardwareListener {
+		@Override
+		public void aStationHasBeenOpened() {
+
+		}
+		@Override
+		public void aStationHasBeenClosed() {
+			predictionCheck(session);
+		}
 	}
 	
 	private class InnerSessionListener implements SessionListener{
@@ -144,7 +167,50 @@ public class IssuePredictor  {
 		}
 		
 	}
-	
+
+	private class InnerReceiptPrinterListener implements ReceiptPrinterListener {
+		@Override
+		public void aDeviceHasBeenEnabled(IDevice<? extends IDeviceListener> device) {}
+		@Override
+		public void aDeviceHasBeenDisabled(IDevice<? extends IDeviceListener> device) {}
+		@Override
+		public void aDeviceHasBeenTurnedOn(IDevice<? extends IDeviceListener> device) {}
+		@Override
+		public void aDeviceHasBeenTurnedOff(IDevice<? extends IDeviceListener> device) {}
+		@Override
+		public void thePrinterIsOutOfPaper() {}
+		@Override
+		public void thePrinterIsOutOfInk() {}
+		@Override
+		public void thePrinterHasLowInk() {}
+		@Override
+		public void thePrinterHasLowPaper() {}
+		/**
+		 * Announces that paper has been added to the printer.
+		 */
+		@Override
+		public void paperHasBeenAddedToThePrinter() {
+			lowPaper = false;
+			estimatedPaper = ReceiptPrinterBronze.MAXIMUM_PAPER;
+		}
+		/**
+		 * Announces that ink has been added to the printer.
+		 */
+		@Override
+		public void inkHasBeenAddedToThePrinter() {
+			lowInk = false;
+			estimatedInk = ReceiptPrinterBronze.MAXIMUM_INK;
+		}
+	}
+
+	private class PrintTracker implements PrintListener {
+		@Override
+		public void aReceiptHasBeenPrinted(int linesPrinted, int charsPrinted) {
+			estimatedPaper -= linesPrinted;
+			estimatedInk -= charsPrinted;
+		}
+	}
+
 	/**
 	 * Runs all checks on a given session
 	 */
@@ -155,6 +221,14 @@ public class IssuePredictor  {
 		checkLowBanknotes(session, banknoteDispensers);
 		checkCoinsFull(session, coinStorage);
 		checkBanknotesFull(session, banknoteStorage);
+		for (boolean i : issues) {
+			if (i) {
+				break;
+			}
+			else {
+				notifyNoIssues(session);
+			}
+		}
 	}
 	
 	
@@ -174,23 +248,31 @@ public class IssuePredictor  {
     	int threshold;
     	
     	if (receiptPrinter instanceof ReceiptPrinterBronze) {
-    		notifyUnsupportedFeature(s, Issues.LOW_INK_CHECK_UNSUPPORTED);
+			ReceiptPrinterBronze bronze = (ReceiptPrinterBronze) receiptPrinter;
+			threshold = bronze.MAXIMUM_INK;
+    		if (estimatedInk <= threshold * 0.1) {
+				notifyLowInk(s);
+				lowInk = true;
+			}
     	} else if (receiptPrinter instanceof ReceiptPrinterSilver) {
     		ReceiptPrinterSilver silver = (ReceiptPrinterSilver) receiptPrinter;
     		
     		currentInk = silver.inkRemaining();
     		threshold = silver.MAXIMUM_INK;
-    		
-    		if (currentInk <= threshold * 0.1)
-    			notifyLowInk(s);
+    		if (currentInk <= threshold * 0.1) {
+				notifyLowInk(s);
+				lowInk = true;
+			}
     	} else {
     		ReceiptPrinterGold gold = (ReceiptPrinterGold) receiptPrinter;
     		
     		currentInk = gold.inkRemaining();
     		threshold = gold.MAXIMUM_INK;
     		
-    		if (currentInk <= threshold * 0.1)
-    			notifyLowInk(s);
+    		if (currentInk <= threshold * 0.1) {
+				notifyLowInk(s);
+				lowInk = true;
+			}
     	}
     }
     
@@ -210,24 +292,34 @@ public class IssuePredictor  {
     	int currentPaper;
     	int threshold;
     	
-		if (receiptPrinter instanceof ReceiptPrinterBronze) 
-			notifyUnsupportedFeature(s, Issues.LOW_PAPER_CHECK_UNSUPPORTED);
+		if (receiptPrinter instanceof ReceiptPrinterBronze) {
+			ReceiptPrinterBronze bronze = (ReceiptPrinterBronze) receiptPrinter;
+			threshold = bronze.MAXIMUM_PAPER;
+			if (estimatedInk <= threshold * 0.1) {
+				notifyLowPaper(s);
+				lowPaper = true;
+			}
+		}
 		else if (receiptPrinter instanceof ReceiptPrinterSilver) {
 			ReceiptPrinterSilver silver = (ReceiptPrinterSilver) receiptPrinter;
 			
 			currentPaper = silver.paperRemaining();
 			threshold = silver.MAXIMUM_PAPER;
 			
-			if (currentPaper <= threshold * 0.1) 
+			if (currentPaper <= threshold * 0.1) {
 				notifyLowPaper(s);
+				lowPaper = true;
+			}
 		} else {
 			ReceiptPrinterGold gold = (ReceiptPrinterGold) receiptPrinter;
 			
 			currentPaper = gold.paperRemaining();
 			threshold = gold.MAXIMUM_PAPER;
 			
-			if (currentPaper <= threshold * 0.1)
+			if (currentPaper <= threshold * 0.1) {
 				notifyLowPaper(s);
+				lowPaper = true;
+			}
 		}
     }
     
@@ -250,15 +342,18 @@ public class IssuePredictor  {
     			int currentCoins = dispenser.size();
     			int threshold = dispenser.getCapacity();
     			
-    			if (currentCoins <= threshold * 0.1) 
-    				notifyCoinsLow(s);
-    			
+    			if (currentCoins <= threshold * 0.1) {
+					notifyCoinsLow(s);
+					lowCoins = true;
+				}
     		} else if (dispenser instanceof CoinDispenserGold) {
     			int currentCoins = dispenser.size();
     			int threshold = dispenser.getCapacity();
     			
-    			if (currentCoins <= threshold * 0.1)
-    				notifyCoinsLow(s);
+    			if (currentCoins <= threshold * 0.1) {
+					notifyCoinsLow(s);
+					lowCoins = true;
+				}
     		} else 
     			notifyUnsupportedFeature(s, Issues.LOW_COINS_CHECK_UNSUPPORTED);
     	}
@@ -283,14 +378,18 @@ public class IssuePredictor  {
     			int currentBanknotes = dispenser.size();
     			int threshold = dispenser.getCapacity();
     			
-    			if (currentBanknotes <= threshold * 0.1) 
-    				notifyBanknotesLow(s);
+    			if (currentBanknotes <= threshold * 0.1) {
+					notifyBanknotesLow(s);
+					lowBanknotes = true;
+				}
     		} else if (dispenser instanceof BanknoteDispenserGold){
     			int currentBanknotes = dispenser.size();
     			int threshold = dispenser.getCapacity();
     			
-    			if (currentBanknotes <= threshold * 0.1) 
-    				notifyBanknotesLow(s);
+    			if (currentBanknotes <= threshold * 0.1) {
+					notifyBanknotesLow(s);
+					lowBanknotes = true;
+				}
 			} else 
 				notifyUnsupportedFeature(s, Issues.LOW_BANKNOTE_CHECK_UNSUPPORTED);
 		}
@@ -309,8 +408,10 @@ public class IssuePredictor  {
     	if (!(state == SessionState.PRE_SESSION)) 
     		return;
     	
-		if (!coinStorage.hasSpace()) 
+		if (!coinStorage.hasSpace()) {
 			notifyCoinsFull(s);
+			fullCoins = true;
+		}
     }
     
     /**
@@ -326,8 +427,10 @@ public class IssuePredictor  {
     	if (!(state == SessionState.PRE_SESSION)) 
     		return;
     	
-    	if (!banknoteStorage.hasSpace()) 
-    		notifyBanknotesFull(s);   	
+    	if (!banknoteStorage.hasSpace()) {
+			notifyBanknotesFull(s);
+			fullBanknotes = true;
+		}
     }
     
     private void notifyUnsupportedFeature(Session session, Issues issue) {
@@ -364,6 +467,11 @@ public class IssuePredictor  {
     	for (IssuePredictorListener l : listeners)
 			l.notifyPredictBanknotesFull(session);
     }
+
+	private void notifyNoIssues(Session session) {
+		for (IssuePredictorListener l : listeners)
+			l.notifyNoIssues(session);
+	}
     
 	public synchronized boolean deregister(IssuePredictorListener listener) {
 		return listeners.remove(listener);

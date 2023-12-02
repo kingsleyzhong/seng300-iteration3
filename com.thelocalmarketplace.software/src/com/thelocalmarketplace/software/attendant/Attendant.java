@@ -162,7 +162,12 @@ public class Attendant {
 			// TODO Auto-generated method stub
 			
 		}
-		
+
+		@Override
+		public void notifyNoIssues(Session session) {
+
+		}
+
 	}
 	public void registerOn(Session session) {
 		session.register(new InnerSessionListener());

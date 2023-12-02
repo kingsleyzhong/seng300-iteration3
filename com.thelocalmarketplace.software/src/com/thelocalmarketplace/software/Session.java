@@ -10,6 +10,7 @@ import com.tdc.NoCashAvailableException;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.Product;
+import com.thelocalmarketplace.software.attendant.HardwareListener;
 import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
 import com.thelocalmarketplace.software.funds.Funds;
@@ -62,6 +63,7 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
  */
 public class Session {
 	public ArrayList<SessionListener> listeners = new ArrayList<>();
+	private ArrayList<HardwareListener> hardwareListeners;
 	private AbstractSelfCheckoutStation scs;
 	private SessionState sessionState;
 	private SessionState prevState;
@@ -142,8 +144,6 @@ public class Session {
 			block();
 
 		}
-
-		
 	}
 
 	private class PayListener implements FundsListener {
@@ -462,6 +462,20 @@ public class Session {
 			l.getRequest(this, request);
 		}
 	}
+
+	/**
+	 * Called when hardware for the session is opened
+	 */
+	public void openHardware() {
+
+	}
+
+	/**
+	 * Called when hardware for the session is closed
+	 */
+	public void closeHardware() {
+
+	}
 	
 	/**
 	 * User demonstrates they wish to ask the attendent for help
@@ -519,6 +533,18 @@ public class Session {
 		if (listener == null)
 			throw new NullPointerSimulationException("listener");
 			listeners.remove(listener);
+	}
+
+	public final synchronized void registerHardwareListener(HardwareListener listener) {
+		if (listener == null)
+			throw new NullPointerSimulationException("listener");
+			hardwareListeners.add(listener);
+	}
+
+	public final synchronized void deRegisterHardwareListener(HardwareListener listener) {
+		if (listener == null)
+			throw new NullPointerSimulationException("listener");
+			hardwareListeners.remove(listener);
 	}
 
 }

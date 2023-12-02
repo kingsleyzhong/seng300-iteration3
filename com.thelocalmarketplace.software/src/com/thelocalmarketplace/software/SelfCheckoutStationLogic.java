@@ -106,7 +106,7 @@ public class SelfCheckoutStationLogic {
 		new ItemAddedRule(scs.getMainScanner(), scs.getHandheldScanner(), itemManager);
 
 		// Register IssuePredictor with Session
-		IssuePredictor predictor = new IssuePredictor(session, scs); 
+		IssuePredictor predictor = new IssuePredictor(session, scs, receipt);
 		// tell the Attendant about the Predictor
 		attendant.addIssuePrediction(predictor); 
 	
