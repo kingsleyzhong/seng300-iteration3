@@ -214,7 +214,7 @@ public class Session {
 		public void notifiyReceiptPrinted() {
 			// Should notifyPaid() not wait until receipt is successfully printed to change
 			// to PRE_SESSION?
-			end();
+			//end();
 		}
 
 	}
@@ -338,6 +338,7 @@ public class Session {
 		prevState = sessionState;
 		sessionState = SessionState.PRE_SESSION;
 		receiptPrinter.printReceipt(getBarcodedItems());
+		System.out.println("end()");
 		
 		for(SessionListener l:listeners) {
 			l.sessionEnded(this);
