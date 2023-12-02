@@ -129,43 +129,37 @@ public class Attendant {
 
 		@Override
 		public void notifyPredictLowInk(Session session) {
-			// TODO Auto-generated method stub
-			
+			session.disable();
 		}
 
 		@Override
 		public void notifyPredictLowPaper(Session session) {
-			// TODO Auto-generated method stub
-			
+			session.disable();
 		}
 
 		@Override
 		public void notifyPredictCoinsFull(Session session) {
-			// TODO Auto-generated method stub
-			
+			session.disable();
 		}
 
 		@Override
 		public void notifyPredictBanknotesFull(Session session) {
-			// TODO Auto-generated method stub
-			
+			session.disable();
 		}
 
 		@Override
 		public void notifyPredictLowCoins(Session session) {
-			// TODO Auto-generated method stub
-			
+			session.disable();
 		}
 
 		@Override
 		public void notifyPredictLowBanknotes(Session session) {
-			// TODO Auto-generated method stub
-			
+			session.disable();
 		}
 
 		@Override
 		public void notifyNoIssues(Session session) {
-
+			session.enable();
 		}
 
 	}
