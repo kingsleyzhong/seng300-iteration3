@@ -122,7 +122,7 @@ public class Funds {
 	
 	public void enableCash() {
 		scs.getCoinSlot().enable();
-		scs.getBanknoteInput().disable();
+		scs.getBanknoteInput().enable();
 	}
 
 	public BigDecimal getItemsPrice() {
