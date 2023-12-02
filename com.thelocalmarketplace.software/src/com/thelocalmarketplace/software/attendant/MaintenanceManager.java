@@ -110,7 +110,7 @@ public class MaintenanceManager {
         if (isOpen) {
             if (coinDenominations.contains(cd)) {
                 for (Coin c : coins) {
-                    if (c.getValue() != cd) {
+                    if (c.getValue().doubleValue() != cd.doubleValue()) {
                         throw new IncorrectDenominationException("Incorrect coin was input!");
                     }
                 }
@@ -143,7 +143,7 @@ public class MaintenanceManager {
      */
     private boolean verifyBanknoteDenomination(BigDecimal bd) {
         for (BigDecimal i : banknoteDenominations) {
-            if (i == bd) {
+            if (i.doubleValue() == bd.doubleValue()) {
                 return true;
             }
         }
@@ -162,7 +162,7 @@ public class MaintenanceManager {
         if (isOpen) {
             if (verifyBanknoteDenomination(bd) && isOpen) {
                 for (Banknote b : banknotes) {
-                    if (b.getDenomination() != bd) {
+                    if (b.getDenomination().doubleValue() != bd.doubleValue()) {
                         throw new IncorrectDenominationException("Incorrect banknote was input!");
                     }
                 }
