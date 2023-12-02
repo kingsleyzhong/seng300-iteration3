@@ -103,12 +103,18 @@ public class PaymentPopup {
             @Override
             public void actionPerformed(ActionEvent e) {
             	try {
+            		if (session.getState() == SessionState.IN_SESSION || session.getState() == SessionState.PAY_BY_CARD) {
             		session.payByCash();
             		paymentTypeLabel.setText("Payment Selected: Cash");
+            		}
+            		else if (session.getState() == SessionState.BLOCKED) {
+            			frame.setVisible(false);
+            			JOptionPane.showMessageDialog(cashButton, "Cannot Pay Right Now. Session is Blocked");
+            		}
             	}
             	catch(CartEmptyException e1) {
 					frame.setVisible(false);
-                    JOptionPane.showMessageDialog(null, "Cannot Pay for Empty Order");
+                    JOptionPane.showMessageDialog(cashButton, "Cannot Pay for Empty Order");
               
             	}
 
@@ -124,8 +130,14 @@ public class PaymentPopup {
             public void actionPerformed(ActionEvent e) {
             	//paymentTypeLabel.setText("Payment Selected: Card");
             	try {
+            		if (session.getState() == SessionState.IN_SESSION || session.getState() == SessionState.PAY_BY_CASH) {
 					session.payByCard();
 					paymentTypeLabel.setText("Payment Selected: Card");
+            		}
+            		else if (session.getState() == SessionState.BLOCKED) {
+            			frame.setVisible(false);
+            			JOptionPane.showMessageDialog(cardButton, "Cannot Pay Right Now. Session is Blocked");
+            		}
 				} catch (CashOverloadException e1) 
             	{
 					//session.notifyAttendant();
@@ -135,7 +147,7 @@ public class PaymentPopup {
 					//session.notifyAttendant();
 				} catch(CartEmptyException e1) {
 					frame.setVisible(false);
-                    JOptionPane.showMessageDialog(null, "Cannot Pay for Empty Order");
+                    JOptionPane.showMessageDialog(cardButton, "Cannot Pay for Empty Order");
             	}
 
             	
