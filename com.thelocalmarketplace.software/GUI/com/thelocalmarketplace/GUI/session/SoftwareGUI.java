@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -92,7 +94,22 @@ public class SoftwareGUI{
 
 	public JPanel start() {
 		JPanel main = new GradientPanel(Colors.color2, Colors.color1);
+		
 		main.setLayout(new GridLayout(0,1,50,50));
+		
+		JButton hardwareBtn = new PlainButton("Hardware GUI", Colors.color1);
+		hardwareBtn.setOpaque(false);
+		hardwareBtn.setBorder(BorderFactory.createEmptyBorder());
+		hardwareBtn.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				HardwareGUI.setVisibility(true);
+			}
+		});
+		
+		main.add(hardwareBtn, BorderLayout.NORTH);
+		
 		
 		//this is the start button
 		JButton btnStart = new PlainButton("Start", Colors.color1);
@@ -115,7 +132,7 @@ public class SoftwareGUI{
 		lblWelcome.setBackground(Color.RED);
 		lblWelcome.setForeground(Colors.color3);
 		lblWelcome.setHorizontalAlignment(SwingConstants.CENTER);
-		lblWelcome.setVerticalAlignment(SwingConstants.BOTTOM);
+		lblWelcome.setVerticalAlignment(SwingConstants.TOP);
 		lblWelcome.setFont(new Font("Dialog", Font.BOLD, 92));
 		main.add(lblWelcome, JLabel.CENTER_ALIGNMENT);
 		main.add(btnStart, JButton.CENTER_ALIGNMENT);	
@@ -126,6 +143,18 @@ public class SoftwareGUI{
 	public JPanel end() {
 		JPanel main = new GradientPanel(Colors.color1, Colors.color2);
 		main.setLayout(new GridLayout(1, 0, 0, 0));
+		
+		JButton hardwareBtn = new PlainButton("Hardware GUI", Colors.color1);
+		hardwareBtn.setOpaque(false);
+		hardwareBtn.setBorder(BorderFactory.createEmptyBorder());
+		hardwareBtn.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				HardwareGUI.setVisibility(true);
+			}
+		});
+		main.add(hardwareBtn);
 		
 		Timer timer = new Timer(20000, new ActionListener() {
 
@@ -252,7 +281,7 @@ public class SoftwareGUI{
 		infoWeightNumber.setFont(new Font("Dialog", Font.BOLD,20));
 		infoTop3.add(infoWeightString, BorderLayout.WEST);
 		infoTop3.add(infoWeightNumber, BorderLayout.EAST);
-				
+		
 		infoTop.add(infoTop1);
 		infoTop.add(infoTop2);
 		infoTop.add(infoTop3);
@@ -277,8 +306,13 @@ public class SoftwareGUI{
 				
 		infoBottom.add(infoBottomInner);
 			
+		ImageIcon image = new ImageIcon(new ImageIcon("images/sheepIcon.png").getImage().getScaledInstance(200, 200, Image.SCALE_DEFAULT));
+		JLabel label = new JLabel(image);
+		label.setVerticalAlignment(JLabel.BOTTOM);
+		
 		cartInfoPanel.add(infoTop, BorderLayout.NORTH);
 		cartInfoPanel.add(infoBottom, BorderLayout.SOUTH);
+		cartInfoPanel.add(label, BorderLayout.CENTER);
 				
 		cartItemsPanel = new AddedProducts(session);
 		//cartItemsPanel.setBackground(Colors.color3);
