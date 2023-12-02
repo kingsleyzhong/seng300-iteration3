@@ -344,7 +344,7 @@ public class IssuePredictor  {
     /*
      * Predict if an issue may occur with not having enough coins to 
      * dispense as change. The current amount of coins in the dispenser 
-     * should be above a threshold = N/A. If an issue is found, 
+     * should be above a threshold = 5. If an issue is found, 
      * announce a low coins event. Otherwise, announce a no issues event.
      */
     public void checkLowCoins(Session s, 
@@ -356,36 +356,23 @@ public class IssuePredictor  {
 			return;
 		
     	for (ICoinDispenser dispenser : coinDispensers.values()) {
-    		if (dispenser instanceof CoinDispenserBronze) {
-    			int currentCoins = dispenser.size();
-    			int threshold = dispenser.getCapacity();
-    			
-    			if (currentCoins <= threshold * 0.1) {
-					notifyCoinsLow(s);
-					lowCoins = true;
-				} else {
-        			notifyNoIssues(s);
-        			lowCoins = false;
-        		}
-    		} else {
-    			int currentCoins = dispenser.size();
-    			int threshold = dispenser.getCapacity();
-    			
-    			if (currentCoins <= threshold * 0.1) {
-					notifyCoinsLow(s);
-					lowCoins = true;
-				} else {
-        			notifyNoIssues(s);
-        			lowCoins = false;
-        		}
+			int currentCoins = dispenser.size();
+			int threshold = 5;
+			
+			if (currentCoins <= threshold) {
+				notifyCoinsLow(s);
+				lowCoins = true;
+			} else {
+    			notifyNoIssues(s);
+    			lowCoins = false;
     		} 
     	}
     }
     
     /**
      * Predict if an issue may occur with not having enough bank notes to 
-     * dispense as change. The current amount of bank notes in the dispenser
-     * should be above a threshold = N/A. If an issue is found, announce
+     * dispense as change. The current amount of bank notes in a dispenser
+     * should be above a threshold = 5. If an issue is found, announce
      * a low banknotes event. Otherwise, announce a no issues event.
      */
     public void checkLowBanknotes(Session s, 
@@ -397,30 +384,16 @@ public class IssuePredictor  {
     		return;
     	
     	for (IBanknoteDispenser dispenser : banknoteDispensers.values()) {
-    		if (dispenser instanceof BanknoteDispenserBronze) {
-    			int currentBanknotes = dispenser.size();
-    			int threshold = dispenser.getCapacity();
-    			
-    			if (currentBanknotes <= threshold * 0.1) {
-					notifyBanknotesLow(s);
-					lowBanknotes = true;
-				}
-    			else {
-        			notifyNoIssues(s);
-        			lowBanknotes = false;
-        		}
-    		} else {
-    			int currentBanknotes = dispenser.size();
-    			int threshold = dispenser.getCapacity();
-    			
-    			if (currentBanknotes <= threshold * 0.1) {
-					notifyBanknotesLow(s);
-					lowBanknotes = true;
-				}
-    			else {
-        			notifyNoIssues(s);
-        			lowBanknotes = false;
-        		}
+			int currentBanknotes = dispenser.size();
+    		int threshold = 5;
+    		
+			if (currentBanknotes <= threshold) {
+				notifyBanknotesLow(s);
+				lowBanknotes = true;
+			}
+			else {
+    			notifyNoIssues(s);
+    			lowBanknotes = false;
 			} 
 		}
     }
