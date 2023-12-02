@@ -49,6 +49,7 @@ public class Attendant {
 	 */
 	public Attendant(AttendantStation as) {
 		this.as = as;
+		TextSearchController ts = new TextSearchController(as.keyboard);
 	}
 
 	/**
