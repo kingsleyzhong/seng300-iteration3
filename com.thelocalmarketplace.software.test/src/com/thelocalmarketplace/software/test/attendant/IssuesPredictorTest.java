@@ -2,44 +2,27 @@ package com.thelocalmarketplace.software.test.attendant;
 
 import java.math.BigDecimal;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Currency;
-import java.util.Locale;
+import java.util.*;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runners.Parameterized;
-
-import com.jjjwelectronics.IDevice;
-import com.jjjwelectronics.Numeral;
-import com.jjjwelectronics.OverloadedDevice;
+import org.junit.*;
+import com.jjjwelectronics.*;
 import com.jjjwelectronics.printer.IReceiptPrinter;
 import com.jjjwelectronics.printer.ReceiptPrinterBronze;
 import com.jjjwelectronics.printer.ReceiptPrinterGold;
-import com.jjjwelectronics.printer.ReceiptPrinterListener;
 import com.jjjwelectronics.printer.ReceiptPrinterSilver;
-import com.jjjwelectronics.scale.IElectronicScale;
-import com.jjjwelectronics.scanner.Barcode;
 import com.tdc.CashOverloadException;
 import com.tdc.banknote.Banknote;
 import com.tdc.coin.Coin;
-import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
-import com.thelocalmarketplace.hardware.BarcodedProduct;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationSilver;
-import com.thelocalmarketplace.software.Session;
-import com.thelocalmarketplace.software.SessionState;
+import com.tdc.coin.ICoinDispenser;
+import com.thelocalmarketplace.hardware.*;
+import com.thelocalmarketplace.software.*;
+import com.thelocalmarketplace.software.attendant.Attendant;
 import com.thelocalmarketplace.software.attendant.IssuePredictor;
-import com.thelocalmarketplace.software.attendant.Requests;
-import com.thelocalmarketplace.software.funds.Funds;
-import com.thelocalmarketplace.software.items.ItemManager;
-import com.thelocalmarketplace.software.receipt.Receipt;
+import com.thelocalmarketplace.software.attendant.MaintenanceManager;
+import com.thelocalmarketplace.software.exceptions.ClosedHardwareException;
+import com.thelocalmarketplace.software.exceptions.IncorrectDenominationException;
+import com.thelocalmarketplace.software.exceptions.NotDisabledSessionException;
 import com.thelocalmarketplace.software.test.AbstractSessionTest;
-import com.thelocalmarketplace.software.test.AbstractTest;
-import com.thelocalmarketplace.software.weight.Weight;
 
 import ca.ucalgary.seng300.simulation.SimulationException;
 import powerutility.PowerGrid;
@@ -80,6 +63,7 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 	private ReceiptPrinterSilver silverPrinter;
 	private ReceiptPrinterBronze bronzePrinter;
 	private ReceiptPrinterGold goldPrinter;
+	private Object mm;
 
 	public IssuesPredictorTest(String testName, AbstractSelfCheckoutStation scs) {
 		super(testName, scs);
@@ -90,8 +74,10 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 	public void setUp() {
 		basicDefaultSetup();
 		
+		Attendant as = new Attendant(new AttendantStation());
 		// create issuePredictor instance
         issuePredictor = new IssuePredictor(session, scs, receiptPrinter);
+        as.addIssuePrediction(issuePredictor);
         
 		// Create power source
 		PowerGrid.engageUninterruptiblePowerSource();
@@ -112,73 +98,120 @@ public class IssuesPredictorTest extends AbstractSessionTest{
         goldPrinter.plugIn(powerGrid);
 		goldPrinter.turnOn();
 		
+		// Maintenance Manager
+		mm = new MaintenanceManager();
        
 	}
 	
 	@Test 
 	public void testCheckLowInk() throws OverloadedDevice {
-		scs.getCoinDispensers().values();
 		// Bronze
 		issuePredictor.checkLowInk(session, scs.getPrinter());
+		Assert.assertEquals(SessionState.DISABLED, session.getState());
+
 		// Silver
+		session.enable();
 		silverPrinter.addInk(100000);
 		issuePredictor.checkLowInk(session, silverPrinter);
+		Assert.assertEquals(SessionState.DISABLED, session.getState());
+
 		// Gold
+		session.enable();
 		goldPrinter.addInk(100000);
 		issuePredictor.checkLowInk(session, goldPrinter);
-		//session.predictionCheck();
-
-		//Assert.assertEquals(SessionState.BLOCKED, session.getState());
+		Assert.assertEquals(SessionState.DISABLED, session.getState());
 
 	}
 	
 	@Test
 	public void testCheckLowInkWhenFull() throws OverloadedDevice {
 		// Bronze
+		bronzePrinter.addInk(bronzePrinter.MAXIMUM_INK);
 		issuePredictor.checkLowInk(session, scs.getPrinter());
-		// Silver
-		silverPrinter.addInk(1 << 20);
-		issuePredictor.checkLowInk(session, silverPrinter);
-		// Gold
-		goldPrinter.addInk(1 << 20);
-		issuePredictor.checkLowInk(session, goldPrinter);
+		//Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
 
-		//Assert.assertEquals(SessionState.BLOCKED, session.getState());
+		// Silver
+		session.enable();
+		silverPrinter.addInk(silverPrinter.MAXIMUM_INK);
+		issuePredictor.checkLowInk(session, silverPrinter);
+		Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
+
+		// Gold
+		session.enable();
+		goldPrinter.addInk(goldPrinter.MAXIMUM_INK);
+		issuePredictor.checkLowInk(session, goldPrinter);
+		Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
 	}
 	
 	@Test
 	public void testCheckLowPaper() throws OverloadedDevice {
 		// Bronze
 		issuePredictor.checkLowPaper(session, scs.getPrinter());
+		Assert.assertEquals(SessionState.DISABLED, session.getState());
+
 		// Silver
+		session.enable();
 		silverPrinter.addPaper(100);
 		issuePredictor.checkLowPaper(session, silverPrinter);
+		Assert.assertEquals(SessionState.DISABLED, session.getState());
+
 		// Gold
+		session.enable();
 		goldPrinter.addPaper(100);
 		issuePredictor.checkLowPaper(session, goldPrinter);
+		Assert.assertEquals(SessionState.DISABLED, session.getState());
+
 	}
 	
 	@Test
 	public void testCheckLowPaperWhenFull() throws OverloadedDevice {
 		// Bronze
+		bronzePrinter.addPaper(bronzePrinter.MAXIMUM_PAPER);
 		issuePredictor.checkLowPaper(session, scs.getPrinter());
+		//Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
+
 		// Silver
-		silverPrinter.addPaper(1 << 10);
+		session.enable();
+		silverPrinter.addPaper(silverPrinter.MAXIMUM_PAPER);
 		issuePredictor.checkLowPaper(session, silverPrinter);
+		Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
+
 		// Gold
-		goldPrinter.addPaper(1 << 10);
+		session.enable();
+		goldPrinter.addPaper(goldPrinter.MAXIMUM_PAPER);
 		issuePredictor.checkLowPaper(session, goldPrinter);
+		Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
+
 	}
 	
 	@Test
 	public void testCheckLowCoins() throws OverloadedDevice {		
 		issuePredictor.checkLowCoins(session, scs.getCoinDispensers());
+		Assert.assertEquals(SessionState.DISABLED, session.getState());
+
 	}
+	
+	@Test
+	public void testCheckLowCoinsNormal() throws IncorrectDenominationException, ClosedHardwareException, CashOverloadException, NotDisabledSessionException {
+		ICoinDispenser tempDispenser = session.getStation().getCoinDispensers().get(new BigDecimal(0.05));
+		Coin coin = new Coin(Currency.getInstance(Locale.CANADA), new BigDecimal ("2.00"));
+		session.disable();
+        ((MaintenanceManager) mm).openHardware(session);
+        for (int i = 0; i < 500; i++) { // 1000 is max capacity
+        	((MaintenanceManager) mm).addCoins(new BigDecimal(0.05), coin);
+        }
+        
+        ((MaintenanceManager) mm).closeHardware();
+		
+		issuePredictor.checkLowCoins(session, scs.getCoinDispensers());
+		Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
+	}
+	
 	
 	@Test
 	public void testCheckLowBanknotes() throws OverloadedDevice {		
 		issuePredictor.checkLowBanknotes(session, scs.getBanknoteDispensers());
-		//System.out.println(scs.getBanknoteDispensers());
+		Assert.assertEquals(SessionState.DISABLED, session.getState());
 
 	}
 	
@@ -188,6 +221,8 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 	        scs.getCoinStorage().load(new Coin(Currency.getInstance(Locale.CANADA), new BigDecimal ("2.00"))); // Add $2.00 1000 times
 	        }
 		issuePredictor.checkCoinsFull(session, scs.getCoinStorage());
+		Assert.assertEquals(SessionState.DISABLED, session.getState());
+
 
 	}
 	
@@ -197,12 +232,12 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 		        scs.getBanknoteStorage().load(new Banknote(Currency.getInstance(Locale.CANADA), new BigDecimal ("5.00"))); // Add $5.00 1000 times
 		        }
 		issuePredictor.checkBanknotesFull(session, scs.getBanknoteStorage());
+		Assert.assertEquals(SessionState.DISABLED, session.getState());
 
 	}
 	
 	@Test
-	public void testSessionBlock() {
-		session.setup(itemManager, funds, weight, receiptPrinter, scs);
+	public void testNotPreSession() {
 		session.start();
 		issuePredictor.checkLowInk(session, bronzePrinter);
 		issuePredictor.checkLowPaper(session, bronzePrinter);
@@ -210,5 +245,7 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 		issuePredictor.checkLowBanknotes(session, scs.getBanknoteDispensers());
 		issuePredictor.checkCoinsFull(session, scs.getCoinStorage());
 		issuePredictor.checkBanknotesFull(session, scs.getBanknoteStorage());
+		Assert.assertEquals(SessionState.IN_SESSION, session.getState());
 	}
+	
 }

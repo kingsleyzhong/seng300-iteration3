@@ -263,6 +263,10 @@ public class IssuePredictor  {
 				notifyLowInk(s);
 				lowInk = true;
 			}
+    		else {
+    			notifyNoIssues(s);
+    			lowInk = false;
+    		}
     	} else {
     		ReceiptPrinterGold gold = (ReceiptPrinterGold) receiptPrinter;
     		
@@ -273,6 +277,10 @@ public class IssuePredictor  {
 				notifyLowInk(s);
 				lowInk = true;
 			}
+    		else {
+    			notifyNoIssues(s);
+    			lowInk = false;
+    		}
     	}
     }
     
@@ -310,6 +318,10 @@ public class IssuePredictor  {
 				notifyLowPaper(s);
 				lowPaper = true;
 			}
+			else {
+    			notifyNoIssues(s);
+    			lowPaper = false;
+    		}
 		} else {
 			ReceiptPrinterGold gold = (ReceiptPrinterGold) receiptPrinter;
 			
@@ -320,6 +332,10 @@ public class IssuePredictor  {
 				notifyLowPaper(s);
 				lowPaper = true;
 			}
+			else {
+    			notifyNoIssues(s);
+    			lowPaper = false;
+    		}
 		}
     }
     
@@ -346,6 +362,10 @@ public class IssuePredictor  {
 					notifyCoinsLow(s);
 					lowCoins = true;
 				}
+    			else {
+        			notifyNoIssues(s);
+        			lowCoins = false;
+        		}
     		} else if (dispenser instanceof CoinDispenserGold) {
     			int currentCoins = dispenser.size();
     			int threshold = dispenser.getCapacity();
@@ -354,6 +374,10 @@ public class IssuePredictor  {
 					notifyCoinsLow(s);
 					lowCoins = true;
 				}
+    			else {
+        			notifyNoIssues(s);
+        			lowCoins = false;
+        		}
     		} else 
     			notifyUnsupportedFeature(s, Issues.LOW_COINS_CHECK_UNSUPPORTED);
     	}
@@ -382,6 +406,10 @@ public class IssuePredictor  {
 					notifyBanknotesLow(s);
 					lowBanknotes = true;
 				}
+    			else {
+        			notifyNoIssues(s);
+        			lowBanknotes = false;
+        		}
     		} else if (dispenser instanceof BanknoteDispenserGold){
     			int currentBanknotes = dispenser.size();
     			int threshold = dispenser.getCapacity();
@@ -390,6 +418,10 @@ public class IssuePredictor  {
 					notifyBanknotesLow(s);
 					lowBanknotes = true;
 				}
+    			else {
+        			notifyNoIssues(s);
+        			lowBanknotes = false;
+        		}
 			} else 
 				notifyUnsupportedFeature(s, Issues.LOW_BANKNOTE_CHECK_UNSUPPORTED);
 		}
@@ -412,6 +444,10 @@ public class IssuePredictor  {
 			notifyCoinsFull(s);
 			fullCoins = true;
 		}
+		else {
+			notifyNoIssues(s);
+			fullCoins = false;
+		}
     }
     
     /**
@@ -430,6 +466,10 @@ public class IssuePredictor  {
     	if (!banknoteStorage.hasSpace()) {
 			notifyBanknotesFull(s);
 			fullBanknotes = true;
+		}
+    	else {
+			notifyNoIssues(s);
+			fullBanknotes = false;
 		}
     }
     
