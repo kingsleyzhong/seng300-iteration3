@@ -48,6 +48,7 @@ public class ItemManager {
 	private HashMap<Product, BigInteger> addedProducts = new HashMap<Product, BigInteger>(); //hashMap for both barcodedProduct and PLUCodedProduct
 	private HashMap<BarcodedProduct, Integer> bulkyItems = new HashMap<BarcodedProduct, Integer>();
 	private HashMap<String, Product> visualCatalogue = new HashMap<String, Product>();
+	private HashMap<Product, Mass> PLUProductWeights = new HashMap<Product, Mass>();
 	
 	private BarcodedProduct lastProduct;
 	private Session session;
@@ -96,6 +97,7 @@ public class ItemManager {
 				addedProducts.replace(product, addedProducts.get(product).add(mass.inMicrograms()));
 			} else {
 				addedProducts.put(product, mass.inMicrograms());
+				PLUProductWeights.put(product,mass);
 			}
 			
 			BigDecimal price = new BigDecimal(product.getPrice());
@@ -103,7 +105,7 @@ public class ItemManager {
 			BigDecimal weightInKilogram = BigDecimal.valueOf(mass.inMicrograms().doubleValue()/MICROGRAM_PER_KILOGRAM);
 			BigDecimal itemPrice = price.multiply(weightInKilogram);
 			
-			notifyItemAdded(mass, itemPrice);
+			notifyItemAdded(product, mass, itemPrice);
 		}
 	}
 
@@ -177,6 +179,24 @@ public class ItemManager {
 		
 		notifyItemRemoved(product, mass, itemPrice);
 	} 
+	
+	public void removeItem(PLUCodedProduct product) {
+		long price = product.getPrice(); 
+		Mass mass = PLUProductWeights.get(product);
+		BigDecimal itemPrice = new BigDecimal(price);
+
+		
+		if (addedProducts.containsKey(product) &&
+		addedProducts.get(product).doubleValue() > mass.inMicrograms().doubleValue()) {
+			addedProducts.replace(product, addedProducts.get(product).subtract(mass.inMicrograms()));
+		} else if (addedProducts.containsKey(product) && 
+		addedProducts.get(product).doubleValue() == mass.inMicrograms().doubleValue()) {
+			addedProducts.remove(product);
+		} else {
+			throw new ProductNotFoundException("Item not found");
+		}
+		notifyItemRemoved(product, mass, itemPrice);
+	}
 	
 	public void notifyItemAdded(Product product, Mass mass, BigDecimal price) {
 		for (ItemListener l : listeners)
