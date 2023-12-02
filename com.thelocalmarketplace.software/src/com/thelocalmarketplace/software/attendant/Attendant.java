@@ -209,6 +209,9 @@ public class Attendant {
 	public AttendantStation getStation() {
 		return as;
 	}
+	public ArrayList<Session> getSessions(){
+		return sessions;
+	}
 
 	public TextSearchController getTextSearchController() {
 		return ts;

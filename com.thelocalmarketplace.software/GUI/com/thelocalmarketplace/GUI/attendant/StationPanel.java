@@ -27,17 +27,19 @@ import com.thelocalmarketplace.hardware.ISelfCheckoutStation;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.attendant.IssuePredictorListener;
 import com.thelocalmarketplace.software.attendant.Issues;
+import com.thelocalmarketplace.software.attendant.MaintenanceManagerListener;
 
 import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
 import javax.swing.SwingConstants;
 
 public class StationPanel extends JPanel implements ActionListener {
+	Session session;
 	
 	private final Color warningColor = new Color(191, 114, 13);
 	private final Color urgentColor = new Color(161, 40, 40);
 	int statusN;
 	Boolean enabled;
-	ISelfCheckoutStation station;
+	
 	JPanel sidePanel;
 	JLabel stationName = new JLabel("");
 	JLabel status = new JLabel("");
@@ -49,14 +51,8 @@ public class StationPanel extends JPanel implements ActionListener {
 	
 	private static final long serialVersionUID = 1L;
 	
-	public StationPanel(ISelfCheckoutStation station) {
-		this.station = station;	
-		
-		if (station != null) {
-			enabled = false;
-		} else {
-			enabled = true;
-		}
+	public StationPanel(Session session) {
+		this.session = session;
 		
 		GridLayout layout = new GridLayout(1,5,0,0);
 		layout.setHgap(20);
@@ -71,7 +67,7 @@ public class StationPanel extends JPanel implements ActionListener {
 		status.setForeground(new Color(60, 179, 113));
 		status.setFont(new Font("Tahoma", Font.BOLD, 16));
 		status.setHorizontalAlignment(SwingConstants.LEFT);
-		status.setText("STATUS: IDLE");
+		status.setText("STATUS: GOOD");
 		
 		power = new PlainButton("OFF", new Color(205, 92, 92));
 		power.setFont(new Font("Tahoma", Font.BOLD, 18));
@@ -95,22 +91,21 @@ public class StationPanel extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == power) {
-			if(enabled) {
-				//station.turnOff();
+			if(!enabled) {
+				session.disable();
 				enabled = false;
 				power.setText("ON");
 				power.setBackground(new Color(158, 228, 144));
 			} else {
-				//station.turnOn();
+				session.enable();
 				enabled = true;
 				power.setText("OFF");
 				power.setBackground(new Color(205, 92, 92));
 			}
-			
 		}
 	}
 	
-	private class InnerListener implements IssuePredictorListener{
+	private class InnerPredictionListener implements IssuePredictorListener{
 
 		@Override
 		public void notifyPredictUnsupportedFeature(Session session, Issues issue) {
@@ -121,37 +116,81 @@ public class StationPanel extends JPanel implements ActionListener {
 		public void notifyPredictLowInk(Session session) {
 			info.setText("WARNING: Predicting low ink");
 			info.setForeground(warningColor);
-			status.setText("");
+			status.setText("STATUS: WARNING");
 		}
 
 		@Override
 		public void notifyPredictLowPaper(Session session) {
 			info.setText("WARNING: Predicting low paper");
 			info.setForeground(urgentColor);
+			status.setText("STATUS: WARNING");
 		}
 
 		@Override
 		public void notifyPredictCoinsFull(Session session) {
 			info.setText("WARNING: Predicting coin overflow");
 			info.setForeground(urgentColor);
+			status.setText("STATUS: WARNING");
 		}
 
 		@Override
 		public void notifyPredictBanknotesFull(Session session) {
 			info.setText("WARNING: Predicting banknote overflow");
 			info.setForeground(urgentColor);
+			status.setText("STATUS: WARNING");
 		}
 
 		@Override
 		public void notifyPredictLowCoins(Session session) {
 			info.setText("WARNING: Predicting insufficient coins");
 			info.setForeground(urgentColor);
+			status.setText("STATUS: WARNING");
 		}
 
 		@Override
 		public void notifyPredictLowBanknotes(Session session) {
 			info.setText("WARNING: Predicting insufficient banknotes");
 			info.setForeground(urgentColor);
+			status.setText("STATUS: WARNING");
+		}
+	}
+	
+	private class InnerResolutionListener implements MaintenanceManagerListener{
+
+		@Override
+		public void notifyInkAdded() {
+			info.setText("");
+			status.setText("STATUS: GOOD");
+		}
+
+		@Override
+		public void notifyPaperAdded() {
+			info.setText("");
+			status.setText("STATUS: GOOD");
+		}
+
+		@Override
+		public void notifyCoinAdded() {
+			info.setText("");
+			status.setText("STATUS: GOOD");
+		}
+
+		@Override
+		public void notifyBanknoteAdded() {
+			info.setText("");
+			status.setText("STATUS: GOOD");
+		}
+
+		@Override
+		public void notifyCoinRemoved() {
+			info.setText("");
+			status.setText("STATUS: GOOD");
+		}
+
+		@Override
+		public void notifyBanknoteRemoved() {
+			info.setText("");
+			status.setText("STATUS: GOOD");
 		}
 		
 	}
