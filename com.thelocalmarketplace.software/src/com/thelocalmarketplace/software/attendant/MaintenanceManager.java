@@ -50,8 +50,6 @@ import java.util.Map;
  */
 public class MaintenanceManager {
     private boolean isOpen = false;
-    private int amountOfInkRefilled = 0;
-    private int amountOfPaperRefilled = 0;
     private SessionState state;
     private IReceiptPrinter receiptPrinter;
     private Map<BigDecimal, IBanknoteDispenser> banknoteDispensers;
@@ -210,15 +208,10 @@ public class MaintenanceManager {
      * @param amount amount of ink to be refilled
      * @throws ClosedHardwareException if hardware is not opened
      */
-    public void refillInk(int amount) throws ClosedHardwareException {
+    public void refillInk(int amount) throws ClosedHardwareException, OverloadedDevice {
         if (isOpen) {
 
-            try {
-                this.receiptPrinter.addInk(amount);
-                this.amountOfInkRefilled += amount;
-            } catch (OverloadedDevice e) {
-                throw new RuntimeException(e);
-            }
+            this.receiptPrinter.addInk(amount);
 
         } else {
             throw new ClosedHardwareException("Hardware is closed!");
@@ -230,27 +223,14 @@ public class MaintenanceManager {
      * @param amount amount of paper to be refilled
      * @throws ClosedHardwareException if hardware is not opened
      */
-    public void refillPaper(int amount) throws ClosedHardwareException {
+    public void refillPaper(int amount) throws ClosedHardwareException, OverloadedDevice {
         if (isOpen) {
 
-            try {
-                this.receiptPrinter.addPaper(amount);
-                this.amountOfPaperRefilled += amount;
-            } catch (OverloadedDevice e) {
-                throw new RuntimeException(e);
-            }
+            this.receiptPrinter.addPaper(amount);
 
         } else {
             throw new ClosedHardwareException("Hardware is closed!");
         }
-    }
-
-    public int getCurrentAmountOfInk() {
-        return this.amountOfInkRefilled;
-    }
-
-    public int getCurrentAmountOfPaper() {
-        return this.amountOfPaperRefilled;
     }
 
 }
