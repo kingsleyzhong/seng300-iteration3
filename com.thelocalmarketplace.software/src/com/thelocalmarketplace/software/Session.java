@@ -360,8 +360,8 @@ public class Session {
 				throw new InvalidActionException("Cannot enter membership if session is not in adding items state");
 			}
 	}
-
-
+	
+	/**
 	 * Places a previously disabled session into the PRE_SESSION state
 	 * For use after clearing hardware issues that left the station disabled.
 	 */
