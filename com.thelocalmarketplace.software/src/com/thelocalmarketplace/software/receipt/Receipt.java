@@ -49,7 +49,7 @@ public class Receipt {
 	private boolean duplicateNeeded = false; //Flag for if the receipt was not printed out fully and a duplicate is needed.
 	private String receipt; //The receipt that should be printed
 	private IReceiptPrinter printer; //The printer associated with the session;
-	private ArrayList<PrintListener> printListeners;
+	private ArrayList<PrintListener> printListeners = new ArrayList<>();
 
 	int charsPrinted;
 	int linesUsed;

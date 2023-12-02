@@ -63,7 +63,7 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
  */
 public class Session {
 	public ArrayList<SessionListener> listeners = new ArrayList<>();
-	private ArrayList<HardwareListener> hardwareListeners;
+	private ArrayList<HardwareListener> hardwareListeners = new ArrayList<>();
 	private AbstractSelfCheckoutStation scs;
 	private SessionState sessionState;
 	private SessionState prevState;

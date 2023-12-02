@@ -37,6 +37,7 @@ import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.items.ItemManager;
 import com.thelocalmarketplace.software.receipt.Receipt;
+import com.thelocalmarketplace.software.test.AbstractSessionTest;
 import com.thelocalmarketplace.software.test.AbstractTest;
 import com.thelocalmarketplace.software.weight.Weight;
 
@@ -71,20 +72,8 @@ import powerutility.PowerGrid;
  * Kingsley Zhong 			: 30197260
  */
 
-public class IssuesPredictorTest extends AbstractTest{
+public class IssuesPredictorTest extends AbstractSessionTest{
 	
-	private Session session;
-	byte num;
-	private Numeral numeral;
-	private Numeral[] digits;
-	private Barcode barcode;
-	private Barcode barcode2;
-	private BarcodedProduct product;
-	private BarcodedProduct product2;
-	private Funds funds;
-	private ItemManager itemManager;
-	private Weight weight;
-	private Receipt receiptPrinter;
 	private IssuePredictor issuePredictor;
 	private PowerGrid powerGrid;
 	private IReceiptPrinter printer;
@@ -101,29 +90,13 @@ public class IssuesPredictorTest extends AbstractTest{
 	public void setUp() {
 		basicDefaultSetup();
 		
+		// create issuePredictor instance
+        issuePredictor = new IssuePredictor(session, scs, receiptPrinter);
+        
 		// Create power source
 		PowerGrid.engageUninterruptiblePowerSource();
     	powerGrid = PowerGrid.instance();
     	
-    	// Set up session
-		session = new Session();
-        num = 1;
-        numeral = Numeral.valueOf(num);
-        digits = new Numeral[] { numeral, numeral, numeral };
-        barcode = new Barcode(digits);
-        barcode2 = new Barcode(new Numeral[] { numeral });
-        product = new BarcodedProduct(barcode, "Sample Product", 10, 100.0);
-        product2 = new BarcodedProduct(barcode2, "Sample Product 2", 15, 20.0);
-        funds = new Funds(scs);
-        itemManager = new ItemManager(session);
-
-        IElectronicScale baggingArea = scs.getBaggingArea();
-        weight = new Weight(baggingArea);
-        
-        printer = scs.getPrinter();
-        receiptPrinter = new Receipt(printer);
-        issuePredictor = new IssuePredictor(session, scs);
-       
         // Bronze Printer
         bronzePrinter = new ReceiptPrinterBronze();
         bronzePrinter.plugIn(powerGrid);
@@ -138,11 +111,12 @@ public class IssuesPredictorTest extends AbstractTest{
 		goldPrinter = new ReceiptPrinterGold();
         goldPrinter.plugIn(powerGrid);
 		goldPrinter.turnOn();
+		
+       
 	}
 	
 	@Test 
 	public void testCheckLowInk() throws OverloadedDevice {
-		session.setup(itemManager, funds, weight, receiptPrinter, scs);
 		scs.getCoinDispensers().values();
 		// Bronze
 		issuePredictor.checkLowInk(session, scs.getPrinter());
@@ -160,7 +134,6 @@ public class IssuesPredictorTest extends AbstractTest{
 	
 	@Test
 	public void testCheckLowInkWhenFull() throws OverloadedDevice {
-		session.setup(itemManager, funds, weight, receiptPrinter, scs);
 		// Bronze
 		issuePredictor.checkLowInk(session, scs.getPrinter());
 		// Silver
@@ -175,7 +148,6 @@ public class IssuesPredictorTest extends AbstractTest{
 	
 	@Test
 	public void testCheckLowPaper() throws OverloadedDevice {
-		session.setup(itemManager, funds, weight, receiptPrinter, scs);
 		// Bronze
 		issuePredictor.checkLowPaper(session, scs.getPrinter());
 		// Silver
@@ -188,7 +160,6 @@ public class IssuesPredictorTest extends AbstractTest{
 	
 	@Test
 	public void testCheckLowPaperWhenFull() throws OverloadedDevice {
-		session.setup(itemManager, funds, weight, receiptPrinter, scs);
 		// Bronze
 		issuePredictor.checkLowPaper(session, scs.getPrinter());
 		// Silver
@@ -200,16 +171,12 @@ public class IssuesPredictorTest extends AbstractTest{
 	}
 	
 	@Test
-	public void testCheckLowCoins() throws OverloadedDevice {
-		session.setup(itemManager, funds, weight, receiptPrinter, scs);
-		
+	public void testCheckLowCoins() throws OverloadedDevice {		
 		issuePredictor.checkLowCoins(session, scs.getCoinDispensers());
 	}
 	
 	@Test
-	public void testCheckLowBanknotes() throws OverloadedDevice {
-		session.setup(itemManager, funds, weight, receiptPrinter, scs);
-		
+	public void testCheckLowBanknotes() throws OverloadedDevice {		
 		issuePredictor.checkLowBanknotes(session, scs.getBanknoteDispensers());
 		//System.out.println(scs.getBanknoteDispensers());
 
@@ -217,7 +184,6 @@ public class IssuesPredictorTest extends AbstractTest{
 	
 	@Test
 	public void testCheckCoinsFull() throws OverloadedDevice, SimulationException, CashOverloadException {
-		session.setup(itemManager, funds, weight, receiptPrinter, scs);
 	    for (int i = 0; i < 1000; i++) { // 1000 is max capacity
 	        scs.getCoinStorage().load(new Coin(Currency.getInstance(Locale.CANADA), new BigDecimal ("2.00"))); // Add $2.00 1000 times
 	        }
@@ -227,7 +193,6 @@ public class IssuesPredictorTest extends AbstractTest{
 	
 	@Test
 	public void testCheckBanknotesFull() throws OverloadedDevice, SimulationException, CashOverloadException {
-		session.setup(itemManager, funds, weight, receiptPrinter, scs);
 		 for (int i = 0; i < 1000; i++) { // 1000 is max capacity
 		        scs.getBanknoteStorage().load(new Banknote(Currency.getInstance(Locale.CANADA), new BigDecimal ("5.00"))); // Add $5.00 1000 times
 		        }
