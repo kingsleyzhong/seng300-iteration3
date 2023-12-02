@@ -93,6 +93,7 @@ public class ButtonPanel extends JPanel implements ActionListener {
 		}
 		else if(e.getSource() == receiptPrinter) {
 			String receipt = "";
+			gui.getStation().getPrinter().cutPaper();
 			try {
 				receipt = gui.getStation().getPrinter().removeReceipt();
 				JOptionPane.showMessageDialog(null, receipt);
