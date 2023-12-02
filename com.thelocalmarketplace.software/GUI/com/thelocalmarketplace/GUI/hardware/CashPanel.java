@@ -7,23 +7,14 @@ import javax.swing.JPanel;
 import com.tdc.CashOverloadException;
 import com.tdc.DisabledException;
 import com.tdc.banknote.Banknote;
-import com.tdc.banknote.BanknoteValidator;
 import com.tdc.coin.Coin;
-import com.tdc.coin.CoinValidator;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
-import com.thelocalmarketplace.software.funds.Funds;
-import com.thelocalmarketplace.software.funds.PayByCash;
-
 import java.awt.Color;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.border.LineBorder;
-import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
-import javax.swing.border.MatteBorder;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
@@ -337,23 +328,23 @@ public class CashPanel extends JPanel{
 	public void setUpCashData() {
 		Currency currency = Currency.getInstance(Locale.CANADA);
 		
-		Five_Cent_Coin = new Coin(currency, BigDecimal.valueOf(0.05));
+		Five_Cent_Coin = new Coin(currency, new BigDecimal(0.05));
 		
-		Ten_Cent_Coin  = new Coin(currency, BigDecimal.valueOf(0.10));
+		Ten_Cent_Coin  = new Coin(currency, new BigDecimal(0.10));
 		TwentyFive_Cent_Coin  = new Coin(currency, BigDecimal.valueOf(0.25));
 		
-		One_Dollar_Coin  = new Coin(currency, BigDecimal.valueOf(1.00));
-		Two_Dollar_Coin  = new Coin(currency, BigDecimal.valueOf(2.00));
+		One_Dollar_Coin  = new Coin(currency, new BigDecimal(1));
+		Two_Dollar_Coin  = new Coin(currency, new BigDecimal(2));
 		
 		//Coin that should be rejected
-		Coin Non_Coin  = new Coin(currency, BigDecimal.valueOf(0.01));
+		Non_Coin  = new Coin(currency, new BigDecimal(0.03));
 		
 		//bills
-		Five_Dollar_Bill = new Banknote(currency, BigDecimal.valueOf(5.00));
-		Ten_Dollar_Bill  = new Banknote(currency, BigDecimal.valueOf(10.00));
-		Twenty_Dollar_Bill  = new Banknote(currency, BigDecimal.valueOf(20.00));
-		Fifty_Dollar_Bill  = new Banknote(currency, BigDecimal.valueOf(50.00));
-		Hundred_Dollar_Bill  = new Banknote(currency, BigDecimal.valueOf(100.00));
+		Five_Dollar_Bill = new Banknote(currency, new BigDecimal(5));
+		Ten_Dollar_Bill  = new Banknote(currency, new BigDecimal(10));
+		Twenty_Dollar_Bill  = new Banknote(currency, new BigDecimal(20));
+		Fifty_Dollar_Bill  = new Banknote(currency, new BigDecimal(50));
+		Hundred_Dollar_Bill  = new Banknote(currency, new BigDecimal(100));
 		
 		//Bill that should be rejected
 		Non_Bill  = new Banknote(Currency.getInstance( Locale.CANADA )   , BigDecimal.valueOf(5000.00));
