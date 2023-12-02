@@ -70,7 +70,7 @@ public class SoftwareGUI{
 	// Panel components of JFrame
 	JPanel orangePanel;
 	JPanel cartInfoPanel;
-	private AddedProducts cartItemsPanel;
+	public AddedProducts cartItemsPanel;
 	JPanel buttonPanel;
 	
 	// Buttons
