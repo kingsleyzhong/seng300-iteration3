@@ -192,6 +192,7 @@ public class ItemManager {
 		} else if (addedProducts.containsKey(product) && 
 		addedProducts.get(product).doubleValue() == mass.inMicrograms().doubleValue()) {
 			addedProducts.remove(product);
+			PLUProductWeights.remove(product);
 		} else {
 			throw new ProductNotFoundException("Item not found");
 		}
