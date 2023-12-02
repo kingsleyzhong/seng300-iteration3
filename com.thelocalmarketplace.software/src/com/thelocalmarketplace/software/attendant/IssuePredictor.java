@@ -84,7 +84,7 @@ public class IssuePredictor  {
 		banknoteStorage = scs.getBanknoteStorage();
 		banknoteDispensers = scs.getBanknoteDispensers();
 		coinDispensers = scs.getCoinDispensers();
-		receiptPrinter.register((ReceiptPrinterListener) new InnerReceiptPrinterListener());
+		receiptPrinter.register(new InnerReceiptPrinterListener());
 		this.receipt = receipt;
 		this.receipt.registerPrintListener(new PrintTracker());
 		estimatedInk = 0;
@@ -305,7 +305,7 @@ public class IssuePredictor  {
 		if (receiptPrinter instanceof ReceiptPrinterBronze) {
 			threshold = ReceiptPrinterBronze.MAXIMUM_PAPER;
 			
-			if (estimatedInk <= threshold * 0.1) {
+			if (estimatedPaper <= threshold * 0.1) {
 				notifyLowPaper(s);
 				lowPaper = true;
 			} else {
