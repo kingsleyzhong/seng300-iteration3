@@ -32,7 +32,6 @@ public class Simulation {
 	private AbstractSelfCheckoutStation scs;
 	private AttendantStation as;
 	private Session session;
-	private ItemManager itemManager;
 	private Attendant attendant;
 	
 	private HardwareGUI hardwareGUI;

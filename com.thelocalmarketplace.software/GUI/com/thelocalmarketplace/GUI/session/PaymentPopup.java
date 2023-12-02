@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 
 import com.tdc.CashOverloadException;
@@ -178,5 +179,21 @@ public class PaymentPopup {
 	
 	public void hide() {
 		this.frame.setVisible(false);
+	}
+	
+	public boolean isVisible() {
+		return frame.isVisible();
+	}
+	
+	public JButton getCashButton() {
+		return cashButton;
+	}
+	
+	public JButton getCardButton() {
+		return cardButton;
+	}
+	
+	public JButton getCancelButton() {
+		return cancelPaymentButton;
 	}
 }

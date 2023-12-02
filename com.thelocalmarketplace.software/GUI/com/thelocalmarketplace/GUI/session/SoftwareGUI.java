@@ -35,23 +35,24 @@ import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
 public class SoftwareGUI{
-	JFrame frame;
+	public JFrame frame;
 	JFrame catalogue;
-	JPanel mainPane;
-	JPanel startPane;
-	JPanel endPane;
+	public JPanel mainPane;
+	public JPanel startPane;
+	public JPanel endPane;
 	
 	Session session;
 	
 	// Buttons for user to interact with:
-	JButton cancel;
-	JButton addBags;
-	JButton pluCode;
-	JButton searchCatalogue;
-	JButton callAttendant;
-	JButton pay;
+	public JButton btnStart;
+	public JButton cancel;
+	public JButton addBags;
+	public JButton pluCode;
+	public JButton searchCatalogue;
+	public JButton callAttendant;
+	public JButton pay;
 	
-    PaymentPopup paymentScreen;
+    public PaymentPopup paymentScreen;
 
     String quantity;
     String itemCount;
@@ -112,7 +113,7 @@ public class SoftwareGUI{
 		
 		
 		//this is the start button
-		JButton btnStart = new PlainButton("Start", Colors.color1);
+		btnStart = new PlainButton("Start", Colors.color1);
 		btnStart.setOpaque(false);
 		btnStart.setFont(new Font("Dialog", Font.BOLD, 40));
 		btnStart.setBorder(BorderFactory.createEmptyBorder());
