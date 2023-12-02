@@ -227,6 +227,9 @@ public class Funds {
                     try {
                         scs.getBanknoteDispensers().get(denomination).emit();
                     } catch (NoCashAvailableException e) {
+                    	// notifies change not available
+                    	for (FundsListener l : listeners)
+            				l.notifyInsufficentChange();
                         break; // go to next denomination if this denomination runs out
                     } catch (DisabledException e) {
 						// TODO Auto-generated catch block
@@ -240,6 +243,9 @@ public class Funds {
                     try {
                         scs.getCoinDispensers().get(denomination).emit();
                     } catch (NoCashAvailableException e) {
+                    	// notifies change not available
+                    	for (FundsListener l : listeners)
+            				l.notifyInsufficentChange();
                         break; // go to next denomination if this denomination runs out
                     } catch (CashOverloadException e) {
 						// TODO Auto-generated catch block
@@ -255,6 +261,9 @@ public class Funds {
         scs.getBanknoteOutput().dispense();
         // occurs when all denominations have been cycled through and the change is not yet fully dispensed
         if (changeDue > 0) {
+        	// notifies change not available
+        	for (FundsListener l : listeners)
+				l.notifyInsufficentChange();
         	throw new NotEnoughChangeException("Not enough change in the machine");
         }
 	}

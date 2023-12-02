@@ -12,6 +12,7 @@ import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.attendant.Attendant;
+import com.thelocalmarketplace.software.attendant.IssuePredictor;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.funds.PayByCard;
 import com.thelocalmarketplace.software.funds.PayByCash;
@@ -24,6 +25,8 @@ import com.thelocalmarketplace.software.weight.Weight;
 /**
  * A facade for the logic, supporting its installation on a self checkout
  * station.
+ * Creates and associates Attendants and Sessions.
+ * 
  * Allows for a database to be constructed
  * 
  * Project Iteration 3 Group 1
@@ -85,8 +88,13 @@ public class SelfCheckoutStationLogic {
 	 *                The session that the logic shall be installed on
 	 */
 	private SelfCheckoutStationLogic(AbstractSelfCheckoutStation scs) {
+		// creates a new Session
 		session = new Session();
+		
+		// Registers the attendant with the session
 		attendant.registerOn(session);
+		
+		// create Funds, Weight, Receipt, and ItemManger classes to associate w/ Session
 		Funds funds = new Funds(scs);
 		new PayByCash(scs.getCoinValidator(), scs.getBanknoteValidator(), funds);
 		new PayByCard(scs.getCardReader(), funds);
@@ -96,13 +104,20 @@ public class SelfCheckoutStationLogic {
 		Membership membership = new Membership(scs.getCardReader());
 		// Will also need the touch screen/ keyboard for GUI interaction
 		session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
+    
 		new ItemAddedRule(scs.getMainScanner(), scs.getHandheldScanner(), itemManager);
+
+		// Register IssuePredictor with Session
+		IssuePredictor predictor = new IssuePredictor(session, scs); 
+		// tell the Attendant about the Predictor
+		attendant.addIssuePrediction(predictor); 
+	
 	}
 
 	public static Attendant getAttendant() {
 		return attendant;
 	}
-
+  
 	public Session getSession() {
 		return session;
 	}

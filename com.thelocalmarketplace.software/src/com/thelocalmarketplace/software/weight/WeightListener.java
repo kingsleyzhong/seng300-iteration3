@@ -43,4 +43,9 @@ public interface WeightListener {
 	 */
 	void notifyDiscrepancyFixed();
 	
+	/**
+	 * Signals an event in which bags have been added to the scale which are above the weight threashold of the system
+	 */
+	void notifyBagsTooHeavy();
+	
 }

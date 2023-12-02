@@ -1,5 +1,7 @@
 package com.thelocalmarketplace.software.funds;
 
+import java.math.BigDecimal;
+
 /**
  * Listens for if payment has been completed
  * 
@@ -33,4 +35,9 @@ public interface FundsListener {
 	 * Signals an event in which the customer has paid for the complete amount of the order
 	 */
 	void notifyPaid();
+	
+	/**
+	 *  Signals an event in which the payment was disrupted by insufficent change avaliable
+	 */
+	void notifyInsufficentChange();
 }
