@@ -31,6 +31,7 @@ public class CashPanel extends JPanel{
 	private static final long serialVersionUID = 1L;
 	private AbstractSelfCheckoutStation scs;
 	
+	public JButton FiveBillBtn;
 	
 	//coins
 	private Coin Five_Cent_Coin;
@@ -73,7 +74,7 @@ public class CashPanel extends JPanel{
 		
 		
 		//5 Dollar Bill
-		JButton FiveBillBtn = new PlainButton("5$ Bill", Colors.color1);
+		FiveBillBtn = new PlainButton("5$ Bill", Colors.color1);
 		FiveBillBtn.setForeground(Colors.color3);
 		FiveBillBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

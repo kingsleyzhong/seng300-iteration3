@@ -290,7 +290,7 @@ public class SoftwareGUI{
 		infoTop.add(infoTop1);
 		infoTop.add(infoTop2);
 		infoTop.add(infoTop3);
-			
+			 
 		JPanel infoBottom = new JPanel();
 		infoBottom.setBackground(Colors.color4);
 		infoBottom.setLayout(new GridLayout(0,1));
