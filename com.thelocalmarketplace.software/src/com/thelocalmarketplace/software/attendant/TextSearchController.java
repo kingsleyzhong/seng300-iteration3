@@ -127,7 +127,7 @@ public class TextSearchController {
 				shift = false;
 
 			} else if (label.equals("Enter")) {
-				textSearchProduct(searchField);
+				if (searchField != "") textSearchProduct(searchField);
 
 			} else {
 				//Do nothing? These are keys that are not characters and do not have bindings in the software
@@ -143,9 +143,12 @@ public class TextSearchController {
 		return searchResults;
 	}
 
+	/**
+	 * This is a search engine utilizing a regex search of the product databases capable of both searching item descriptions, PLU codes, and Barcodes (UPC)
+	 * It is generally activated upon pressing the enter key when the attendant station is in search mode
+	 * @param searchField
+	 */
 	private void textSearchProduct(String searchField) {
-		// This is some kind of method that may action the search
-		// WIP!!
 
 		Map<Barcode, BarcodedProduct> databaseBC = ProductDatabases.BARCODED_PRODUCT_DATABASE;
 		Map<PriceLookUpCode, PLUCodedProduct> databasePLU = ProductDatabases.PLU_PRODUCT_DATABASE;
@@ -155,9 +158,18 @@ public class TextSearchController {
 		String itemQuery;
 		Matcher regexMatcher;
 
-		// Barcoded Products
+		// Barcoded Products by description
 		for (HashMap.Entry<Barcode, BarcodedProduct> entry : databaseBC.entrySet()) {
 			itemQuery = entry.getValue().getDescription();
+			regexMatcher = regexPattern.matcher(itemQuery);
+			if (regexMatcher.find()) {
+				searchResults.add(entry.getValue());
+			}
+		}
+
+		// Barcoded Products by Barcode (i.e. UPC number)
+		for (HashMap.Entry<Barcode, BarcodedProduct> entry : databaseBC.entrySet()) {
+			itemQuery = String.valueOf(entry.getKey());
 			regexMatcher = regexPattern.matcher(itemQuery);
 			if (regexMatcher.find()) {
 				searchResults.add(entry.getValue());

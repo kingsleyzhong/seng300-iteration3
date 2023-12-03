@@ -5,14 +5,12 @@ import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.scanner.BarcodedItem;
-import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
-import com.thelocalmarketplace.hardware.AttendantStation;
-import com.thelocalmarketplace.hardware.BarcodedProduct;
-import com.thelocalmarketplace.hardware.Product;
+import com.thelocalmarketplace.hardware.*;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
 import com.thelocalmarketplace.software.attendant.Attendant;
 import com.thelocalmarketplace.software.test.AbstractTest;
+import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import powerutility.NoPowerException;
@@ -20,7 +18,7 @@ import powerutility.NoPowerException;
 import java.util.ArrayList;
 
 import static junit.framework.Assert.assertTrue;
-import static junit.framework.TestCase.assertEquals;
+import static junit.framework.Assert.assertEquals;
 
 /**
  * <p>A class of unit tests that test specifically the funtionality of
@@ -56,9 +54,17 @@ public class TextSearchControllerTest extends AbstractTest {
     private AttendantStation station;
     private Attendant a;
 
-    private BarcodedProduct product;
-    private Barcode barcode;
-    private BarcodedItem item;
+    private BarcodedProduct product1;
+    private BarcodedProduct product2;
+    private PLUCodedProduct product3;
+
+    private Barcode barcode1;
+    private Barcode barcode2;
+    private PriceLookUpCode plu;
+
+    private BarcodedItem item1;
+    private BarcodedItem item2;
+    private PLUCodedItem item3;
 
     private ArrayList<Product> expectedResults;
 
@@ -76,10 +82,21 @@ public class TextSearchControllerTest extends AbstractTest {
         station.turnOn();
 
         expectedResults = new ArrayList<>();
-        barcode = new Barcode(new Numeral[] { Numeral.valueOf((byte) 1) });
-        product = new BarcodedProduct(barcode, "chicken wings", 10, 100.0);
-        item = new BarcodedItem(barcode, new Mass(100.0));
-        ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode, product); // Add a product to the database
+        barcode1 = new Barcode(new Numeral[]{Numeral.valueOf((byte) 1)});
+        product1 = new BarcodedProduct(barcode1, "Raisin Bran Cereal", 10, 100.0);
+        item1 = new BarcodedItem(barcode1, new Mass(100.0));
+
+        barcode2 = new Barcode(new Numeral[]{Numeral.valueOf((byte) 2)});
+        product2 = new BarcodedProduct(barcode2, "Sun-Maid Raisins 6 Pack", 3, 10.0);
+        item2 = new BarcodedItem(barcode2, new Mass(100.0));
+
+        plu = new PriceLookUpCode("6666");
+        product3 = new PLUCodedProduct(plu, "San Marzano Tomato", 5);
+        item3 = new PLUCodedItem(plu, new Mass(1.0));
+
+        ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode1, product1); // Add a product to the database
+        ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode2, product2); // Add a product to the database
+        ProductDatabases.PLU_PRODUCT_DATABASE.put(plu, product3); // Add a product to the database
 
     }
 
@@ -117,17 +134,43 @@ public class TextSearchControllerTest extends AbstractTest {
     }
 
     @Test
-    public void successfulSearchTest() throws DisabledDevice {
-        ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode, product);
-        expectedResults.add(product);
-        String expectedSearch = "ICKEN";
+    public void successfulNumberSearchTest() throws DisabledDevice {
+        ProductDatabases.BARCODED_PRODUCT_DATABASE.putIfAbsent(barcode1, product1);
+        ProductDatabases.BARCODED_PRODUCT_DATABASE.putIfAbsent(barcode2, product2);
+        ProductDatabases.PLU_PRODUCT_DATABASE.putIfAbsent(plu, product3);
+
+        expectedResults.add(product2);
+        expectedResults.add(product3);
+
+        a.getStation().keyboard.getKey("6 ^").press();
+        a.getStation().keyboard.getKey("6 ^").release();
+
+        a.getStation().keyboard.getKey("Enter").press();
+        a.getStation().keyboard.getKey("Enter").release();
+
+        assertTrue(a.getTextSearchController().getSearchResults().containsAll(expectedResults));
+    }
+
+    @Test
+    public void successfulTextSearchTest() throws DisabledDevice {
+        ProductDatabases.BARCODED_PRODUCT_DATABASE.putIfAbsent(barcode1, product1);
+        ProductDatabases.BARCODED_PRODUCT_DATABASE.putIfAbsent(barcode2, product2);
+        ProductDatabases.PLU_PRODUCT_DATABASE.putIfAbsent(plu, product3);
+
+        expectedResults.add(product1);
+        expectedResults.add(product2);
+
+        String expectedSearch = "AISIN";
+
         for (int i = 0; i < expectedSearch.length(); i++) {
             a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).press();
             a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).release();
         }
+
         a.getStation().keyboard.getKey("Enter").press();
         a.getStation().keyboard.getKey("Enter").release();
-        assertEquals(expectedResults, a.getTextSearchController().getSearchResults());
+
+        assertTrue(a.getTextSearchController().getSearchResults().containsAll(expectedResults));
     }
 
     @Test
@@ -141,17 +184,7 @@ public class TextSearchControllerTest extends AbstractTest {
         a.getStation().keyboard.getKey("Enter").release();
         assertTrue(a.getTextSearchController().getSearchResults().isEmpty());
     }
-//
-//    @Test
-//    public void textSearchAndAdd() throws DisabledDevice {
-//        String expectedSearch = "ICKEN";
-//        for (int i = 0; i < expectedSearch.length(); i++) {
-//            a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).press();
-//            a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).release();
-//            // TBD how the rest of this is done
-//        }
-//    }
-//
+
     @Test(expected = DisabledDevice.class)
     public void disabledPressTest() throws DisabledDevice {
         a.getStation().keyboard.disable();
@@ -175,5 +208,4 @@ public class TextSearchControllerTest extends AbstractTest {
         a.getStation().unplug();
         a.getStation().keyboard.getKey("Shift (Right)").release();
     }
-
 }
