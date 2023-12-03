@@ -88,19 +88,19 @@ public class StationPanel extends JPanel implements ActionListener {
 		info = new JLabel("Sample text for the display of a warning or error message when the problem occurs (empty otherwise)");
 		info.setVerticalAlignment(SwingConstants.TOP);
 		info.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		populateIssues();
+		populateIssues(false);
 		add(info);
 		add(resolve);
 		add(power);
 	}
 
-	private void populateIssues() {
-		issues.put("ink", false);
-		issues.put("paper", false);
-		issues.put("coinsLow", false);
-		issues.put("banknotesLow", false);
-		issues.put("coinsFull", false);
-		issues.put("banknotesFull", false);
+	private void populateIssues(boolean stat) {
+		issues.put("ink", stat);
+		issues.put("paper", stat);
+		issues.put("coinsLow", stat);
+		issues.put("banknotesLow", stat);
+		issues.put("coinsFull", stat);
+		issues.put("banknotesFull", stat);
 	}
 	
 	public boolean issuesPresent() {
@@ -181,6 +181,11 @@ public class StationPanel extends JPanel implements ActionListener {
 			info.setText("WARNING: Predicting insufficient banknotes");
 			info.setForeground(urgentColor);
 			status.setText("STATUS: WARNING");
+		}
+
+		@Override
+		public void notifyNoIssues(Session session) {
+			populateIssues(false);
 		}
 	}
 	

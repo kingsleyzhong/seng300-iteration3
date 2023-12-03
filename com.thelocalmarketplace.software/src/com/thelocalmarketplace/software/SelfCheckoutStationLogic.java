@@ -95,11 +95,11 @@ public class SelfCheckoutStationLogic {
 		
 		// create Funds, Weight, Receipt, and ItemManger classes to associate w/ Session
 		Funds funds = new Funds(scs);
-		IssuePredictor predictionManager = new IssuePredictor(session, scs);
 		new PayByCash(scs.getCoinValidator(), scs.getBanknoteValidator(), funds);
 		new PayByCard(scs.getCardReader(), funds);
 		Weight weight = new Weight(scs.getBaggingArea());
 		Receipt receipt = new Receipt(scs.getPrinter());
+		IssuePredictor predictionManager = new IssuePredictor(session, scs, receipt);
 		ItemManager itemManager = new ItemManager(session); 
 		session.setup(itemManager, funds, weight, receipt, scs); 
 
