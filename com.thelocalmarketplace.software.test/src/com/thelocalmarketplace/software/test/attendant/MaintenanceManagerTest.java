@@ -82,27 +82,8 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     public void setup() throws OverloadedDevice, CashOverloadException {
         basicDefaultSetup();
 
-        // idk why the test cases only work when I have these, even though I am calling defaultSetup()
-        // it still tests for all gold, silver and bronze stations though
-//        PowerGrid.engageUninterruptiblePowerSource();
-//        AbstractSelfCheckoutStation.resetConfigurationToDefaults();
         AbstractSelfCheckoutStation.configureBanknoteDenominations(new BigDecimal[] { new BigDecimal(10), new BigDecimal(5) });
         AbstractSelfCheckoutStation.configureCoinDenominations(new BigDecimal[] { new BigDecimal(0.10), new BigDecimal(0.05) });
-
-//        scs = new SelfCheckoutStationBronze();
-//        powerGrid = PowerGrid.instance();
-//        scs.plugIn(powerGrid);
-//        scs.turnOn();
-//
-//        session = new Session();
-//        itemManager = new ItemManager(session);
-//
-//        weight = new Weight(scs.getBaggingArea());
-//        funds = new Funds(scs);
-//        receiptPrinter = new Receipt(scs.getPrinter());
-
-        //session.setup(itemManager, funds, weight, receiptPrinter, scs);
-        // ----------------------------------------------------------------------
 
         station = new AttendantStation();
         station.plugIn(powerGrid);
