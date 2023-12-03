@@ -215,6 +215,7 @@ public class Session {
 			// Should notifyPaid() not wait until receipt is successfully printed to change
 			// to PRE_SESSION?
 			end();
+			notifySessionEnd();
 		}
 
 	}
@@ -479,6 +480,12 @@ public class Session {
 	public void notifyAttendant(Requests request) {
 		for (SessionListener l : listeners) {
 			l.getRequest(this, request);
+		}
+	}
+	
+	private void notifySessionEnd() {
+		for (SessionListener l : listeners) {
+			l.sessionEnded(this);
 		}
 	}
 
