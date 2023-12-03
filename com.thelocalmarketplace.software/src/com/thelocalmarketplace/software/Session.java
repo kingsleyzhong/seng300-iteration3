@@ -186,14 +186,10 @@ public class Session {
 
 		@Override
 		public void notifiyPaperRefilled() {
-			if (!(sessionState == SessionState.PRE_SESSION))
-				resume();
 		}
 
 		@Override
 		public void notifiyInkRefilled() {
-			if (!(sessionState == SessionState.PRE_SESSION))
-				resume();
 		}
 
 		@Override
