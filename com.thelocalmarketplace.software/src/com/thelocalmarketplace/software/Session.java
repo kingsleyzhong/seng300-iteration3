@@ -75,6 +75,8 @@ public class Session {
 	private ItemManager manager;
 	private Receipt receiptPrinter;
 	private boolean requestApproved = false;
+	
+
 
 	
 	
@@ -399,6 +401,21 @@ public class Session {
 			weight.addBags();
 		}
 		// else: nothing changes about the Session's state
+	}
+	
+	/**
+	 * The customer indicates they wish to purchase reusable bags as a part of their interaction.
+	 * Customer must indicate the number of bags they want to purchase. 
+	 * System only supports one bag type.
+	 * 
+	 * @param num
+	 * 				the number of bags the customer wants to buy
+	 * 
+	 * 
+	 */
+	public void purchasebags(int num) {
+		
+		
 	}
 	
 	// Move to receiptPrinter class (possible rename of receiptPrinter to just reciept

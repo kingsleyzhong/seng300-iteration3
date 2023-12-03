@@ -16,7 +16,7 @@ import com.thelocalmarketplace.software.exceptions.ProductNotFoundException;
 import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 
 /**
- * Manages aspects to adding items
+ * Manages aspects to adding items to an order
  * 
  * Project Iteration 3 Group 1
  *
