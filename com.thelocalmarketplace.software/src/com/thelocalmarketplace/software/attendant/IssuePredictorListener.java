@@ -64,5 +64,8 @@ public interface IssuePredictorListener {
 	 * Signals an event that a low bank notes issue will shortly occur
 	 */
 	void notifyPredictLowBanknotes(Session session);
-
+	/**
+	 * Signals that no issues are present
+	 */
+	void notifyNoIssues(Session session);
 }

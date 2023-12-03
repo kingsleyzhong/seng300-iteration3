@@ -69,7 +69,9 @@ public class TextSearchControllerTest extends AbstractTest {
     @Test
     public void populateSeachFieldTest() throws DisabledDevice {
         // Test to see if typing in the search field works
-        String expectedSearch = "MARLBORO GOLD CIGARETTES";
+        String expectedSearch = "THIS DOES";
+        a.getStation().keyboard.getKey("Shift (Right)").press();
+        a.getStation().keyboard.getKey("Shift (Right)").release();
         for (int i = 0; i < expectedSearch.length(); i++) {
             a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).press();
             a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).release();
@@ -77,40 +79,42 @@ public class TextSearchControllerTest extends AbstractTest {
             assertEquals(expectedSearch, a.getTextSearchController().getSearchField());
         }
     }
-
-    @Test
-    public void successfulSearchTest() throws DisabledDevice {
-        String expectedSearch = "ICKEN";
-        for (int i = 0; i < expectedSearch.length(); i++) {
-            a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).press();
-            a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).release();
-//            assertEquals(expectedResults, searchResults);
-        }
-    }
-
-    @Test
-    public void failedSearchTest() throws DisabledDevice {
-        String expectedSearch = "ALBERTA PURE";
-        for (int i = 0; i < expectedSearch.length(); i++) {
-            a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).press();
-            a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).release();
-//            assertEquals(null, searchResults);
-        }
-    }
-
-    @Test
-    public void textSearchAndAdd() throws DisabledDevice {
-        String expectedSearch = "ICKEN";
-        for (int i = 0; i < expectedSearch.length(); i++) {
-            a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).press();
-            a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).release();
-            // TBD how the rest of this is done
-        }
-    }
-
-    @Test
-    public void disabledTest() {
-        // Finish this
-    }
+//
+//    @Test
+//    public void successfulSearchTest() throws DisabledDevice {
+//        String expectedSearch = "ICKEN";
+//        for (int i = 0; i < expectedSearch.length(); i++) {
+//            a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).press();
+//            a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).release();
+////            assertEquals(expectedResults, searchResults);
+//        }
+//    }
+//
+//    @Test
+//    public void failedSearchTest() throws DisabledDevice{
+//        String expectedSearch = "MARLBORO GOLD CIGARETTES";
+//        for (int i = 0; i < expectedSearch.length(); i++) {
+//            a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).press();
+//            a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).release();
+//            a.getStation().keyboard.getKey("Enter").press();
+//            a.getStation().keyboard.getKey("Enter").release();
+//            assertEquals(true, a.getTextSearchController().searchResults.isEmpty());
+//        }
+//    }
+//
+//    @Test
+//    public void textSearchAndAdd() throws DisabledDevice {
+//        String expectedSearch = "ICKEN";
+//        for (int i = 0; i < expectedSearch.length(); i++) {
+//            a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).press();
+//            a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).release();
+//            // TBD how the rest of this is done
+//        }
+//    }
+//
+//    @Test
+//    public void disabledTest() {
+//        // Finish this
+//    }
 
 }

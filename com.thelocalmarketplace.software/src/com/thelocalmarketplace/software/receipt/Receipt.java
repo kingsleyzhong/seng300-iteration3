@@ -12,6 +12,9 @@ import com.jjjwelectronics.printer.IReceiptPrinter;
 import com.jjjwelectronics.printer.ReceiptPrinterListener;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.software.attendant.PrintListener;
+import powerutility.NoPowerException;
+
 /*
  * 
  * Project Iteration 3 Group 1
@@ -46,6 +49,10 @@ public class Receipt {
 	private boolean duplicateNeeded = false; //Flag for if the receipt was not printed out fully and a duplicate is needed.
 	private String receipt; //The receipt that should be printed
 	private IReceiptPrinter printer; //The printer associated with the session;
+	private ArrayList<PrintListener> printListeners = new ArrayList<>();
+
+	int charsPrinted;
+	int linesUsed;
 
 	
 	/**
@@ -143,6 +150,7 @@ public class Receipt {
     private void print() {
     	try {
     		printer.print('\n'); // Ensures any new receipt being printed starts on a fresh line
+			trackPrint('\n');
         	for (int i = 0, n = receipt.length() ; i < n ; i++) {
         		// Notify and break out of the printing loop if out of paper or ink
         		if (isOutOfPaper) {
@@ -159,12 +167,18 @@ public class Receipt {
         		}
         		// Send the character to the printer to print
     			printer.print(receipt.charAt(i));
+				trackPrint(receipt.charAt(i));
         	}
-        	
         	// If the condition is passed, then all characters were successfully printed to the receipt
         		for(ReceiptListener l : listeners) {
     				l.notifiyReceiptPrinted();
     			}
+				for(PrintListener p : printListeners) {
+					p.aReceiptHasBeenPrinted(linesUsed, charsPrinted);
+				}
+			linesUsed = 0;
+			charsPrinted = 0;
+
         // The empty device exception is thrown within the loop when the printer is out of paper or ink
     	} catch (EmptyDevice e) {
 			System.err.println("There is either no ink or no paper in the printer");
@@ -172,8 +186,18 @@ public class Receipt {
 			System.err.println("The line is too long. Add a newline");
 		}
     }
-    
-    
+
+	private void trackPrint(char c) {
+		if(c == '\n') {
+			linesUsed++;
+		}
+		else if(c != ' ' && Character.isWhitespace(c))
+			return;
+
+		if(!Character.isWhitespace(c)) {
+			charsPrinted++;
+		}
+	}
     
     /**
      * Methods for adding listeners to the PrintReceipt
@@ -188,5 +212,9 @@ public class Receipt {
 
 	public final synchronized void register(ReceiptListener listener) {
 		listeners.add(listener);
+	}
+
+	public final synchronized void registerPrintListener(PrintListener listener) {
+		printListeners.add(listener);
 	}
 }

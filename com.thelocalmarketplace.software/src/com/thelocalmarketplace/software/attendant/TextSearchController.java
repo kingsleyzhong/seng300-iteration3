@@ -3,6 +3,7 @@ package com.thelocalmarketplace.software.attendant;
 import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
 import com.jjjwelectronics.IDevice;
 import com.jjjwelectronics.IDeviceListener;
+import com.jjjwelectronics.keyboard.IKeyboard;
 import com.jjjwelectronics.keyboard.KeyboardListener;
 import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.screen.TouchScreenListener;
@@ -12,6 +13,7 @@ import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.exceptions.InvalidActionException;
+import com.thelocalmarketplace.software.funds.PayByCard;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +21,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.naming.directory.SearchResult;
 
 /**
  * <p>Simulation of an attendant searching for items using a physical keyboard via keyword search.</p>
@@ -49,11 +53,17 @@ import java.util.regex.Pattern;
  */
 public class TextSearchController {
 	private String searchField;
-	private ArrayList<Product> searchResults = new ArrayList<>();
+	private StringBuilder searchFieldSB;
+	public ArrayList<Product> searchResults;
 	private boolean shift;
+	
+	public TextSearchController(IKeyboard keyboard) {
+		ArrayList<Product> searchResults = new ArrayList<>();
+		searchField = new String(" ");
 
-	public String getSearchField() {
-		return searchField;
+		TextSearchController.InnerListener textListener = new TextSearchController.InnerListener();
+		keyboard.register(textListener);
+
 	}
 
 	private class InnerListener implements TouchScreenListener, KeyboardListener {
@@ -99,19 +109,29 @@ public class TextSearchController {
 			// TODO This software must decide what is done when the key is released here
 			// We could have something like:
 			if (label.length() == 1 && !shift){
-				searchField += label.toLowerCase();
+				searchField = searchField + label;
+
 
 			} else if (label.length() == 1 && shift){
-				searchField += label;
+				if (searchField == " "){
+					searchField = label;
+				} else searchField += label;
 
 			} else if (label.length() == 3 && !shift){
-				searchField += label.charAt(0); // Does this work?
+				if (searchField == null){
+					searchField = String.valueOf(label.charAt(0));
+				} else searchField += label.charAt(0);  // Does this work?
+
 
 			} else if (label.length() == 3 && shift){
-				searchField += label.charAt(2); // Does this work?
+				if (searchField == null){
+					searchField = String.valueOf(label.charAt(2));
+				} else searchField += label.charAt(2);  // Does this work?
 
 			} else if (label.equals("Spacebar")){
-				searchField += " ";
+				if (searchField == null){
+					searchField = " ";
+				} else searchField += " ";
 
 			} else if (label.equals("FnLock Esc")) {
 				searchField = "";
@@ -119,15 +139,25 @@ public class TextSearchController {
 			} else if (label.equals("Shift (Right)") || label.equals("Shift (Left)")) {
 				shift = false;
 
+			} else if (label.equals("Backspace")) {
+				StringBuilder searchFieldSB = new StringBuilder(searchField);
+				searchFieldSB.deleteCharAt(searchField.length() - 1);
+				searchField = searchFieldSB.toString();
+
 			} else if (label.equals("Enter")) {
-				textSearchProduct(label);
+				textSearchProduct(searchField);
+
 			} else {
 				//Do nothing? These are keys that are not characters and do not have bindings in the software
 			}
 		}
 	}
 
-	private ArrayList<Product> textSearchProduct(String label) {
+	public String getSearchField() {
+        return searchField;
+	}
+	
+	private ArrayList<Product> textSearchProduct(String searchField) {
 		// This is some kind of method that may action the search
 		// WIP!!
 
@@ -135,7 +165,7 @@ public class TextSearchController {
 		Map<Barcode, BarcodedProduct> databaseBC = ProductDatabases.BARCODED_PRODUCT_DATABASE;
 		Map<PriceLookUpCode, PLUCodedProduct> databasePLU = ProductDatabases.PLU_PRODUCT_DATABASE;
 
-		Pattern regexPattern = Pattern.compile(label, Pattern.CASE_INSENSITIVE);
+		Pattern regexPattern = Pattern.compile(searchField, Pattern.CASE_INSENSITIVE);
 
 		// Barcoded Products
 		for (HashMap.Entry<Barcode, BarcodedProduct> entry: databaseBC.entrySet()) {
