@@ -148,8 +148,8 @@ public class TextSearchControllerTest extends AbstractTest {
 
     private ArrayList<String> expectedResults;
 
-    public TextSearchControllerTest(String testName, AbstractSelfCheckoutStation scs) {
-        super(testName, scs);
+    public TextSearchControllerTest(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
+        super(testName, scsClass);
     }
 
     @Before
