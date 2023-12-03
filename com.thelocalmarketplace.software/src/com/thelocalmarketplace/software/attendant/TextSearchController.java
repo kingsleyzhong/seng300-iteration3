@@ -1,8 +1,8 @@
 package com.thelocalmarketplace.software.attendant;
 
-import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
 import com.jjjwelectronics.IDevice;
 import com.jjjwelectronics.IDeviceListener;
+import com.jjjwelectronics.keyboard.IKeyboard;
 import com.jjjwelectronics.keyboard.KeyboardListener;
 import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.screen.TouchScreenListener;
@@ -15,13 +15,13 @@ import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * <p>Simulation of an attendant searching for items using a physical keyboard via keyword search.</p>
+ * <p>Simulation of an attendant searching for items using a physical keyboard via keyword search.
+ * It is capable of searching item descriptions, PLU codes, and Barcodes.</p>
  * <p></p>
  * <p>Project Iteration 3 Group 1:</p>
  * <p></p>
@@ -49,11 +49,17 @@ import java.util.regex.Pattern;
  */
 public class TextSearchController {
 	private String searchField;
-	private ArrayList<Product> searchResults = new ArrayList<>();
+	private StringBuilder searchFieldSB;
+	private ArrayList<Product> searchResults;
 	private boolean shift;
 
-	public String getSearchField() {
-		return searchField;
+	public TextSearchController(IKeyboard keyboard) {
+		searchResults = new ArrayList<>();
+		searchField = new String("");
+		shift = false;
+		TextSearchController.InnerListener textListener = new TextSearchController.InnerListener();
+		keyboard.register(textListener);
+
 	}
 
 	private class InnerListener implements TouchScreenListener, KeyboardListener {
@@ -84,11 +90,32 @@ public class TextSearchController {
 
 		@Override
 		public void aKeyHasBeenPressed(String label) {
-			// TODO This software must decide what is done with the key press here
-			// This will only do something for meta keys like shift
-			// Only meta keys trigger something in this model
+
 			if (label.equals("Shift (Right)") || label.equals("Shift (Left)")) {
 				shift = true;
+			} else if (label.length() == 1 && !shift) {
+				searchField = searchField + label.toLowerCase();
+
+			} else if (label.length() == 1 && shift) {
+				searchField = searchField + label;
+
+			} else if (label.length() == 3 && !shift) {
+				searchField += label.charAt(0);  // Does this work?
+
+			} else if (label.length() == 3 && shift) {
+				searchField += label.charAt(2);  // Does this work?
+
+			} else if (label.equals("Spacebar")) {
+				searchField += " ";
+
+			} else if (label.equals("FnLock Esc")) {
+				searchField = "";
+
+			} else if (label.equals("Backspace")) {
+				searchFieldSB = new StringBuilder(searchField);
+				searchFieldSB.deleteCharAt(searchField.length() - 1);
+				searchField = searchFieldSB.toString();
+
 			} else {
 				//Do nothing? Unfortunately we can't make this realistic so every key actions on release
 			}
@@ -96,79 +123,80 @@ public class TextSearchController {
 
 		@Override
 		public void aKeyHasBeenReleased(String label) {
-			// TODO This software must decide what is done when the key is released here
-			// We could have something like:
-			if (label.length() == 1 && !shift){
-				searchField += label.toLowerCase();
 
-			} else if (label.length() == 1 && shift){
-				searchField += label;
-
-			} else if (label.length() == 3 && !shift){
-				searchField += label.charAt(0); // Does this work?
-
-			} else if (label.length() == 3 && shift){
-				searchField += label.charAt(2); // Does this work?
-
-			} else if (label.equals("Spacebar")){
-				searchField += " ";
-
-			} else if (label.equals("FnLock Esc")) {
-				searchField = "";
-
-			} else if (label.equals("Shift (Right)") || label.equals("Shift (Left)")) {
+			if (label.equals("Shift (Right)") || label.equals("Shift (Left)")) {
 				shift = false;
 
 			} else if (label.equals("Enter")) {
-				textSearchProduct(label);
+				if (searchField != "") textSearchProduct(searchField);
+
 			} else {
 				//Do nothing? These are keys that are not characters and do not have bindings in the software
 			}
 		}
 	}
 
-	private ArrayList<Product> textSearchProduct(String label) {
-		// This is some kind of method that may action the search
-		// WIP!!
+	public String getSearchField() {
+		return searchField;
+	}
 
-		ArrayList<Product> searchResults = new ArrayList<>();
+	public ArrayList<Product> getSearchResults() {
+		return searchResults;
+	}
+
+	/**
+	 * This is a search engine utilizing a regex search of the product databases capable of both searching item descriptions, PLU codes, and Barcodes (UPC)
+	 * It is generally activated upon pressing the enter key when the attendant station is in search mode
+	 * @param searchField
+	 */
+	private void textSearchProduct(String searchField) {
+
 		Map<Barcode, BarcodedProduct> databaseBC = ProductDatabases.BARCODED_PRODUCT_DATABASE;
 		Map<PriceLookUpCode, PLUCodedProduct> databasePLU = ProductDatabases.PLU_PRODUCT_DATABASE;
 
-		Pattern regexPattern = Pattern.compile(label, Pattern.CASE_INSENSITIVE);
+		Pattern regexPattern = Pattern.compile(searchField, Pattern.CASE_INSENSITIVE);
 
-		// Barcoded Products
-		for (HashMap.Entry<Barcode, BarcodedProduct> entry: databaseBC.entrySet()) {
-			String itemQuery = databaseBC.get(entry.getValue()).getDescription();
-			Matcher regexMatcher = regexPattern.matcher(itemQuery);
+		String itemQuery;
+		Matcher regexMatcher;
+
+		// Barcoded Products by description
+		for (HashMap.Entry<Barcode, BarcodedProduct> entry : databaseBC.entrySet()) {
+			itemQuery = entry.getValue().getDescription();
+			regexMatcher = regexPattern.matcher(itemQuery);
 			if (regexMatcher.find()) {
 				searchResults.add(entry.getValue());
 			}
 		}
 
-  		// Products with PLU by description
-		for (HashMap.Entry<PriceLookUpCode, PLUCodedProduct> entry: databasePLU.entrySet()) {
-			String itemQuery = databasePLU.get(entry.getValue()).getDescription();
-			Matcher regexMatcher = regexPattern.matcher(itemQuery);
+		// Barcoded Products by Barcode (i.e. UPC number)
+		for (HashMap.Entry<Barcode, BarcodedProduct> entry : databaseBC.entrySet()) {
+			itemQuery = String.valueOf(entry.getKey());
+			regexMatcher = regexPattern.matcher(itemQuery);
+			if (regexMatcher.find()) {
+				searchResults.add(entry.getValue());
+			}
+		}
+
+		// Products with PLU by description
+		for (HashMap.Entry<PriceLookUpCode, PLUCodedProduct> entry : databasePLU.entrySet()) {
+			itemQuery = entry.getValue().getDescription();
+			regexMatcher = regexPattern.matcher(itemQuery);
 			if (regexMatcher.find()) {
 				searchResults.add(entry.getValue());
 			}
 		}
 
 		// Products with PLU by PLU
-		for (HashMap.Entry<PriceLookUpCode, PLUCodedProduct> entry: databasePLU.entrySet()) {
-			String itemQuery = String.valueOf(databasePLU.get(entry.getKey()));
-			Matcher regexMatcher = regexPattern.matcher(itemQuery);
+		for (HashMap.Entry<PriceLookUpCode, PLUCodedProduct> entry : databasePLU.entrySet()) {
+			itemQuery = String.valueOf(entry.getKey());
+			regexMatcher = regexPattern.matcher(itemQuery);
 			if (regexMatcher.find()) {
 				searchResults.add(entry.getValue());
 			}
 		}
-
-		if (searchResults == null){
-			throw new InvalidActionException("No Results");
-		} else {
-			return searchResults;
-		}
-
 	}
+
+	// Now there needs to be a way to select an item and add it to cart while considering if PLU or Barcoded
+
+
 }

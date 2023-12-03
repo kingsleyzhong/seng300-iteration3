@@ -83,6 +83,7 @@ public class MaintenanceManager {
         state = session.getState();
         if (state == SessionState.DISABLED) {
             scs = session.getStation();
+            session.openHardware();
             banknoteDenominations = scs.getBanknoteDenominations();
             coinDenominations = scs.getCoinDenominations();
             receiptPrinter = scs.getPrinter();
@@ -109,7 +110,7 @@ public class MaintenanceManager {
         if (isOpen) {
             if (coinDenominations.contains(cd)) {
                 for (Coin c : coins) {
-                    if (c.getValue() != cd) {
+                    if (c.getValue().doubleValue() != cd.doubleValue()) {
                         throw new IncorrectDenominationException("Incorrect coin was input!");
                     }
                 }
@@ -142,7 +143,7 @@ public class MaintenanceManager {
      */
     private boolean verifyBanknoteDenomination(BigDecimal bd) {
         for (BigDecimal i : banknoteDenominations) {
-            if (i == bd) {
+            if (i.doubleValue() == bd.doubleValue()) {
                 return true;
             }
         }
@@ -161,7 +162,7 @@ public class MaintenanceManager {
         if (isOpen) {
             if (verifyBanknoteDenomination(bd) && isOpen) {
                 for (Banknote b : banknotes) {
-                    if (b.getDenomination() != bd) {
+                    if (b.getDenomination().doubleValue() != bd.doubleValue()) {
                         throw new IncorrectDenominationException("Incorrect banknote was input!");
                     }
                 }
@@ -191,7 +192,7 @@ public class MaintenanceManager {
      * Simulates closing the hardware
      */
     public void closeHardware() {
-        // still needs code to handle updating session state
+        session.closeHardware();
         session = null;
         state = null;
         scs = null;
@@ -209,15 +210,12 @@ public class MaintenanceManager {
      * @param amount amount of ink to be refilled
      * @throws ClosedHardwareException if hardware is not opened
      */
-    public void refillInk(int amount) throws ClosedHardwareException {
+    public void refillInk(int amount) throws ClosedHardwareException, OverloadedDevice {
         if (isOpen) {
 
-            try {
-                this.receiptPrinter.addInk(amount);
-                this.amountOfInkRefilled += amount;
-            } catch (OverloadedDevice e) {
-                throw new RuntimeException(e);
-            }
+            this.receiptPrinter.addInk(amount);
+            this.amountOfInkRefilled = 0;
+            this.amountOfInkRefilled += amount;
 
         } else {
             throw new ClosedHardwareException("Hardware is closed!");
@@ -229,27 +227,20 @@ public class MaintenanceManager {
      * @param amount amount of paper to be refilled
      * @throws ClosedHardwareException if hardware is not opened
      */
-    public void refillPaper(int amount) throws ClosedHardwareException {
+    public void refillPaper(int amount) throws ClosedHardwareException, OverloadedDevice {
         if (isOpen) {
 
-            try {
-                this.receiptPrinter.addPaper(amount);
-                this.amountOfPaperRefilled += amount;
-            } catch (OverloadedDevice e) {
-                throw new RuntimeException(e);
-            }
+            this.receiptPrinter.addPaper(amount);
+            this.amountOfPaperRefilled = 0;
+            this.amountOfPaperRefilled += amount;
 
         } else {
             throw new ClosedHardwareException("Hardware is closed!");
         }
     }
 
-    public int getCurrentAmountOfInk() {
-        return this.amountOfInkRefilled;
-    }
+    public int getCurrentAmountOfInk() { return this.amountOfInkRefilled; }
 
-    public int getCurrentAmountOfPaper() {
-        return this.amountOfPaperRefilled;
-    }
+    public int getCurrentAmountOfPaper() { return this.amountOfPaperRefilled; }
 
 }

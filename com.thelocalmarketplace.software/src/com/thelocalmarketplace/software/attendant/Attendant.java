@@ -49,6 +49,7 @@ public class Attendant {
 	 */
 	public Attendant(AttendantStation as) {
 		this.as = as;
+		ts = new TextSearchController(as.keyboard);
 	}
 
 	/**
@@ -81,7 +82,7 @@ public class Attendant {
 
 		@Override
 		public void discrepancy(Session session, String message) {
-			
+		 
 		}
 
 		@Override
@@ -95,7 +96,7 @@ public class Attendant {
 		}
 		
 		/**
-		 * Example of how getRequest could be written. It should include the request and the sesssion the request comes from.
+		 * Example of how getRequest could be written. It should include the request and the session the request comes from.
 		 * Note you will also have to add any of these methods to SessionListener along with the @Override keyword
 		 * @param session
 		 * @param request
@@ -129,40 +130,39 @@ public class Attendant {
 
 		@Override
 		public void notifyPredictLowInk(Session session) {
-			// TODO Auto-generated method stub
-			
+			session.disable();
 		}
 
 		@Override
 		public void notifyPredictLowPaper(Session session) {
-			// TODO Auto-generated method stub
-			
+			session.disable();
 		}
 
 		@Override
 		public void notifyPredictCoinsFull(Session session) {
-			// TODO Auto-generated method stub
-			
+			session.disable();
 		}
 
 		@Override
 		public void notifyPredictBanknotesFull(Session session) {
-			// TODO Auto-generated method stub
-			
+			session.disable();
 		}
 
 		@Override
 		public void notifyPredictLowCoins(Session session) {
-			// TODO Auto-generated method stub
-			
+			session.disable();
 		}
 
 		@Override
 		public void notifyPredictLowBanknotes(Session session) {
-			// TODO Auto-generated method stub
-			
+			session.disable();
 		}
-		
+
+		@Override
+		public void notifyNoIssues(Session session) {
+			session.enable();
+		}
+
 	}
 	public void registerOn(Session session) {
 		session.register(new InnerSessionListener());
