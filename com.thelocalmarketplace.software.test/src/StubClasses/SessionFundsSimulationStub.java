@@ -23,6 +23,8 @@ import com.thelocalmarketplace.software.SessionState;
  */
 
 public class SessionFundsSimulationStub extends Session {
+	SessionState sessionState;
+	
 	public void setPayByCash() {
 		sessionState = SessionState.PAY_BY_CASH;
 	}
@@ -33,5 +35,10 @@ public class SessionFundsSimulationStub extends Session {
 		
 	public void block() {
 		sessionState = SessionState.BLOCKED;
+	}
+	
+	@Override
+	public SessionState getState() {
+		return sessionState;
 	}
 }

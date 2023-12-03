@@ -90,7 +90,7 @@ public class Attendant {
 		}
 
 		@Override
-		public void pricePaidUpdated(Session session) {
+		public void pricePaidUpdated(Session session, BigDecimal amountDue) {
 			
 		}
 		
