@@ -82,6 +82,8 @@ public class Session {
 
 	Session session = this;
 	
+	Session session = this;
+	
 	private class ItemManagerListener implements ItemListener{
 		private Session outerSession;
 		
