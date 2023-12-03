@@ -1,5 +1,7 @@
 package com.thelocalmarketplace.software.receipt;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +14,8 @@ import com.jjjwelectronics.printer.IReceiptPrinter;
 import com.jjjwelectronics.printer.ReceiptPrinterListener;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.hardware.PLUCodedProduct;
+import com.thelocalmarketplace.hardware.Product;
 /*
  * 
  * Project Iteration 3 Group 1
@@ -128,14 +132,26 @@ public class Receipt {
 		}
     }
     
-    public void printReceipt(HashMap<BarcodedProduct, Integer> barcodedItems) {
+    public void printReceipt(HashMap<Product, BigInteger> items) {
     	receipt = "";
-		for (Map.Entry<BarcodedProduct, Integer> item : barcodedItems.entrySet()) {
-			BarcodedProduct product = item.getKey();
-			int numberOfProduct = item.getValue().intValue();
-			// barcoded item does not store the price for items which need to be weighted
-			long overallPrice = product.getPrice()*numberOfProduct;
-			receipt = receipt.concat("Item: " + product.getDescription() + " Amount: " + numberOfProduct + " Price: " + overallPrice + "\n");
+		for (Map.Entry<Product, BigInteger> item : items.entrySet()) {
+			if(item instanceof BarcodedProduct) {
+				BarcodedProduct product = (BarcodedProduct)item.getKey();
+				int numberOfProduct = item.getValue().intValue();
+				// barcoded item does not store the price for items which need to be weighted
+				double overallPrice = product.getPrice()*numberOfProduct;
+				receipt = receipt.concat("Item: " + product.getDescription() + " Amount: " + numberOfProduct + " Price: " + overallPrice + "\n");
+			} else if (item instanceof PLUCodedProduct) {
+				PLUCodedProduct product = (PLUCodedProduct)item.getKey();
+				BigInteger mass = item.getValue();
+				
+				final int MICROGRAM_PER_KILOGRAM = 1_000_000_000;
+				double weightInKilogram = mass.doubleValue()/MICROGRAM_PER_KILOGRAM;
+				long pricePerKilogram = product.getPrice();
+				double price = pricePerKilogram * weightInKilogram;
+				receipt = receipt.concat("Item: " + product.getDescription() + " Weight: " + weightInKilogram + " /kg" + " Price: " + price + "\n");
+			}
+			
 		}
     	print();
     }

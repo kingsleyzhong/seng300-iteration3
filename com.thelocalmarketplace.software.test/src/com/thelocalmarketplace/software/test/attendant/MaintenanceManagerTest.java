@@ -37,32 +37,33 @@ import static org.junit.Assert.assertNotNull;
  *
  * Project Iteration 3 Group 1
  *
- * Derek Atabayev 			: 30177060
- * Enioluwafe Balogun 		: 30174298
- * Subeg Chahal 			: 30196531
- * Jun Heo 					: 30173430
- * Emily Kiddle 			: 30122331
- * Anthony Kostal-Vazquez 	: 30048301
- * Jessica Li 				: 30180801
- * Sua Lim 					: 30177039
- * Savitur Maharaj 			: 30152888
- * Nick McCamis 			: 30192610
- * Ethan McCorquodale 		: 30125353
- * Katelan Ng 				: 30144672
- * Arcleah Pascual 			: 30056034
- * Dvij Raval 				: 30024340
- * Chloe Robitaille 		: 30022887
- * Danissa Sandykbayeva 	: 30200531
- * Emily Stein 				: 30149842
- * Thi My Tuyen Tran 		: 30193980
- * Aoi Ueki 				: 30179305
- * Ethan Woo 				: 30172855
- * Kingsley Zhong 			: 30197260
+ * Derek Atabayev : 30177060
+ * Enioluwafe Balogun : 30174298
+ * Subeg Chahal : 30196531
+ * Jun Heo : 30173430
+ * Emily Kiddle : 30122331
+ * Anthony Kostal-Vazquez : 30048301
+ * Jessica Li : 30180801
+ * Sua Lim : 30177039
+ * Savitur Maharaj : 30152888
+ * Nick McCamis : 30192610
+ * Ethan McCorquodale : 30125353
+ * Katelan Ng : 30144672
+ * Arcleah Pascual : 30056034
+ * Dvij Raval : 30024340
+ * Chloe Robitaille : 30022887
+ * Danissa Sandykbayeva : 30200531
+ * Emily Stein : 30149842
+ * Thi My Tuyen Tran : 30193980
+ * Aoi Ueki : 30179305
+ * Ethan Woo : 30172855
+ * Kingsley Zhong : 30197260
  */
 
 public class MaintenanceManagerTest extends AbstractSessionTest {
-    public MaintenanceManagerTest(String testName, AbstractSelfCheckoutStation scs) {
-        super(testName, scs);
+    public MaintenanceManagerTest(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
+        super(testName, scsClass);
+        // TODO Auto-generated constructor stub
     }
 
     private SelfCheckoutStationLogic logic;
@@ -144,7 +145,7 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         Assert.assertEquals(expected, actual);
     }
 
-    @Test (expected = OverloadedDevice.class)
+    @Test(expected = OverloadedDevice.class)
     public void testAddInkWhenFull() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException {
         // full on ink
         session.getStation().getPrinter().addInk(1 << 20);
@@ -156,7 +157,7 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         maintenanceManager.refillInk(100);
     }
 
-    @Test (expected = OverloadedDevice.class)
+    @Test(expected = OverloadedDevice.class)
     public void testAddInkMoreThanMax() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException {
         // add ink so that amount + remaining > max
         session.getStation().getPrinter().addInk(10);
@@ -168,7 +169,7 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         maintenanceManager.refillInk(1 << 20);
     }
 
-    @Test (expected = NotDisabledSessionException.class)
+    @Test(expected = NotDisabledSessionException.class)
     public void testAddInkPrinterNotOpened() throws OverloadedDevice, ClosedHardwareException {
         // add ink when printer is not opened
 
@@ -176,7 +177,6 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     }
 
     // test cases for detecting change
-
 
     @Test
     public void testAddPaperWhenLow() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException {
@@ -210,7 +210,7 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         Assert.assertEquals(expected, actual);
     }
 
-    @Test (expected = OverloadedDevice.class)
+    @Test(expected = OverloadedDevice.class)
     public void testAddPaperWhenFull() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException {
         // full on ink
         session.getStation().getPrinter().addPaper(1 << 10);
@@ -222,8 +222,9 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         maintenanceManager.refillPaper(100);
     }
 
-    @Test (expected = OverloadedDevice.class)
-    public void testAddPaperMoreThanMax() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException {
+    @Test(expected = OverloadedDevice.class)
+    public void testAddPaperMoreThanMax()
+            throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException {
         // add paper so that amount + remaining > max
         session.getStation().getPrinter().addPaper(10);
         // maintenanceManager.refillPaper(10);
@@ -234,7 +235,7 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         maintenanceManager.refillPaper(1 << 10);
     }
 
-    @Test (expected = NotDisabledSessionException.class)
+    @Test(expected = NotDisabledSessionException.class)
     public void testAddPaperPrinterNotOpened() throws OverloadedDevice, ClosedHardwareException {
         // add ink when printer is not opened
 
@@ -244,7 +245,8 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     // test cases for detecting change
 
     @Test
-    public void testAddCoin() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException, IncorrectDenominationException {
+    public void testAddCoin() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException,
+            IncorrectDenominationException {
         ICoinDispenser tempDispenser = session.getStation().getCoinDispensers().get(new BigDecimal(0.05));
         tempDispenser.load(nickel);
         maintenanceManager.openHardware(session);
@@ -253,8 +255,9 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         assertEquals(tempDispenser.size(), 4);
     }
 
-    @Test (expected = IncorrectDenominationException.class)
-    public void testAddCoinIncorrectDenomination() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException, IncorrectDenominationException {
+    @Test(expected = IncorrectDenominationException.class)
+    public void testAddCoinIncorrectDenomination() throws CashOverloadException, NotDisabledSessionException,
+            ClosedHardwareException, IncorrectDenominationException {
         ICoinDispenser tempDispenser = session.getStation().getCoinDispensers().get(new BigDecimal(0.05));
         tempDispenser.load(nickel, nickel, nickel);
         maintenanceManager.openHardware(session);
@@ -262,26 +265,31 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         maintenanceManager.closeHardware();
     }
 
-    @Test (expected = CashOverloadException.class)
-    public void testAddCoinOverflow() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException, IncorrectDenominationException {
+    @Test(expected = CashOverloadException.class)
+    public void testAddCoinOverflow() throws CashOverloadException, NotDisabledSessionException,
+            ClosedHardwareException, IncorrectDenominationException {
         ICoinDispenser tempDispenser = session.getStation().getCoinDispensers().get(new BigDecimal(0.05));
         Coin coinList[] = new Coin[tempDispenser.getCapacity()];
-        for (Coin i : coinList) {i = new Coin(new BigDecimal(0.05));} // Fills Coin Dispenser to full capacity
+        for (Coin i : coinList) {
+            i = new Coin(new BigDecimal(0.05));
+        } // Fills Coin Dispenser to full capacity
         tempDispenser.load(coinList);
         maintenanceManager.openHardware(session);
         maintenanceManager.addCoins(new BigDecimal(0.05), nickel);
         maintenanceManager.closeHardware();
     }
 
-    @Test (expected = ClosedHardwareException.class)
-    public void testAddCoinClosedHardware() throws CashOverloadException, ClosedHardwareException, IncorrectDenominationException {
+    @Test(expected = ClosedHardwareException.class)
+    public void testAddCoinClosedHardware()
+            throws CashOverloadException, ClosedHardwareException, IncorrectDenominationException {
         ICoinDispenser tempDispenser = session.getStation().getCoinDispensers().get(new BigDecimal(0.05));
         tempDispenser.load(nickel);
         maintenanceManager.addCoins(new BigDecimal(0.05), nickel, nickel, nickel);
     }
 
     @Test
-    public void emptyCoinStorageUnit() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException {
+    public void emptyCoinStorageUnit()
+            throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException {
         CoinStorageUnit tempStorage = session.getStation().getCoinStorage();
         tempStorage.load(nickel, nickel, nickel);
         maintenanceManager.openHardware(session);
@@ -292,7 +300,8 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testAddBanknote() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException, IncorrectDenominationException {
+    public void testAddBanknote() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException,
+            IncorrectDenominationException {
         IBanknoteDispenser tempDispenser = session.getStation().getBanknoteDispensers().get(new BigDecimal(5));
         tempDispenser.load(five);
         maintenanceManager.openHardware(session);
@@ -301,8 +310,9 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         assertEquals(tempDispenser.size(), 4);
     }
 
-    @Test (expected = IncorrectDenominationException.class)
-    public void testAddBanknoteIncorrectDenomination() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException, IncorrectDenominationException {
+    @Test(expected = IncorrectDenominationException.class)
+    public void testAddBanknoteIncorrectDenomination() throws CashOverloadException, NotDisabledSessionException,
+            ClosedHardwareException, IncorrectDenominationException {
         IBanknoteDispenser tempDispenser = session.getStation().getBanknoteDispensers().get(new BigDecimal(5));
         tempDispenser.load(five);
         maintenanceManager.openHardware(session);
@@ -310,25 +320,30 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         maintenanceManager.closeHardware();
     }
 
-    @Test (expected = CashOverloadException.class)
-    public void testAddBanknoteOverflow() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException, IncorrectDenominationException {
+    @Test(expected = CashOverloadException.class)
+    public void testAddBanknoteOverflow() throws CashOverloadException, NotDisabledSessionException,
+            ClosedHardwareException, IncorrectDenominationException {
         IBanknoteDispenser tempDispenser = session.getStation().getBanknoteDispensers().get(new BigDecimal(5));
         Banknote banknoteList[] = new Banknote[tempDispenser.getCapacity()];
-        for (Banknote i : banknoteList) {i = new Banknote(cad, new BigDecimal(5));} // Fills Coin Dispenser to full capacity
+        for (Banknote i : banknoteList) {
+            i = new Banknote(cad, new BigDecimal(5));
+        } // Fills Coin Dispenser to full capacity
         tempDispenser.load(banknoteList);
         maintenanceManager.openHardware(session);
         maintenanceManager.addBanknotes(new BigDecimal(5), five);
         maintenanceManager.closeHardware();
     }
 
-    @Test (expected = ClosedHardwareException.class)
-    public void testAddBanknoteClosedHardware() throws CashOverloadException, ClosedHardwareException, IncorrectDenominationException {
+    @Test(expected = ClosedHardwareException.class)
+    public void testAddBanknoteClosedHardware()
+            throws CashOverloadException, ClosedHardwareException, IncorrectDenominationException {
         IBanknoteDispenser tempDispenser = session.getStation().getBanknoteDispensers().get(new BigDecimal(5));
         maintenanceManager.addBanknotes(new BigDecimal(5), five);
     }
 
     @Test
-    public void emptyBanknoteStorage() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException {
+    public void emptyBanknoteStorage()
+            throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException {
         BanknoteStorageUnit tempStorage = session.getStation().getBanknoteStorage();
         tempStorage.load(five, five, five);
         maintenanceManager.openHardware(session);

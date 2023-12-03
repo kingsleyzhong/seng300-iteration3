@@ -94,7 +94,7 @@ public class Funds {
 			throw new IllegalDigitException("Price should be positive.");
 		}
 		this.itemsPrice = this.itemsPrice.add(price);
-		calculateAmountDue(price);
+		calculateAmountDue(new BigDecimal(0));
 	}
 
 	/**
@@ -149,6 +149,8 @@ public class Funds {
 		
 		this.amountDue = this.amountDue.add(amountPaid);
 
+		for (FundsListener l : listeners)
+			l.notifyUpdateAmountDue(this.amountDue);
 		// To account for any rounding errors, checks if less that 0.0005 rather than
 		// just 0
 		if (amountDue.intValue() <= 0.0005 && isPay) {

@@ -43,8 +43,8 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 * Kingsley Zhong 			: 30197260 
  */
 public class WeightTest extends AbstractTest {
-	public WeightTest(String testName, AbstractSelfCheckoutStation scs) {
-		super(testName, scs);
+	public WeightTest(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
+		super(testName, scsClass);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -69,6 +69,10 @@ public class WeightTest extends AbstractTest {
 		public void notifyDiscrepancyFixed() {
 			discrepancyFixed = true;
 			discrepancyNotified = false;
+		}
+
+		@Override
+		public void notifyBagsTooHeavy() {
 		}
 
 	}

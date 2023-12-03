@@ -7,6 +7,7 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.DropMode;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -25,15 +26,23 @@ import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.scanner.BarcodedItem;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+import com.thelocalmarketplace.hardware.PLUCodedItem;
+import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Font;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 
 public class HardwareGUI {
 	private AbstractSelfCheckoutStation scs;
 	private static JFrame hardwareFrame;
 	private JPanel content;
 	private JPanel screens;
+	private JPanel start;
 	private JPanel cashInput;
 	private JPanel card;
 	private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -51,7 +60,6 @@ public class HardwareGUI {
 	private JPanel baggingPanel;
 	private JList<ItemObject> baggingList = new JList<ItemObject>(itemsInBaggingArea);
 	
-	private DefaultListModel<ItemObject> lastModel = new DefaultListModel<>();
 	private ItemObject lastObject = null;
 	protected ItemObject lastItem;
 	private JList<ItemObject> importList;
@@ -75,13 +83,58 @@ public class HardwareGUI {
 		hardwareFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		hardwareFrame.getContentPane().setLayout(new BorderLayout(0, 0));
 		hardwareFrame.getContentPane().setBackground(Colors.color1);
+		hardwareFrame.setUndecorated(true);
+
 		
 		JPanel buttonPanel = new ButtonPanel(this);
 		buttonPanel.setPreferredSize(new Dimension(width, height/4));
 		
+		start = new JPanel();
+		start.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 50));
+		start.setBackground(Colors.color1);
+		
+		ImageIcon image1 = new ImageIcon("images/stationIcon.png");
+		GridBagLayout gbl_start = new GridBagLayout();
+		gbl_start.columnWidths = new int[]{209, 222, 0};
+		gbl_start.rowHeights = new int[]{40, 60, 0};
+		gbl_start.columnWeights = new double[]{1.0, 1.0, Double.MIN_VALUE};
+		gbl_start.rowWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
+		start.setLayout(gbl_start);
+		JLabel title = new JLabel("<html>Self Checkout Station<br>Hardware</html>");
+		title.setFont(new Font("Dialog", Font.BOLD, 50));
+		title.setForeground(Colors.color4);
+		title.setBackground(Colors.color1);
+		GridBagConstraints gbc_title = new GridBagConstraints();
+		gbc_title.anchor = GridBagConstraints.NORTH;
+		gbc_title.fill = GridBagConstraints.HORIZONTAL;
+		gbc_title.insets = new Insets(0, 0, 5, 0);
+		gbc_title.gridx = 1;
+		gbc_title.gridy = 0;
+		start.add(title, gbc_title);
+		ImageIcon image = new ImageIcon(new ImageIcon("images/sheepIcon.png").getImage().getScaledInstance(300, 300, Image.SCALE_DEFAULT));
+		
 		content = new JPanel();
 		content.setBackground(Colors.color1);
 		content.setLayout(new GridLayout(1,0));
+		
+		content.add(start);
+		JLabel label1 = new JLabel(image1);
+		label1.setVerticalAlignment(JLabel.BOTTOM);
+		GridBagConstraints gbc_label1 = new GridBagConstraints();
+		gbc_label1.anchor = GridBagConstraints.WEST;
+		gbc_label1.fill = GridBagConstraints.VERTICAL;
+		gbc_label1.insets = new Insets(0, 0, 0, 5);
+		gbc_label1.gridx = 0;
+		gbc_label1.gridy = 1;
+		start.add(label1, gbc_label1);
+		JLabel label = new JLabel(image);
+		label.setVerticalAlignment(JLabel.BOTTOM);
+		GridBagConstraints gbc_label = new GridBagConstraints();
+		gbc_label.anchor = GridBagConstraints.WEST;
+		gbc_label.fill = GridBagConstraints.VERTICAL;
+		gbc_label.gridx = 1;
+		gbc_label.gridy = 1;
+		start.add(label, gbc_label);
 		
 		//ANTHONY FOR YOU... PLEASE ADD YOUR THINGS TO THIS SPECIFIC PANEL
 		cashInput = new CashPanel(scs);
@@ -103,21 +156,38 @@ public class HardwareGUI {
 		hardwareFrame.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
 		hardwareFrame.getContentPane().add(content, BorderLayout.CENTER);
 		
-		hardwareFrame.setUndecorated(true);
 	}
 	
 	public void populateItems() {
 		BarcodedItem bitem1 = new BarcodedItem(new Barcode(new Numeral[] { Numeral.one}), new Mass(300.0));
-		ItemObject item1 = new ItemObject(bitem1, "Baaakini1");
+		ItemObject item1 = new ItemObject(bitem1, "Baaakini");
 		itemsInCart.addElement(item1);
 		
-		BarcodedItem bitem2 = new BarcodedItem(new Barcode(new Numeral[] { Numeral.one}), new Mass(300.0));
-		ItemObject item2 = new ItemObject(bitem2, "Baaakini2");
+		BarcodedItem bitem2 = new BarcodedItem(new Barcode(new Numeral[] { Numeral.two}), new Mass(1000.0));
+		ItemObject item2 = new ItemObject(bitem2, "Wooly warm blanket");
 		itemsInCart.addElement(item2);
 		
-		BarcodedItem bitem3 = new BarcodedItem(new Barcode(new Numeral[] { Numeral.one}), new Mass(300.0));
-		ItemObject item3 = new ItemObject(bitem3, "Baaakini3");
+		BarcodedItem bitem3 = new BarcodedItem(new Barcode(new Numeral[] { Numeral.three}), new Mass(125.0));
+		ItemObject item3 = new ItemObject(bitem3, "Baaanana bread bites");
 		itemsInCart.addElement(item3);
+		
+		BarcodedItem bitem3_1 = new BarcodedItem(new Barcode(new Numeral[] { Numeral.three}), new Mass(125.0));
+		ItemObject item3_1 = new ItemObject(bitem3_1, "Baaanana bread bites");
+		itemsInCart.addElement(item3_1);
+		
+		BarcodedItem bitem4 = new BarcodedItem(new Barcode(new Numeral[] { Numeral.four}), new Mass(50.0));
+		ItemObject item4 = new ItemObject(bitem4, "Flock of socks");
+		itemsInCart.addElement(item4);
+		
+		PriceLookUpCode plu1 = new PriceLookUpCode(new String("0000"));
+		PLUCodedItem pluitem1 = new PLUCodedItem(plu1, new Mass(200.0));
+		ItemObject item5 = new ItemObject(pluitem1, "Baaananas");
+		itemsInCart.addElement(item5);
+		
+		PriceLookUpCode plu2 = new PriceLookUpCode(new String("0001"));
+		PLUCodedItem pluitem2 = new PLUCodedItem(plu2, new Mass(100.0));
+		ItemObject item6 = new ItemObject(pluitem2, "Baaakliva");
+		itemsInCart.addElement(item6);
 	}
 	
 	public JPanel introPanel() {
@@ -141,6 +211,8 @@ public class HardwareGUI {
 		panel.add(panel2);
 		content.add(panel);
 		content.add(screens);
+		content.remove(start);
+		content.repaint();
 		content.revalidate();
 		return panel;
 	}

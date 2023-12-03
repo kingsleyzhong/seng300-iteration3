@@ -37,6 +37,12 @@ public interface FundsListener {
 	void notifyPaid();
 	
 	/**
+	 * Signals the amount due has been updated.
+	 * @param amount
+	 */
+	void notifyUpdateAmountDue(BigDecimal amount);
+	
+	/**
 	 *  Signals an event in which the payment was disrupted by insufficent change avaliable
 	 */
 	void notifyInsufficentChange();
