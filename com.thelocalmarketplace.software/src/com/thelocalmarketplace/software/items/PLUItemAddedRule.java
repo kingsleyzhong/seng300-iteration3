@@ -1,21 +1,12 @@
 package com.thelocalmarketplace.software.items;
 
-import java.util.Map;
-
 import com.jjjwelectronics.IDevice;
 import com.jjjwelectronics.IDeviceListener;
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.scale.ElectronicScaleListener;
 import com.jjjwelectronics.scale.IElectronicScale;
-import com.thelocalmarketplace.hardware.BarcodedProduct;
-import com.thelocalmarketplace.hardware.PLUCodedItem;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.PriceLookUpCode;
-import com.thelocalmarketplace.hardware.external.ProductDatabases;
-import com.thelocalmarketplace.software.Session;
-import com.thelocalmarketplace.software.SessionState;
-
-import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
 
 public class PLUItemAddedRule {
 		private ItemManager itemManager;
@@ -33,15 +24,9 @@ public class PLUItemAddedRule {
 				
 				//Only trigger when in ADD_PLU_ITEM state to avoid customer accidentally put something on the scanner scale
 				if(itemManager.isAddPLUItemState()) {
-					PriceLookUpCode code = itemManager.getPLUCode();
-					Map<PriceLookUpCode, PLUCodedProduct> database = ProductDatabases.PLU_PRODUCT_DATABASE;
-					// Checks if product is in database. Throws exception if not in database.
-					if (database.containsKey(code)) {
-						PLUCodedProduct product = database.get(code);
-						itemManager.addItem(product, mass);
-					} else {
-						throw new InvalidArgumentSimulationException("Not in database");
-					}
+					PLUCodedProduct product = itemManager.getPluProduct();
+					itemManager.addItem(product, mass);
+					
 				}
 			}
 			

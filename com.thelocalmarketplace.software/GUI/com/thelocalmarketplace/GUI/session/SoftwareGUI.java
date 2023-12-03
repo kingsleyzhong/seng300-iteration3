@@ -25,6 +25,7 @@ import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.GradientPanel;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
+import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionListener;
@@ -536,6 +537,18 @@ public class SoftwareGUI{
 		public void sessionEnded(Session session) {
 			paymentScreen.hide();
 			displayEnd();
+		}
+
+		@Override
+		public void pluCodeEntered(PLUCodedProduct product) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void sessionStateChanged() {
+			// TODO Auto-generated method stub
+			
 		}
 
 		

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import com.jjjwelectronics.Mass;
 import com.thelocalmarketplace.hardware.AttendantStation;
+import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionListener;
@@ -111,6 +112,18 @@ public class Attendant {
 
 		@Override
 		public void sessionEnded(Session session) {
+		}
+
+		@Override
+		public void pluCodeEntered(PLUCodedProduct product) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void sessionStateChanged() {
+			// TODO Auto-generated method stub
+			
 		}
 	}
 	

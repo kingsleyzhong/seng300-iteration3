@@ -101,7 +101,7 @@ public class SelfCheckoutStationLogic {
 		new PayByCard(scs.getCardReader(), funds);
 		Weight weight = new Weight(scs.getBaggingArea());
 		Receipt receiptPrinter = new Receipt(scs.getPrinter());
-		ItemManager itemManager = new ItemManager(session);
+		ItemManager itemManager = new ItemManager();
 		Membership membership = new Membership(scs.getCardReader());
 		// Will also need the touch screen/ keyboard for GUI interaction
 		session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
