@@ -167,9 +167,8 @@ public class ItemManager {
 		} else {
 			throw new ProductNotFoundException("Item not found");
 		}
-	
-		HashMap<BarcodedProduct, Integer> bulkyItems = session.getBulkyItems();
-		if (bulkyItems.containsKey(product) && bulkyItems.get(product) >= 1 ) {
+
+		if (bulkyItems.containsKey(product) && bulkyItems.get(product) > 1 ) {
 			bulkyItems.replace(product, bulkyItems.get(product)-1);
 			mass = new Mass(0);
 		} else if (bulkyItems.containsKey(product) && bulkyItems.get(product) == 1 ) {
@@ -211,7 +210,7 @@ public class ItemManager {
 	
 	
 	/**
-	 * Methods for adding funds listeners to the funds
+	 * Methods for adding funds listeners to the items
 	 */
 	public synchronized boolean deregister(ItemListener listener) {
 		if (listener == null)
@@ -229,6 +228,10 @@ public class ItemManager {
 			throw new NullPointerSimulationException("listener");
 
 		listeners.add(listener);
+	}
+	
+	public ArrayList<ItemListener> getListeners(){
+		return listeners;
 	}
 
 	public HashMap<Product, BigInteger> getItems() {
