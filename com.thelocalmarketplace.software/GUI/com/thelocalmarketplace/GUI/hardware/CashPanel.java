@@ -11,6 +11,9 @@ import com.tdc.coin.Coin;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+
+import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
+
 import java.awt.Color;
 import javax.swing.JOptionPane;
 import javax.swing.border.LineBorder;
@@ -18,7 +21,9 @@ import javax.swing.border.TitledBorder;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.Currency;
+import java.util.List;
 import java.util.Locale;
 import java.awt.event.ActionEvent;
 
@@ -162,7 +167,14 @@ public class CashPanel extends JPanel{
 		RemoveInputBill.setForeground(Colors.color3);
 		RemoveInputBill.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				scs.getBanknoteInput().removeDanglingBanknote();
+				try {
+					Banknote banknote = scs.getBanknoteInput().removeDanglingBanknote();
+					DecimalFormat df = new DecimalFormat("#.00");
+					String s = "$" + df.format(banknote.getDenomination());
+					JOptionPane.showMessageDialog(null, s);
+				} catch (NullPointerSimulationException e1) {
+					JOptionPane.showMessageDialog(null, "There is nothing here.");
+				}
 			}
 		});
 		Bills.add(RemoveInputBill);
@@ -173,7 +185,17 @@ public class CashPanel extends JPanel{
 		RemoveChangeBillBtn.setForeground(Colors.color3);
 		RemoveChangeBillBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				scs.getBanknoteOutput().removeDanglingBanknotes();
+				try {
+					List<Banknote> banknotes = scs.getBanknoteOutput().removeDanglingBanknotes();
+					DecimalFormat df = new DecimalFormat("#.00");
+					String s = "You collected:\n";
+					for(int i = 0; i < banknotes.size(); i++) {
+						s = s + "$" + df.format(banknotes.get(i).getDenomination()) + "\n";
+					}
+					JOptionPane.showMessageDialog(null, s);
+				} catch(NullPointerSimulationException e1) {
+					JOptionPane.showMessageDialog(null, "There is nothing here.");
+				}
 			}
 		});
 		Bills.add(RemoveChangeBillBtn);
@@ -187,21 +209,6 @@ public class CashPanel extends JPanel{
 		add(Coins);
 		Coins.setLayout(new GridLayout(5, 1, 15, 15));
 		
-		
-		//DEBUGGGG BELOOOWWWW
-		//Funds funds = new Funds(scs);
-
-		//CoinValidator coinValidator = scs.getCoinValidator();
-		//BanknoteValidator banknoteValidator = scs.getBanknoteValidator();
-
-		//PayByCash cashController = new PayByCash(coinValidator, banknoteValidator, funds);
-		
-		
-		
-		
-		//DEBUGG  ABOVEEEEe
-		
-		
 		//5 cent coin button
 		JButton button_five_cent = new PlainButton("5¢", Colors.color1);
 		button_five_cent.setForeground(Colors.color3);
@@ -209,10 +216,6 @@ public class CashPanel extends JPanel{
 			public void actionPerformed(ActionEvent e) {
 				try {
 					scs.getCoinSlot().receive(Five_Cent_Coin);
-					
-					//DEBUG
-					//System.out.println(cashController.getCashPaid());
-					//DEBUG
 					
 				} catch (DisabledException | CashOverloadException e1) {
 					JOptionPane.showMessageDialog(null, "Coin Not Accepted");
@@ -284,8 +287,6 @@ public class CashPanel extends JPanel{
 				} catch (DisabledException | CashOverloadException e1) {
 					JOptionPane.showMessageDialog(null, "Coin Not Accepted");
 				}
-				
-				
 			}
 		});
 		btn_two_coin.setForeground(Colors.color3);
@@ -314,7 +315,18 @@ public class CashPanel extends JPanel{
 		btn_remove_coins.setForeground(Colors.color3);
 		btn_remove_coins.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				scs.getCoinTray().collectCoins();
+				List<Coin> coins = scs.getCoinTray().collectCoins();
+				DecimalFormat df = new DecimalFormat("#.00");
+				String s = "You collected:\n";
+				for(int i = 0; i < coins.size(); i++) {
+					s = s + "$" + df.format(coins.get(i).getValue()) + "\n";
+				}
+				if(coins.isEmpty()) {
+					JOptionPane.showMessageDialog(null, "There are no coins to collect");
+				}
+				else {
+					JOptionPane.showMessageDialog(null, s);
+				}
 			}
 		});
 		Coins.add(btn_remove_coins);
