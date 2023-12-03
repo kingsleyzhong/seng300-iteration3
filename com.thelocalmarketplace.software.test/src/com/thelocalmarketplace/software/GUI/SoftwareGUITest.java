@@ -106,6 +106,9 @@ public class SoftwareGUITest{
 		scs.getMainScanner().scan(item);
 		scs.getBaggingArea().addAnItem(item);
 		
+		scs.getMainScanner().scan(item2);
+		scs.getBaggingArea().addAnItem(item2);
+		
 		softwareGUI.pay.doClick();
 		softwareGUI.paymentScreen.getCashButton().doClick();
 		
@@ -114,7 +117,6 @@ public class SoftwareGUITest{
 		cashpanel.FiveBillBtn.doClick();
 		
 		Assert.assertEquals(BigDecimal.TEN , cashController.getCashPaid());
-		
 		
 	}
 	
