@@ -5,9 +5,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import com.jjjwelectronics.Mass;
-import com.tdc.CashOverloadException;
-import com.tdc.DisabledException;
-import com.tdc.NoCashAvailableException;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PriceLookUpCode;
@@ -74,7 +71,6 @@ public class Session {
 	private SessionState prevState;
 	private boolean disableSelf = false; // when true: disable the Session when it ends
 	private BarcodedProduct lastProduct;
-	private PriceLookUpCode lastPLUcode;
 	private Funds funds;
 	private Weight weight;
 	private ItemManager manager;
@@ -82,18 +78,10 @@ public class Session {
 	private Membership membership;
 	private String membershipNumber;
 	private boolean hasMembership = false;
-	private Requests request = Requests.NO_REQUEST;
 	private boolean requestApproved = false;
 
 	Session session = this;
 
-	public PriceLookUpCode getLastPLUcode() {
-		return lastPLUcode;
-	}
-
-	public void setLastPLUcode(PriceLookUpCode lastPLUcode) {
-		this.lastPLUcode = lastPLUcode;
-	}
 
 	private class ItemManagerListener implements ItemListener {
 		private Session outerSession;
@@ -437,9 +425,27 @@ public class Session {
 		}
 		// else: nothing changes about the Session's state
 	}
-
-	// Move to receiptPrinter class (possible rename of receiptPrinter to just
-	// reciept
+	
+	/**
+	 * The customer indicates they wish to purchase reusable bags as a part of their interaction.
+	 * Customer must indicate the number of bags they want to purchase. 
+	 * System only supports one bag type.
+	 * 
+	 * @param num
+	 * 				the number of bags the customer wants to buy
+	 * 
+	 * 
+	 */
+	public void purchasebags(int num) {
+		if (sessionState == SessionState.IN_SESSION) {
+			// signal item manager somehow		
+			// enter the addBags() state
+			addBags();
+		}
+		
+	}
+	
+	// Move to receiptPrinter class (possible rename of receiptPrinter to just reciept
 	public void printReceipt() {
 		receiptPrinter.printReceipt(manager.getItems());
 	}
@@ -529,8 +535,8 @@ public class Session {
 
 	// GUI called this method when customer enter a PLU code
 	public void addPLUCodedItem(PriceLookUpCode code) {
-		this.setLastPLUcode(code);
 		sessionState = SessionState.ADD_PLU_ITEM;
+		manager.getPLUCode(code);
 	}
 
 	/**
