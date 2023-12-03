@@ -322,7 +322,6 @@ public class Session {
 		prevState = sessionState;
 		sessionState = SessionState.PRE_SESSION;
 		receiptPrinter.printReceipt(getItems());
-		System.out.println("end()");
 		
 		for(SessionListener l:listeners) {
 			l.sessionEnded(this);
