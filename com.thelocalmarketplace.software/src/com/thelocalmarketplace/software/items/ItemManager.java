@@ -167,7 +167,7 @@ public class ItemManager {
 		} else {
 			throw new ProductNotFoundException("Item not found");
 		}
-		
+	
 		HashMap<BarcodedProduct, Integer> bulkyItems = session.getBulkyItems();
 		if (bulkyItems.containsKey(product) && bulkyItems.get(product) >= 1 ) {
 			bulkyItems.replace(product, bulkyItems.get(product)-1);
