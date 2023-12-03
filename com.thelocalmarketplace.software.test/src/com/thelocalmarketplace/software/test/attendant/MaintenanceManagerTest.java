@@ -156,7 +156,7 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     public void testAddInkWhenLow() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException {
         // low on ink
         session.getStation().getPrinter().addInk(10);
-        session.cancel();
+        //session.cancel();
 
         // add ink when it is low
         attendant.disableStation(session);
@@ -198,7 +198,7 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     public void testAddInkWhenFull() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException {
         // full on ink
         session.getStation().getPrinter().addInk(1 << 20);
-        session.cancel();
+        //session.cancel();
 
         // add ink when full
         attendant.disableStation(session);
@@ -216,7 +216,7 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     public void testAddInkMoreThanMax() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException {
         // add ink so that amount + remaining > max
         session.getStation().getPrinter().addInk(10);
-        session.cancel();
+        //session.cancel();
 
         // add ink
         attendant.disableStation(session);
@@ -246,7 +246,7 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     public void testAddPaperWhenLow() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException {
         // low on paper
         session.getStation().getPrinter().addPaper(10);
-        session.cancel();
+        //session.cancel();
 
         // add paper
         attendant.disableStation(session);
@@ -288,7 +288,7 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     public void testAddPaperWhenFull() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException {
         // full on ink
         session.getStation().getPrinter().addPaper(1 << 10);
-        session.cancel();
+        //session.cancel();
 
         // add paper
         attendant.disableStation(session);
@@ -306,7 +306,7 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     public void testAddPaperMoreThanMax() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException {
         // add paper so that amount + remaining > max
         session.getStation().getPrinter().addPaper(10);
-        session.cancel();
+        //session.cancel();
 
         // add paper
         attendant.disableStation(session);
