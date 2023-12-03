@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.HashMap;
 
 import org.junit.After;
@@ -16,6 +17,7 @@ import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.scanner.BarcodedItem;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.test.AbstractSessionTest;
@@ -51,21 +53,20 @@ public class ItemManagerTest extends AbstractSessionTest {
 	}
 	
 	
-	public ItemManagerTest(String testName, AbstractSelfCheckoutStation scs) {
-		super(testName, scs);
-		// TODO Auto-generated constructor stub
-	}
+	public ItemManagerTest(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
+        super(testName, scsClass);
+    }
 	
     @Test
     public void testAddItem() {
         session.start();
         itemManager.addItem(product);
-        HashMap<BarcodedProduct, Integer> list = session.getBarcodedItems();
+        HashMap<Product, BigInteger> list = session.getItems();
         assertTrue("Contains product in list", list.containsKey(product));
-        Integer expected = 1;
+        BigInteger expected = BigInteger.valueOf(1);
         assertEquals("Has 1", expected, list.get(product));
         
-        // Reset
+        // Reset 
         itemManager.removeItem(product);
     }
 
@@ -78,9 +79,9 @@ public class ItemManagerTest extends AbstractSessionTest {
         scs.getBaggingArea().addAnItem(barcodedItem);
         itemManager.addItem(product);
         scs.getBaggingArea().addAnItem(barcodedItemDuplicate);
-        HashMap<BarcodedProduct, Integer> list = session.getBarcodedItems();
+        HashMap<Product, BigInteger> list = session.getItems();
         assertTrue("Contains product in list", list.containsKey(product));
-        Integer expected = 2;
+        BigInteger expected = BigInteger.valueOf(2);
         assertEquals("Has 2 products", expected, list.get(product));
         
         // Reset
@@ -97,8 +98,8 @@ public class ItemManagerTest extends AbstractSessionTest {
         scs.getBaggingArea().addAnItem(barcodedItem);
         itemManager.addItem(product2);
         scs.getBaggingArea().addAnItem(barcodedItem2);
-        HashMap<BarcodedProduct, Integer> list = session.getBarcodedItems();
-        Integer expected = 1;
+        HashMap<Product, BigInteger> list = session.getItems();
+        BigInteger expected = BigInteger.valueOf(1);
         assertTrue("Contains product in list", list.containsKey(product));
         assertEquals("Contains 1 product", expected, list.get(product));
         assertTrue("Contains product2 in list", list.containsKey(product2));

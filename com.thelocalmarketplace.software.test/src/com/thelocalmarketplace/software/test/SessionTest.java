@@ -147,7 +147,6 @@ public class SessionTest extends AbstractTest {
         assertFalse(session.getState().inPay());
     }
 
-
     @Test(expected = CartEmptyException.class)
     public void payEmpty_payByCash() {
     	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
