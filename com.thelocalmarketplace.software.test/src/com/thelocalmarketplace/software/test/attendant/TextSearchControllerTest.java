@@ -3,6 +3,7 @@ package com.thelocalmarketplace.software.test.attendant;
 import com.jjjwelectronics.DisabledDevice;
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
+import com.jjjwelectronics.keyboard.USKeyboardQWERTY;
 import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.scanner.BarcodedItem;
 import com.thelocalmarketplace.hardware.*;
@@ -16,6 +17,8 @@ import org.junit.Test;
 import powerutility.NoPowerException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.assertEquals;
@@ -91,7 +94,7 @@ public class TextSearchControllerTest extends AbstractTest {
         item2 = new BarcodedItem(barcode2, new Mass(100.0));
 
         plu = new PriceLookUpCode("6666");
-        product3 = new PLUCodedProduct(plu, "San Marzano Tomato", 5);
+        product3 = new PLUCodedProduct(plu, "Bulk Raisins", 5);
         item3 = new PLUCodedItem(plu, new Mass(1.0));
 
         ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode1, product1); // Add a product to the database
@@ -107,34 +110,25 @@ public class TextSearchControllerTest extends AbstractTest {
      */
     @Test
     public void populateSearchFieldTest() throws DisabledDevice {
-        String expectedSearch = "THIS";
-        for (int i = 0; i < expectedSearch.length(); i++) {
-            a.getStation().keyboard.getKey("Shift (Right)").press();
-            a.getStation().keyboard.getKey(Character.toString(expectedSearch.charAt(i))).press();
-            a.getStation().keyboard.getKey(Character.toString(expectedSearch.charAt(i))).release();
-            a.getStation().keyboard.getKey("Shift (Right)").release();
-        }
-        String expectedSearch2 = "NOTTHAT";
-        for (int i = 0; i < expectedSearch2.length(); i++) {
-            a.getStation().keyboard.getKey(Character.toString(expectedSearch2.charAt(i))).press();
-            a.getStation().keyboard.getKey(Character.toString(expectedSearch2.charAt(i))).release();
-        }
+        String expectedSearch = "yo";
+        stringToKeyboard(expectedSearch);
+
+        a.getStation().keyboard.getKey("FnLock Esc").press();
+        a.getStation().keyboard.getKey("FnLock Esc").release();
+        
+        expectedSearch = "Thi$ b3tt3r WoRk.k";
+        stringToKeyboard(expectedSearch);
+        
         a.getStation().keyboard.getKey("Backspace").press();
         a.getStation().keyboard.getKey("Backspace").release();
-        a.getStation().keyboard.getKey("2 @").press();
-        a.getStation().keyboard.getKey("2 @").release();
-        a.getStation().keyboard.getKey("Shift (Right)").press();
-        a.getStation().keyboard.getKey("2 @").press();
-        a.getStation().keyboard.getKey("2 @").release();
-        a.getStation().keyboard.getKey("Shift (Right)").release();
-        expectedSearch2 = "NOTTHA2@";
-        expectedSearch = expectedSearch + expectedSearch2.toLowerCase();
+
+        expectedSearch = "Thi$ b3tt3r WoRk.";
 
         assertEquals(expectedSearch, a.getTextSearchController().getSearchField());;
     }
 
     @Test
-    public void successfulNumberSearchTest() throws DisabledDevice {
+    public void successfulNumericSearchTest() throws DisabledDevice {
         ProductDatabases.BARCODED_PRODUCT_DATABASE.putIfAbsent(barcode1, product1);
         ProductDatabases.BARCODED_PRODUCT_DATABASE.putIfAbsent(barcode2, product2);
         ProductDatabases.PLU_PRODUCT_DATABASE.putIfAbsent(plu, product3);
@@ -142,8 +136,23 @@ public class TextSearchControllerTest extends AbstractTest {
         expectedResults.add(product2);
         expectedResults.add(product3);
 
-        a.getStation().keyboard.getKey("6 ^").press();
-        a.getStation().keyboard.getKey("6 ^").release();
+        stringToKeyboard("6");
+
+        a.getStation().keyboard.getKey("Enter").press();
+        a.getStation().keyboard.getKey("Enter").release();
+
+        assertTrue(a.getTextSearchController().getSearchResults().containsAll(expectedResults));
+    }
+    
+    @Test
+    public void successfulBarcodeSearchTest() throws DisabledDevice {
+        ProductDatabases.BARCODED_PRODUCT_DATABASE.putIfAbsent(barcode1, product1);
+        ProductDatabases.BARCODED_PRODUCT_DATABASE.putIfAbsent(barcode2, product2);
+        ProductDatabases.PLU_PRODUCT_DATABASE.putIfAbsent(plu, product3);
+
+        expectedResults.add(product1);
+
+        stringToKeyboard("1");
 
         a.getStation().keyboard.getKey("Enter").press();
         a.getStation().keyboard.getKey("Enter").release();
@@ -159,13 +168,9 @@ public class TextSearchControllerTest extends AbstractTest {
 
         expectedResults.add(product1);
         expectedResults.add(product2);
+        expectedResults.add(product3);
 
-        String expectedSearch = "AISIN";
-
-        for (int i = 0; i < expectedSearch.length(); i++) {
-            a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).press();
-            a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).release();
-        }
+        stringToKeyboard("aisin");
 
         a.getStation().keyboard.getKey("Enter").press();
         a.getStation().keyboard.getKey("Enter").release();
@@ -175,11 +180,7 @@ public class TextSearchControllerTest extends AbstractTest {
 
     @Test
     public void failedSearchTest() throws DisabledDevice{
-        String expectedSearch = "MARLBOROGOLDCIGARETTES";
-        for (int i = 0; i < expectedSearch.length(); i++) {
-            a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).press();
-            a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).release();
-        }
+        stringToKeyboard("MARLBORO GOLD CIGARETTES");
         a.getStation().keyboard.getKey("Enter").press();
         a.getStation().keyboard.getKey("Enter").release();
         assertTrue(a.getTextSearchController().getSearchResults().isEmpty());
@@ -208,4 +209,70 @@ public class TextSearchControllerTest extends AbstractTest {
         a.getStation().unplug();
         a.getStation().keyboard.getKey("Shift (Right)").release();
     }
+
+    /**
+     * This is a method that will convert a string into the associated key presses on the
+     * USKeyboardQWERTY, a similar function may be included in the GUI, but that is outside
+     * the scope of this test class.
+     * @param input
+     * @throws DisabledDevice
+     */
+    public void stringToKeyboard(String input) throws DisabledDevice {
+        USKeyboardQWERTY keyboard = a.getStation().keyboard;
+
+        // Generate Mapping for Non Alphabetical Shift Modified Keys
+        Map<Character, Boolean> shiftModified = new HashMap<>();
+        Map<Character, String> labelLookup = new HashMap<>();
+
+        for (String label : USKeyboardQWERTY.WINDOWS_QWERTY) {
+            if(label.length() == 3 && label.charAt(1) == ' ') { // Desired Format
+                Character c1 = label.charAt(0);
+                Character c2 = label.charAt(2);
+
+                shiftModified.put(c1, false);
+                shiftModified.put(c2, true);
+
+                labelLookup.put(c1, label);
+                labelLookup.put(c2, label);
+            }
+        }
+
+
+        for (int i = 0; i < input.length(); i++) {
+            Character c = input.charAt(i);
+            boolean shift = false;
+            String targetLabel;
+
+            if(c == ' ') {
+                targetLabel = "Spacebar";
+            }
+            else if(Character.isLowerCase(c)) {
+                targetLabel = String.valueOf(Character.toUpperCase(c));
+            }
+            else if(Character.isUpperCase(c)) {
+                targetLabel = String.valueOf(c);
+                shift = true;
+            }
+            else if(labelLookup.containsKey(c)) {
+                targetLabel = labelLookup.get(c);
+                shift = shiftModified.get(c);
+            }
+            else {
+                continue;
+            }
+
+            if(shift) {
+                keyboard.getKey("Shift (Left)").press();
+            }
+            keyboard.getKey(targetLabel).press();
+            keyboard.getKey(targetLabel).release();
+            if(shift) {
+                keyboard.getKey("Shift (Left)").release();
+            }
+
+        }
+
+
+    }
+
 }

@@ -20,7 +20,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * <p>Simulation of an attendant searching for items using a physical keyboard via keyword search.</p>
+ * <p>Simulation of an attendant searching for items using a physical keyboard via keyword search.
+ * It is capable of searching item descriptions, PLU codes, and Barcodes.</p>
  * <p></p>
  * <p>Project Iteration 3 Group 1:</p>
  * <p></p>
