@@ -68,7 +68,6 @@ public class Session {
 	private SessionState sessionState;
 	private SessionState prevState;
 	private boolean disableSelf = false; // when true: disable the Session when it ends
-	private BarcodedProduct lastProduct;
 	private Funds funds;
 	private Weight weight;
 	private ItemManager manager;
@@ -77,9 +76,6 @@ public class Session {
 	private String membershipNumber;
 	private boolean hasMembership = false;
 	private boolean requestApproved = false;
-
-	Session session = this;
-
 
 	private class ItemManagerListener implements ItemListener {
 		private Session outerSession;
@@ -152,7 +148,13 @@ public class Session {
 	}
 
 	private class PayListener implements FundsListener {
+		private Session outerSession;
 
+		private PayListener(Session s) {
+			outerSession = s;
+		}
+		
+		
 		/**
 		 * Signals to the system that the customer has payed the full amount. Ends the
 		 * session.
@@ -177,7 +179,7 @@ public class Session {
 		@Override
 		public void notifyUpdateAmountDue(BigDecimal amount) {
 			for (SessionListener l : listeners) {
-				l.pricePaidUpdated(session, amount);
+				l.pricePaidUpdated(outerSession, amount);
 			}
 		}
 
@@ -261,7 +263,7 @@ public class Session {
 		this.funds = funds;
 		this.weight = weight;
 		this.weight.register(new WeightDiscrepancyListener());
-		this.funds.register(new PayListener());
+		this.funds.register(new PayListener(this));
 		this.manager.register(new ItemManagerListener(this));
 		this.receiptPrinter = receiptPrinter;
 		this.receiptPrinter.register(new PrinterListener());
