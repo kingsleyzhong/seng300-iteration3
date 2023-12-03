@@ -25,8 +25,6 @@ public class AddedProducts extends JPanel {
 	private HashMap<ArrayList<Object>, CartProduct> productList = new HashMap<ArrayList<Object>, CartProduct>();
 	private ArrayList<ArrayList<Object>> products = new ArrayList<ArrayList<Object>>();
 	private ArrayList<CartProduct> panels = new ArrayList<CartProduct>();
-	
-	private boolean first = true;
 
 	/**
 	 * Create the panel.
@@ -62,10 +60,6 @@ public class AddedProducts extends JPanel {
 				current = panels.get(i);
 			}
 		}
-		
-		if(!first) {
-			System.out.println("here");
-		}
 		/*
 		if(productList.containsKey(temp)) {
 			current = productList.get(temp);
@@ -82,7 +76,6 @@ public class AddedProducts extends JPanel {
 		else {
 			current.addProduct();
 		}
-		first = false;
 	}
 
 	public void removeProduct(Product product, Mass mass) {
