@@ -32,6 +32,7 @@ public class CashPanel extends JPanel{
 	private AbstractSelfCheckoutStation scs;
 	
 	public JButton FiveBillBtn;
+	public JButton button_one_coin;
 	
 	//coins
 	private Coin Five_Cent_Coin;
@@ -263,7 +264,7 @@ public class CashPanel extends JPanel{
 		
 		
 		//1 Dollar Coin
-		JButton button_one_coin = new PlainButton("$1", Colors.color1);
+		button_one_coin = new PlainButton("$1", Colors.color1);
 		button_one_coin.setForeground(Colors.color3);
 		button_one_coin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

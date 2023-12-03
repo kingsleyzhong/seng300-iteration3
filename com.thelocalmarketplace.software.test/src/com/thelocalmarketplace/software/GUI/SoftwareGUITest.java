@@ -18,6 +18,7 @@ import com.jjjwelectronics.scanner.BarcodedItem;
 import com.tdc.banknote.BanknoteValidator;
 import com.tdc.coin.CoinValidator;
 import com.thelocalmarketplace.GUI.hardware.CashPanel;
+import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
 import com.thelocalmarketplace.GUI.session.SoftwareGUI;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.AttendantStation;
@@ -40,6 +41,7 @@ public class SoftwareGUITest{
 	private AttendantStation as;
 	private Session session;
 	private SoftwareGUI softwareGUI;
+	private HardwareGUI hardwaregui;
 	
 	private CashPanel cashpanel;
 	private CoinValidator coinValidator;
@@ -47,6 +49,7 @@ public class SoftwareGUITest{
 	private CoinValidator validator;
 	private PayByCash cashController;
 	private Funds funds;
+	
 	
 	private BarcodedProduct product;
 	private Barcode barcode;
@@ -64,6 +67,7 @@ public class SoftwareGUITest{
 		SelfCheckoutStationLogic logic = SelfCheckoutStationLogic.installOn(scs);
 		session = logic.getSession();
 		softwareGUI = new SoftwareGUI(session);
+		hardwaregui = new HardwareGUI(scs);
 		
 		//cash panel stuff
 		cashpanel = new CashPanel(scs);
@@ -93,6 +97,46 @@ public class SoftwareGUITest{
 	public void teardown() {
 		scs.getScreen().getFrame().dispose();
 	}
+	
+	
+	@Test
+	public void testPayWithBill() {
+		softwareGUI.btnStart.doClick();
+		
+		scs.getMainScanner().scan(item);
+		scs.getBaggingArea().addAnItem(item);
+		
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getCashButton().doClick();
+		
+		
+		cashpanel.FiveBillBtn.doClick();
+		cashpanel.FiveBillBtn.doClick();
+		
+		Assert.assertEquals(BigDecimal.TEN , cashController.getCashPaid());
+		
+		
+	}
+	
+	@Test
+	public void testPayWithCoin() {
+		softwareGUI.btnStart.doClick();
+		
+		scs.getMainScanner().scan(item);
+		scs.getBaggingArea().addAnItem(item);
+		
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getCashButton().doClick();
+		
+		cashpanel.button_one_coin.doClick();
+		
+		//IDK WHY IT WONT TAKE MY MONEY HERE!!!!!!!!!!!!!!
+		Assert.assertEquals(BigDecimal.ONE , cashController.getCashPaid());
+		
+		
+	}
+	
+	
 	
 	@Test
 	public void testStart() {
@@ -146,22 +190,8 @@ public class SoftwareGUITest{
 	}
 	
 	
-	@Test
-	public void testPayWithBill() {
-		softwareGUI.btnStart.doClick();
-		scs.getMainScanner().scan(item);
-		scs.getBaggingArea().addAnItem(item);
-		softwareGUI.pay.doClick();
-		softwareGUI.paymentScreen.getCashButton().doClick();
-		
-		
-		cashpanel.FiveBillBtn.doClick();
-		cashpanel.FiveBillBtn.doClick();
-		
-		Assert.assertEquals(BigDecimal.TEN , cashController.getCashPaid());
-		
-		
-	}
+
+	
 	
 	public void testAddItemDoPayCard() {
 		softwareGUI.btnStart.doClick();
