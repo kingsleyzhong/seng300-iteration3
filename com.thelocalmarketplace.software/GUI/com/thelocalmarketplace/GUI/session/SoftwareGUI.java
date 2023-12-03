@@ -378,6 +378,8 @@ public class SoftwareGUI{
 			JButton source = (JButton) e.getSource();
 			if(source == searchCatalogue) {
 				catalogue.setVisible(true);
+			} else if(source == callAttendant) {
+				session.notifyAttendant(Requests.HELP_REQUESTED);
 			}
 			
 		}	

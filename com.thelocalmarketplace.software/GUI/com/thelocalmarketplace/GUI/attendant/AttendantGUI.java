@@ -23,12 +23,14 @@ import com.thelocalmarketplace.hardware.ISelfCheckoutStation;
 import com.thelocalmarketplace.software.attendant.Attendant;
 import com.thelocalmarketplace.software.attendant.IssuePredictorListener;
 import com.thelocalmarketplace.software.attendant.Issues;
+import com.thelocalmarketplace.software.attendant.TextSearchController;
 
 public class AttendantGUI {
 	Attendant attendant;
 	List<Session> sessions;
 	List<JPanel> stationPanels;
 	ITouchScreen asScreen;
+	TextSearchController textSearch;
 	
 	private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	private int[] dimensions = {0,0};
@@ -41,6 +43,7 @@ public class AttendantGUI {
 	public AttendantGUI(Attendant attendant) {
 		this.attendant = attendant;
 		this.asScreen = attendant.getStation().screen;
+		this.textSearch = attendant.getTextSearchController();
 		
 		sessions = attendant.getSessions();
 		width = (int) screenSize.getWidth();
@@ -57,8 +60,6 @@ public class AttendantGUI {
 		
 		asScreen.getFrame().getContentPane().setBackground(Colors.color1);
 		
-		
-		
 		populateSessions();
 		asScreen.setVisible(false);
 	}
@@ -67,13 +68,15 @@ public class AttendantGUI {
 		int val = 0;
 		if (sessions.size() != 0) {
 		while(val < sessions.size()) {
-			JPanel panel = new StationPanel(sessions.get(val));
+			JPanel panel = new StationPanel(sessions.get(val), attendant);
 			stationPanels.add(panel);
+			attendant.registerOn(sessions.get(val));
 			panel.setPreferredSize(new Dimension(width/6, width/6));
 			asScreen.getFrame().getContentPane().add(panel, BorderLayout.SOUTH);
 		}
 		} else {
-			JPanel panel = new StationPanel(null);
+			JPanel panel = new StationPanel(null, attendant);
+			//attendant.registerOn(null);
 			panel.setPreferredSize(new Dimension(width/6, width/6));
 			asScreen.getFrame().getContentPane().add(panel, BorderLayout.SOUTH);
 		}
