@@ -94,9 +94,11 @@ public class BagDispenserController {
 			ReusableBag bag = bagDispenser.dispense();
 		} catch (EmptyDevice e) {
 			// inform the itemManager and Session that there are not enough bags... somehow
+			// theortically this should never happen if the bag dispenser notifies when its empty ahead of time
 		}
 		
 		// else: bag goes to the bagging area, update weight and stuff
+		
 		
 	}
 	

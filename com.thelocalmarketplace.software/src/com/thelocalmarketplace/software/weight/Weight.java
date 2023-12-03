@@ -117,18 +117,12 @@ public class Weight {
 	}
 	
 	/**
-	 * Method used to add a bag to the bagging area
-	 *
-	 * @param numberOfBags
-	 *            The number of reusable bags to be added
+	 * Method used to signal that a bag will be added to the bagging area
+g	 *
 	 */
-	public void addBags(int numberOfBags) {
+	public void addBags() {
 			bagCheck = true;
-			Mass bagWeight = new Mass(BigInteger.valueOf(5_000_000)); // ideal mass from ReusableBag class
-			purchasedBagsWeight = bagWeight.multiply(BigInteger.valueOf(numberOfBags));
-
-			this.update(purchasedBagsWeight); // update the scale 
-		}
+	}
 	
 	/*
 	 * Occurs when the bags the Customer added to the bagging area are above the

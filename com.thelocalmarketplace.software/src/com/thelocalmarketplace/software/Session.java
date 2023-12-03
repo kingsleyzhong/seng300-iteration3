@@ -5,9 +5,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import com.jjjwelectronics.Mass;
-import com.tdc.CashOverloadException;
-import com.tdc.DisabledException;
-import com.tdc.NoCashAvailableException;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PriceLookUpCode;
@@ -80,7 +77,6 @@ public class Session {
 	private Membership membership;
 	private String membershipNumber;
 	private boolean hasMembership = false;
-	private Requests request = Requests.NO_REQUEST;
 	private boolean requestApproved = false;
 	
 
@@ -439,7 +435,11 @@ public class Session {
 	 * 
 	 */
 	public void purchasebags(int num) {
-		
+		if (sessionState == SessionState.IN_SESSION) {
+			// signal item manager somehow		
+			// enter the addBags() state
+			addBags();
+		}
 		
 	}
 	
