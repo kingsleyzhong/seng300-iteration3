@@ -64,6 +64,7 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 	private ReceiptPrinterBronze bronzePrinter;
 	private ReceiptPrinterGold goldPrinter;
 	private Object mm;
+	
 
 	public IssuesPredictorTest(String testName, AbstractSelfCheckoutStation scs) {
 		super(testName, scs);
@@ -83,21 +84,22 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 		PowerGrid.engageUninterruptiblePowerSource();
     	powerGrid = PowerGrid.instance();
     	
-        // Bronze Printer
-        bronzePrinter = new ReceiptPrinterBronze();
-        bronzePrinter.plugIn(powerGrid);
-		bronzePrinter.turnOn();
-		
-        // Silver Printer
-		silverPrinter = new ReceiptPrinterSilver();
-        silverPrinter.plugIn(powerGrid);
-		silverPrinter.turnOn();
-		
-		// Gold Printer
-		goldPrinter = new ReceiptPrinterGold();
-        goldPrinter.plugIn(powerGrid);
-		goldPrinter.turnOn();
-		
+    	
+
+    	// Bronze Printer
+    	bronzePrinter = (ReceiptPrinterBronze) scs.getPrinter();
+    		
+
+    	// Silver Printer
+    	silverPrinter = new ReceiptPrinterSilver();
+    	silverPrinter.plugIn(powerGrid);
+    	silverPrinter.turnOn();
+
+   		// Gold Printer
+   		goldPrinter = new ReceiptPrinterGold();
+   		goldPrinter.plugIn(powerGrid);
+    	goldPrinter.turnOn();
+    	
 		// Maintenance Manager
 		mm = new MaintenanceManager();
        
@@ -126,19 +128,20 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 	@Test
 	public void testCheckLowInkWhenFull() throws OverloadedDevice {
 		// Bronze
-		bronzePrinter.addInk(bronzePrinter.MAXIMUM_INK);
-		issuePredictor.checkLowInk(session, scs.getPrinter());
-		//Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
+		
+		bronzePrinter.addInk(ReceiptPrinterBronze.MAXIMUM_INK);
+		issuePredictor.checkLowInk(session, bronzePrinter);
+		Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
 
 		// Silver
 		session.enable();
-		silverPrinter.addInk(silverPrinter.MAXIMUM_INK);
+		silverPrinter.addInk(ReceiptPrinterSilver.MAXIMUM_INK);
 		issuePredictor.checkLowInk(session, silverPrinter);
 		Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
 
 		// Gold
 		session.enable();
-		goldPrinter.addInk(goldPrinter.MAXIMUM_INK);
+		goldPrinter.addInk(ReceiptPrinterGold.MAXIMUM_INK);
 		issuePredictor.checkLowInk(session, goldPrinter);
 		Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
 	}
@@ -166,19 +169,19 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 	@Test
 	public void testCheckLowPaperWhenFull() throws OverloadedDevice {
 		// Bronze
-		bronzePrinter.addPaper(bronzePrinter.MAXIMUM_PAPER);
+		bronzePrinter.addPaper(ReceiptPrinterBronze.MAXIMUM_PAPER);
 		issuePredictor.checkLowPaper(session, scs.getPrinter());
-		//Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
+		Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
 
 		// Silver
 		session.enable();
-		silverPrinter.addPaper(silverPrinter.MAXIMUM_PAPER);
+		silverPrinter.addPaper(ReceiptPrinterSilver.MAXIMUM_PAPER);
 		issuePredictor.checkLowPaper(session, silverPrinter);
 		Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
 
 		// Gold
 		session.enable();
-		goldPrinter.addPaper(goldPrinter.MAXIMUM_PAPER);
+		goldPrinter.addPaper(ReceiptPrinterGold.MAXIMUM_PAPER);
 		issuePredictor.checkLowPaper(session, goldPrinter);
 		Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
 

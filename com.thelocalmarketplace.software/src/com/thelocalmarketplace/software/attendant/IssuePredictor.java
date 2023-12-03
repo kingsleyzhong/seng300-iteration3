@@ -84,7 +84,7 @@ public class IssuePredictor  {
 		banknoteStorage = scs.getBanknoteStorage();
 		banknoteDispensers = scs.getBanknoteDispensers();
 		coinDispensers = scs.getCoinDispensers();
-		receiptPrinter.register(new InnerReceiptPrinterListener());
+		scs.getPrinter().register(new InnerReceiptPrinterListener());
 		this.receipt = receipt;
 		this.receipt.registerPrintListener(new PrintTracker());
 		estimatedInk = 0;
