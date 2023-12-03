@@ -146,8 +146,8 @@ public class Funds {
 	 * price.
 	 */
 	private void calculateAmountDue(BigDecimal amountPaid) {
-
-		this.amountDue = this.itemsPrice.subtract(amountPaid);
+		
+		this.amountDue = this.amountDue.add(amountPaid);
 
 		// To account for any rounding errors, checks if less that 0.0005 rather than
 		// just 0

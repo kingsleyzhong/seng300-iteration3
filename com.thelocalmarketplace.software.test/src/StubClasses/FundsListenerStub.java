@@ -36,4 +36,10 @@ public class FundsListenerStub implements FundsListener {
 	public ArrayList<String> getEvents() {
 		return events;
 	}
+
+	@Override
+	public void notifyInsufficentChange() {
+		// TODO Auto-generated method stub
+		
+	}
 }

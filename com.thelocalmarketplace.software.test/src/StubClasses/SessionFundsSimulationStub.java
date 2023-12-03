@@ -23,6 +23,7 @@ import com.thelocalmarketplace.software.SessionState;
  */
 
 public class SessionFundsSimulationStub extends Session {
+	
 	public void setPayByCash() {
 		sessionState = SessionState.PAY_BY_CASH;
 	}

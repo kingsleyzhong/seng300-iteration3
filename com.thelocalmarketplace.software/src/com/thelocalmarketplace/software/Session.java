@@ -66,7 +66,7 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 public class Session {
 	public ArrayList<SessionListener> listeners = new ArrayList<>();
 	private AbstractSelfCheckoutStation scs;
-	private SessionState sessionState;
+	protected SessionState sessionState;
 	private SessionState prevState;
 	private boolean disableSelf = false; // when true: disable the Session when it ends
 	private BarcodedProduct lastProduct;
