@@ -100,9 +100,11 @@ public class AddBagsPopup {
 		addPersonalBagButton.setFont(new Font("Tahoma", Font.PLAIN, 25));
 		addPersonalBagButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (session.getState() == SessionState.IN_SESSION) {
+				if (session.getState() != SessionState.BLOCKED) {
 					session.addBags();
-				}
+					JOptionPane.showMessageDialog(addPersonalBagButton, "Please Place Your Bags in the Bagging Area");
+					hide();
+				}			
 				else {
 					JOptionPane.showMessageDialog(addPersonalBagButton, "Cannot Add Bag at this moment");
 
@@ -111,12 +113,14 @@ public class AddBagsPopup {
 		});
 		panel.add(addPersonalBagButton);
 		
-		addStoreBagButton = new PlainButton("Add Store Bag (+1)", Colors.color4);
+		NumberOfBags numOfBagsScreen = new NumberOfBags();
+		addStoreBagButton = new PlainButton("Add Stores Bags", Colors.color4);
 		addStoreBagButton.setFont(new Font("Tahoma", Font.PLAIN, 25));
 		addStoreBagButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (session.getState() == SessionState.IN_SESSION) {
-					session.addBags();
+				if (session.getState() != SessionState.BLOCKED) {
+					numOfBagsScreen.popUp();
+					hide();
 				}
 				else {
 	            JOptionPane.showMessageDialog(addPersonalBagButton, "Cannot Add Bag at this moment");
@@ -145,4 +149,5 @@ public class AddBagsPopup {
 	public void hide() {
 		this.frame.setVisible(false);
 	}
+	
 }
