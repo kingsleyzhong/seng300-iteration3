@@ -76,6 +76,8 @@ public class Session {
 	private String membershipNumber;
 	private boolean hasMembership = false;
 	private boolean requestApproved = false;
+	private boolean itemAdded = false;
+	private boolean itemRemoved = false;
 
 	private class ItemManagerListener implements ItemListener {
 		private Session outerSession;
@@ -86,6 +88,7 @@ public class Session {
 
 		@Override
 		public void anItemHasBeenAdded(Product product, Mass mass, BigDecimal price) {
+			itemAdded = true;
 			weight.update(mass);
 			funds.update(price);
 			for (SessionListener l : listeners) {
@@ -95,6 +98,7 @@ public class Session {
 
 		@Override
 		public void anItemHasBeenRemoved(Product product, Mass mass, BigDecimal price) {
+			itemRemoved = true;
 			weight.removeItemWeightUpdate(mass);
 			funds.removeItemPrice(price);
 			for (SessionListener l : listeners) {
@@ -105,6 +109,7 @@ public class Session {
 		@Override
 		public void aPLUCodeHasBeenEntered(PLUCodedProduct product) {
 			sessionState = SessionState.ADD_PLU_ITEM;
+			stateChanged();
 			for (SessionListener l : listeners) {
 				l.pluCodeEntered(product);
 			}
@@ -112,7 +117,12 @@ public class Session {
 	}
 
 	private class WeightDiscrepancyListener implements WeightListener {
+		private Session outerSession;
 
+		private WeightDiscrepancyListener(Session s) {
+			outerSession = s;
+		}
+		
 		/**
 		 * Upon a weightDiscrepancy, session should freeze
 		 * 
@@ -120,7 +130,32 @@ public class Session {
 		 * checks the bags instead.
 		 */
 		@Override
-		public void notifyDiscrepancy() {
+		public void notifyDiscrepancy(double difference) {
+			// <0 means that actual weight on scale is greater than expected
+			if (difference < 0) {
+				if(itemRemoved) {
+					for (SessionListener l : listeners) {
+						l.removeItemFromScaleDiscrepancy(outerSession);
+					}
+				}
+				else {
+					for (SessionListener l : listeners) {
+						l.discrepancy(outerSession, "There is too much weight on the scale!");;
+					}
+				}
+			}
+			else {// actual weight on scale is less than expected
+				if(itemAdded) {
+					for (SessionListener l : listeners) {
+						l.addItemToScaleDiscrepancy(outerSession);
+					}
+				}
+				else {
+					for (SessionListener l : listeners) {
+						l.discrepancy(outerSession, "There is not enough weight on the scale!");;
+					}
+				}
+			}
 			// Only needed when the customer wants to add their own bags (this is how
 			// Session knows the bags' weight)
 			if (sessionState == SessionState.ADDING_BAGS) {
@@ -142,6 +177,8 @@ public class Session {
 		 */
 		@Override
 		public void notifyDiscrepancyFixed() {
+			itemAdded = false;
+			itemRemoved = false;
 			resume();
 		}
 
@@ -274,7 +311,7 @@ public class Session {
 		this.manager = manager;
 		this.funds = funds;
 		this.weight = weight;
-		this.weight.register(new WeightDiscrepancyListener());
+		this.weight.register(new WeightDiscrepancyListener(this));
 		this.funds.register(new PayListener(this));
 		this.manager.register(new ItemManagerListener(this));
 		this.receiptPrinter = receiptPrinter;
@@ -291,6 +328,7 @@ public class Session {
 		// signal about to start + wait for prediction to finish?
 
 		sessionState = SessionState.IN_SESSION;
+		stateChanged();
 		manager.setAddItems(true);
 		hasMembership = false;
 		membershipNumber = null;
@@ -305,9 +343,11 @@ public class Session {
 	public void cancel() {
 		if (sessionState == SessionState.IN_SESSION) {
 			sessionState = SessionState.PRE_SESSION;
+			stateChanged();
 			manager.setAddItems(false);
 		} else if (sessionState != SessionState.BLOCKED) {
 			sessionState = SessionState.IN_SESSION;
+			stateChanged();
 			weight.cancel();
 			manager.setAddItems(true);
 		}
@@ -319,12 +359,14 @@ public class Session {
 	private void block() {
 		prevState = sessionState;
 		sessionState = SessionState.BLOCKED;
+		stateChanged();
 		manager.setAddItems(false);
 	}
 
 	private void end() {
 		prevState = sessionState;
 		sessionState = SessionState.PRE_SESSION;
+		stateChanged();
 		receiptPrinter.printReceipt(getItems());
 		
 		for(SessionListener l:listeners) {
@@ -344,6 +386,7 @@ public class Session {
 			sessionState = prevState;
 		} else {
 			sessionState = SessionState.IN_SESSION;
+			stateChanged();
 			manager.setAddItems(true);
 		}
 	}
@@ -369,6 +412,7 @@ public class Session {
 		// sets the session's state to PRE_SESSION
 		if (this.sessionState == SessionState.DISABLED) {
 			this.sessionState = SessionState.PRE_SESSION;
+			stateChanged();
 			disableSelf = false;
 		}
 	}
@@ -387,6 +431,7 @@ public class Session {
 		// sets the session's state to DISABLED
 		if (this.sessionState == SessionState.PRE_SESSION) {
 			this.sessionState = SessionState.DISABLED;
+			stateChanged();
 		} else {
 			disableSelf = true;
 		}
@@ -401,6 +446,7 @@ public class Session {
 		if (sessionState == SessionState.IN_SESSION) {
 			if (!manager.getItems().isEmpty()) {
 				sessionState = SessionState.PAY_BY_CASH;
+				stateChanged();
 				funds.setPay(true);
 				funds.enableCash();
 				manager.setAddItems(false);
@@ -419,6 +465,7 @@ public class Session {
 		if (sessionState == SessionState.IN_SESSION || sessionState == SessionState.PAY_BY_CASH) {
 			if (!manager.getItems().isEmpty()) {
 				sessionState = SessionState.PAY_BY_CARD;
+				stateChanged();
 				funds.setPay(true);
 				manager.setAddItems(false);
 			} else {
@@ -436,6 +483,7 @@ public class Session {
 	public void addBags() {
 		if (sessionState == SessionState.IN_SESSION) {
 			sessionState = SessionState.ADDING_BAGS;
+			stateChanged();
 			weight.addBags();
 		}
 		// else: nothing changes about the Session's state
@@ -473,6 +521,7 @@ public class Session {
 		// Only able to add when in a discrepancy after adding bags
 		if (sessionState == SessionState.BLOCKED) {
 			sessionState = SessionState.BULKY_ITEM;
+			stateChanged();
 			notifyAttendant(Requests.BULKY_ITEM);
 		} else if (sessionState == SessionState.BULKY_ITEM) {
 			if (requestApproved) {
@@ -513,6 +562,12 @@ public class Session {
 	public void notifyAttendant(Requests request) {
 		for (SessionListener l : listeners) {
 			l.getRequest(this, request);
+		}
+	}
+	
+	public void stateChanged() {
+		for (SessionListener l : listeners) {
+			l.sessionStateChanged();
 		}
 	}
 
@@ -566,14 +621,12 @@ public class Session {
 		return scs;
 	}
 
-	/**
-	 * getter for session state
-	 *
-	 * @return
-	 *         Session State
-	 */
 	public SessionState getState() {
 		return sessionState;
+	}
+	
+	public SessionState getPrevState() {
+		return prevState;
 	}
 
 	// register listeners

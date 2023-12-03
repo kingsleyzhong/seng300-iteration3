@@ -580,7 +580,6 @@ public class SoftwareGUI{
 
 		@Override
 		public void sessionStateChanged() {
-			// TODO Auto-generated method stub
 			
 		}
 
