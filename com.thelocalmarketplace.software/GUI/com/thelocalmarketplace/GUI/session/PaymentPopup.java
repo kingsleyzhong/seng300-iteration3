@@ -139,13 +139,6 @@ public class PaymentPopup {
             			frame.setVisible(false);
             			JOptionPane.showMessageDialog(cardButton, "Cannot Pay Right Now. Session is Blocked");
             		}
-				} catch (CashOverloadException e1) 
-            	{
-					//session.notifyAttendant();
-				} catch (NoCashAvailableException e1) {
-					//session.notifyAttendant();
-				} catch (DisabledException e1) {
-					//session.notifyAttendant();
 				} catch(CartEmptyException e1) {
 					frame.setVisible(false);
                     JOptionPane.showMessageDialog(cardButton, "Cannot Pay for Empty Order");

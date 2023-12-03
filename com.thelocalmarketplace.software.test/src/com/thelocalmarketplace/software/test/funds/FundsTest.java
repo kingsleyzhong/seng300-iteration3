@@ -161,6 +161,7 @@ public class FundsTest extends AbstractTest {
 
 		SessionFundsSimulationStub sampleSimulation = new SessionFundsSimulationStub();
 		sampleSimulation.setPayByCash();
+		scs.getCoinSlot().enable();
 
 		scs.getCoinSlot().receive(coinAmountPaid);
 
@@ -180,7 +181,8 @@ public class FundsTest extends AbstractTest {
 
 		SessionFundsSimulationStub sampleSimulation = new SessionFundsSimulationStub();
 		sampleSimulation.setPayByCash();
-
+		scs.getCoinSlot().enable();
+		
 		scs.getCoinSlot().receive(coinAmountPaid);
 
 		assertFalse("Paid event not called", stub.getEvents().contains("Paid"));
@@ -210,7 +212,8 @@ public class FundsTest extends AbstractTest {
 
 		SessionFundsSimulationStub sampleSimulation = new SessionFundsSimulationStub();
 		sampleSimulation.setPayByCash();
-
+		scs.getCoinSlot().enable();
+		
 		scs.getCoinSlot().receive(coinAmountPaid);
 
 		assertFalse("Paid event should not be called", stub.getEvents().contains("Paid"));
@@ -232,6 +235,7 @@ public class FundsTest extends AbstractTest {
 
 		SessionFundsSimulationStub sampleSimulation = new SessionFundsSimulationStub();
 		sampleSimulation.setPayByCash();
+		scs.getCoinSlot().enable();
 
 		scs.getCoinSlot().receive(coinAmountPaid);
 
@@ -257,6 +261,7 @@ public class FundsTest extends AbstractTest {
 
 		SessionFundsSimulationStub sampleSimulation = new SessionFundsSimulationStub();
 		sampleSimulation.setPayByCash();
+		scs.getBanknoteInput().enable();
 
 		funds.update(BigDecimal.valueOf(1));
 
