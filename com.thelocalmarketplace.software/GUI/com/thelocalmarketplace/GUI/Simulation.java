@@ -24,6 +24,7 @@ import powerutility.PowerGrid;
 public class Simulation {
 	private AbstractSelfCheckoutStation scs;
 	private AttendantStation as;
+	private Attendant attendant;
 	private Session session;
 	private ItemManager itemManager;
 	
@@ -42,6 +43,7 @@ public class Simulation {
 	public void setupLogic() {
 		scs = new SelfCheckoutStationBronze();
 		as = new AttendantStation();
+		attendant = new Attendant(as);
 		
 		PowerGrid.engageUninterruptiblePowerSource();
 		scs.plugIn(PowerGrid.instance());
@@ -55,7 +57,7 @@ public class Simulation {
 		session.getStation().setSupervisor(as);
 		
 		hardwareGUI = new HardwareGUI(scs, as);
-		attendantGUI = new AttendantGUI(as);
+		attendantGUI = new AttendantGUI(attendant);
 		softwareGUI = new SoftwareGUI(session);
 		
 		// hidden by default
