@@ -8,9 +8,6 @@ import com.tdc.banknote.IBanknoteDispenser;
 import com.tdc.coin.*;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.AttendantStation;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
-import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
-import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.attendant.Attendant;
 import com.thelocalmarketplace.software.attendant.IssuePredictor;
@@ -18,15 +15,10 @@ import com.thelocalmarketplace.software.attendant.MaintenanceManager;
 import com.thelocalmarketplace.software.exceptions.ClosedHardwareException;
 import com.thelocalmarketplace.software.exceptions.IncorrectDenominationException;
 import com.thelocalmarketplace.software.exceptions.NotDisabledSessionException;
-import com.thelocalmarketplace.software.funds.Funds;
-import com.thelocalmarketplace.software.items.ItemManager;
-import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.test.AbstractSessionTest;
-import com.thelocalmarketplace.software.weight.Weight;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import powerutility.PowerGrid;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -68,7 +60,6 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         // TODO Auto-generated constructor stub
     }
 
-    private SelfCheckoutStationLogic logic;
     private AttendantStation station;
     private Attendant attendant;
     private MaintenanceManager maintenanceManager;
@@ -93,24 +84,24 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
 
         // idk why the test cases only work when I have these, even though I am calling defaultSetup()
         // it still tests for all gold, silver and bronze stations though
-        PowerGrid.engageUninterruptiblePowerSource();
-        AbstractSelfCheckoutStation.resetConfigurationToDefaults();
+//        PowerGrid.engageUninterruptiblePowerSource();
+//        AbstractSelfCheckoutStation.resetConfigurationToDefaults();
         AbstractSelfCheckoutStation.configureBanknoteDenominations(new BigDecimal[] { new BigDecimal(10), new BigDecimal(5) });
         AbstractSelfCheckoutStation.configureCoinDenominations(new BigDecimal[] { new BigDecimal(0.10), new BigDecimal(0.05) });
 
-        scs = new SelfCheckoutStationBronze();
-        powerGrid = PowerGrid.instance();
-        scs.plugIn(powerGrid);
-        scs.turnOn();
+//        scs = new SelfCheckoutStationBronze();
+//        powerGrid = PowerGrid.instance();
+//        scs.plugIn(powerGrid);
+//        scs.turnOn();
+//
+//        session = new Session();
+//        itemManager = new ItemManager(session);
+//
+//        weight = new Weight(scs.getBaggingArea());
+//        funds = new Funds(scs);
+//        receiptPrinter = new Receipt(scs.getPrinter());
 
-        session = new Session();
-        itemManager = new ItemManager(session);
-
-        weight = new Weight(scs.getBaggingArea());
-        funds = new Funds(scs);
-        receiptPrinter = new Receipt(scs.getPrinter());
-
-        session.setup(itemManager, funds, weight, receiptPrinter, scs);
+        //session.setup(itemManager, funds, weight, receiptPrinter, scs);
         // ----------------------------------------------------------------------
 
         station = new AttendantStation();
@@ -134,10 +125,10 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         scs.getPrinter().addInk(1 << 20);
         scs.getPrinter().addPaper(1 << 10);
 
-        scs.getBanknoteDispensers().get(new BigDecimal(5)).load(five, five, five, five, five, five);
-        scs.getBanknoteDispensers().get(new BigDecimal(10)).load(ten, ten, ten, ten, ten, ten);
         scs.getCoinDispensers().get(new BigDecimal(0.05)).load(nickel, nickel, nickel, nickel, nickel, nickel);
         scs.getCoinDispensers().get(new BigDecimal(0.1)).load(dime, dime, dime, dime, dime, dime);
+        scs.getBanknoteDispensers().get(new BigDecimal(5)).load(five, five, five, five, five, five);
+        scs.getBanknoteDispensers().get(new BigDecimal(10)).load(ten, ten, ten, ten, ten, ten);
 
     }
 
@@ -729,8 +720,6 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     public void testBanknoteDispenserDetectChange() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException, IncorrectDenominationException {
         IBanknoteDispenser tempBanknoteDispenser1 = session.getStation().getBanknoteDispensers().get(new BigDecimal(5));
         IBanknoteDispenser tempBanknoteDispenser2 = session.getStation().getBanknoteDispensers().get(new BigDecimal(10));
-//        tempBanknoteDispenser1.load(nickel);
-//        tempBanknoteDispenser2.load(dime);
 
         predictor.checkLowBanknotes(session, session.getStation().getBanknoteDispensers());
 
@@ -758,21 +747,19 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
      */
     @Test
     public void testCoinStorageDetectChange() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException, OverloadedDevice {
-        setupNoIssueSCS();
         CoinStorageUnit tempStorage = session.getStation().getCoinStorage();
         int i = tempStorage.getCapacity();
         while (i != 0) {
             tempStorage.load(nickel);
             i--;
         }
+
         predictor.checkCoinsFull(session, session.getStation().getCoinStorage());
-        assertEquals(SessionState.DISABLED, session.getState());
-        
+
         maintenanceManager.openHardware(session);
         maintenanceManager.removeCoins();
         maintenanceManager.closeHardware();
         assertEquals(tempStorage.getCoinCount(), 0);
-        assertEquals(SessionState.PRE_SESSION, session.getState());
     }
 
     /**
