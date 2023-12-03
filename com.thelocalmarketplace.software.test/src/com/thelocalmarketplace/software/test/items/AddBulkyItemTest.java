@@ -61,8 +61,8 @@ import java.util.HashMap;
  * Kingsley Zhong : 30197260
  */
 public class AddBulkyItemTest extends AbstractTest {
-    public AddBulkyItemTest(String testName, AbstractSelfCheckoutStation scs) {
-        super(testName, scs);
+    public AddBulkyItemTest(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
+        super(testName, scsClass);
         // TODO Auto-generated constructor stub
     }
 

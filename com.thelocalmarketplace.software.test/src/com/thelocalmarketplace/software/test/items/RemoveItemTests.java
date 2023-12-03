@@ -65,8 +65,8 @@ import com.thelocalmarketplace.software.weight.Weight;
  */
 
 public class RemoveItemTests extends AbstractTest {
-    public RemoveItemTests(String testName, AbstractSelfCheckoutStation scs) {
-        super(testName, scs);
+    public RemoveItemTests(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
+        super(testName, scsClass);
         // TODO Auto-generated constructor stub
     }
 
@@ -89,12 +89,12 @@ public class RemoveItemTests extends AbstractTest {
         basicDefaultSetup();
 
         session = new Session();
-        
+
         itemManager = new ItemManager(session);
-        
+
         receipt = new Receipt(scs.getPrinter());
 
-        new ItemAddedRule(scs.getMainScanner(),scs.getHandheldScanner(), itemManager);
+        new ItemAddedRule(scs.getMainScanner(), scs.getHandheldScanner(), itemManager);
 
         barcode = new Barcode(new Numeral[] { Numeral.valueOf((byte) 1) });
         product = new BarcodedProduct(barcode, "Product 1", 10, 100.0);
@@ -112,7 +112,7 @@ public class RemoveItemTests extends AbstractTest {
     public void testRemoveItemInDatabase() {
 
         // start the session
-    	session.setup(itemManager, funds, weight, receipt, scs);
+        session.setup(itemManager, funds, weight, receipt, scs);
         session.start();
         // add item
         itemManager.addItem(product);
@@ -140,7 +140,7 @@ public class RemoveItemTests extends AbstractTest {
     @Test(expected = ProductNotFoundException.class)
     public void testRemoveItemNotInDatabase() {
         // start the session
-    	session.setup(itemManager, funds, weight, receipt, scs);
+        session.setup(itemManager, funds, weight, receipt, scs);
         session.start();
 
         // Remove item
@@ -151,7 +151,7 @@ public class RemoveItemTests extends AbstractTest {
     @Test
     public void testRemoveDupliacateItemInDatabase() {
         // start the session
-    	session.setup(itemManager, funds, weight, receipt, scs);
+        session.setup(itemManager, funds, weight, receipt, scs);
         session.start();
 
         // add item twice
@@ -179,7 +179,7 @@ public class RemoveItemTests extends AbstractTest {
     // remove item twice
     @Test(expected = ProductNotFoundException.class)
     public void testRemoveSameItemTwice() {
-    	session.setup(itemManager, funds, weight, receipt, scs);
+        session.setup(itemManager, funds, weight, receipt, scs);
         session.start();
         itemManager.addItem(product);
         HashMap<Product, BigInteger> productList = session.getItems();
@@ -191,7 +191,7 @@ public class RemoveItemTests extends AbstractTest {
     @Test
     public void testRemoveItemThatsNotLastAdded() {
         // start the session
-    	session.setup(itemManager, funds, weight, receipt, scs);
+        session.setup(itemManager, funds, weight, receipt, scs);
         session.start();
 
         // add two different items

@@ -57,30 +57,26 @@ import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
 
 public class ItemAddedRuleTest extends AbstractSessionTest {
 
-    public ItemAddedRuleTest(String testName, AbstractSelfCheckoutStation scs) {
-        super(testName, scs);
+    public ItemAddedRuleTest(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
+        super(testName, scsClass);
         // TODO Auto-generated constructor stub
     }
 
     private BarcodedProduct product;
     private Barcode barcode;
     private BarcodedItem item;
-   
-
 
     private ScannerListenerStub listener;
 
-    
     @Before
     public void setup() {
-    	basicDefaultSetup();
+        basicDefaultSetup();
         new ItemAddedRule(scs.getMainScanner(), scs.getHandheldScanner(), itemManager);
 
         barcode = new Barcode(new Numeral[] { Numeral.valueOf((byte) 1) });
         product = new BarcodedProduct(barcode, "Product 1", 10, 100.0);
         item = new BarcodedItem(barcode, new Mass(100.0));
         ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode, product); // Add a product to the database
-
 
         listener = new ScannerListenerStub();
 
@@ -90,7 +86,7 @@ public class ItemAddedRuleTest extends AbstractSessionTest {
 
     @Test(expected = InvalidArgumentSimulationException.class)
     public void testNullSCS() {
-        ItemManager itemManagerNull  = null;
+        ItemManager itemManagerNull = null;
         new ItemAddedRule(scs.getMainScanner(), scs.getHandheldScanner(), itemManagerNull);
     }
 
@@ -104,8 +100,6 @@ public class ItemAddedRuleTest extends AbstractSessionTest {
         HashMap<Product, BigInteger> productList = session.getItems();
         assertTrue(productList.containsKey(product));
     }
-
-   
 
     @Test(expected = InvalidArgumentSimulationException.class)
     public void testAddItemNotInDatabase() {
@@ -153,18 +147,16 @@ public class ItemAddedRuleTest extends AbstractSessionTest {
         scs.getMainScanner().enable();
 
     }
-    
+
     @Test
     public void testAddBagInDatabase() {
         session.start();
 
-       
-
         /**
-         * call method to purchase bag 
-        list of bags  = session.getBagItems();
-        assertTrue(productList.containsKey(bag));
-        **/
+         * call method to purchase bag
+         * list of bags = session.getBagItems();
+         * assertTrue(productList.containsKey(bag));
+         **/
     }
 
     public class ScannerListenerStub implements BarcodeScannerListener {

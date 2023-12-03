@@ -20,6 +20,11 @@ import StubClasses.BagStub;
 import powerutility.PowerGrid;
 
 public abstract class AbstractAddBagsTest extends AbstractSessionTest {
+	public AbstractAddBagsTest(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
+		super(testName, scsClass);
+		// TODO Auto-generated constructor stub
+	}
+
 	private Mass bagMass;
 	private Mass overweightBagMass;
 	private Mass weightLimitBagMass;
@@ -30,10 +35,7 @@ public abstract class AbstractAddBagsTest extends AbstractSessionTest {
 	private BagStub notBag;
 	private double BAG_MASS_LIMIT = 250.00;
 	
-	public AbstractAddBagsTest(String testName, AbstractSelfCheckoutStation scs) {
-		super(testName, scs);
-		// TODO Auto-generated constructor stub
-	}
+
 	
 	protected abstract AbstractSelfCheckoutStation createInstance();
 
@@ -41,18 +43,7 @@ public abstract class AbstractAddBagsTest extends AbstractSessionTest {
 	@Before
 	public void setup() {
 		basicDefaultSetup();
-		scs.resetConfigurationToDefaults();
-   
-    	// power on the self checkout station
-    	powerGrid = PowerGrid.instance();
-    	powerGrid.engageUninterruptiblePowerSource();
-		
-    	scs.plugIn(powerGrid);
-    	// turn on the self checkout station
-		scs.turnOn();
 
-        // create "bags"
-        
         bagMass = new Mass(10 * Mass.MICROGRAMS_PER_GRAM);// bag of mass 100g < BAG MASS LIMIT
         overweightBagMass = new Mass((BAG_MASS_LIMIT + 60.0) );// mass > BAG MASS LIMIT
         weightLimitBagMass = new Mass(BAG_MASS_LIMIT );// mass equal to the limited size of a bag in the session software

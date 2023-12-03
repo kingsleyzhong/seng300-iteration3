@@ -38,6 +38,14 @@ import com.thelocalmarketplace.software.weight.Weight;
  */
 
 abstract public class AbstractSessionTest extends AbstractTest {
+	public AbstractSessionTest(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
+		super(testName, scsClass);
+		// TODO Auto-generated constructor stub
+	}
+
+
+
+
 	protected Session session;
 	protected ItemManager itemManager;
 	protected Funds funds;
@@ -45,9 +53,7 @@ abstract public class AbstractSessionTest extends AbstractTest {
 	protected Receipt receiptPrinter;
 	protected Membership membership;
 
-	public AbstractSessionTest(String testName, AbstractSelfCheckoutStation scs) {
-		super(testName, scs);
-	}
+
 	
 	
 	public void basicDefaultSetup() {

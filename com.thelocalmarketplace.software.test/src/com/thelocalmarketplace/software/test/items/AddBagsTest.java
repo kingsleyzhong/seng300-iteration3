@@ -71,14 +71,12 @@ import powerutility.PowerGrid;
 * Kingsley Zhong 			: 30197260 
  */
 
-
 public class AddBagsTest extends AbstractSessionTest {
 
-	public AddBagsTest(String testName, AbstractSelfCheckoutStation scs) {
-		super(testName, scs);
+	public AddBagsTest(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
+		super(testName, scsClass);
 		// TODO Auto-generated constructor stub
 	}
-
 
 	private double BAG_MASS_LIMIT = 250.00;// 250g, well above what a bag probably weighs
 											// above the sensativity limit for even a bronze scale (5g)
@@ -168,7 +166,6 @@ public class AddBagsTest extends AbstractSessionTest {
 	@Test
 	public void test_addBags_updatesSessionState() {
 		// start session:
-		
 
 		// call addBags
 		session.addBags();
@@ -185,11 +182,10 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * Expected Behavior: the session returns to normal runtime state (in session)
 	 * 
 	 */
-	//bug found
+	// bug found
 	@Test
 	public void test_addBags_addingBagsUnblocksSession() {
 		// start session:
-		
 
 		// call addBags
 		session.addBags();
@@ -211,7 +207,6 @@ public class AddBagsTest extends AbstractSessionTest {
 	@Test
 	public void test_addBags_updatesExpectedWeight() {
 		// start session:
-		
 
 		// save the expected Mass before adding the bag
 		Mass expectedMassBefore = weight.getExpectedWeight();
@@ -230,8 +225,6 @@ public class AddBagsTest extends AbstractSessionTest {
 		assertFalse(expectedMassAfter.compareTo(expectedMassBefore) == 0);
 	}
 
-	
-
 	/*
 	 * Tests that calling addBag() during an active session and then changing the
 	 * bagging area by
@@ -243,7 +236,6 @@ public class AddBagsTest extends AbstractSessionTest {
 	@Test
 	public void test_addBags_unexpectedChange_doesntUpdateExpectedWeight() {
 		// start session:
-		
 
 		// pre-test: add an item to the bagging area
 		weight.update(notBagMass); // sets the expected mass on the scale to already know about the bag
@@ -276,7 +268,6 @@ public class AddBagsTest extends AbstractSessionTest {
 	@Test
 	public void test_addBags_unexpectedChange_blocksSession() {
 		// start session:
-		
 
 		// pre-test: add an item to the bagging area
 		weight.update(notBagMass); // sets the expected mass on the scale to already know about the bag
@@ -303,7 +294,6 @@ public class AddBagsTest extends AbstractSessionTest {
 	@Test
 	public void test_addBags_overweightBag_blockSession() {
 		// start session:
-		
 
 		// call addBags
 		session.addBags();
@@ -325,7 +315,6 @@ public class AddBagsTest extends AbstractSessionTest {
 	@Test
 	public void test_addBags_overweightBag_doesntUpdateExpectedWeight() {
 		// start session:
-		
 
 		// save the expected Mass before adding the bag
 		Mass expectedMassBefore = weight.getExpectedWeight();
@@ -354,7 +343,6 @@ public class AddBagsTest extends AbstractSessionTest {
 	@Test
 	public void test_addBags_weightLimitBag_blockSession() {
 		// start session:
-		
 
 		// call addBags
 		session.addBags();
@@ -376,7 +364,6 @@ public class AddBagsTest extends AbstractSessionTest {
 	@Test
 	public void test_addBags_weightLimitBag_expectedWeightIsNotUpdated() {
 		// start session:
-		
 
 		// save the expected Mass before adding the bag
 		Mass expectedMassBefore = weight.getExpectedWeight();
@@ -404,13 +391,12 @@ public class AddBagsTest extends AbstractSessionTest {
 	@Test
 	public void test_cancelAddBags_updatesState() {
 		// start session:
-		
 
 		// call addBags
 		session.addBags();
 
 		// call cancelAddBags()
-	
+
 		// check state to make sure the system has updates
 		assertTrue(session.getState() == SessionState.IN_SESSION);
 	}
@@ -425,7 +411,6 @@ public class AddBagsTest extends AbstractSessionTest {
 	@Test
 	public void test_cancelAddBags_doesntUpdateExpectedWeight() {
 		// start session:
-		
 
 		// save the expected Mass before adding the bag
 		Mass expectedMassBefore = weight.getExpectedWeight();
@@ -456,7 +441,6 @@ public class AddBagsTest extends AbstractSessionTest {
 		// dont start session
 
 		// call cancelAddBags
-		
 
 		// check the state
 		assertTrue(session.getState() == SessionState.PRE_SESSION);
@@ -472,13 +456,11 @@ public class AddBagsTest extends AbstractSessionTest {
 	@Test
 	public void test_cancelAddBags_blocksSystem() {
 		// start session:
-		
 
 		// call addBags
 		session.addBags();
 
 		// call cancelAddBags()
-		
 
 		// add the heavy bag to the bagging area
 		scs.getBaggingArea().addAnItem(bag);
@@ -501,11 +483,11 @@ public class AddBagsTest extends AbstractSessionTest {
 		// create a new Session with this as the max bag weight
 		Session newSession = new Session();
 		Funds funds = new Funds(scs);
-        Weight weight = new Weight(scs.getBaggingArea());
-        ItemManager itemManager = new ItemManager(session);
-        Receipt receipt = new Receipt(scs.getPrinter());
-        SelfCheckoutStationBronze scs = new SelfCheckoutStationBronze();
-        newSession.setup(itemManager, funds, weight, receipt, scs);
+		Weight weight = new Weight(scs.getBaggingArea());
+		ItemManager itemManager = new ItemManager(session);
+		Receipt receipt = new Receipt(scs.getPrinter());
+		SelfCheckoutStationBronze scs = new SelfCheckoutStationBronze();
+		newSession.setup(itemManager, funds, weight, receipt, scs);
 		newSession.getWeight().configureMAXBAGWEIGHT(newMAXBAGWEIGHT);
 
 		// create a Mass using the max weight weight value from session
@@ -528,13 +510,13 @@ public class AddBagsTest extends AbstractSessionTest {
 		Mass expectedMaxBagWeight = new Mass(newMAXBAGWEIGHT);
 
 		// create a new Session with this as the max bag weight
-		Session newSession =  new Session();
+		Session newSession = new Session();
 		Funds funds = new Funds(scs);
-        Weight weight = new Weight(scs.getBaggingArea());
-        ItemManager itemManager = new ItemManager(session);
-        Receipt receipt = new Receipt(scs.getPrinter());
-        SelfCheckoutStationBronze scs = new SelfCheckoutStationBronze();
-        newSession.setup(itemManager, funds, weight, receipt, scs);
+		Weight weight = new Weight(scs.getBaggingArea());
+		ItemManager itemManager = new ItemManager(session);
+		Receipt receipt = new Receipt(scs.getPrinter());
+		SelfCheckoutStationBronze scs = new SelfCheckoutStationBronze();
+		newSession.setup(itemManager, funds, weight, receipt, scs);
 		newSession.getWeight().configureMAXBAGWEIGHT(newMAXBAGWEIGHT);
 
 		// create a Mass using the max weight weight value from session
@@ -543,6 +525,5 @@ public class AddBagsTest extends AbstractSessionTest {
 		// compare the two Masses
 		assertTrue(actualMaxBagWeight.compareTo(expectedMaxBagWeight) == 0);
 	}
-
 
 }
