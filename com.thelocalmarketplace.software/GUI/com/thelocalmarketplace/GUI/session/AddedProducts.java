@@ -136,4 +136,8 @@ public class AddedProducts extends JPanel {
 		}
 		return null;
 	}
+	
+	public int amount() {
+		return panels.size();
+	}
 }

@@ -26,11 +26,12 @@ import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.scanner.BarcodedItem;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+import com.thelocalmarketplace.hardware.PLUCodedItem;
+import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Image;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
@@ -169,6 +170,24 @@ public class HardwareGUI {
 		BarcodedItem bitem3 = new BarcodedItem(new Barcode(new Numeral[] { Numeral.three}), new Mass(125.0));
 		ItemObject item3 = new ItemObject(bitem3, "Baaanana bread bites");
 		itemsInCart.addElement(item3);
+		
+		BarcodedItem bitem3_1 = new BarcodedItem(new Barcode(new Numeral[] { Numeral.three}), new Mass(125.0));
+		ItemObject item3_1 = new ItemObject(bitem3_1, "Baaanana bread bites");
+		itemsInCart.addElement(item3_1);
+		
+		BarcodedItem bitem4 = new BarcodedItem(new Barcode(new Numeral[] { Numeral.four}), new Mass(50.0));
+		ItemObject item4 = new ItemObject(bitem4, "Flock of socks");
+		itemsInCart.addElement(item4);
+		
+		PriceLookUpCode plu1 = new PriceLookUpCode(new String("0000"));
+		PLUCodedItem pluitem1 = new PLUCodedItem(plu1, new Mass(200.0));
+		ItemObject item5 = new ItemObject(pluitem1, "Baaananas");
+		itemsInCart.addElement(item5);
+		
+		PriceLookUpCode plu2 = new PriceLookUpCode(new String("0001"));
+		PLUCodedItem pluitem2 = new PLUCodedItem(plu2, new Mass(100.0));
+		ItemObject item6 = new ItemObject(pluitem2, "Baaakliva");
+		itemsInCart.addElement(item6);
 	}
 	
 	public JPanel introPanel() {

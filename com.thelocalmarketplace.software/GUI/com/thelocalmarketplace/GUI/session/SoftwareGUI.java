@@ -56,8 +56,10 @@ public class SoftwareGUI{
 	public AddBagsPopup addBagsScreen;
 
 
-    String quantity;
-    String itemCount;
+    int quantity = 0;
+    public JLabel itemAmount;
+    int productCount;
+    public JLabel productAmount;
     String weight;
     public JLabel infoWeightNumber;
     String cartPrice;
@@ -255,24 +257,24 @@ public class SoftwareGUI{
 		JPanel infoTop1 = new JPanel();
 		infoTop1.setLayout(new BorderLayout());
 		infoTop1.setBackground(Colors.color4);
-		JLabel infoQtyString = new JLabel("Quantity");
+		JLabel infoQtyString = new JLabel("Number of Items");
 		infoQtyString.setFont(new Font("Dialog", Font.BOLD,20));
-		JLabel infoQtyNumber = new JLabel("0");
-		infoQtyNumber.setFont(new Font("Dialog", Font.BOLD,20));
+		itemAmount = new JLabel("0");
+		itemAmount.setFont(new Font("Dialog", Font.BOLD,20));
 		infoTop1.setLayout(new BorderLayout(0, 0));
 		infoTop1.add(infoQtyString, BorderLayout.WEST);
-		infoTop1.add(infoQtyNumber, BorderLayout.EAST);
+		infoTop1.add(itemAmount, BorderLayout.EAST);
 				
 		JPanel infoTop2 = new JPanel();
 		infoTop2.setBackground(Colors.color4);
 		infoTop2.setLayout(new BorderLayout());
 		infoTop2.setBackground(Colors.color4);
-		JLabel infoItemString = new JLabel("Item Count");
+		JLabel infoItemString = new JLabel("Number of Products");
 		infoItemString.setFont(new Font("Dialog", Font.BOLD,20));
-		JLabel infoItemNumber = new JLabel("0");
-		infoItemNumber.setFont(new Font("Dialog", Font.BOLD,20));
+		productAmount = new JLabel("0");
+		productAmount.setFont(new Font("Dialog", Font.BOLD,20));
 		infoTop2.add(infoItemString, BorderLayout.WEST);
-		infoTop2.add(infoItemNumber, BorderLayout.EAST);
+		infoTop2.add(productAmount, BorderLayout.EAST);
 				
 		JPanel infoTop3 = new JPanel();
 		infoTop3.setBackground(Colors.color4);
@@ -434,6 +436,9 @@ public class SoftwareGUI{
 		}
 		else weight = df.format(mass) + "g";
 		infoWeightNumber.setText(weight);
+		productCount = cartItemsPanel.amount();
+		productAmount.setText(Integer.toString(productCount));
+		itemAmount.setText(Integer.toString(quantity));
 	}
 	
 	public void hide() {
@@ -471,6 +476,7 @@ public class SoftwareGUI{
 		public void itemAdded(Session session, Product product, Mass ofProduct, Mass currentExpectedWeight,
 				BigDecimal currentExpectedPrice) {
 			cartItemsPanel.addProduct(product, ofProduct);
+			quantity = quantity + 1;
 			update(currentExpectedPrice.doubleValue(), currentExpectedWeight.inGrams().doubleValue());
 		}
 
@@ -478,7 +484,8 @@ public class SoftwareGUI{
 		public void itemRemoved(Session session, Product product, Mass ofProduct, Mass currentExpectedMass,
 				BigDecimal currentExpectedPrice) {
 			cartItemsPanel.removeProduct(product, ofProduct);
-			
+			quantity = quantity - 1;
+			update(currentExpectedPrice.doubleValue(), currentExpectedMass.inGrams().doubleValue());
 		}
 
 		@Override
