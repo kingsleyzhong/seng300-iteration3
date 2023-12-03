@@ -107,7 +107,12 @@ public class ProductPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//session.getManager.add(product);
+				if(product instanceof BarcodedProduct) {
+					session.getManager().addItem((BarcodedProduct) product);
+				}
+				else if(product instanceof PLUCodedProduct) {
+					session.getManager().addItem(((PLUCodedProduct) product).getPLUCode());
+				}
 			}
 			
 		});

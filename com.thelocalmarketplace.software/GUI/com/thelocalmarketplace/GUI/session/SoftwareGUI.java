@@ -26,18 +26,20 @@ import com.thelocalmarketplace.GUI.customComponents.GradientPanel;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
+import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionListener;
 import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.attendant.Requests;
+import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
 public class SoftwareGUI{
 	public JFrame frame;
-	JFrame catalogue;
+	public JFrame catalogue;
 	public JPanel mainPane;
 	public JPanel startPane;
 	public JPanel endPane;
@@ -456,18 +458,41 @@ public class SoftwareGUI{
 		public void actionPerformed(ActionEvent e) {
 			JButton source = (JButton) e.getSource();
 			if(source == searchCatalogue) {
-				catalogue.setVisible(true);
+				if(session.getState() == SessionState.IN_SESSION)
+					catalogue.setVisible(true);
+				else JOptionPane.showMessageDialog(null, "You cannot add an item right now.");
 			}
 			else if(source == cancel) {
 				if(session.getState() == SessionState.IN_SESSION) {
-					displayStart();
+					int n = JOptionPane.showConfirmDialog(null, "Are you sure you want to leave the session and cancel your order?", 
+							"Confirm Cancel", JOptionPane.YES_NO_OPTION);
+					if(n == JOptionPane.YES_OPTION) {
+						displayStart();
+					}
+					else {
+						return;
+					}
 				}
 				else if(session.getState() == SessionState.BLOCKED) {
 					JOptionPane.showMessageDialog(null, "Cannot cancel. Please resolve discrepancy on weight scale.");
 				}
 				session.cancel();
 			}
-			
+			else if(source == pluCode) {
+				if(session.getState() == SessionState.IN_SESSION) {
+					String result = JOptionPane.showInputDialog(null,"Input PLU Code", 
+							"Input PLU Code", JOptionPane.PLAIN_MESSAGE);
+					if(result != null && !result.equals("")) {
+						PriceLookUpCode plu = new PriceLookUpCode(result);
+						try {
+							session.getManager().addItem(plu);
+						} catch (InvalidActionException e1) {
+							JOptionPane.showMessageDialog(null, "This is not a valid PLU Code");
+						}
+					}
+				}
+				else JOptionPane.showMessageDialog(null, "Cannot add PLU item right now.");
+			}
 		}	
 	}
 	
@@ -476,6 +501,7 @@ public class SoftwareGUI{
 		@Override
 		public void itemAdded(Session session, Product product, Mass ofProduct, Mass currentExpectedWeight,
 				BigDecimal currentExpectedPrice) {
+			catalogue.setVisible(false);
 			cartItemsPanel.addProduct(product, ofProduct);
 			quantity = quantity + 1;
 			update(currentExpectedPrice.doubleValue(), currentExpectedWeight.inGrams().doubleValue());
@@ -541,8 +567,15 @@ public class SoftwareGUI{
 
 		@Override
 		public void pluCodeEntered(PLUCodedProduct product) {
-			// TODO Auto-generated method stub
-			
+			catalogue.setVisible(false);
+			int n = JOptionPane.showConfirmDialog(null, "Would you like to add: " + product.getDescription(), 
+					"Confirm Product", JOptionPane.YES_NO_OPTION);
+			if(n == JOptionPane.NO_OPTION) {
+				session.cancel();
+			}
+			else if(n == JOptionPane.YES_OPTION) {
+				JOptionPane.showMessageDialog(null, "Please place " + product.getDescription() + " on the scanning scale.");
+			}
 		}
 
 		@Override

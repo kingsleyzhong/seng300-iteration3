@@ -100,7 +100,12 @@ public class CartProduct extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//session.getManager().remove(product);
+				if(product instanceof BarcodedProduct) {
+					session.getManager().removeItem((BarcodedProduct) product);
+				}
+				else if(product instanceof PLUCodedProduct) {
+					session.getManager().removeItem((PLUCodedProduct) product);
+				}
 			}
     		
     	});
@@ -119,7 +124,10 @@ public class CartProduct extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(product instanceof BarcodedProduct) {
-					//session.getManager().add(product);
+					session.getManager().addItem((BarcodedProduct) product);
+				}
+				else if(product instanceof PLUCodedProduct) {
+					session.getManager().addItem(((PLUCodedProduct) product).getPLUCode());
 				}
 			}
     		

@@ -8,7 +8,6 @@ import com.jjjwelectronics.Mass;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
-import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
@@ -199,22 +198,26 @@ public class Session {
 		@Override
 		public void notifiyOutOfPaper() {
 			notifyAttendant(Requests.CANT_PRINT_RECEIPT);
+			if(sessionState != SessionState.PRE_SESSION)
 			block();
 		}
 
 		@Override
 		public void notifiyOutOfInk() {
 			notifyAttendant(Requests.CANT_PRINT_RECEIPT);
+			if(sessionState != SessionState.PRE_SESSION)
 			block();
 		}
 
 		@Override
 		public void notifiyPaperRefilled() {
+			if(sessionState != SessionState.PRE_SESSION)
 			resume();
 		}
 
 		@Override
 		public void notifiyInkRefilled() {
+			if(sessionState != SessionState.PRE_SESSION)
 			resume();
 		}
 
@@ -541,6 +544,10 @@ public class Session {
 
 	public Weight getWeight() {
 		return weight;
+	}
+	
+	public ItemManager getManager() {
+		return manager;
 	}
 
 	public Membership getMembership() {
