@@ -1,5 +1,6 @@
 package StubClasses;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import com.thelocalmarketplace.software.funds.FundsListener;
@@ -35,5 +36,17 @@ public class FundsListenerStub implements FundsListener {
 
 	public ArrayList<String> getEvents() {
 		return events;
+	}
+
+	@Override
+	public void notifyUpdateAmountDue(BigDecimal amount) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void notifyInsufficentChange() {
+		// TODO Auto-generated method stub
+		
 	}
 }

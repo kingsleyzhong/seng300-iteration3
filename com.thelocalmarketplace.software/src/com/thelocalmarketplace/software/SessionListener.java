@@ -53,7 +53,7 @@ public interface SessionListener {
 	
 	void discrepancyResolved(Session session);
 	
-	void pricePaidUpdated(Session session);
+	void pricePaidUpdated(Session session, BigDecimal amountDue);
 	
 	void sessionAboutToStart(Session session);
 	
