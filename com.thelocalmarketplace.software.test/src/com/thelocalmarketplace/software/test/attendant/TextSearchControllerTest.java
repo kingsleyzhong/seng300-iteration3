@@ -3,19 +3,23 @@ package com.thelocalmarketplace.software.test.attendant;
 import com.jjjwelectronics.DisabledDevice;
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
-import com.jjjwelectronics.keyboard.USKeyboardQWERTY;
 import com.jjjwelectronics.scanner.Barcode;
+import com.jjjwelectronics.scanner.BarcodedItem;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.AttendantStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
 import com.thelocalmarketplace.software.attendant.Attendant;
 import com.thelocalmarketplace.software.test.AbstractTest;
 import org.junit.Before;
 import org.junit.Test;
-import powerutility.PowerGrid;
+import powerutility.NoPowerException;
 
+import java.util.ArrayList;
+
+import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.assertEquals;
 
 /**
@@ -52,6 +56,12 @@ public class TextSearchControllerTest extends AbstractTest {
     private AttendantStation station;
     private Attendant a;
 
+    private BarcodedProduct product;
+    private Barcode barcode;
+    private BarcodedItem item;
+
+    private ArrayList<Product> expectedResults;
+
     public TextSearchControllerTest(String testName, AbstractSelfCheckoutStation scs) {
         super(testName, scs);
     }
@@ -64,43 +74,73 @@ public class TextSearchControllerTest extends AbstractTest {
         SelfCheckoutStationLogic.installAttendantStation(station);
         station.plugIn(powerGrid);
         station.turnOn();
+
+        expectedResults = new ArrayList<>();
+        barcode = new Barcode(new Numeral[] { Numeral.valueOf((byte) 1) });
+        product = new BarcodedProduct(barcode, "chicken wings", 10, 100.0);
+        item = new BarcodedItem(barcode, new Mass(100.0));
+        ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode, product); // Add a product to the database
+
+    }
+
+    /**
+     * This is a bit of a crap test for now, it just tests a bunch of typing functions to see what they actually do...
+     * it seems to work!
+     * @throws DisabledDevice
+     */
+    @Test
+    public void populateSearchFieldTest() throws DisabledDevice {
+        String expectedSearch = "THIS";
+        for (int i = 0; i < expectedSearch.length(); i++) {
+            a.getStation().keyboard.getKey("Shift (Right)").press();
+            a.getStation().keyboard.getKey(Character.toString(expectedSearch.charAt(i))).press();
+            a.getStation().keyboard.getKey(Character.toString(expectedSearch.charAt(i))).release();
+            a.getStation().keyboard.getKey("Shift (Right)").release();
+        }
+        String expectedSearch2 = "NOTTHAT";
+        for (int i = 0; i < expectedSearch2.length(); i++) {
+            a.getStation().keyboard.getKey(Character.toString(expectedSearch2.charAt(i))).press();
+            a.getStation().keyboard.getKey(Character.toString(expectedSearch2.charAt(i))).release();
+        }
+        a.getStation().keyboard.getKey("Backspace").press();
+        a.getStation().keyboard.getKey("Backspace").release();
+        a.getStation().keyboard.getKey("2 @").press();
+        a.getStation().keyboard.getKey("2 @").release();
+        a.getStation().keyboard.getKey("Shift (Right)").press();
+        a.getStation().keyboard.getKey("2 @").press();
+        a.getStation().keyboard.getKey("2 @").release();
+        a.getStation().keyboard.getKey("Shift (Right)").release();
+        expectedSearch2 = "NOTTHA2@";
+        expectedSearch = expectedSearch + expectedSearch2.toLowerCase();
+
+        assertEquals(expectedSearch, a.getTextSearchController().getSearchField());;
     }
 
     @Test
-    public void populateSeachFieldTest() throws DisabledDevice {
-        // Test to see if typing in the search field works
-        String expectedSearch = "THIS DOES";
-        a.getStation().keyboard.getKey("Shift (Right)").press();
-        a.getStation().keyboard.getKey("Shift (Right)").release();
+    public void successfulSearchTest() throws DisabledDevice {
+        ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode, product);
+        expectedResults.add(product);
+        String expectedSearch = "ICKEN";
         for (int i = 0; i < expectedSearch.length(); i++) {
             a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).press();
             a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).release();
-            // Somehow retrieve the searchField
-            assertEquals(expectedSearch, a.getTextSearchController().getSearchField());
         }
+        a.getStation().keyboard.getKey("Enter").press();
+        a.getStation().keyboard.getKey("Enter").release();
+        assertEquals(expectedResults, a.getTextSearchController().getSearchResults());
     }
-//
-//    @Test
-//    public void successfulSearchTest() throws DisabledDevice {
-//        String expectedSearch = "ICKEN";
-//        for (int i = 0; i < expectedSearch.length(); i++) {
-//            a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).press();
-//            a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).release();
-////            assertEquals(expectedResults, searchResults);
-//        }
-//    }
-//
-//    @Test
-//    public void failedSearchTest() throws DisabledDevice{
-//        String expectedSearch = "MARLBORO GOLD CIGARETTES";
-//        for (int i = 0; i < expectedSearch.length(); i++) {
-//            a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).press();
-//            a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).release();
-//            a.getStation().keyboard.getKey("Enter").press();
-//            a.getStation().keyboard.getKey("Enter").release();
-//            assertEquals(true, a.getTextSearchController().searchResults.isEmpty());
-//        }
-//    }
+
+    @Test
+    public void failedSearchTest() throws DisabledDevice{
+        String expectedSearch = "MARLBOROGOLDCIGARETTES";
+        for (int i = 0; i < expectedSearch.length(); i++) {
+            a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).press();
+            a.getStation().keyboard.getKey(String.valueOf(expectedSearch.charAt(i))).release();
+        }
+        a.getStation().keyboard.getKey("Enter").press();
+        a.getStation().keyboard.getKey("Enter").release();
+        assertTrue(a.getTextSearchController().getSearchResults().isEmpty());
+    }
 //
 //    @Test
 //    public void textSearchAndAdd() throws DisabledDevice {
@@ -112,9 +152,28 @@ public class TextSearchControllerTest extends AbstractTest {
 //        }
 //    }
 //
-//    @Test
-//    public void disabledTest() {
-//        // Finish this
-//    }
+    @Test(expected = DisabledDevice.class)
+    public void disabledPressTest() throws DisabledDevice {
+        a.getStation().keyboard.disable();
+        a.getStation().keyboard.getKey("Shift (Right)").press();
+    }
+
+    @Test(expected = DisabledDevice.class)
+    public void disabledReleaseTest() throws DisabledDevice {
+        a.getStation().keyboard.disable();
+        a.getStation().keyboard.getKey("Shift (Right)").release();
+    }
+
+    @Test(expected = NoPowerException.class)
+    public void noPowerPressTest() throws DisabledDevice {
+        a.getStation().unplug();
+        a.getStation().keyboard.getKey("Shift (Right)").press();
+    }
+
+    @Test(expected = NoPowerException.class)
+    public void noPowerReleaseTest() throws DisabledDevice {
+        a.getStation().unplug();
+        a.getStation().keyboard.getKey("Shift (Right)").release();
+    }
 
 }
