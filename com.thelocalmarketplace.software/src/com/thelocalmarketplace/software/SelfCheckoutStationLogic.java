@@ -114,7 +114,7 @@ public class SelfCheckoutStationLogic {
 		attendant.addIssuePrediction(predictor);
 
 		// register scanning area scale with the PLU Item manager
-		new PLUItemAddedRule(scs.getScanningArea(), itemManager, session);
+		new PLUItemAddedRule(scs.getScanningArea(), itemManager);
 	}
 
 	public static Attendant getAttendant() {

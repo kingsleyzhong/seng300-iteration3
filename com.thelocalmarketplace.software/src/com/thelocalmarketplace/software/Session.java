@@ -69,7 +69,6 @@ public class Session {
 	private SessionState prevState;
 	private boolean disableSelf = false; // when true: disable the Session when it ends
 	private BarcodedProduct lastProduct;
-	private PriceLookUpCode lastPLUcode;
 	private Funds funds;
 	private Weight weight;
 	private ItemManager manager;
@@ -81,13 +80,6 @@ public class Session {
 
 	Session session = this;
 
-	public PriceLookUpCode getLastPLUcode() {
-		return lastPLUcode;
-	}
-
-	public void setLastPLUcode(PriceLookUpCode lastPLUcode) {
-		this.lastPLUcode = lastPLUcode;
-	}
 
 	private class ItemManagerListener implements ItemListener {
 		private Session outerSession;
@@ -518,8 +510,8 @@ public class Session {
 
 	// GUI called this method when customer enter a PLU code
 	public void addPLUCodedItem(PriceLookUpCode code) {
-		this.setLastPLUcode(code);
 		sessionState = SessionState.ADD_PLU_ITEM;
+		manager.getPLUCode(code);
 	}
 
 	/**
