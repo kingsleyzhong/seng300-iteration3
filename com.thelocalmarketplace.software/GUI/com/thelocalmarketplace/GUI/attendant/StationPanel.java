@@ -11,6 +11,9 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -34,6 +37,8 @@ import javax.swing.SwingConstants;
 
 public class StationPanel extends JPanel implements ActionListener {
 	Session session;
+	List<String> warnings;
+	private HashMap<String, Boolean> issues;
 	
 	private final Color warningColor = new Color(191, 114, 13);
 	private final Color urgentColor = new Color(161, 40, 40);
@@ -83,11 +88,29 @@ public class StationPanel extends JPanel implements ActionListener {
 		info = new JLabel("Sample text for the display of a warning or error message when the problem occurs (empty otherwise)");
 		info.setVerticalAlignment(SwingConstants.TOP);
 		info.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		populateIssues();
 		add(info);
 		add(resolve);
 		add(power);
 	}
 
+	private void populateIssues() {
+		issues.put("ink", false);
+		issues.put("paper", false);
+		issues.put("coinsLow", false);
+		issues.put("banknotesLow", false);
+		issues.put("coinsFull", false);
+		issues.put("banknotesFull", false);
+	}
+	
+	public boolean issuesPresent() {
+		return issues.containsValue(true);
+	}
+	
+	public HashMap<String, Boolean> getIssues() {
+		return issues;
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == power) {
@@ -114,13 +137,15 @@ public class StationPanel extends JPanel implements ActionListener {
 
 		@Override
 		public void notifyPredictLowInk(Session session) {
-			info.setText("WARNING: Predicting low ink");
+			issues.put("ink", true);
+			warnings.add("\nWARNING: Predicting low ink");
 			info.setForeground(warningColor);
 			status.setText("STATUS: WARNING");
 		}
 
 		@Override
 		public void notifyPredictLowPaper(Session session) {
+			issues.put("paper", true);
 			info.setText("WARNING: Predicting low paper");
 			info.setForeground(urgentColor);
 			status.setText("STATUS: WARNING");
@@ -128,6 +153,7 @@ public class StationPanel extends JPanel implements ActionListener {
 
 		@Override
 		public void notifyPredictCoinsFull(Session session) {
+			issues.put("coinsFull", true);
 			info.setText("WARNING: Predicting coin overflow");
 			info.setForeground(urgentColor);
 			status.setText("STATUS: WARNING");
@@ -135,6 +161,7 @@ public class StationPanel extends JPanel implements ActionListener {
 
 		@Override
 		public void notifyPredictBanknotesFull(Session session) {
+			issues.put("banknotesFull", true);
 			info.setText("WARNING: Predicting banknote overflow");
 			info.setForeground(urgentColor);
 			status.setText("STATUS: WARNING");
@@ -142,6 +169,7 @@ public class StationPanel extends JPanel implements ActionListener {
 
 		@Override
 		public void notifyPredictLowCoins(Session session) {
+			issues.put("coinsLow", true);
 			info.setText("WARNING: Predicting insufficient coins");
 			info.setForeground(urgentColor);
 			status.setText("STATUS: WARNING");
@@ -149,6 +177,7 @@ public class StationPanel extends JPanel implements ActionListener {
 
 		@Override
 		public void notifyPredictLowBanknotes(Session session) {
+			issues.put("banknotesLow", true);
 			info.setText("WARNING: Predicting insufficient banknotes");
 			info.setForeground(urgentColor);
 			status.setText("STATUS: WARNING");
@@ -159,36 +188,42 @@ public class StationPanel extends JPanel implements ActionListener {
 
 		@Override
 		public void notifyInkAdded() {
+			issues.put("ink", false);
 			info.setText("");
 			status.setText("STATUS: GOOD");
 		}
 
 		@Override
 		public void notifyPaperAdded() {
+			issues.put("paper", false);
 			info.setText("");
 			status.setText("STATUS: GOOD");
 		}
 
 		@Override
 		public void notifyCoinAdded() {
+			issues.put("coinsLow", false);
 			info.setText("");
 			status.setText("STATUS: GOOD");
 		}
 
 		@Override
 		public void notifyBanknoteAdded() {
+			issues.put("banknotesLow", false);
 			info.setText("");
 			status.setText("STATUS: GOOD");
 		}
 
 		@Override
 		public void notifyCoinRemoved() {
+			issues.put("coinsFull", false);
 			info.setText("");
 			status.setText("STATUS: GOOD");
 		}
 
 		@Override
 		public void notifyBanknoteRemoved() {
+			issues.put("banknotesFull", false);
 			info.setText("");
 			status.setText("STATUS: GOOD");
 		}
