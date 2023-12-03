@@ -69,7 +69,6 @@ public class IssuePredictor  {
 	private boolean fullCoins;
 	private boolean lowBanknotes;
 	private boolean fullBanknotes;
-	private boolean[] issues = {lowInk, lowPaper, lowCoins, fullCoins, lowBanknotes, fullBanknotes};
 	
 	
 	public IssuePredictor(Session session, AbstractSelfCheckoutStation scs, Receipt receipt) {
@@ -221,13 +220,16 @@ public class IssuePredictor  {
 		checkLowBanknotes(session, banknoteDispensers);
 		checkCoinsFull(session, coinStorage);
 		checkBanknotesFull(session, banknoteStorage);
+		boolean[] issues = {lowInk, lowPaper, lowCoins, fullCoins, lowBanknotes, fullBanknotes};
+		boolean hasIssue = false;
 		for (boolean i : issues) {
 			if (i) {
-				break;
+				hasIssue = true;
 			}
-			else {
-				notifyNoIssues(session);
-			}
+		}
+		if (hasIssue == false) {
+			notifyNoIssues(session);
+			session.enable();
 		}
 	}
 	
