@@ -36,8 +36,8 @@ import powerutility.PowerGrid;
 
 public class PayByCashTest extends AbstractTest {
 
-	public PayByCashTest(String testName, AbstractSelfCheckoutStation scs) {
-		super(testName, scs);
+	public PayByCashTest(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
+		super(testName, scsClass);
 		// TODO Auto-generated constructor stub
 	}
 

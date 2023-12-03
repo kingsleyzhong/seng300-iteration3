@@ -57,8 +57,9 @@ public class SelfCheckoutStationLogicTest extends AbstractTest {
     private SelfCheckoutStationLogic logic;
     private AttendantStation station;
 
-    public SelfCheckoutStationLogicTest(String testName, AbstractSelfCheckoutStation scs) {
-        super(testName, scs);
+    public SelfCheckoutStationLogicTest(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
+        super(testName, scsClass);
+        // TODO Auto-generated constructor stub
     }
 
     @Before

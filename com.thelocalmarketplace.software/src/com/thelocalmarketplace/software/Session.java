@@ -1,6 +1,7 @@
 package com.thelocalmarketplace.software;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import com.jjjwelectronics.Mass;
@@ -9,6 +10,7 @@ import com.tdc.DisabledException;
 import com.tdc.NoCashAvailableException;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
@@ -40,27 +42,27 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
  *
  * Project Iteration 3 Group 1
  *
- * Derek Atabayev 			: 30177060
- * Enioluwafe Balogun 		: 30174298
- * Subeg Chahal 			: 30196531
- * Jun Heo 					: 30173430
- * Emily Kiddle 			: 30122331
- * Anthony Kostal-Vazquez 	: 30048301
- * Jessica Li 				: 30180801
- * Sua Lim 					: 30177039
- * Savitur Maharaj 			: 30152888
- * Nick McCamis 			: 30192610
- * Ethan McCorquodale 		: 30125353
- * Katelan Ng 				: 30144672
- * Arcleah Pascual 			: 30056034
- * Dvij Raval 				: 30024340
- * Chloe Robitaille 		: 30022887
- * Danissa Sandykbayeva 	: 30200531
- * Emily Stein 				: 30149842
- * Thi My Tuyen Tran 		: 30193980
- * Aoi Ueki 				: 30179305
- * Ethan Woo 				: 30172855
- * Kingsley Zhong 			: 30197260
+ * Derek Atabayev : 30177060
+ * Enioluwafe Balogun : 30174298
+ * Subeg Chahal : 30196531
+ * Jun Heo : 30173430
+ * Emily Kiddle : 30122331
+ * Anthony Kostal-Vazquez : 30048301
+ * Jessica Li : 30180801
+ * Sua Lim : 30177039
+ * Savitur Maharaj : 30152888
+ * Nick McCamis : 30192610
+ * Ethan McCorquodale : 30125353
+ * Katelan Ng : 30144672
+ * Arcleah Pascual : 30056034
+ * Dvij Raval : 30024340
+ * Chloe Robitaille : 30022887
+ * Danissa Sandykbayeva : 30200531
+ * Emily Stein : 30149842
+ * Thi My Tuyen Tran : 30193980
+ * Aoi Ueki : 30179305
+ * Ethan Woo : 30172855
+ * Kingsley Zhong : 30197260
  *
  */
 public class Session {
@@ -70,6 +72,7 @@ public class Session {
 	private SessionState prevState;
 	private boolean disableSelf = false; // when true: disable the Session when it ends
 	private BarcodedProduct lastProduct;
+	private PriceLookUpCode lastPLUcode;
 	private Funds funds;
 	private Weight weight;
 	private ItemManager manager;
@@ -81,14 +84,22 @@ public class Session {
 	private boolean requestApproved = false;
 
 	Session session = this;
-	
-	private class ItemManagerListener implements ItemListener{
+
+	public PriceLookUpCode getLastPLUcode() {
+		return lastPLUcode;
+	}
+
+	public void setLastPLUcode(PriceLookUpCode lastPLUcode) {
+		this.lastPLUcode = lastPLUcode;
+	}
+
+	private class ItemManagerListener implements ItemListener {
 		private Session outerSession;
-		
+
 		private ItemManagerListener(Session s) {
 			outerSession = s;
 		}
-		
+
 		@Override
 		public void anItemHasBeenAdded(Product product, Mass mass, BigDecimal price) {
 			weight.update(mass);
@@ -107,9 +118,7 @@ public class Session {
 			}
 		}
 	}
-	
-	 
-	
+
 	private class WeightDiscrepancyListener implements WeightListener {
 
 		/**
@@ -123,16 +132,16 @@ public class Session {
 			// Only needed when the customer wants to add their own bags (this is how
 			// Session knows the bags' weight)
 			if (sessionState == SessionState.ADDING_BAGS) {
-				//This means that the bags are too heavy. Something should happen here. Perhaps
-				//instead we need another call that notifies bags too heavyS
+				// This means that the bags are too heavy. Something should happen here. Perhaps
+				// instead we need another call that notifies bags too heavyS
 				return;
 			}
-			
+
 			// signal attendant(s)
-			notifyAttendant(Requests.WEIGHT_DISCREPANCY);	
-			
+			notifyAttendant(Requests.WEIGHT_DISCREPANCY);
+
 			// signal a discrepancy
-			
+
 			block();
 		}
 
@@ -152,7 +161,6 @@ public class Session {
 
 		}
 
-		
 	}
 
 	private class PayListener implements FundsListener {
@@ -165,9 +173,10 @@ public class Session {
 		public void notifyPaid() {
 			end();
 		}
-		
+
 		/**
-		 * Called when there is not enough change (of any kind) avalaiable to handle payment
+		 * Called when there is not enough change (of any kind) avalaiable to handle
+		 * payment
 		 */
 		@Override
 		public void notifyInsufficentChange() {
@@ -220,7 +229,7 @@ public class Session {
 	}
 
 	private class MemberListener implements MembershipListener {
-		/** Sets the membership number for the session.*/
+		/** Sets the membership number for the session. */
 		@Override
 		public void membershipEntered(String membershipNumber) {
 			Session.this.membershipNumber = membershipNumber;
@@ -238,51 +247,28 @@ public class Session {
 	}
 
 	/**
-	 * Constructor for session that also allows the MAX BAG WEIGHT to be defined
-	 * 
-	 * @params maxBagWeight
-	 *         double representing the expected weight of a bag (in grams)
-	 */
-	public Session(double maxBagWeight) {
-		weight.configureMAXBAGWEIGHT(maxBagWeight);
-		sessionState = SessionState.PRE_SESSION;
-
-	}
-
-	/**
-	 * Constructor for session that also allows the MAX BAG WEIGHT to be defined
-	 * 
-	 * @param maxBagWeight
-	 *                     long representing the expected weight of a bag (in
-	 *                     micrograms)
-	 */
-	public Session(long maxBagWeight) {
-		weight.configureMAXBAGWEIGHT(maxBagWeight);
-		sessionState = SessionState.PRE_SESSION;
-	}
-
-	/**
 	 * Setup method for the session used in installing logic on the system
 	 * Initializes private variables to the ones passed. Initially has the session
 	 * off, session unfrozen, and pay not enabled.
 	 * 
 	 * @param BarcodedItems
-	 *                      A hashMap of barcoded products and their associated
-	 *                      quantity in shopping cart
+	 *                       A hashMap of barcoded products and their associated
+	 *                       quantity in shopping cart
 	 * @param funds
-	 *                      The funds used in the session
+	 *                       The funds used in the session
 	 * @param weight
-	 *                      The weight of the items and actual weight on the scale
-	 *                      during the session
+	 *                       The weight of the items and actual weight on the scale
+	 *                       during the session
 	 * 
-	 *                      
+	 * 
 	 * @param receiptPrinter
-	 * 						The PrintReceipt behavior
+	 *                       The PrintReceipt behavior
 	 * 
 	 * @param IremManager
-	 * 						The software for managing adding and removing items
+	 *                       The software for managing adding and removing items
 	 */
-	public void setup(ItemManager manager, Funds funds, Weight weight, Receipt receiptPrinter, Membership membership, AbstractSelfCheckoutStation scs) {
+	public void setup(ItemManager manager, Funds funds, Weight weight, Receipt receiptPrinter, Membership membership,
+			AbstractSelfCheckoutStation scs) {
 		this.manager = manager;
 		this.funds = funds;
 		this.weight = weight;
@@ -299,9 +285,9 @@ public class Session {
 	/**
 	 * Sets the session to have started, allowing customer to interact with station
 	 */
-	public void start() {		
+	public void start() {
 		// signal about to start + wait for prediction to finish?
-		
+
 		sessionState = SessionState.IN_SESSION;
 		manager.setAddItems(true);
 		hasMembership = false;
@@ -310,16 +296,14 @@ public class Session {
 		// funds.clear();
 		// weight.clear();
 	}
-	
 
 	/**
 	 * Cancels the current session and resets the current session
 	 */
 	public void cancel() {
-		if(sessionState == SessionState.IN_SESSION) {
+		if (sessionState == SessionState.IN_SESSION) {
 			sessionState = SessionState.PRE_SESSION;
-		}
-		else if(sessionState != SessionState.BLOCKED) {
+		} else if (sessionState != SessionState.BLOCKED) {
 			sessionState = SessionState.IN_SESSION;
 			weight.cancel();
 		}
@@ -333,18 +317,18 @@ public class Session {
 		sessionState = SessionState.BLOCKED;
 		manager.setAddItems(false);
 	}
-	
+
 	private void end() {
 		prevState = sessionState;
 		sessionState = SessionState.PRE_SESSION;
-		receiptPrinter.printReceipt(getBarcodedItems());
+		receiptPrinter.printReceipt(getItems());
 		System.out.println("end()");
 		
 		for(SessionListener l:listeners) {
 			l.sessionEnded(this);
 		}
 		// if the session is slated to be disabled, do that
-		if(disableSelf) {
+		if (disableSelf) {
 			disable();
 		}
 	}
@@ -353,10 +337,9 @@ public class Session {
 	 * Resumes the session, allowing the customer to continue interaction
 	 */
 	private void resume() {
-		if(funds.isPay()) {
+		if (funds.isPay()) {
 			sessionState = prevState;
-		}
-		else {
+		} else {
 			sessionState = SessionState.IN_SESSION;
 			manager.setAddItems(true);
 		}
@@ -370,44 +353,45 @@ public class Session {
 	public void enteringMembership() {
 		if (sessionState == SessionState.IN_SESSION) {
 			membership.setAddingItems(true);
-			} else {
-				throw new InvalidActionException("Cannot enter membership if session is not in adding items state");
-			}
+		} else {
+			throw new InvalidActionException("Cannot enter membership if session is not in adding items state");
+		}
 	}
-	
+
 	/**
 	 * Places a previously disabled session into the PRE_SESSION state
 	 * For use after clearing hardware issues that left the station disabled.
 	 */
 	public void enable() {
 		// sets the session's state to PRE_SESSION
-		if(this.sessionState == SessionState.DISABLED) {
+		if (this.sessionState == SessionState.DISABLED) {
 			this.sessionState = SessionState.PRE_SESSION;
 			disableSelf = false;
 		}
 	}
 
-	
 	/**
-	 * Places this session into the DISABLED state. While in the DISABLED state no functions
+	 * Places this session into the DISABLED state. While in the DISABLED state no
+	 * functions
 	 * should be able to occur.
 	 * 
-	 * If the session is currently running/active than the session cannot be disabled until it
+	 * If the session is currently running/active than the session cannot be
+	 * disabled until it
 	 * has finished running
-	 *  
+	 * 
 	 */
 	public void disable() {
 		// sets the session's state to DISABLED
-		if(this.sessionState == SessionState.PRE_SESSION) {
+		if (this.sessionState == SessionState.PRE_SESSION) {
 			this.sessionState = SessionState.DISABLED;
-		}
-		else {
-			disableSelf = true; 
+		} else {
+			disableSelf = true;
 		}
 	}
-	
+
 	/**
-	 * Enters the cash payment mode for the customer. Prevents customer from adding further
+	 * Enters the cash payment mode for the customer. Prevents customer from adding
+	 * further
 	 * items by freezing session.
 	 */
 	public void payByCash() {
@@ -424,7 +408,8 @@ public class Session {
 	}
 
 	/**
-	 * Enters the card payment mode for the customer. Prevents customer from adding further
+	 * Enters the card payment mode for the customer. Prevents customer from adding
+	 * further
 	 * items by freezing session. Can also enter after paying some cash.
 	 */
 	public void payByCard() {
@@ -453,7 +438,8 @@ public class Session {
 		// else: nothing changes about the Session's state
 	}
 
-	// Move to receiptPrinter class (possible rename of receiptPrinter to just reciept
+	// Move to receiptPrinter class (possible rename of receiptPrinter to just
+	// reciept
 	public void printReceipt() {
 		receiptPrinter.printReceipt(manager.getItems());
 	}
@@ -465,7 +451,7 @@ public class Session {
 	 */
 	public void addBulkyItem() {
 		// Only able to add when in a discrepancy after adding bags
-		if(sessionState == SessionState.BLOCKED) {
+		if (sessionState == SessionState.BLOCKED) {
 			sessionState = SessionState.BULKY_ITEM;
 			notifyAttendant(Requests.BULKY_ITEM);
 		} else if (sessionState == SessionState.BULKY_ITEM) {
@@ -496,13 +482,16 @@ public class Session {
 	}
 
 	/**
-	 * Abstract notification method that tells any registered listeners about the request of Session.
-	 * This is done to reduce redundancy, as there are many possible requests that could be made of the attendant
-
-	 * @param request specific instance of the Requests ennum related to the current issues within Session
+	 * Abstract notification method that tells any registered listeners about the
+	 * request of Session.
+	 * This is done to reduce redundancy, as there are many possible requests that
+	 * could be made of the attendant
+	 * 
+	 * @param request specific instance of the Requests ennum related to the current
+	 *                issues within Session
 	 */
 	public void notifyAttendant(Requests request) {
-		for(SessionListener l:listeners) {
+		for (SessionListener l : listeners) {
 			l.getRequest(this, request);
 		}
 	}
@@ -514,6 +503,12 @@ public class Session {
 		notifyAttendant(Requests.HELP_REQUESTED);
 	}
 
+	// GUI called this method when customer enter a PLU code
+	public void addPLUCodedItem(PriceLookUpCode code) {
+		this.setLastPLUcode(code);
+		sessionState = SessionState.ADD_PLU_ITEM;
+	}
+
 	/**
 	 * getter methods
 	 */
@@ -521,11 +516,11 @@ public class Session {
 		return this.requestApproved;
 	}
 
-	public HashMap<BarcodedProduct, Integer> getBarcodedItems() {
+	public HashMap<Product, BigInteger> getItems() {
 		return manager.getItems();
 	}
 
-    public HashMap<BarcodedProduct, Integer> getBulkyItems() {
+	public HashMap<BarcodedProduct, Integer> getBulkyItems() {
 		return manager.getBulkyItems();
 	}
 
@@ -548,7 +543,6 @@ public class Session {
 	public boolean membershipEntered() {
 		return hasMembership;
 	}
-
 
 	public AbstractSelfCheckoutStation getStation() {
 		return scs;

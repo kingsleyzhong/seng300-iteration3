@@ -71,8 +71,8 @@ import powerutility.PowerGrid;
  */
 
 public class FundsTest extends AbstractTest {
-	public FundsTest(String testName, AbstractSelfCheckoutStation scs) {
-		super(testName, scs);
+	public FundsTest(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
+		super(testName, scsClass);
 	}
 
 	private Funds funds;
