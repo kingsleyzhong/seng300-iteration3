@@ -71,6 +71,10 @@ public class WeightTest extends AbstractTest {
 			discrepancyNotified = false;
 		}
 
+		@Override
+		public void notifyBagsTooHeavy() {
+		}
+
 	}
 
 	@Before

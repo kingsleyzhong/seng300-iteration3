@@ -10,13 +10,15 @@ import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.hardware.PLUCodedItem;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
+import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
+import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.exceptions.ProductNotFoundException;
 import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 
 /**
- * Manages aspects to adding items
+ * Manages aspects to adding items to an order
  * 
  * Project Iteration 3 Group 1
  *
@@ -50,10 +52,11 @@ public class ItemManager {
 	private HashMap<String, Product> visualCatalogue = new HashMap<String, Product>();
 	private HashMap<Product, Mass> PLUProductWeights = new HashMap<Product, Mass>();
 	
+	private PriceLookUpCode PLUCode;
 	private BarcodedProduct lastProduct;
 	private Session session;
 	private boolean addItems = true;
-	
+	private boolean addPLUItemState = false;
 	
 	public ItemManager(Session session) {
 		this.session = session;
@@ -62,6 +65,20 @@ public class ItemManager {
 
 	public void setAddItems(boolean value) {
 		addItems = value;
+	}
+	
+	//Get PLU code from the GUI
+	public void getPLUCode(PriceLookUpCode code) {
+		if(session.getState() == SessionState.ADD_PLU_ITEM) addPLUItemState = true;
+		PLUCode = code;
+	}
+	
+	public boolean isAddPLUItemState() {
+		return addPLUItemState;
+	}
+	
+	public PriceLookUpCode getPLUCode() {
+		return PLUCode;
 	}
 	
 	/**

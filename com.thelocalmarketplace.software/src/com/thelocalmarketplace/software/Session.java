@@ -5,9 +5,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import com.jjjwelectronics.Mass;
-import com.tdc.CashOverloadException;
-import com.tdc.DisabledException;
-import com.tdc.NoCashAvailableException;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PriceLookUpCode;
@@ -71,8 +68,6 @@ public class Session {
 	private SessionState sessionState;
 	private SessionState prevState;
 	private boolean disableSelf = false; // when true: disable the Session when it ends
-	private BarcodedProduct lastProduct;
-	private PriceLookUpCode lastPLUcode;
 	private Funds funds;
 	private Weight weight;
 	private ItemManager manager;
@@ -80,16 +75,7 @@ public class Session {
 	private Membership membership;
 	private String membershipNumber;
 	private boolean hasMembership = false;
-	private Requests request = Requests.NO_REQUEST;
 	private boolean requestApproved = false;
-
-	public PriceLookUpCode getLastPLUcode() {
-		return lastPLUcode;
-	}
-
-	public void setLastPLUcode(PriceLookUpCode lastPLUcode) {
-		this.lastPLUcode = lastPLUcode;
-	}
 
 	private class ItemManagerListener implements ItemListener {
 		private Session outerSession;
@@ -162,7 +148,13 @@ public class Session {
 	}
 
 	private class PayListener implements FundsListener {
+		private Session outerSession;
 
+		private PayListener(Session s) {
+			outerSession = s;
+		}
+		
+		
 		/**
 		 * Signals to the system that the customer has payed the full amount. Ends the
 		 * session.
@@ -182,6 +174,13 @@ public class Session {
 			notifyAttendant(Requests.CANT_MAKE_CHANGE);
 			block();
 
+		}
+
+		@Override
+		public void notifyUpdateAmountDue(BigDecimal amount) {
+			for (SessionListener l : listeners) {
+				l.pricePaidUpdated(outerSession, amount);
+			}
 		}
 
 	}
@@ -214,7 +213,7 @@ public class Session {
 		public void notifiyReceiptPrinted() {
 			// Should notifyPaid() not wait until receipt is successfully printed to change
 			// to PRE_SESSION?
-			end();
+			//end();
 		}
 
 	}
@@ -264,7 +263,7 @@ public class Session {
 		this.funds = funds;
 		this.weight = weight;
 		this.weight.register(new WeightDiscrepancyListener());
-		this.funds.register(new PayListener());
+		this.funds.register(new PayListener(this));
 		this.manager.register(new ItemManagerListener(this));
 		this.receiptPrinter = receiptPrinter;
 		this.receiptPrinter.register(new PrinterListener());
@@ -312,7 +311,11 @@ public class Session {
 	private void end() {
 		prevState = sessionState;
 		sessionState = SessionState.PRE_SESSION;
-
+		receiptPrinter.printReceipt(getItems());
+		
+		for(SessionListener l:listeners) {
+			l.sessionEnded(this);
+		}
 		// if the session is slated to be disabled, do that
 		if (disableSelf) {
 			disable();
@@ -423,9 +426,27 @@ public class Session {
 		}
 		// else: nothing changes about the Session's state
 	}
-
-	// Move to receiptPrinter class (possible rename of receiptPrinter to just
-	// reciept
+	
+	/**
+	 * The customer indicates they wish to purchase reusable bags as a part of their interaction.
+	 * Customer must indicate the number of bags they want to purchase. 
+	 * System only supports one bag type.
+	 * 
+	 * @param num
+	 * 				the number of bags the customer wants to buy
+	 * 
+	 * 
+	 */
+	public void purchasebags(int num) {
+		if (sessionState == SessionState.IN_SESSION) {
+			// signal item manager somehow		
+			// enter the addBags() state
+			addBags();
+		}
+		
+	}
+	
+	// Move to receiptPrinter class (possible rename of receiptPrinter to just reciept
 	public void printReceipt() {
 		receiptPrinter.printReceipt(manager.getItems());
 	}
@@ -491,8 +512,8 @@ public class Session {
 
 	// GUI called this method when customer enter a PLU code
 	public void addPLUCodedItem(PriceLookUpCode code) {
-		this.setLastPLUcode(code);
 		sessionState = SessionState.ADD_PLU_ITEM;
+		manager.getPLUCode(code);
 	}
 
 	/**

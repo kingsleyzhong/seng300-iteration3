@@ -141,7 +141,7 @@ public class IssuesPredictorTest extends AbstractTest {
 
 	@Test
 	public void testCheckLowInk() throws OverloadedDevice {
-		session.setup(itemManager, funds, weight, receiptPrinter, scs);
+		session.setup(itemManager, funds, weight, receiptPrinter, null, scs);
 		scs.getCoinDispensers().values();
 		// Bronze
 		issuePredictor.checkLowInk(session, scs.getPrinter());
@@ -159,7 +159,7 @@ public class IssuesPredictorTest extends AbstractTest {
 
 	@Test
 	public void testCheckLowInkWhenFull() throws OverloadedDevice {
-		session.setup(itemManager, funds, weight, receiptPrinter, scs);
+		session.setup(itemManager, funds, weight, receiptPrinter, null, scs);
 		// Bronze
 		issuePredictor.checkLowInk(session, scs.getPrinter());
 		// Silver
@@ -174,7 +174,7 @@ public class IssuesPredictorTest extends AbstractTest {
 
 	@Test
 	public void testCheckLowPaper() throws OverloadedDevice {
-		session.setup(itemManager, funds, weight, receiptPrinter, scs);
+		session.setup(itemManager, funds, weight, receiptPrinter, null, scs);
 		// Bronze
 		issuePredictor.checkLowPaper(session, scs.getPrinter());
 		// Silver
@@ -187,7 +187,7 @@ public class IssuesPredictorTest extends AbstractTest {
 
 	@Test
 	public void testCheckLowPaperWhenFull() throws OverloadedDevice {
-		session.setup(itemManager, funds, weight, receiptPrinter, scs);
+		session.setup(itemManager, funds, weight, receiptPrinter, null, scs);
 		// Bronze
 		issuePredictor.checkLowPaper(session, scs.getPrinter());
 		// Silver
@@ -207,6 +207,7 @@ public class IssuesPredictorTest extends AbstractTest {
 
 	@Test
 	public void testCheckLowBanknotes() throws OverloadedDevice {
+
 		session.setup(itemManager, funds, weight, receiptPrinter, scs);
 
 		issuePredictor.checkLowBanknotes(session, scs.getBanknoteDispensers());
@@ -216,6 +217,7 @@ public class IssuesPredictorTest extends AbstractTest {
 
 	@Test
 	public void testCheckCoinsFull() throws OverloadedDevice, SimulationException, CashOverloadException {
+
 		session.setup(itemManager, funds, weight, receiptPrinter, scs);
 		for (int i = 0; i < 1000; i++) { // 1000 is max capacity
 			scs.getCoinStorage().load(new Coin(Currency.getInstance(Locale.CANADA), new BigDecimal("2.00"))); // Add
@@ -223,12 +225,14 @@ public class IssuesPredictorTest extends AbstractTest {
 																												// 1000
 																												// times
 		}
+
 		issuePredictor.checkCoinsFull(session, scs.getCoinStorage());
 
 	}
 
 	@Test
 	public void testCheckBanknotesFull() throws OverloadedDevice, SimulationException, CashOverloadException {
+
 		session.setup(itemManager, funds, weight, receiptPrinter, scs);
 		for (int i = 0; i < 1000; i++) { // 1000 is max capacity
 			scs.getBanknoteStorage().load(new Banknote(Currency.getInstance(Locale.CANADA), new BigDecimal("5.00"))); // Add
@@ -236,13 +240,14 @@ public class IssuesPredictorTest extends AbstractTest {
 																														// 1000
 																														// times
 		}
+
 		issuePredictor.checkBanknotesFull(session, scs.getBanknoteStorage());
 
 	}
 
 	@Test
 	public void testSessionBlock() {
-		session.setup(itemManager, funds, weight, receiptPrinter, scs);
+		session.setup(itemManager, funds, weight, receiptPrinter, null, scs);
 		session.start();
 		issuePredictor.checkLowInk(session, bronzePrinter);
 		issuePredictor.checkLowPaper(session, bronzePrinter);

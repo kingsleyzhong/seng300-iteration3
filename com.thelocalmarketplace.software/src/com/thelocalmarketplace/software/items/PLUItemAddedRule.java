@@ -19,11 +19,9 @@ import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
 
 public class PLUItemAddedRule {
 		private ItemManager itemManager;
-		private Session session;
 		
-		public PLUItemAddedRule(IElectronicScale scannerScale, ItemManager i, Session session) {
+		public PLUItemAddedRule(IElectronicScale scannerScale, ItemManager i) {
 			itemManager = i;
-			this.session = session;
 			scannerScale.register(new innerListener());
 		}
 		
@@ -34,8 +32,8 @@ public class PLUItemAddedRule {
 				// TODO Auto-generated method stub
 				
 				//Only trigger when in ADD_PLU_ITEM state to avoid customer accidentally put something on the scanner scale
-				if(session.getState() == SessionState.ADD_PLU_ITEM) {
-					PriceLookUpCode code = session.getLastPLUcode();
+				if(itemManager.isAddPLUItemState()) {
+					PriceLookUpCode code = itemManager.getPLUCode();
 					Map<PriceLookUpCode, PLUCodedProduct> database = ProductDatabases.PLU_PRODUCT_DATABASE;
 					// Checks if product is in database. Throws exception if not in database.
 					if (database.containsKey(code)) {
