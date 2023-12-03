@@ -8,12 +8,10 @@ import java.util.HashMap;
 import com.jjjwelectronics.Mass;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.Product;
-import com.thelocalmarketplace.hardware.PLUCodedItem;
+import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.PriceLookUpCode;
-import com.thelocalmarketplace.hardware.Product;
-import com.thelocalmarketplace.software.Session;
-import com.thelocalmarketplace.software.SessionState;
+import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 import com.thelocalmarketplace.software.exceptions.ProductNotFoundException;
 import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 
@@ -52,33 +50,35 @@ public class ItemManager {
 	private HashMap<String, Product> visualCatalogue = new HashMap<String, Product>();
 	private HashMap<Product, Mass> PLUProductWeights = new HashMap<Product, Mass>();
 	
-	private PriceLookUpCode PLUCode;
+	private PLUCodedProduct pluProduct;
 	private BarcodedProduct lastProduct;
-	private Session session;
-	private boolean addItems = true;
+	private boolean addItems = false;
 	private boolean addPLUItemState = false;
-	
-	public ItemManager(Session session) {
-		this.session = session;
-	}
-	
 
 	public void setAddItems(boolean value) {
 		addItems = value;
+		addPLUItemState = false;
 	}
 	
 	//Get PLU code from the GUI
-	public void getPLUCode(PriceLookUpCode code) {
-		if(session.getState() == SessionState.ADD_PLU_ITEM) addPLUItemState = true;
-		PLUCode = code;
+	public void addItem(PriceLookUpCode code) {
+		if(addItems) {
+			if (ProductDatabases.PLU_PRODUCT_DATABASE.containsKey(code)) {
+				addPLUItemState = true;
+				pluProduct = ProductDatabases.PLU_PRODUCT_DATABASE.get(code);
+				notifyPLUCode(pluProduct);
+			} else {
+				throw new InvalidActionException("Item not in Database");
+			}
+		}
 	}
 	
 	public boolean isAddPLUItemState() {
 		return addPLUItemState;
 	}
 	
-	public PriceLookUpCode getPLUCode() {
-		return PLUCode;
+	public PLUCodedProduct getPluProduct() {
+		return pluProduct;
 	}
 	
 	/**
@@ -184,9 +184,8 @@ public class ItemManager {
 		} else {
 			throw new ProductNotFoundException("Item not found");
 		}
-	
-		HashMap<BarcodedProduct, Integer> bulkyItems = session.getBulkyItems();
-		if (bulkyItems.containsKey(product) && bulkyItems.get(product) >= 1 ) {
+
+		if (bulkyItems.containsKey(product) && bulkyItems.get(product) > 1 ) {
 			bulkyItems.replace(product, bulkyItems.get(product)-1);
 			mass = new Mass(0);
 		} else if (bulkyItems.containsKey(product) && bulkyItems.get(product) == 1 ) {
@@ -226,9 +225,14 @@ public class ItemManager {
 			l.anItemHasBeenRemoved(product, mass, price);
 	}
 	
+	public void notifyPLUCode(PLUCodedProduct product) {
+		for (ItemListener l : listeners)
+			l.aPLUCodeHasBeenEntered(product);
+	}
+	
 	
 	/**
-	 * Methods for adding funds listeners to the funds
+	 * Methods for adding funds listeners to the items
 	 */
 	public synchronized boolean deregister(ItemListener listener) {
 		if (listener == null)
@@ -246,6 +250,10 @@ public class ItemManager {
 			throw new NullPointerSimulationException("listener");
 
 		listeners.add(listener);
+	}
+	
+	public ArrayList<ItemListener> getListeners(){
+		return listeners;
 	}
 
 	public HashMap<Product, BigInteger> getItems() {

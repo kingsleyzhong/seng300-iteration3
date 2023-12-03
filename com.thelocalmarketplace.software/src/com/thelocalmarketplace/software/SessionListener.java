@@ -3,6 +3,7 @@ package com.thelocalmarketplace.software;
 import com.thelocalmarketplace.software.attendant.Requests;
 import java.math.BigDecimal;
 import com.jjjwelectronics.Mass;
+import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
 
 /**
@@ -45,6 +46,8 @@ public interface SessionListener {
 	
 	void itemRemoved(Session session, Product product, Mass ofProduct, Mass currentExpectedMass, BigDecimal currentExpectedPrice);
 	
+	void pluCodeEntered(PLUCodedProduct product);
+	
 	void addItemToScaleDiscrepancy(Session session);
 	
 	void removeItemFromScaleDiscrepancy(Session session);
@@ -59,4 +62,5 @@ public interface SessionListener {
 	
 	void sessionEnded(Session session);
 	
+	void sessionStateChanged();
 }

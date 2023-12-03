@@ -7,6 +7,7 @@ import java.util.HashMap;
 import com.jjjwelectronics.Mass;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.attendant.HardwareListener;
@@ -70,7 +71,6 @@ public class Session {
 	private SessionState sessionState;
 	private SessionState prevState;
 	private boolean disableSelf = false; // when true: disable the Session when it ends
-	private BarcodedProduct lastProduct;
 	private Funds funds;
 	private Weight weight;
 	private ItemManager manager;
@@ -79,9 +79,6 @@ public class Session {
 	private String membershipNumber;
 	private boolean hasMembership = false;
 	private boolean requestApproved = false;
-
-	Session session = this;
-
 
 	private class ItemManagerListener implements ItemListener {
 		private Session outerSession;
@@ -105,6 +102,14 @@ public class Session {
 			funds.removeItemPrice(price);
 			for (SessionListener l : listeners) {
 				l.itemRemoved(outerSession, product, mass, weight.getExpectedWeight(), funds.getItemsPrice());
+			}
+		}
+
+		@Override
+		public void aPLUCodeHasBeenEntered(PLUCodedProduct product) {
+			sessionState = SessionState.ADD_PLU_ITEM;
+			for (SessionListener l : listeners) {
+				l.pluCodeEntered(product);
 			}
 		}
 	}
@@ -154,7 +159,13 @@ public class Session {
 	}
 
 	private class PayListener implements FundsListener {
+		private Session outerSession;
 
+		private PayListener(Session s) {
+			outerSession = s;
+		}
+		
+		
 		/**
 		 * Signals to the system that the customer has payed the full amount. Ends the
 		 * session.
@@ -179,7 +190,7 @@ public class Session {
 		@Override
 		public void notifyUpdateAmountDue(BigDecimal amount) {
 			for (SessionListener l : listeners) {
-				l.pricePaidUpdated(session, amount);
+				l.pricePaidUpdated(outerSession, amount);
 			}
 		}
 
@@ -262,7 +273,7 @@ public class Session {
 		this.funds = funds;
 		this.weight = weight;
 		this.weight.register(new WeightDiscrepancyListener());
-		this.funds.register(new PayListener());
+		this.funds.register(new PayListener(this));
 		this.manager.register(new ItemManagerListener(this));
 		this.receiptPrinter = receiptPrinter;
 		this.receiptPrinter.register(new PrinterListener());
@@ -292,9 +303,11 @@ public class Session {
 	public void cancel() {
 		if (sessionState == SessionState.IN_SESSION) {
 			sessionState = SessionState.PRE_SESSION;
+			manager.setAddItems(false);
 		} else if (sessionState != SessionState.BLOCKED) {
 			sessionState = SessionState.IN_SESSION;
 			weight.cancel();
+			manager.setAddItems(true);
 		}
 	}
 
@@ -441,8 +454,7 @@ public class Session {
 			// signal item manager somehow		
 			// enter the addBags() state
 			addBags();
-		}
-		
+		}	
 	}
 	
 	// Move to receiptPrinter class (possible rename of receiptPrinter to just reciept
@@ -533,12 +545,6 @@ public class Session {
 		notifyAttendant(Requests.HELP_REQUESTED);
 	}
 
-	// GUI called this method when customer enter a PLU code
-	public void addPLUCodedItem(PriceLookUpCode code) {
-		sessionState = SessionState.ADD_PLU_ITEM;
-		manager.getPLUCode(code);
-	}
-
 	/**
 	 * getter methods
 	 */
@@ -600,6 +606,10 @@ public class Session {
 		if (listener == null)
 			throw new NullPointerSimulationException("listener");
 		listeners.remove(listener);
+	}
+	
+	public ArrayList<SessionListener> getListeners(){
+		return listeners;
 	}
 
 	public final synchronized void registerHardwareListener(HardwareListener listener) {

@@ -32,9 +32,13 @@ import com.thelocalmarketplace.software.membership.Membership;
 import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.weight.Weight;
 
+import StubClasses.ItemsListenerStub;
+import StubClasses.SessionListenerStub;
+import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 import powerutility.PowerGrid;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Currency;
@@ -147,7 +151,6 @@ public class SessionTest extends AbstractTest {
         assertFalse(session.getState().inPay());
     }
 
-
     @Test(expected = CartEmptyException.class)
     public void payEmpty_payByCash() {
     	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
@@ -183,5 +186,73 @@ public class SessionTest extends AbstractTest {
         }
         assertEquals(session.getState(), SessionState.PAY_BY_CASH);
     }
-
+    
+    @Test(expected = NullPointerSimulationException.class)
+    public void addedNullRegister() {
+    	session.register(null);
+    	
+    }
+    
+    @Test(expected = NullPointerSimulationException.class)
+    public void removedNullRegister() {
+    	session.deRegister(null);
+    	
+    }
+    
+    @Test
+    public void addAndRemoveValidListeners() {
+    	SessionListenerStub stub = new SessionListenerStub();
+    	assertEquals(session.getListeners().size(), 0);
+    	session.register(stub);
+    	assertEquals(session.getListeners().size(), 1);
+    	
+    	// Reset
+    	session.deRegister(stub);
+    	assertEquals(session.getListeners().size(), 0);
+    }
+    
+    @Test
+    public void anItemHasBeenAddedListenerNotified() {
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
+        session.start();
+     	SessionListenerStub stub = new SessionListenerStub();
+        session.register(stub);
+        itemManager.addItem(product);
+        
+        assertEquals(stub.products.get(product), BigInteger.valueOf(1));
+        assertTrue(stub.currentExpectedPrice.compareTo(new BigDecimal(10)) == 0);
+        
+        // Reset
+        session.deRegister(stub);
+        itemManager.removeItem(product);
+        
+    }
+    
+    @Test
+    public void anItemHasBeenRemovedListenerNotified() {
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
+        session.start();
+     	SessionListenerStub stub = new SessionListenerStub();
+        session.register(stub);
+        itemManager.addItem(product);
+        
+        // Reset
+        itemManager.removeItem(product);
+        session.deRegister(stub);
+        
+        assertEquals(stub.products.get(product), null);
+        assertTrue(stub.currentExpectedPrice.compareTo(new BigDecimal(0)) == 0);
+        
+    }
+    
+    
+    @Test
+    public void cancelSessionInSession() {
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
+        session.start();
+        session.cancel();
+        assertTrue(session.getState() == SessionState.PRE_SESSION);
+    	
+    }
+       
 }
