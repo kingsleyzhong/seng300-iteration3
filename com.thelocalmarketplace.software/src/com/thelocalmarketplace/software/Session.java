@@ -578,5 +578,9 @@ public class Session {
 			throw new NullPointerSimulationException("listener");
 		listeners.remove(listener);
 	}
+	
+	public ArrayList<SessionListener> getListeners(){
+		return listeners;
+	}
 
 }
