@@ -244,9 +244,6 @@ public class IssuePredictor  {
     	receiptPrinter = printer;
     	SessionState state = s.getState();
     	
-    	if (!(state == SessionState.PRE_SESSION)) 
-    		return;
-    	
     	int currentInk;
     	int threshold;
     	
@@ -297,10 +294,7 @@ public class IssuePredictor  {
     public void checkLowPaper(Session s, IReceiptPrinter printer) {
     	receiptPrinter = printer;
     	SessionState state = s.getState();
-    	
-    	if (!(state == SessionState.PRE_SESSION)) 
-    		return;
-    		
+
     	int currentPaper;
     	int threshold;
     	
@@ -353,10 +347,7 @@ public class IssuePredictor  {
     		Map<BigDecimal, ICoinDispenser> dispensers) {
     	coinDispensers = dispensers;
     	SessionState state = s.getState();
-    	
-		if (!(state == SessionState.PRE_SESSION)) 
-			return;
-		
+
     	for (ICoinDispenser dispenser : coinDispensers.values()) {
 			int currentCoins = dispenser.size();
 			int threshold = 5;
@@ -381,10 +372,7 @@ public class IssuePredictor  {
     		Map<BigDecimal, IBanknoteDispenser> dispensers) {
     	banknoteDispensers = dispensers;
     	SessionState state = s.getState();
-    	
-    	if (!(state == SessionState.PRE_SESSION))  
-    		return;
-    	
+
     	for (IBanknoteDispenser dispenser : banknoteDispensers.values()) {
 			int currentBanknotes = dispenser.size();
     		int threshold = 5;
@@ -409,10 +397,10 @@ public class IssuePredictor  {
     public void checkCoinsFull(Session s, CoinStorageUnit storage) {
     	coinStorage = storage;
     	SessionState state = s.getState();
-    	
-    	if (!(state == SessionState.PRE_SESSION)) 
+
+    	if (!(state == SessionState.PRE_SESSION))
     		return;
-    	
+
 		if (!coinStorage.hasSpace()) {
 			notifyCoinsFull(s);
 			fullCoins = true;
@@ -432,10 +420,10 @@ public class IssuePredictor  {
     public void checkBanknotesFull(Session s, BanknoteStorageUnit storage) {
     	banknoteStorage = storage;
     	SessionState state = s.getState();
-    	
-    	if (!(state == SessionState.PRE_SESSION)) 
+
+    	if (!(state == SessionState.PRE_SESSION))
     		return;
-    	
+
     	if (!banknoteStorage.hasSpace()) {
 			notifyBanknotesFull(s);
 			fullBanknotes = true;
