@@ -1,6 +1,5 @@
 package com.thelocalmarketplace.software.weight;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
@@ -9,7 +8,6 @@ import com.jjjwelectronics.IDeviceListener;
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.scale.ElectronicScaleListener;
 import com.jjjwelectronics.scale.IElectronicScale;
-import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 
 /**
@@ -52,6 +50,7 @@ public class Weight {
 	private boolean bagCheck = false;
 	private Mass lastWeightAdded = Mass.ZERO;
 	private Mass personalBagsWeight;
+	private Mass purchasedBagsWeight;
 	
 	private Mass MAXBAGWEIGHT = new Mass(500 * Mass.MICROGRAMS_PER_GRAM);
 
@@ -118,10 +117,17 @@ public class Weight {
 	}
 	
 	/**
-	 * Method used to set adding bags to true
+	 * Method used to add a bag to the bagging area
+	 *
+	 * @param numberOfBags
+	 *            The number of reusable bags to be added
 	 */
-	public void addBags() {
+	public void addBags(int numberOfBags) {
 			bagCheck = true;
+			Mass bagWeight = new Mass(BigInteger.valueOf(5_000_000)); // ideal mass from ReusableBag class
+			purchasedBagsWeight = bagWeight.multiply(BigInteger.valueOf(numberOfBags));
+
+			this.update(purchasedBagsWeight); // update the scale 
 		}
 	
 	/*
@@ -241,18 +247,8 @@ public class Weight {
 	 * Tolerance of +-5% and 5 grams (bronze)
 	 */
 	public void checkDiscrepancy() {
-		BigDecimal difference = expectedWeight.difference(actualWeight).abs().inGrams();
-		BigDecimal percentageDifference;
-		if (expectedWeight.inGrams().equals(BigDecimal.ZERO)) {
-			percentageDifference = new BigDecimal(1000.0); // Assume a near infinite percentage difference
-		} else {
-			percentageDifference = difference.divide(expectedWeight.inGrams(), BigDecimal.ROUND_HALF_UP);
-		}
-		// System.out.println(percentageDifference.compareTo(new BigDecimal(0.05)));
-		// System.out.println(difference.compareTo(new BigDecimal(5.0)));
-		if (percentageDifference.compareTo(new BigDecimal(0.05)) == 1
-				&& difference.compareTo(new BigDecimal(5.0)) == 1) {
-			// System.out.println("discrepancy");
+		double difference = expectedWeight.difference(actualWeight).abs().inGrams().doubleValue();
+		if (difference > 5) {
 			isDiscrepancy = true;
 			for (WeightListener l : listeners) {
 				l.notifyDiscrepancy();

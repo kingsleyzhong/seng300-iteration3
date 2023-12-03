@@ -93,8 +93,9 @@ public class SessionTest extends AbstractTest {
 
     private AttendantStation station;
 
-    public SessionTest(String testName, AbstractSelfCheckoutStation scs) {
-        super(testName, scs);
+    public SessionTest(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
+        super(testName, scsClass);
+        // TODO Auto-generated constructor stub
     }
 
     @Before

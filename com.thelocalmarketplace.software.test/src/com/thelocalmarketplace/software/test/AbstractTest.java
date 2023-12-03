@@ -1,5 +1,7 @@
 package com.thelocalmarketplace.software.test;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -51,26 +53,35 @@ import powerutility.PowerGrid;
 public abstract class AbstractTest {
     protected AbstractSelfCheckoutStation scs;
     protected PowerGrid powerGrid;
-	
-	public AbstractTest(String testName, AbstractSelfCheckoutStation scs) {
-        this.scs = scs;
+    private final Class<? extends AbstractSelfCheckoutStation> scsClass;
+
+    public AbstractTest(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
+        this.scsClass = scsClass;
     }
 
     @Parameterized.Parameters(name = "{0}")
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][]{
-            {"Bronze", new SelfCheckoutStationBronze()},
-            {"Silver", new SelfCheckoutStationSilver()},
-            {"Gold", new SelfCheckoutStationGold()}
+        return Arrays.asList(new Object[][] {
+                { "Bronze", SelfCheckoutStationBronze.class },
+                { "Silver", SelfCheckoutStationSilver.class },
+                { "Gold", SelfCheckoutStationGold.class }
         });
     }
-    
+
     protected void basicDefaultSetup() {
-    	AbstractSelfCheckoutStation.resetConfigurationToDefaults();
-    	PowerGrid.engageUninterruptiblePowerSource();
-    	powerGrid = PowerGrid.instance();
-    	scs.plugIn(powerGrid);
-		scs.turnOn();
+        try {
+        	scs = scsClass.getDeclaredConstructor().newInstance();
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			// This should never happen
+			e.printStackTrace();
+		}
+
+        AbstractSelfCheckoutStation.resetConfigurationToDefaults();
+        PowerGrid.engageUninterruptiblePowerSource();
+        powerGrid = PowerGrid.instance();
+        scs.plugIn(powerGrid);
+        scs.turnOn();
     }
 
 }
