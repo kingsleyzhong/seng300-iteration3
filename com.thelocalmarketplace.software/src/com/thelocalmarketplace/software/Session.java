@@ -7,6 +7,7 @@ import java.util.HashMap;
 import com.jjjwelectronics.Mass;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.attendant.Requests;
@@ -99,6 +100,14 @@ public class Session {
 			funds.removeItemPrice(price);
 			for (SessionListener l : listeners) {
 				l.itemRemoved(outerSession, product, mass, weight.getExpectedWeight(), funds.getItemsPrice());
+			}
+		}
+
+		@Override
+		public void aPLUCodeHasBeenEntered(PLUCodedProduct product) {
+			sessionState = SessionState.ADD_PLU_ITEM;
+			for (SessionListener l : listeners) {
+				l.pluCodeEntered(product);
 			}
 		}
 	}
@@ -293,9 +302,11 @@ public class Session {
 	public void cancel() {
 		if (sessionState == SessionState.IN_SESSION) {
 			sessionState = SessionState.PRE_SESSION;
+			manager.setAddItems(false);
 		} else if (sessionState != SessionState.BLOCKED) {
 			sessionState = SessionState.IN_SESSION;
 			weight.cancel();
+			manager.setAddItems(true);
 		}
 	}
 
@@ -442,8 +453,7 @@ public class Session {
 			// signal item manager somehow		
 			// enter the addBags() state
 			addBags();
-		}
-		
+		}	
 	}
 	
 	// Move to receiptPrinter class (possible rename of receiptPrinter to just reciept
@@ -508,12 +518,6 @@ public class Session {
 	 */
 	public void askForHelp() {
 		notifyAttendant(Requests.HELP_REQUESTED);
-	}
-
-	// GUI called this method when customer enter a PLU code
-	public void addPLUCodedItem(PriceLookUpCode code) {
-		sessionState = SessionState.ADD_PLU_ITEM;
-		manager.getPLUCode(code);
 	}
 
 	/**

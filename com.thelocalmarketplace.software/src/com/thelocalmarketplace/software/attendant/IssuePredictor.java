@@ -21,6 +21,7 @@ import com.tdc.coin.CoinSlot;
 import com.tdc.coin.CoinStorageUnit;
 import com.tdc.coin.ICoinDispenser;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionListener;
@@ -141,6 +142,18 @@ public class IssuePredictor  {
 		public void sessionEnded(Session session) {
 			// run the prediction algorithm
 			predictionCheck(session);
+		}
+
+		@Override
+		public void pluCodeEntered(PLUCodedProduct product) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void sessionStateChanged() {
+			// TODO Auto-generated method stub
+			
 		}
 		
 	}
