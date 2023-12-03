@@ -19,6 +19,7 @@ import com.thelocalmarketplace.software.funds.PayByCash;
 import com.thelocalmarketplace.software.items.ItemAddedRule;
 import com.thelocalmarketplace.software.items.ItemManager;
 import com.thelocalmarketplace.software.membership.Membership;
+import com.thelocalmarketplace.software.items.PLUItemAddedRule;
 import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.weight.Weight;
 
@@ -31,27 +32,27 @@ import com.thelocalmarketplace.software.weight.Weight;
  * 
  * Project Iteration 3 Group 1
  *
- * Derek Atabayev 			: 30177060
- * Enioluwafe Balogun 		: 30174298
- * Subeg Chahal 			: 30196531
- * Jun Heo 					: 30173430
- * Emily Kiddle 			: 30122331
- * Anthony Kostal-Vazquez 	: 30048301
- * Jessica Li 				: 30180801
- * Sua Lim 					: 30177039
- * Savitur Maharaj 			: 30152888
- * Nick McCamis 			: 30192610
- * Ethan McCorquodale 		: 30125353
- * Katelan Ng 				: 30144672
- * Arcleah Pascual 			: 30056034
- * Dvij Raval 				: 30024340
- * Chloe Robitaille 		: 30022887
- * Danissa Sandykbayeva 	: 30200531
- * Emily Stein 				: 30149842
- * Thi My Tuyen Tran 		: 30193980
- * Aoi Ueki 				: 30179305
- * Ethan Woo 				: 30172855
- * Kingsley Zhong 			: 30197260
+ * Derek Atabayev : 30177060
+ * Enioluwafe Balogun : 30174298
+ * Subeg Chahal : 30196531
+ * Jun Heo : 30173430
+ * Emily Kiddle : 30122331
+ * Anthony Kostal-Vazquez : 30048301
+ * Jessica Li : 30180801
+ * Sua Lim : 30177039
+ * Savitur Maharaj : 30152888
+ * Nick McCamis : 30192610
+ * Ethan McCorquodale : 30125353
+ * Katelan Ng : 30144672
+ * Arcleah Pascual : 30056034
+ * Dvij Raval : 30024340
+ * Chloe Robitaille : 30022887
+ * Danissa Sandykbayeva : 30200531
+ * Emily Stein : 30149842
+ * Thi My Tuyen Tran : 30193980
+ * Aoi Ueki : 30179305
+ * Ethan Woo : 30172855
+ * Kingsley Zhong : 30197260
  */
 
 public class SelfCheckoutStationLogic {
@@ -90,10 +91,10 @@ public class SelfCheckoutStationLogic {
 	private SelfCheckoutStationLogic(AbstractSelfCheckoutStation scs) {
 		// creates a new Session
 		session = new Session();
-		
+
 		// Registers the attendant with the session
 		attendant.registerOn(session);
-		
+
 		// create Funds, Weight, Receipt, and ItemManger classes to associate w/ Session
 		Funds funds = new Funds(scs);
 		new PayByCash(scs.getCoinValidator(), scs.getBanknoteValidator(), funds);
@@ -104,20 +105,22 @@ public class SelfCheckoutStationLogic {
 		Membership membership = new Membership(scs.getCardReader());
 		// Will also need the touch screen/ keyboard for GUI interaction
 		session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
-    
+
 		new ItemAddedRule(scs.getMainScanner(), scs.getHandheldScanner(), itemManager);
 
 		// Register IssuePredictor with Session
-		IssuePredictor predictor = new IssuePredictor(session, scs); 
+		IssuePredictor predictor = new IssuePredictor(session, scs);
 		// tell the Attendant about the Predictor
-		attendant.addIssuePrediction(predictor); 
-	
+		attendant.addIssuePrediction(predictor);
+
+		// register scanning area scale with the PLU Item manager
+		new PLUItemAddedRule(scs.getScanningArea(), itemManager, session);
 	}
 
 	public static Attendant getAttendant() {
 		return attendant;
 	}
-  
+
 	public Session getSession() {
 		return session;
 	}

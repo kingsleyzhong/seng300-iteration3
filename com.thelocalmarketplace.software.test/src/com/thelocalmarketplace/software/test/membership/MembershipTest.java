@@ -47,14 +47,16 @@ public class MembershipTest extends AbstractSessionTest {
     private StubListener stubListener;
     private static final String membershipNumber = "1234";
     private static final String memberName = "John Doe";
-    private static final Card membershipCard = new Card("membership", membershipNumber, memberName, "", "", false, false);
+    private static final Card membershipCard = new Card("membership", membershipNumber, memberName, "", "", false,
+            false);
 
     static {
         MembershipDatabase.registerMember(membershipNumber, memberName);
     }
 
-    public MembershipTest(String testName, AbstractSelfCheckoutStation scs) {
-        super(testName, scs);
+    public MembershipTest(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
+        super(testName, scsClass);
+        // TODO Auto-generated constructor stub
     }
 
     @Before
@@ -134,7 +136,8 @@ public class MembershipTest extends AbstractSessionTest {
                 scs.getCardReader().swipe(membershipCard);
                 if (stubListener.membershipNumber == null)
                     success++;
-            } catch (MagneticStripeFailureException ignored) {}
+            } catch (MagneticStripeFailureException ignored) {
+            }
         }
         Assert.assertTrue(success > 450);
     }
@@ -149,7 +152,8 @@ public class MembershipTest extends AbstractSessionTest {
                 scs.getCardReader().swipe(membershipCard);
                 if (stubListener.membershipNumber != null && stubListener.membershipNumber.equals(membershipNumber))
                     success++;
-            } catch (MagneticStripeFailureException ignored) {}
+            } catch (MagneticStripeFailureException ignored) {
+            }
         }
         Assert.assertTrue(success > 450);
     }
@@ -165,7 +169,8 @@ public class MembershipTest extends AbstractSessionTest {
                 scs.getCardReader().swipe(otherCard);
                 if (stubListener.membershipNumber == null)
                     success++;
-            } catch (MagneticStripeFailureException ignored) {}
+            } catch (MagneticStripeFailureException ignored) {
+            }
         }
         Assert.assertTrue(success > 450);
     }
@@ -181,13 +186,15 @@ public class MembershipTest extends AbstractSessionTest {
                 scs.getCardReader().swipe(otherCard);
                 if (stubListener.membershipNumber == null)
                     success++;
-            } catch (MagneticStripeFailureException ignored) {}
+            } catch (MagneticStripeFailureException ignored) {
+            }
         }
         Assert.assertTrue(success > 450);
     }
 
     static class StubListener implements MembershipListener {
         String membershipNumber;
+
         @Override
         public void membershipEntered(String membershipNumber) {
             this.membershipNumber = membershipNumber;
