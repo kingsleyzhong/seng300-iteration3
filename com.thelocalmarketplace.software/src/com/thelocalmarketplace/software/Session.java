@@ -78,11 +78,9 @@ public class Session {
 	private String membershipNumber;
 	private boolean hasMembership = false;
 	private boolean requestApproved = false;
-	
 
+	Session session = this;
 
-	
-	
 	public PriceLookUpCode getLastPLUcode() {
 		return lastPLUcode;
 	}
@@ -184,6 +182,13 @@ public class Session {
 
 		}
 
+		@Override
+		public void notifyUpdateAmountDue(BigDecimal amount) {
+			for (SessionListener l : listeners) {
+				l.pricePaidUpdated(session, amount);
+			}
+		}
+
 	}
 
 	private class PrinterListener implements ReceiptListener {
@@ -214,7 +219,7 @@ public class Session {
 		public void notifiyReceiptPrinted() {
 			// Should notifyPaid() not wait until receipt is successfully printed to change
 			// to PRE_SESSION?
-			end();
+			//end();
 		}
 
 	}
@@ -312,7 +317,11 @@ public class Session {
 	private void end() {
 		prevState = sessionState;
 		sessionState = SessionState.PRE_SESSION;
-
+		receiptPrinter.printReceipt(getItems());
+		
+		for(SessionListener l:listeners) {
+			l.sessionEnded(this);
+		}
 		// if the session is slated to be disabled, do that
 		if (disableSelf) {
 			disable();
