@@ -11,7 +11,6 @@ import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
 import com.thelocalmarketplace.software.attendant.Attendant;
 import com.thelocalmarketplace.software.test.AbstractTest;
-import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import powerutility.NoPowerException;
@@ -24,9 +23,9 @@ import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.assertEquals;
 
 /**
- * <p>A class of unit tests that test specifically the funtionality of
+ * <p>A class of unit tests that test specifically the functionality of
  * com.thelocalmarketplace.software.attendant.TextSearchController; it must be able to take key inputs properly into
- * a search field and then exeute a successful search either returning all valid search hits or nothing if there
+ * a search field and then execute a successful search either returning all valid search hits or nothing if there
  * aren't any.</p>
  * <p></p>
  * <p>Project Iteration 3 Group 1:</p>
@@ -104,8 +103,7 @@ public class TextSearchControllerTest extends AbstractTest {
     }
 
     /**
-     * This is a bit of a crap test for now, it just tests a bunch of typing functions to see what they actually do...
-     * it seems to work!
+     * Tests multiple functionalities of the keyboard
      * @throws DisabledDevice
      */
     @Test
@@ -127,6 +125,10 @@ public class TextSearchControllerTest extends AbstractTest {
         assertEquals(expectedSearch, a.getTextSearchController().getSearchField());;
     }
 
+    /**
+     * Searches the typed input "6", expecting to find any description, barcode, or PLU code that contains "6"
+     * @throws DisabledDevice
+     */
     @Test
     public void successfulNumericSearchTest() throws DisabledDevice {
         ProductDatabases.BARCODED_PRODUCT_DATABASE.putIfAbsent(barcode1, product1);
@@ -144,6 +146,10 @@ public class TextSearchControllerTest extends AbstractTest {
         assertTrue(a.getTextSearchController().getSearchResults().containsAll(expectedResults));
     }
     
+    /**
+     * Searches the typed input "1", expecting to find any description, barcode, or PLU code that contains "1"
+     * @throws DisabledDevice
+     */
     @Test
     public void successfulBarcodeSearchTest() throws DisabledDevice {
         ProductDatabases.BARCODED_PRODUCT_DATABASE.putIfAbsent(barcode1, product1);
@@ -160,6 +166,10 @@ public class TextSearchControllerTest extends AbstractTest {
         assertTrue(a.getTextSearchController().getSearchResults().containsAll(expectedResults));
     }
 
+    /**
+     * Searches the typed input "aisin", expecting to find any description that contains the substring "aisin"
+     * @throws DisabledDevice
+     */
     @Test
     public void successfulTextSearchTest() throws DisabledDevice {
         ProductDatabases.BARCODED_PRODUCT_DATABASE.putIfAbsent(barcode1, product1);
@@ -178,40 +188,63 @@ public class TextSearchControllerTest extends AbstractTest {
         assertTrue(a.getTextSearchController().getSearchResults().containsAll(expectedResults));
     }
 
+    /**
+     * Searches the typed input "Marlboro Gold Cigarettes", expecting to find nothing, we do not sell
+     * "Marlboro Gold Cigarettes". Say no to cigarettes kids!
+     * @throws DisabledDevice
+     */
     @Test
     public void failedSearchTest() throws DisabledDevice{
-        stringToKeyboard("MARLBORO GOLD CIGARETTES");
+        stringToKeyboard("Marlboro Gold Cigarettes");
         a.getStation().keyboard.getKey("Enter").press();
         a.getStation().keyboard.getKey("Enter").release();
         assertTrue(a.getTextSearchController().getSearchResults().isEmpty());
     }
 
+    /**
+     * Presses a key when the keyboard is disabled
+     * @throws DisabledDevice
+     */
     @Test(expected = DisabledDevice.class)
     public void disabledPressTest() throws DisabledDevice {
         a.getStation().keyboard.disable();
         a.getStation().keyboard.getKey("Shift (Right)").press();
     }
-
+    
+    /**
+     * Releases a key when the keyboard is disabled
+     * @throws DisabledDevice
+     */
     @Test(expected = DisabledDevice.class)
     public void disabledReleaseTest() throws DisabledDevice {
         a.getStation().keyboard.disable();
         a.getStation().keyboard.getKey("Shift (Right)").release();
     }
 
+    /**
+     * Presses a key when the keyboard has no power
+     * @throws DisabledDevice
+     */
     @Test(expected = NoPowerException.class)
     public void noPowerPressTest() throws DisabledDevice {
         a.getStation().unplug();
         a.getStation().keyboard.getKey("Shift (Right)").press();
     }
 
+    /**
+     * Releases a key when the keyboard has no power
+     * @throws DisabledDevice
+     */
     @Test(expected = NoPowerException.class)
     public void noPowerReleaseTest() throws DisabledDevice {
         a.getStation().unplug();
         a.getStation().keyboard.getKey("Shift (Right)").release();
     }
-
+ 
+    // -------------------- END TESTS --------------------
+    
     /**
-     * This is a method that will convert a string into the associated key presses on the
+     * This is a utility method that will convert a string into the associated key presses on the
      * USKeyboardQWERTY, a similar function may be included in the GUI, but that is outside
      * the scope of this test class.
      * @param input
@@ -236,7 +269,6 @@ public class TextSearchControllerTest extends AbstractTest {
                 labelLookup.put(c2, label);
             }
         }
-
 
         for (int i = 0; i < input.length(); i++) {
             Character c = input.charAt(i);
@@ -269,10 +301,6 @@ public class TextSearchControllerTest extends AbstractTest {
             if(shift) {
                 keyboard.getKey("Shift (Left)").release();
             }
-
         }
-
-
     }
-
 }
