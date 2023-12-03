@@ -467,14 +467,18 @@ public class Session {
 	 * Called when hardware for the session is opened
 	 */
 	public void openHardware() {
-
+		for (HardwareListener l: hardwareListeners) {
+			l.aStationHasBeenOpened();
+		}
 	}
 
 	/**
 	 * Called when hardware for the session is closed
 	 */
 	public void closeHardware() {
-
+		for (HardwareListener l : hardwareListeners) {
+			l.aStationHasBeenClosed();
+		}
 	}
 	
 	/**
