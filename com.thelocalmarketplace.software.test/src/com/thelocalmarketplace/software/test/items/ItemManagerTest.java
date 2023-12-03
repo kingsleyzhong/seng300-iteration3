@@ -170,13 +170,13 @@ public class ItemManagerTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testWeightDiscrepancy() {
+    public void testDiscrepancy() {
         session.start();
         itemManager.addItem(product);
         assertEquals("Discrepancy must have occured", session.getState(), SessionState.BLOCKED);
     }
     
-    @Test
+    @Test 
     public void testWeightDiscrepancyResolved() {
     	// Create random item 
     	BarcodedItem item = new BarcodedItem(barcode, new Mass(100.0));
