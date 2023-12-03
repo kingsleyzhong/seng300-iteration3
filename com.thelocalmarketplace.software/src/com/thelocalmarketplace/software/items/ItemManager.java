@@ -127,25 +127,25 @@ public class ItemManager {
 	}
 
 	/**
-	 * Adds an item from the visual catalogue. Assumes that only instances of PLUCodedProduct and BarcodedProduct are possible.
+	 * Adds an item from the visual catalogue—checks whether an item is PLUCodedProduct or BarcodedProduct.
 	 *
-	 * @param description
-	 *                The text from the GUI representing the product in the catalogue.
+	 * @param product
+	 *                The product instance from the GUI in the visual catalogue.
 	 */
-	public void addVisualItem(String description) {
+	public void addVisualItem(Product product) {
 		if (addItems) {
-			// Check if the product with given description exists in the catalogue
-			if (visualCatalogue.containsKey(description)) {
-				Product selectedProduct = visualCatalogue.get(description);
-
+			// Check if the product is in the visual catalogue
+			if (visualCatalogue.containsValue(product)) {
+				
 				// The product could be a Barcoded Product
-				if (selectedProduct instanceof BarcodedProduct) {
-					this.addItem((BarcodedProduct) selectedProduct);
+				if (product instanceof BarcodedProduct) {
+					addItem((BarcodedProduct) product);
 				}
 
 				// The product could be a PLU Coded Product
-				else if (selectedProduct instanceof PLUCodedProduct) {
-					// to be complete
+				else if (product instanceof PLUCodedProduct) {
+					lastPLUCode = product.getPLUCode();
+					sessionState = SessionState.ADD_PLU_ITEM; // lets the scale listener know it can measure the weight
 				}
 			} else {
 				// Product not found in the visual catalogue
