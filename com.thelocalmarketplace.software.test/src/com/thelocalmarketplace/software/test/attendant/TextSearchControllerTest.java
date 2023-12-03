@@ -68,7 +68,7 @@ public class TextSearchControllerTest extends AbstractTest {
     private BarcodedItem item2;
     private PLUCodedItem item3;
 
-    private ArrayList<Product> expectedResults;
+    private ArrayList<String> expectedResults;
 
     public TextSearchControllerTest(String testName, AbstractSelfCheckoutStation scs) {
         super(testName, scs);
@@ -135,15 +135,15 @@ public class TextSearchControllerTest extends AbstractTest {
         ProductDatabases.BARCODED_PRODUCT_DATABASE.putIfAbsent(barcode2, product2);
         ProductDatabases.PLU_PRODUCT_DATABASE.putIfAbsent(plu, product3);
 
-        expectedResults.add(product2);
-        expectedResults.add(product3);
+        expectedResults.add(product2.getDescription());
+        expectedResults.add(product3.getDescription());
 
         stringToKeyboard("6");
 
         a.getStation().keyboard.getKey("Enter").press();
         a.getStation().keyboard.getKey("Enter").release();
 
-        assertTrue(a.getTextSearchController().getSearchResults().containsAll(expectedResults));
+        assertTrue(a.getTextSearchController().getSearchResults().keySet().containsAll(expectedResults));
     }
     
     /**
@@ -156,14 +156,14 @@ public class TextSearchControllerTest extends AbstractTest {
         ProductDatabases.BARCODED_PRODUCT_DATABASE.putIfAbsent(barcode2, product2);
         ProductDatabases.PLU_PRODUCT_DATABASE.putIfAbsent(plu, product3);
 
-        expectedResults.add(product1);
+        expectedResults.add(product1.getDescription());
 
         stringToKeyboard("1");
 
         a.getStation().keyboard.getKey("Enter").press();
         a.getStation().keyboard.getKey("Enter").release();
 
-        assertTrue(a.getTextSearchController().getSearchResults().containsAll(expectedResults));
+        assertTrue(a.getTextSearchController().getSearchResults().keySet().containsAll(expectedResults));
     }
 
     /**
@@ -176,16 +176,16 @@ public class TextSearchControllerTest extends AbstractTest {
         ProductDatabases.BARCODED_PRODUCT_DATABASE.putIfAbsent(barcode2, product2);
         ProductDatabases.PLU_PRODUCT_DATABASE.putIfAbsent(plu, product3);
 
-        expectedResults.add(product1);
-        expectedResults.add(product2);
-        expectedResults.add(product3);
+        expectedResults.add(product1.getDescription());
+        expectedResults.add(product2.getDescription());
+        expectedResults.add(product3.getDescription());
 
         stringToKeyboard("aisin");
 
         a.getStation().keyboard.getKey("Enter").press();
         a.getStation().keyboard.getKey("Enter").release();
 
-        assertTrue(a.getTextSearchController().getSearchResults().containsAll(expectedResults));
+        assertTrue(a.getTextSearchController().getSearchResults().keySet().containsAll(expectedResults));
     }
 
     /**

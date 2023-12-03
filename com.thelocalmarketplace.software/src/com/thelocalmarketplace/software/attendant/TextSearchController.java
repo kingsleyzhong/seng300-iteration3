@@ -15,6 +15,7 @@ import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,16 +51,15 @@ import java.util.regex.Pattern;
 public class TextSearchController {
 	private String searchField;
 	private StringBuilder searchFieldSB;
-	private ArrayList<Product> searchResults;
+	private HashMap<String, Product> searchResults;
 	private boolean shift;
 
 	public TextSearchController(IKeyboard keyboard) {
-		searchResults = new ArrayList<>();
+		searchResults = new HashMap<>();
 		searchField = new String("");
 		shift = false;
 		TextSearchController.InnerListener textListener = new TextSearchController.InnerListener();
 		keyboard.register(textListener);
-
 	}
 
 	private class InnerListener implements TouchScreenListener, KeyboardListener {
@@ -140,7 +140,7 @@ public class TextSearchController {
 		return searchField;
 	}
 
-	public ArrayList<Product> getSearchResults() {
+	public HashMap<String, Product> getSearchResults() {
 		return searchResults;
 	}
 
@@ -164,7 +164,7 @@ public class TextSearchController {
 			itemQuery = entry.getValue().getDescription();
 			regexMatcher = regexPattern.matcher(itemQuery);
 			if (regexMatcher.find()) {
-				searchResults.add(entry.getValue());
+				searchResults.put(entry.getValue().getDescription(), entry.getValue());
 			}
 		}
 
@@ -173,7 +173,7 @@ public class TextSearchController {
 			itemQuery = String.valueOf(entry.getKey());
 			regexMatcher = regexPattern.matcher(itemQuery);
 			if (regexMatcher.find()) {
-				searchResults.add(entry.getValue());
+				searchResults.put(entry.getValue().getDescription(), entry.getValue());
 			}
 		}
 
@@ -182,7 +182,7 @@ public class TextSearchController {
 			itemQuery = entry.getValue().getDescription();
 			regexMatcher = regexPattern.matcher(itemQuery);
 			if (regexMatcher.find()) {
-				searchResults.add(entry.getValue());
+				searchResults.put(entry.getValue().getDescription(), entry.getValue());
 			}
 		}
 
@@ -191,12 +191,21 @@ public class TextSearchController {
 			itemQuery = String.valueOf(entry.getKey());
 			regexMatcher = regexPattern.matcher(itemQuery);
 			if (regexMatcher.find()) {
-				searchResults.add(entry.getValue());
+				searchResults.put(entry.getValue().getDescription(), entry.getValue());
 			}
 		}
 	}
 
 	// Now there needs to be a way to select an item and add it to cart while considering if PLU or Barcoded
-
+	
+	/**
+	 * Adding an item from the list of search results
+	 * @param searchField
+	 */
+	public void selectItem() {
+		// It will take some sort of input selection from the GUI
+		// It will then determine what type of item and then what addItemRule to use
+		// It will then add that item to the cart... what happens next?	
+	}
 
 }
