@@ -144,8 +144,8 @@ public class ItemManager {
 
 				// The product could be a PLU Coded Product
 				else if (product instanceof PLUCodedProduct) {
-					lastPLUCode = product.getPLUCode();
-					sessionState = SessionState.ADD_PLU_ITEM; // lets the scale listener know it can measure the weight
+					pluProduct = (PLUCodedProduct) product;
+					addItem(pluProduct.getPLUCode());	//sets the itemManager to be in the plu adding state
 				}
 			} else {
 				// Product not found in the visual catalogue
@@ -196,23 +196,30 @@ public class ItemManager {
 		notifyItemRemoved(product, mass, itemPrice);
 	} 
 	
+	/**
+	 *  this method will remove the entirety of a plu coded product from the addedProducts database and 
+	 *  Subsequently remove all of these products from the transaction, if a customer wants a partial removal
+	 *  they will need to remove all products then re add only the products that they want in the transaction.
+	 *  
+	 *  example: 3 tomatoes added from plu code but customer wants to remove 1, they need to remove all 3 then only
+	 *  add the weight of 2.
+	 * @param product the plu product to be removed
+	 */
 	public void removeItem(PLUCodedProduct product) {
-		long price = product.getPrice(); 
-		Mass mass = PLUProductWeights.get(product);
-		BigDecimal itemPrice = new BigDecimal(price);
-
-		
-		if (addedProducts.containsKey(product) &&
-		addedProducts.get(product).doubleValue() > mass.inMicrograms().doubleValue()) {
-			addedProducts.replace(product, addedProducts.get(product).subtract(mass.inMicrograms()));
-		} else if (addedProducts.containsKey(product) && 
-		addedProducts.get(product).doubleValue() == mass.inMicrograms().doubleValue()) {
+		if (addedProducts.containsKey(product)) {
+			BigDecimal price = new BigDecimal(product.getPrice());
+			BigInteger productWeightMicro = addedProducts.get(product);
+			final int MICROGRAM_PER_KILOGRAM = 1_000_000_000;
+			//gets the weight in kilograms to find price
+			BigInteger weightInKilogram = productWeightMicro.divide(BigInteger.valueOf(MICROGRAM_PER_KILOGRAM));
+			BigDecimal itemPrice = price.multiply(BigDecimal.valueOf(weightInKilogram.doubleValue()));
 			addedProducts.remove(product);
 			PLUProductWeights.remove(product);
+			notifyItemRemoved(product, new Mass(productWeightMicro), itemPrice);
 		} else {
 			throw new ProductNotFoundException("Item not found");
 		}
-		notifyItemRemoved(product, mass, itemPrice);
+		
 	}
 	
 	public void notifyItemAdded(Product product, Mass mass, BigDecimal price) {
