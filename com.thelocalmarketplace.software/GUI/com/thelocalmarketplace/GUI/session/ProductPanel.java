@@ -33,6 +33,7 @@ public class ProductPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private Product product;
 	private Session session;
+	private PlainButton addButton;
 	
 	/**
 	 * Create the panel.
@@ -100,9 +101,9 @@ public class ProductPanel extends JPanel {
 		gbc_priceLbl.fill = GridBagConstraints.HORIZONTAL;
 		add(priceLbl, gbc_priceLbl);
 		
-		JButton btnNewButton = new PlainButton("Add", Colors.color2);
-		btnNewButton.setForeground(Colors.color3);
-		btnNewButton.addActionListener(new ActionListener() {
+		addButton = new PlainButton("Add", Colors.color2);
+		addButton.setForeground(Colors.color3);
+		addButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -121,7 +122,7 @@ public class ProductPanel extends JPanel {
 		gbc_btnNewButton.gridy = 3;
 		gbc_btnNewButton.weightx = 1;
 		gbc_btnNewButton.fill = GridBagConstraints.HORIZONTAL;
-		add(btnNewButton, gbc_btnNewButton);
+		add(addButton, gbc_btnNewButton);
 	}
 
     @Override
@@ -140,6 +141,10 @@ public class ProductPanel extends JPanel {
         graphics.fillRoundRect(0, 0, width-1, height-1, arcs.width, arcs.height); //paint background
         //graphics.setColor(getForeground());
         //graphics.drawRoundRect(0, 0, width-1, height-1, arcs.width, arcs.height); //paint border
+    }
+    
+    public JButton getAddButton() {
+    	return addButton;
     }
 
 }
