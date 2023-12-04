@@ -1,10 +1,8 @@
 package com.thelocalmarketplace.software.attendant;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 import com.jjjwelectronics.DisabledDevice;
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.keyboard.USKeyboardQWERTY;
