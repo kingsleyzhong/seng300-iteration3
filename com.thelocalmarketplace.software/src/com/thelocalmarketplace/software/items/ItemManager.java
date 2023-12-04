@@ -126,34 +126,7 @@ public class ItemManager {
 		}
 	}
 
-	/**
-	 * Adds an item from the visual catalogue—checks whether an item is PLUCodedProduct or BarcodedProduct.
-	 *
-	 * @param product
-	 *                The product instance from the GUI in the visual catalogue.
-	 */
-	public void addVisualItem(Product product) {
-		if (addItems) {
-			// Check if the product is in the visual catalogue
-			if (visualCatalogue.containsValue(product)) {
-				
-				// The product could be a Barcoded Product
-				if (product instanceof BarcodedProduct) {
-					addItem((BarcodedProduct) product);
-				}
-
-				// The product could be a PLU Coded Product
-				else if (product instanceof PLUCodedProduct) {
-					pluProduct = (PLUCodedProduct) product;
-					addItem(pluProduct.getPLUCode());	//sets the itemManager to be in the plu adding state
-				}
-			} else {
-				// Product not found in the visual catalogue
-				throw new ProductNotFoundException("Item not found");
-			}
-			
-		}
-	}
+	
 
 	public void addBulkyItem() {
 		if (bulkyItems.containsKey(lastProduct)) {
