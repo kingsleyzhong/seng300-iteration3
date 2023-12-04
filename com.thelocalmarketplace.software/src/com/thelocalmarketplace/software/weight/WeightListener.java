@@ -36,7 +36,7 @@ public interface WeightListener {
 	 * May be modified in the future to check if the discrepancy was caused by adding/removing an item
 	 * to the cart, or adding/removing an item to the scale
 	 */
-	void notifyDiscrepancy(double difference);
+	void notifyDiscrepancy();
 	
 	/**
 	 * Signals an event in which a previous Discrepancy has been resolved

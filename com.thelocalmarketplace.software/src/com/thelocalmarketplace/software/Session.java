@@ -130,7 +130,7 @@ public class Session {
 		 * checks the bags instead.
 		 */
 		@Override
-		public void notifyDiscrepancy(double difference) {
+		public void notifyDiscrepancy() {
 			// <0 means that actual weight on scale is greater than expected
 			if (weight.getExpectedWeight().inGrams().doubleValue()<weight.getActualWeight().inGrams().doubleValue()) {
 				if(itemRemoved) {

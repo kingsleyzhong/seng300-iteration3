@@ -245,7 +245,7 @@ g	 *
 		if (difference > 5) {
 			isDiscrepancy = true;
 			for (WeightListener l : listeners) {
-				l.notifyDiscrepancy(difference);
+				l.notifyDiscrepancy();
 			}
 		} else {
 			if (isDiscrepancy) {

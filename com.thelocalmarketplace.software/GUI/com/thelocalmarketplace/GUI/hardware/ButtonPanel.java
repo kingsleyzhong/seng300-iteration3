@@ -9,23 +9,25 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import com.jjjwelectronics.EmptyDevice;
+import com.jjjwelectronics.bag.ReusableBag;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 
 import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
 
 public class ButtonPanel extends JPanel implements ActionListener {
+	private ReusableBag[] bags;
+	private int numBags = 0;
+	
 	JButton mainScanner;
 	JButton handheldScanner;
-	JButton coinSlot;
-	JButton banknoteInput;
-	JButton coinTray;
-	JButton banknoteOutput;
 	JButton receiptPrinter;
-	JButton cardDevice;
 	JButton sessionScreen;
 	JButton attendantScreen;
 	JButton startButton;
+	JButton addBags;
+	JButton removeBags;
 	
 	private static final long serialVersionUID = 1L;
 	private HardwareGUI gui;
@@ -36,28 +38,22 @@ public class ButtonPanel extends JPanel implements ActionListener {
 		mainScanner.addActionListener(this);
 		handheldScanner = new PlainButton("Scan With Handheld Scanner", Colors.color4);
 		handheldScanner.addActionListener(this);
-		coinSlot = new PlainButton("Coin Slot", Colors.color4);
-		coinSlot.addActionListener(this);
-		banknoteInput = new PlainButton("Banknote Input", Colors.color4);
-		banknoteInput.addActionListener(this);
-		coinTray = new PlainButton("Coin Tray", Colors.color4);
-		coinTray.addActionListener(this);
-		banknoteOutput = new PlainButton("Banknote Output", Colors.color4);
-		banknoteOutput.addActionListener(this);
 		receiptPrinter = new PlainButton("Collect Receipt", Colors.color4);
 		receiptPrinter.addActionListener(this);
-		cardDevice = new PlainButton("Card Device", Colors.color4);
-		cardDevice.addActionListener(this);
 		sessionScreen = new PlainButton("Self Checkout Station Screen", Colors.color4);
 		sessionScreen.addActionListener(this);
 		attendantScreen = new PlainButton("Attendant Screen", Colors.color4);
 		attendantScreen.addActionListener(this);
+		addBags = new PlainButton("Dispense bags", Colors.color4);
+		addBags.addActionListener(this);
+		removeBags = new PlainButton("Remove all bags", Colors.color4);
+		removeBags.addActionListener(this);
 		
 		startButton = new PlainButton("Start Hardware Simulation", Colors.color4);
 		startButton.addActionListener(this);
 		
 		this.setBackground(Colors.color2);
-		GridLayout layout = new GridLayout(0,5,0,0);
+		GridLayout layout = new GridLayout(1,0,0,0);
 		layout.setHgap(20);
 		layout.setVgap(20);
 		this.setLayout(layout);
@@ -73,6 +69,8 @@ public class ButtonPanel extends JPanel implements ActionListener {
 		this.add(mainScanner);
 		this.add(handheldScanner);
 		this.add(receiptPrinter);
+		this.add(addBags);
+		this.add(removeBags);
 		this.add(sessionScreen);
 		this.add(attendantScreen);
 		this.revalidate();
@@ -108,6 +106,22 @@ public class ButtonPanel extends JPanel implements ActionListener {
 		}
 		else if(e.getSource() == attendantScreen) {
 			
+		}
+		else if(e.getSource() == addBags) {
+			try {
+				ReusableBag bag = gui.getStation().getReusableBagDispenser().dispense();
+				gui.getStation().getBaggingArea().addAnItem(bag);
+				bags[numBags] = bag;
+				numBags += 1;
+			} catch (EmptyDevice e1) {
+				JOptionPane.showMessageDialog(null, "No more bags to dispense.");
+			}
+		}
+		else if(e.getSource() == removeBags) {
+			for(int i = 0; i<numBags; i++) {
+				gui.getStation().getBaggingArea().removeAnItem(bags[i]);
+			}
+			numBags = 0;
 		}
 		
 	}

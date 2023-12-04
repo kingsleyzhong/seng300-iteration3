@@ -484,10 +484,10 @@ public class AddBagsTest extends AbstractSessionTest {
 		Session newSession = new Session();
 		Funds funds = new Funds(scs);
 		Weight weight = new Weight(scs.getBaggingArea());
-		ItemManager itemManager = new ItemManager(session);
+		ItemManager itemManager = new ItemManager();
 		Receipt receipt = new Receipt(scs.getPrinter());
 		SelfCheckoutStationBronze scs = new SelfCheckoutStationBronze();
-		newSession.setup(itemManager, funds, weight, receipt, scs);
+		newSession.setup(itemManager, funds, weight, receipt, membership, scs);
 		newSession.getWeight().configureMAXBAGWEIGHT(newMAXBAGWEIGHT);
 
 		// create a Mass using the max weight weight value from session
@@ -513,10 +513,10 @@ public class AddBagsTest extends AbstractSessionTest {
 		Session newSession = new Session();
 		Funds funds = new Funds(scs);
 		Weight weight = new Weight(scs.getBaggingArea());
-		ItemManager itemManager = new ItemManager(session);
+		ItemManager itemManager = new ItemManager();
 		Receipt receipt = new Receipt(scs.getPrinter());
 		SelfCheckoutStationBronze scs = new SelfCheckoutStationBronze();
-		newSession.setup(itemManager, funds, weight, receipt, scs);
+		newSession.setup(itemManager, funds, weight, receipt, membership, scs);
 		newSession.getWeight().configureMAXBAGWEIGHT(newMAXBAGWEIGHT);
 
 		// create a Mass using the max weight weight value from session
