@@ -29,7 +29,8 @@ import com.thelocalmarketplace.software.funds.FundsListener;
 public class FundsListenerStub implements FundsListener {
 	private ArrayList<String> events;
 	private boolean insufficient;
-
+	private BigDecimal amountDue;
+	
 	public FundsListenerStub() {
 		events = new ArrayList<String>();
 	}
@@ -52,5 +53,15 @@ public class FundsListenerStub implements FundsListener {
 
 	public boolean getInsufficient() {
 		return insufficient;
+	}
+
+	@Override
+	public void notifyUpdateAmountDue(BigDecimal amount) {
+		amountDue = amount;
+		
+	}
+	
+	public BigDecimal getAmountDue() {
+		return amountDue;
 	}
 }
