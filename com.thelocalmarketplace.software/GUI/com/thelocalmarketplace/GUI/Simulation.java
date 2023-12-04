@@ -25,6 +25,7 @@ import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.attendant.Attendant;
 import com.thelocalmarketplace.software.attendant.IssuePredictor;
 import com.thelocalmarketplace.software.attendant.MaintenanceManager;
+import com.thelocalmarketplace.software.exceptions.NotDisabledSessionException;
 import com.thelocalmarketplace.software.items.ItemManager;
 import com.thelocalmarketplace.software.receipt.Receipt;
 
@@ -52,8 +53,9 @@ public class Simulation {
 
 	/**
 	 * Sets up the logic of the simulation
+	 * @throws NotDisabledSessionException 
 	 */
-	public void setupLogic() {
+	public void setupLogic() throws NotDisabledSessionException {
 		scs = new SelfCheckoutStationBronze();
 		as = new AttendantStation();
 		
@@ -65,8 +67,10 @@ public class Simulation {
 		
 		SelfCheckoutStationLogic.installAttendantStation(as);
 		attendant = SelfCheckoutStationLogic.getAttendant();
-		receipt = new Receipt(scs.getPrinter());		
-		manager = new MaintenanceManager(session, scs);
+		receipt = new Receipt(scs.getPrinter());	
+		
+		manager = new MaintenanceManager();
+		manager.openHardware(session);
 		
 		SelfCheckoutStationLogic logic = SelfCheckoutStationLogic.installOn(scs);
 		session = logic.getSession();

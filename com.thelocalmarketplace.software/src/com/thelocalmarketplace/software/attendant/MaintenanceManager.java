@@ -71,17 +71,7 @@ public class MaintenanceManager {
     /**
      * Constructor for MaintenanceManager
      */
-    public MaintenanceManager(Session session, AbstractSelfCheckoutStation scs) {
-    	this.session = session;
-    	this.scs = scs;
-    	this.state = session.getState();
-    	this.receiptPrinter = scs.getPrinter();
-    	this.banknoteDispensers = scs.getBanknoteDispensers();
-    	this.coinDispensers = scs.getCoinDispensers();
-    	this.banknoteDenominations = scs.getBanknoteDenominations();
-    	this.coinDenominations = scs.getCoinDenominations();
-    	this.banknoteStorage = scs.getBanknoteStorage();
-    	this.coinStorage = scs.getCoinStorage();
+    public MaintenanceManager() {
     }
     
     /**
@@ -90,6 +80,7 @@ public class MaintenanceManager {
      * @throws NotDisabledSessionException if the session is not disabled
      */
     public void openHardware(Session session) throws NotDisabledSessionException {
+    	this.session = session;
         state = session.getState();
         if (state == SessionState.DISABLED) {
             scs = session.getStation();
