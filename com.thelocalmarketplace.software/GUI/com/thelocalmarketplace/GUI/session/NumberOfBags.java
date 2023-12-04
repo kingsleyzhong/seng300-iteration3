@@ -272,7 +272,7 @@ public class NumberOfBags {
 			}
 			
 			
-			session.purchasebags(intNumber);
+			session.purchaseBags(intNumber);
 			
 		}
 			
