@@ -48,7 +48,6 @@ public class Attendant {
 	private AttendantStation as;
 	private TextSearchController ts;
 	private HashMap<Session, Requests> sessions = new HashMap<>();
-
 	public ArrayList<AttendantListener> listeners = new ArrayList<>();
 	
 	/**

@@ -171,6 +171,12 @@ public class IssuePredictor  {
 			// TODO Auto-generated method stub
 			
 		}
+
+		@Override
+		public void getRequest(Session session, Requests request) {
+			// TODO Auto-generated method stub
+			
+		}
 		
 	}
 
