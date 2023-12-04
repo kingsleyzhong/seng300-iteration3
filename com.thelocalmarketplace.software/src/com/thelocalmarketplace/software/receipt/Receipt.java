@@ -141,13 +141,13 @@ public class Receipt {
     public void printReceipt(HashMap<Product, BigInteger> items) {
     	receipt = "";
 		for (Map.Entry<Product, BigInteger> item : items.entrySet()) {
-			if(item instanceof BarcodedProduct) {
+			if(item.getKey() instanceof BarcodedProduct) {
 				BarcodedProduct product = (BarcodedProduct)item.getKey();
 				int numberOfProduct = item.getValue().intValue();
 				// barcoded item does not store the price for items which need to be weighted
 				double overallPrice = product.getPrice()*numberOfProduct;
 				receipt = receipt.concat("Item: " + product.getDescription() + " Amount: " + numberOfProduct + " Price: " + overallPrice + "\n");
-			} else if (item instanceof PLUCodedProduct) {
+			} else if (item.getKey() instanceof PLUCodedProduct) {
 				PLUCodedProduct product = (PLUCodedProduct)item.getKey();
 				BigInteger mass = item.getValue();
 				

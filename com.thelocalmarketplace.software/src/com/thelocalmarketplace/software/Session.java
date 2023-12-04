@@ -69,7 +69,7 @@ public class Session {
 	public ArrayList<SessionListener> listeners = new ArrayList<>();
 	private ArrayList<HardwareListener> hardwareListeners = new ArrayList<>();
 	private AbstractSelfCheckoutStation scs;
-	private SessionState sessionState;
+	protected SessionState sessionState;
 	private SessionState prevState;
 	private boolean disableSelf = false; // when true: disable the Session when it ends
 	private Funds funds;
@@ -229,15 +229,6 @@ public class Session {
 
 	}
 
-	private class MemberListener implements MembershipListener {
-		/** Sets the membership number for the session. */
-		@Override
-		public void membershipEntered(String membershipNumber) {
-			Session.this.membershipNumber = membershipNumber;
-			Session.this.hasMembership = true;
-		}
-	}
-
 	/**
 	 * Constructor for the session method. Requires to be installed on self-checkout
 	 * system
@@ -279,7 +270,10 @@ public class Session {
 		this.receipt = receiptPrinter;
 		this.receipt.register(new PrinterListener());
 		this.membership = membership;
-		membership.register(new MemberListener());
+		membership.register((membershipNumber) -> {
+			Session.this.membershipNumber = membershipNumber;
+			Session.this.hasMembership = true;
+		});
 		this.scs = scs;
 	}
 
