@@ -9,7 +9,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.jjjwelectronics.scanner.BarcodedItem;
 import com.tdc.CashOverloadException;
 import com.tdc.DisabledException;
 import com.tdc.IComponent;
@@ -21,18 +20,9 @@ import com.tdc.coin.Coin;
 import com.tdc.coin.CoinValidator;
 import com.tdc.coin.CoinValidatorObserver;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationSilver;
-import com.thelocalmarketplace.software.Session;
-import com.thelocalmarketplace.software.SessionState;
-import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.funds.PayByCash;
 import com.thelocalmarketplace.software.test.AbstractTest;
-import com.thelocalmarketplace.software.test.funds.PayByCashTest.MockSession;
-
-import powerutility.PowerGrid;
 
 public class PayByCashTest extends AbstractTest {
 
