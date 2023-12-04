@@ -48,7 +48,6 @@ public class Attendant {
 	private AttendantStation as;
 	private TextSearchController ts;
 	private HashMap<Session, Requests> sessions = new HashMap<>();
-	public ArrayList<AttendantListener> listeners = new ArrayList<>();
 	
 	/**
 	 * default constructor
@@ -328,23 +327,5 @@ public class Attendant {
 
 	public TextSearchController getTextSearchController() {
 		return ts;
-	}
-
-	// register listeners
-	public final synchronized void register(AttendantListener listener) {
-		if (listener == null)
-			throw new NullPointerSimulationException("listener");
-		listeners.add(listener);
-	}
-
-	// de-register listeners
-	public final synchronized void deRegister(AttendantListener listener) {
-		if (listener == null)
-			throw new NullPointerSimulationException("listener");
-		listeners.remove(listener);
-	}
-
-	public ArrayList<AttendantListener> getListeners(){
-		return listeners;
 	}
 }

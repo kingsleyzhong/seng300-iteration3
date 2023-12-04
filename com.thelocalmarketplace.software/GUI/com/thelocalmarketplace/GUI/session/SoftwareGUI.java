@@ -41,7 +41,7 @@ import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
 public class SoftwareGUI{
-	public JFrame frame;
+	public static JFrame frame;
 	public JFrame catalogue;
 	public JPanel mainPane;
 	public JPanel startPane;
@@ -458,11 +458,11 @@ public class SoftwareGUI{
 		itemAmount.setText(Integer.toString(quantity));
 	}
 	
-	public void hide() {
+	public static void hide() {
     	frame.setVisible(false);
     }
 	
-	public void unhide() {
+	public static void unhide() {
 		frame.setVisible(true);
 	}
 	

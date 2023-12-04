@@ -7,11 +7,13 @@ import com.thelocalmarketplace.software.Session;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import javax.swing.JPanel;
-
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -19,6 +21,8 @@ import javax.swing.JOptionPane;
 import com.jjjwelectronics.screen.ITouchScreen;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
+import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
+import com.thelocalmarketplace.GUI.session.SoftwareGUI;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.AttendantStation;
 import com.thelocalmarketplace.hardware.ISelfCheckoutStation;
@@ -66,27 +70,57 @@ public class AttendantGUI {
 		asScreen.getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		asScreen.getFrame().setSize(new Dimension(width, height));
 		asScreen.getFrame().setExtendedState(JFrame.MAXIMIZED_BOTH);
-		asScreen.getFrame().getContentPane().setLayout(new GridLayout(6,0,0,0));
+		asScreen.getFrame().getContentPane().setLayout(new BorderLayout());
 		
 		asScreen.getFrame().getContentPane().setBackground(Colors.color1);
+		// ORANGE PANEL FOR ITEM DETAILS:
+		JPanel orangePanel = new JPanel();
+		orangePanel.setBackground(Colors.color5);
+		orangePanel.setLayout(new GridLayout(1,0,10,10));
+					
+		JButton hardwareButton = new PlainButton("Hardware GUI", Colors.color5);
+		hardwareButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				HardwareGUI.setVisibility(true);
+						
+			}		
+		});
+		JButton softwareButton = new PlainButton("Software GUI", Colors.color5);
+		hardwareButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				SoftwareGUI.unhide();
+			}		
+		});
+		JPanel search = new SearchBar(textSearch);
+		
+		orangePanel.add(hardwareButton);
+		orangePanel.add(softwareButton);
+		orangePanel.add(search);
+		asScreen.getFrame().getContentPane().add(orangePanel, BorderLayout.NORTH);
 		
 		populateSessions();
-		asScreen.setVisible(false);
+		asScreen.setVisible(true);
 	}
 	
 	public void populateSessions() {
-		int val = 0;
+		JPanel main = new JPanel();
+		main.setBackground(Colors.color1);
+		main.setLayout(new GridLayout(6,0,0,0));
 		if (sessions.size() != 0) {
 			for(Session session : sessions.keySet()) {
 				JPanel panel = new StationPanel(session, attendant, predictor, manager);
 				panel.setPreferredSize(new Dimension(width/6, width/6));
-				asScreen.getFrame().getContentPane().add(panel, BorderLayout.SOUTH);
+				main.add(panel);
 			}
 		} else {
 			JPanel panel = new StationPanel(null, attendant, predictor, manager);
 			panel.setPreferredSize(new Dimension(width/6, width/6));
-			asScreen.getFrame().getContentPane().add(panel, BorderLayout.SOUTH);
+			main.add(panel);
 		}
+		asScreen.getFrame().getContentPane().add(main, BorderLayout.CENTER);
+		asScreen.getFrame().getContentPane().revalidate();
 	}
 	
 	public static void hide() {

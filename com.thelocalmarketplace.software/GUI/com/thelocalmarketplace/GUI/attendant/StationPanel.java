@@ -71,7 +71,6 @@ public class StationPanel extends JPanel implements ActionListener {
 	public StationPanel(Session session, Attendant attendant, IssuePredictor predictor, MaintenanceManager manager) {
 		this.attendant = attendant;
 		this.session = session;
-		this.searchCatalogue = new AttendantCatalogue(session, attendant);
 		
 		// register listeners
 		predictor.register(new InnerPredictionListener());
@@ -192,7 +191,7 @@ public class StationPanel extends JPanel implements ActionListener {
 				updateIssues(issues);
 			}
 		} else if (e.getSource() == addBySearch) {
-			searchCatalogue.setVisible(true);
+			new AttendantCatalogue(session, attendant);
 		}
 	}
 	
