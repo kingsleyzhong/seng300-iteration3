@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.util.HashMap;
 
 import com.jjjwelectronics.Mass;
+import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionListener;
@@ -15,7 +16,8 @@ public class SessionListenerStub implements SessionListener{
 	public HashMap<Product, BigInteger> products = new HashMap<Product, BigInteger>();
 	public BigDecimal currentExpectedPrice;
 	public boolean discrepancy;
-
+	PLUCodedProduct pluProduct;
+	
 	@Override
 	public void getRequest(Session session, Requests request) {
 		this.request = request;
@@ -61,7 +63,6 @@ public class SessionListenerStub implements SessionListener{
 		
 	}
 
-	@Override
 	public void pricePaidUpdated(Session session) {
 		// TODO Auto-generated method stub
 		
@@ -75,6 +76,24 @@ public class SessionListenerStub implements SessionListener{
 
 	@Override
 	public void sessionEnded(Session session) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void pluCodeEntered(PLUCodedProduct product) {
+		this.pluProduct = product;
+		
+	}
+
+	@Override
+	public void pricePaidUpdated(Session session, BigDecimal amountDue) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void sessionStateChanged() {
 		// TODO Auto-generated method stub
 		
 	}

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
@@ -21,7 +22,9 @@ import com.thelocalmarketplace.hardware.PLUCodedItem;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.Product;
+import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.SessionState;
+import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 import com.thelocalmarketplace.software.exceptions.ProductNotFoundException;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.test.AbstractSessionTest;
@@ -65,8 +68,8 @@ public class ItemManagerTest extends AbstractSessionTest {
         barcodedItem2 = new BarcodedItem(barcode2, new Mass(product2.getExpectedWeight()));
         pluCode = new PriceLookUpCode("1234");
         pluCode2 = new PriceLookUpCode("4321");
-        pluProduct = new PLUCodedProduct(pluCode, "bread", 5);
-        pluProduct2 = new PLUCodedProduct(pluCode2, "meat", 10);
+        pluProduct = new PLUCodedProduct(pluCode, "bread", 500);
+        pluProduct2 = new PLUCodedProduct(pluCode2, "meat", 100);
         pluProductMass = new Mass(5);
         pluProductMass2 = new Mass(10);
         pluItem = new PLUCodedItem(pluCode, pluProductMass);
@@ -74,6 +77,11 @@ public class ItemManagerTest extends AbstractSessionTest {
         
 	}
 	
+	public void populatePLUDatabase() {
+		ProductDatabases.PLU_PRODUCT_DATABASE.put(pluCode, pluProduct);
+		ProductDatabases.PLU_PRODUCT_DATABASE.put(pluCode2, pluProduct2);
+	}
+
 	
 	public ItemManagerTest(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
         super(testName, scsClass);
@@ -273,6 +281,7 @@ public class ItemManagerTest extends AbstractSessionTest {
     @Test
     public void addPLUProduct() {
     	session.start();
+    	itemManager.deregisterAll();
     	itemManager.addItem(pluProduct, pluProductMass);
     	
     	BigInteger expected = pluProductMass.inMicrograms();
@@ -286,8 +295,8 @@ public class ItemManagerTest extends AbstractSessionTest {
     
     @Test
     public void addTwoPLUProducts() {
+    	itemManager.deregisterAll();
     	PLUCodedItem pluItemClone = new PLUCodedItem(pluCode, pluProductMass);
-    	
     	session.start();
     	itemManager.addItem(pluProduct, pluProductMass);
     	scs.getScanningArea().addAnItem(pluItem);
@@ -303,7 +312,6 @@ public class ItemManagerTest extends AbstractSessionTest {
      	// Reset
      	itemManager.removeItem(pluProduct);
      	scs.getScanningArea().removeAnItem(pluItem);
-     	itemManager.removeItem(pluProduct);
      	scs.getScanningArea().removeAnItem(pluItemClone);
     }
     
@@ -341,6 +349,43 @@ public class ItemManagerTest extends AbstractSessionTest {
     	itemManager.register(stub);
     	itemManager.deregister(stub);
     	assertEquals(itemManager.getListeners().size(), 0);
+    }
+    
+    @Test
+    public void getInitialpluState() {
+    	session.start();
+    	assertEquals(false, itemManager.isAddPLUItemState());
+    }
+    
+    
+    @Test
+    public void addItemPLUByGUI() {
+    	session.start();
+    	ItemsListenerStub stub = new ItemsListenerStub();
+    	itemManager.register(stub);
+    	populatePLUDatabase();
+    	itemManager.setAddItems(true);
+    	itemManager.addItem(pluCode);
+    	
+    	assertTrue(pluCode.equals(stub.getProduct().getPLUCode()));
+    	
+    	// Reset
+    	itemManager.setAddItems(false);
+    }
+    
+    @Test(expected = InvalidActionException.class)
+    public void addItemPLUByGUINotInDatabase() {
+    	session.start();
+    	ItemsListenerStub stub = new ItemsListenerStub();
+    	itemManager.register(stub);
+    	ProductDatabases.PLU_PRODUCT_DATABASE.clear();
+    	itemManager.setAddItems(true);
+    	itemManager.addItem(pluCode);
+    	
+    	assertTrue(pluCode.equals(stub.getProduct().getPLUCode()));
+    	
+    	// Reset
+    	itemManager.setAddItems(false);
     }
     
     @Test 
