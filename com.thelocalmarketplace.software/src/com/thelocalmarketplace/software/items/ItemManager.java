@@ -272,4 +272,7 @@ public class ItemManager {
 		return visualCatalogue;
 	}
 
+	public void clear() {
+		addedProducts = new HashMap<>();
+	}
 }
