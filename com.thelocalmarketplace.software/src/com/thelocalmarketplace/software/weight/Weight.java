@@ -8,6 +8,8 @@ import com.jjjwelectronics.IDeviceListener;
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.scale.ElectronicScaleListener;
 import com.jjjwelectronics.scale.IElectronicScale;
+import com.thelocalmarketplace.software.SessionState;
+
 import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 
 /**
@@ -51,6 +53,7 @@ public class Weight {
 	private Mass lastWeightAdded = Mass.ZERO;
 	private Mass personalBagsWeight;
 	private Mass purchasedBagsWeight;
+	private boolean inSession;
 	
 	private Mass MAXBAGWEIGHT = new Mass(500 * Mass.MICROGRAMS_PER_GRAM);
 
@@ -65,7 +68,15 @@ public class Weight {
 		baggingArea.register(new innerListener());
 	}
 
-	public class innerListener implements ElectronicScaleListener {
+    public void clear() {
+		expectedWeight = Mass.ZERO;
+		checkDiscrepancy();
+    }
+
+    public void setInSession(boolean value) {
+    	inSession = value;
+    }
+    public class innerListener implements ElectronicScaleListener {
 
 		@Override
 		public void aDeviceHasBeenEnabled(IDevice<? extends IDeviceListener> device) {
@@ -229,7 +240,7 @@ public class Weight {
 		// Mass(massToSubtract.inMicrograms().multiply(conversion));
 	
 		this.expectedWeight = new Mass(NewValue);
-	
+		checkDiscrepancy();
 	}
 	
 	/*
@@ -244,17 +255,19 @@ public class Weight {
 	 * @param forceNotify: boolean value to force notifyDiscrepancy() to be called
 	 */
 	public void checkDiscrepancy(boolean forceNotify) {
-		double difference = expectedWeight.difference(actualWeight).abs().inGrams().doubleValue();
-		if (difference > 5) {
-			isDiscrepancy = true;
-			for (WeightListener l : listeners) {
-				l.notifyDiscrepancy();
-			}
-		} else {
-			if (isDiscrepancy || forceNotify) {
-				isDiscrepancy = false;
+		if (inSession){
+			double difference = expectedWeight.difference(actualWeight).abs().inGrams().doubleValue();
+			if (difference > 5) {
+				isDiscrepancy = true;
 				for (WeightListener l : listeners) {
-					l.notifyDiscrepancyFixed();
+					l.notifyDiscrepancy();
+				}
+			} else {
+				if (isDiscrepancy || forceNotify) {
+					isDiscrepancy = false;
+					for (WeightListener l : listeners) {
+						l.notifyDiscrepancyFixed();
+					}
 				}
 			}
 		}

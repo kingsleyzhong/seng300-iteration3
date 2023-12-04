@@ -22,6 +22,7 @@ import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.attendant.Attendant;
+import com.thelocalmarketplace.software.attendant.TextSearchController;
 
 public class AttendantCatalogue extends JFrame {
 
@@ -29,15 +30,15 @@ public class AttendantCatalogue extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Attendant attendant;
 	private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-	private Map<Product, Integer> inventory = ProductDatabases.INVENTORY;
+	private Map<String, Product> inventory;
 	Session session;
-	private JFrame frame = this;
+	private static JFrame frame;
 	
 	public AttendantCatalogue(Session session, Attendant attendant) {
+		frame = this;
+		inventory = attendant.getTextSearchController().getSearchResults();
 		this.session = session;
-		this.attendant = attendant;
 		this.setTitle("Search Catalog");
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setUndecorated(true);
@@ -56,14 +57,12 @@ public class AttendantCatalogue extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				frame.setVisible(false);
+				frame.dispose();
 			}
 			
 		});
 		
-		SearchBar searchBar = new SearchBar(inventory);
 		orangePanel.add(backButton, BorderLayout.WEST);
-		orangePanel.add(searchBar, BorderLayout.CENTER);
 		mainPanel.add(orangePanel, BorderLayout.NORTH);
 		
 		JPanel productPanel = new JPanel();
@@ -72,7 +71,7 @@ public class AttendantCatalogue extends JFrame {
 		productPanel.setBackground(Colors.color1);
 		
 		inventory.forEach((key, value) -> {
-			productPanel.add(new ProductItem(key, session, attendant));
+			productPanel.add(new ProductItem(value, session, attendant));
 		});
 		
 		JScrollPane scroll = new JScrollPane(productPanel);
@@ -86,6 +85,11 @@ public class AttendantCatalogue extends JFrame {
 		getContentPane().add(mainPanel, BorderLayout.CENTER);
 		
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		setVisible(true);
 		setAlwaysOnTop(true);
+	}
+	
+	public static void remove() {
+		frame.dispose();
 	}
 }

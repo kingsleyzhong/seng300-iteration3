@@ -51,7 +51,7 @@ public class ItemManager {
 	private HashMap<Product, Mass> PLUProductWeights = new HashMap<Product, Mass>();
 	
 	private PLUCodedProduct pluProduct;
-	private BarcodedProduct lastProduct;
+	private Product lastProduct;
 	private boolean addItems = false;
 	private boolean addPLUItemState = false;
 
@@ -83,6 +83,10 @@ public class ItemManager {
 	
 	public PLUCodedProduct getPluProduct() {
 		return pluProduct;
+	}
+	
+	public Product getLastProduct() {
+		return lastProduct;
 	}
 	
 	/**
@@ -120,7 +124,7 @@ public class ItemManager {
 				addedProducts.put(product, mass.inMicrograms());
 				PLUProductWeights.put(product,mass);
 			}
-			
+			lastProduct = product;
 			BigDecimal price = new BigDecimal(product.getPrice());
 			final int MICROGRAM_PER_KILOGRAM = 1_000_000_000;
 			BigDecimal weightInKilogram = BigDecimal.valueOf(mass.inMicrograms().doubleValue()/MICROGRAM_PER_KILOGRAM);
@@ -133,10 +137,10 @@ public class ItemManager {
 	
 
 	public void addBulkyItem() {
-		if (bulkyItems.containsKey(lastProduct)) {
-			bulkyItems.replace(lastProduct, bulkyItems.get(lastProduct) + 1);
+		if (bulkyItems.containsKey((BarcodedProduct)lastProduct)) {
+			bulkyItems.replace((BarcodedProduct)lastProduct, bulkyItems.get(lastProduct) + 1);
 		} else {
-			bulkyItems.put(lastProduct, 1);
+			bulkyItems.put((BarcodedProduct)lastProduct, 1);
 		}
 	}
 	
@@ -293,4 +297,7 @@ public class ItemManager {
 		return visualCatalogue;
 	}
 
+	public void clear() {
+		addedProducts = new HashMap<>();
+	}
 }
