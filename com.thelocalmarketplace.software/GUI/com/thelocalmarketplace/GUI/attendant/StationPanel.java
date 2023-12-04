@@ -24,6 +24,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import com.tdc.banknote.BanknoteStorageUnit;
+import com.tdc.coin.CoinStorageUnit;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
@@ -31,8 +33,10 @@ import com.thelocalmarketplace.GUI.session.SearchCatalogue;
 import com.thelocalmarketplace.hardware.ISelfCheckoutStation;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.attendant.Attendant;
+import com.thelocalmarketplace.software.attendant.IssuePredictor;
 import com.thelocalmarketplace.software.attendant.IssuePredictorListener;
 import com.thelocalmarketplace.software.attendant.Issues;
+import com.thelocalmarketplace.software.attendant.MaintenanceManager;
 import com.thelocalmarketplace.software.attendant.MaintenanceManagerListener;
 
 import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
@@ -64,10 +68,14 @@ public class StationPanel extends JPanel implements ActionListener {
 	
 	private static final long serialVersionUID = 1L;
 	
-	public StationPanel(Session session, Attendant attendant) {
+	public StationPanel(Session session, Attendant attendant, IssuePredictor predictor, MaintenanceManager manager) {
 		this.attendant = attendant;
 		this.session = session;
 		this.searchCatalogue = new AttendantCatalogue(session, attendant);
+		
+		// register listeners
+		predictor.register(new InnerPredictionListener());
+		manager.register(new InnerResolutionListener());		
 		
 		GridLayout layout = new GridLayout(1,6,0,0);
 		layout.setHgap(20);
@@ -237,39 +245,51 @@ public class StationPanel extends JPanel implements ActionListener {
 	private class InnerResolutionListener implements MaintenanceManagerListener{
 
 		@Override
-		public void notifyInkAdded() {
+		public void notifyInkAdded(Session session) {
 			issues.put("ink", false);
 			updateIssues(issues);
 		}
 
 		@Override
-		public void notifyPaperAdded() {
+		public void notifyPaperAdded(Session session) {
 			issues.put("paper", false);
 			updateIssues(issues);
 		}
 
 		@Override
-		public void notifyCoinAdded() {
+		public void notifyCoinAdded(Session session) {
 			issues.put("coinsLow", false);
 			updateIssues(issues);
 		}
 
 		@Override
-		public void notifyBanknoteAdded() {
+		public void notifyBanknoteAdded(Session session) {
 			issues.put("banknotesLow", false);
 			updateIssues(issues);
 		}
 
 		@Override
-		public void notifyCoinRemoved() {
+		public void notifyCoinRemoved(Session session, CoinStorageUnit coinStorage) {
 			issues.put("coinsFull", false);
 			updateIssues(issues);
 		}
 
 		@Override
-		public void notifyBanknoteRemoved() {
+		public void notifyBanknoteRemoved(Session session, BanknoteStorageUnit banknoteStorage) {
 			issues.put("banknotesFull", false);
 			updateIssues(issues);
+		}
+
+		@Override
+		public void notifyHardwareOpened(Session session) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void notifyHardwareClosed(Session session) {
+			// TODO Auto-generated method stub
+			
 		}
 		
 	}

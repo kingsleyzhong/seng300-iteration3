@@ -117,7 +117,7 @@ public class SessionTest extends AbstractTest {
         product = new BarcodedProduct(barcode, "Sample Product", 10, 100.0);
         product2 = new BarcodedProduct(barcode2, "Sample Product 2", 15, 20.0);
         funds = new Funds(scs);
-        itemManager = new ItemManager(session);
+        itemManager = new ItemManager();
 
         IElectronicScale baggingArea = scs.getBaggingArea();
         weight = new Weight(baggingArea);

@@ -33,7 +33,14 @@ import com.thelocalmarketplace.software.attendant.Requests;
  * Kingsley Zhong 		   	: 30197260 
  */
 
-public interface SessionListener {	
+public interface SessionListener {
+	/**
+	 * Allows for the attendant station to be notified of a request from a session it is tracking and what the request is.
+	 * @param session
+	 * @param request
+	 */
+	void getRequest(Session session, Requests request);
+	
 	
 	void itemAdded(Session session, Product product, Mass ofProduct, Mass currentExpectedWeight, BigDecimal currentExpectedPrice);
 	
