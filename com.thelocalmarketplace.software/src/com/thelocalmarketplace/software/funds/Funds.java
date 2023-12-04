@@ -146,8 +146,8 @@ public class Funds {
 	 * price.
 	 */
 	private void calculateAmountDue(BigDecimal amountPaid) {
-
-		this.amountDue = this.itemsPrice.add(amountPaid);
+		
+		this.amountDue = this.amountDue.add(amountPaid);
 
 		for (FundsListener l : listeners)
 			l.notifyUpdateAmountDue(this.amountDue);
