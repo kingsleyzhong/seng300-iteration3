@@ -263,14 +263,14 @@ public class SessionTest extends AbstractTest {
      */
     @Test
     public void testDisableSession() {
-        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
      	
         session.disable();
         assertTrue(session.getState()== SessionState.DISABLED);
     }
     @Test
     public void testDisableSessionStarted() {
-        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
      	session.start();
         session.disable();
         assertTrue(session.getState() != SessionState.DISABLED);
@@ -280,14 +280,14 @@ public class SessionTest extends AbstractTest {
      */
     @Test
     public void testEnableSession() {
-        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.disable();
         session.enable();
         assertTrue(session.getState() != SessionState.DISABLED);
     }
     @Test
     public void testEnableSessionNotDisabled() {
-        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.start();
         SessionState preState = session.getState();
         session.enable();

@@ -106,7 +106,7 @@ public class SelfCheckoutStationLogic {
 		Membership membership = new Membership(scs.getCardReader());
 		// Will also need the touch screen/ keyboard for GUI interaction
 		BagDispenserController bagdispenser = new BagDispenserController(scs.getReusableBagDispenser(), itemManager);
-		session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagdispenser );
+		session.setup(itemManager, funds, weight, receipt, membership, scs, bagdispenser );
 
 		// register scanner and handheld scanner with the item manager
 		new ItemAddedRule(scs.getMainScanner(), scs.getHandheldScanner(), itemManager);
