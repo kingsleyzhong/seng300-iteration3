@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import com.jjjwelectronics.Mass;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
+import com.thelocalmarketplace.software.attendant.Requests;
 
 /**
  * Project Iteration 3 Group 1

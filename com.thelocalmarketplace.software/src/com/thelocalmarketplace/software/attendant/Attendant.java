@@ -114,10 +114,14 @@ public class Attendant {
 
 		@Override
 		public void sessionAboutToStart(Session session) {
+			// TODO Auto-generated method stub
+			
 		}
 
 		@Override
 		public void sessionEnded(Session session) {
+			// TODO Auto-generated method stub
+			
 		}
 
 		@Override
@@ -136,7 +140,13 @@ public class Attendant {
 
 	/**
 	 * Receives notifications when an issue (eg. low ink, paper, low coins) is likely to occur for a given Session
-	 * Used to let Attendant know when a customer station might have issues before they happen
+	 * Used to let Attendant know when a customer station might have issues before they happen.
+	 * 
+	 * @param session
+	 * 					an instance of Session tha the Attendant is responsible for acting on
+	 * 
+	 * 
+	 * 
 	 */
 	private class InnerPredictionListener implements IssuePredictorListener{
 
@@ -176,8 +186,10 @@ public class Attendant {
 		}
 
 	}
-	public void registerOn(Session session) {
+	public void registerOn(Session session, IssuePredictor predictior) {
 		session.register(new InnerSessionListener());
+		//sessions.add(session);
+		//as.supervisedStations();
 		sessions.put(session, Requests.NO_REQUEST);
 	}
 
@@ -250,6 +262,9 @@ public class Attendant {
 	}
 	public AttendantStation getStation() {
 		return as;
+	}
+	public HashMap<Session, Requests> getSessions(){
+		return sessions;
 	}
 
 	public TextSearchController getTextSearchController() {

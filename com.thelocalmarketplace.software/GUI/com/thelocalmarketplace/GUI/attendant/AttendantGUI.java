@@ -3,50 +3,94 @@ package com.thelocalmarketplace.GUI.attendant;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import com.thelocalmarketplace.software.Session;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Toolkit;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import javax.swing.JPanel;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 import com.jjjwelectronics.screen.ITouchScreen;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
+import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+import com.thelocalmarketplace.hardware.AttendantStation;
+import com.thelocalmarketplace.hardware.ISelfCheckoutStation;
 import com.thelocalmarketplace.software.attendant.Attendant;
+import com.thelocalmarketplace.software.attendant.IssuePredictorListener;
+import com.thelocalmarketplace.software.attendant.Issues;
+import com.thelocalmarketplace.software.attendant.MaintenanceManager;
+import com.thelocalmarketplace.software.attendant.Requests;
+import com.thelocalmarketplace.software.attendant.TextSearchController;
 
 public class AttendantGUI {
 	Attendant attendant;
-	ITouchScreen screen;
-	JFrame attendantFrame;
+	MaintenanceManager manager;
+	HashMap<Session, Requests> sessions;
+	List<JPanel> stationPanels;
+	ITouchScreen asScreen;
+	TextSearchController textSearch;
 	
 	private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	private int[] dimensions = {0,0};
 	private int width;
 	private int height;
 	
-	public AttendantGUI(Attendant attendant, ITouchScreen screen) {
+	/**
+	 * @wbp.parser.entryPoint
+	 */
+	public AttendantGUI(Attendant attendant, MaintenanceManager manager) {
+		this.attendant = attendant;
+		this.manager = manager;
+		this.asScreen = attendant.getStation().screen;
+		this.textSearch = attendant.getTextSearchController();
+		
+		sessions = attendant.getSessions();
 		width = (int) screenSize.getWidth();
 		height = (int) screenSize.getHeight();
 		
 		width = 1500;
 		height = 800;
 		
-		screen.getFrame().setTitle("Attendant Screen GUI");
-		screen.getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		screen.getFrame().setSize(new Dimension(width, height));
-		screen.getFrame().setExtendedState(JFrame.MAXIMIZED_BOTH);
-		screen.getFrame().getContentPane().setLayout(new GridLayout(10,10));
+		asScreen.getFrame().setTitle("Attendant Screen GUI");
+		asScreen.getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		asScreen.getFrame().setSize(new Dimension(width, height));
+		asScreen.getFrame().setExtendedState(JFrame.MAXIMIZED_BOTH);
+		asScreen.getFrame().getContentPane().setLayout(new GridLayout(6,0,0,0));
 		
-		GridBagConstraints gridConstraints = new GridBagConstraints();
-		gridConstraints.insets = new Insets(1, 1, 1, 1);
-		gridConstraints.gridx = 0;
-		gridConstraints.gridy = 0;
+		asScreen.getFrame().getContentPane().setBackground(Colors.color1);
 		
-		screen.getFrame().getContentPane().setBackground(Colors.color1);
-		screen.getFrame().getContentPane().add(new PlainButton("test", Colors.color4));
-		
-		this.attendant = attendant;
-		screen.setVisible(true);
+		populateSessions();
+		asScreen.setVisible(false);
 	}
+	
+	public void populateSessions() {
+		int val = 0;
+		if (sessions.size() != 0) {
+			for(Session session : sessions.keySet()) {
+				JPanel panel = new StationPanel(session, attendant, manager);
+				panel.setPreferredSize(new Dimension(width/6, width/6));
+				asScreen.getFrame().getContentPane().add(panel, BorderLayout.SOUTH);
+			}
+		} else {
+			JPanel panel = new StationPanel(null, attendant, manager);
+			panel.setPreferredSize(new Dimension(width/6, width/6));
+			asScreen.getFrame().getContentPane().add(panel, BorderLayout.SOUTH);
+		}
+	}
+	
+	public void hide() {
+		asScreen.getFrame().setVisible(false);
+	}
+	
+	public void unhide() {
+		asScreen.getFrame().setVisible(true);
+	}
+	
 }

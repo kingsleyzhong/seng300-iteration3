@@ -94,6 +94,7 @@ public class SelfCheckoutStationLogic {
 
 		// Registers the attendant with the session
 		attendant.registerOn(session);
+		System.out.println("SESSIONS: "+attendant.getSessions().size());
 
 		// create Funds, Weight, Receipt, and ItemManger classes to associate w/ Session
 		Funds funds = new Funds(scs);

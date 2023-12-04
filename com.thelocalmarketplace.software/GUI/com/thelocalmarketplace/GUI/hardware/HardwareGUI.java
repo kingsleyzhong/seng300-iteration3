@@ -26,6 +26,7 @@ import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.scanner.BarcodedItem;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+import com.thelocalmarketplace.hardware.AttendantStation;
 import com.thelocalmarketplace.hardware.PLUCodedItem;
 import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import java.awt.BorderLayout;
@@ -38,6 +39,7 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 
 public class HardwareGUI {
+	private AttendantStation supervisor;
 	private AbstractSelfCheckoutStation scs;
 	private static JFrame hardwareFrame;
 	private JPanel content;
@@ -65,8 +67,9 @@ public class HardwareGUI {
 	private JList<ItemObject> importList;
     private JList<ItemObject> exportList;
 	
-	public HardwareGUI(AbstractSelfCheckoutStation scs) {
+	public HardwareGUI(AbstractSelfCheckoutStation scs, AttendantStation supervisor) {
 		this.scs = scs;
+		this.supervisor = supervisor;
 		
 		populateItems();
 		
@@ -328,6 +331,10 @@ public class HardwareGUI {
 				JOptionPane.showMessageDialog(null, "This item does not have a barcode to scan.");
 			}
 		}
+	}
+	
+	public AttendantStation getSupervisor() {
+		return supervisor;
 	}
 	
 	public AbstractSelfCheckoutStation getStation() {
