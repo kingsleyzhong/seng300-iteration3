@@ -94,7 +94,7 @@ public class Funds {
 			throw new IllegalDigitException("Price should be positive.");
 		}
 		this.itemsPrice = this.itemsPrice.add(price);
-		calculateAmountDue(new BigDecimal(0));
+		calculateAmountDue(price.negate());
 	}
 
 	/**
@@ -108,7 +108,7 @@ public class Funds {
 		}
 		
 		this.itemsPrice = this.itemsPrice.subtract(price);
-		calculateAmountDue(price.negate());
+		calculateAmountDue(price);
 	}
 
 	/**
@@ -166,7 +166,7 @@ public class Funds {
 		}
 	}
 
-	/***
+	/*** 
 	 * Checks the status of a card payment
 	 */
 	public void updatePaidCard(boolean paidBool) {
