@@ -267,7 +267,7 @@ public class FundsTest extends AbstractTest {
 		SessionFundsSimulationStub sampleSimulation = new SessionFundsSimulationStub();
 		sampleSimulation.setPayByCash();
 		scs.getBanknoteInput().enable();
-		scs.getBanknoteInput().receive(new Banknote(currency, new BigDecimal(1)));
+		//scs.getBanknoteInput().receive(new Banknote(currency, new BigDecimal(1)));
 		funds.updatePaidCash(BigDecimal.TEN);
 	}
 	

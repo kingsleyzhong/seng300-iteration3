@@ -150,8 +150,7 @@ public class Funds {
 	 * Calculates the amount due by subtracting the paid amount from the total items
 	 * price.
 	 */
-	private void calculateAmountDue(BigDecimal amountPaid) {
-		
+	private void calculateAmountDue(BigDecimal amountPaid) {	
 		this.amountDue = this.amountDue.subtract(amountPaid);
 
 		for (FundsListener l : listeners)
@@ -177,7 +176,7 @@ public class Funds {
 	public void updatePaidCard(boolean paidBool) {
 		if (isPay) {
 			if (paidBool) {
-				calculateAmountDue(amountDue.negate());
+				calculateAmountDue(amountDue);
 			}
 		} else {
 			throw new InvalidActionException("Not in Card Payment state");
@@ -189,7 +188,7 @@ public class Funds {
 	 */
 	public void updatePaidCash(BigDecimal paid) {
 		if (isPay) {
-			calculateAmountDue(paid.negate());
+			calculateAmountDue(paid);
 		}
 
 	}
