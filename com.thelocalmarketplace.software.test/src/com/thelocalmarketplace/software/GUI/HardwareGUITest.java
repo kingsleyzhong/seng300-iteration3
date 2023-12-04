@@ -29,6 +29,7 @@ import powerutility.PowerGrid;
 
 import java.awt.*;
 import java.math.BigDecimal;
+import java.awt.event.InputEvent;
 
 public class HardwareGUITest {
     private AbstractSelfCheckoutStation scs;
@@ -51,9 +52,41 @@ public class HardwareGUITest {
     private Barcode barcode;
     private BarcodedItem item;
     private BarcodedItem item2;
+    private DragRobot dragRobot;
+
+    public class DragRobot {
+
+        private Robot robot;
+
+        public DragRobot() throws AWTException {
+            robot = new Robot();
+        }
+
+        /**
+         * Drags an element from the start point to the end point.
+         *
+         * @param startPoint The starting point of the drag.
+         * @param endPoint   The end point of the drag.
+         */
+        public void drag(Point startPoint, Point endPoint) {
+            // Move the mouse to the start point
+            robot.mouseMove(startPoint.x, startPoint.y);
+
+            // Press the mouse button (left click)
+            robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+            robot.delay(200); // short delay to allow the mouse press to register
+
+            // Move the mouse to the end point while the button is pressed
+            robot.mouseMove(endPoint.x, endPoint.y);
+            robot.delay(200); // short delay for the dragging to register
+
+            // Release the mouse button
+            robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+        }
+    }
 
     @Before
-    public void setup() {
+    public void setup() throws AWTException {
         scs = new SelfCheckoutStationGold();
         as = new AttendantStation();
         PowerGrid.engageUninterruptiblePowerSource();
@@ -87,6 +120,7 @@ public class HardwareGUITest {
 
         item = new BarcodedItem(barcode, new Mass(20.0));
         item2 = new BarcodedItem(barcode, new Mass(20.0));
+        dragRobot = new DragRobot();
     }
     
     @After
@@ -126,7 +160,15 @@ public class HardwareGUITest {
 
     @Test
     public void dragItemFromCartToBagging() {
-
+        hardwareGUI.buttonPanel.startButton.doClick();
+        System.out.println(hardwareGUI.cartPanel.getLocationOnScreen());
+        Point cartCoord = hardwareGUI.cartPanel.getComponent(0).getLocationOnScreen();
+        cartCoord.move(10, 10);
+        Point baggingCoord = hardwareGUI.baggingPanel.getLocationOnScreen();
+        baggingCoord.move(10, 10);
+        dragRobot.drag(cartCoord, baggingCoord);
+        System.out.println(hardwareGUI.getItemsInBaggingArea().size());
+        Assert.assertEquals(1, hardwareGUI.getItemsInBaggingArea().size());
     }
 
     @Test

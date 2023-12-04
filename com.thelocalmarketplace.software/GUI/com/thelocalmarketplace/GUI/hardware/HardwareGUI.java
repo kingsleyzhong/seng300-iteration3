@@ -463,6 +463,18 @@ public class HardwareGUI {
             addIndex = -1;
         }
     }
+
+	public DefaultListModel<ItemObject> getItemsInBaggingArea() {
+		return itemsInBaggingArea;
+	}
+
+	public DefaultListModel<ItemObject> getItemsInCart() {
+		return itemsInCart;
+	}
+
+	public DefaultListModel<ItemObject> getItemsInScanningArea() {
+		return itemsInScanningArea;
+	}
 	
 	public static void setVisibility(boolean visibility) {
 		hardwareFrame.setVisible(visibility);
