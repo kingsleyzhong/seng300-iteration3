@@ -62,7 +62,7 @@ public class ItemManager {
 	
 	//Get PLU code from the GUI
 	public void addItem(PriceLookUpCode code) {
-		if(addItems) {
+		if(addItems) { 
 			if (ProductDatabases.PLU_PRODUCT_DATABASE.containsKey(code)) {
 				addPLUItemState = true;
 				pluProduct = ProductDatabases.PLU_PRODUCT_DATABASE.get(code);
