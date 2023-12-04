@@ -38,6 +38,7 @@ import com.thelocalmarketplace.software.attendant.IssuePredictorListener;
 import com.thelocalmarketplace.software.attendant.Issues;
 import com.thelocalmarketplace.software.attendant.MaintenanceManager;
 import com.thelocalmarketplace.software.attendant.MaintenanceManagerListener;
+import com.thelocalmarketplace.software.attendant.Requests;
 
 import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
 import javax.swing.SwingConstants;
@@ -62,6 +63,7 @@ public class StationPanel extends JPanel implements ActionListener {
 	JLabel info = new JLabel("");
 	Color detailsColor;
 	
+	JButton approveRequest;
 	JButton addBySearch;
 	JButton power;	
 	Color powerColor;
@@ -100,6 +102,10 @@ public class StationPanel extends JPanel implements ActionListener {
 			addBySearch.setFont(new Font("Tahoma", Font.BOLD, 18));
 			addBySearch.addActionListener(this);
 			
+			approveRequest = new PlainButton("Approve Request", Colors.color4);
+			approveRequest.setFont(new Font("Tahoma", Font.BOLD, 18));
+			approveRequest.addActionListener(this);
+			
 			add(stationName);
 			add(status);
 			
@@ -110,6 +116,7 @@ public class StationPanel extends JPanel implements ActionListener {
 			populateIssues(false);
 			updateIssues(issues);
 			add(info);
+			add(approveRequest);
 			add(addBySearch);
 			add(power);
 		} else {
@@ -192,6 +199,11 @@ public class StationPanel extends JPanel implements ActionListener {
 			}
 		} else if (e.getSource() == addBySearch) {
 			new AttendantCatalogue(session, attendant);
+		}
+		else if (e.getSource() == approveRequest) {
+			Requests request = attendant.getCurrentRequest(session);
+			JOptionPane.showMessageDialog(null, "Approving request: " + request.toString());
+			attendant.approveRequest(session);
 		}
 	}
 	

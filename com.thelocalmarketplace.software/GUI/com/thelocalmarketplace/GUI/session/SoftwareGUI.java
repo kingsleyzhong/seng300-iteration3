@@ -537,6 +537,7 @@ public class SoftwareGUI{
 			}
 			else if(source == callAttendant) {
 				session.askForHelp();
+				JOptionPane.showMessageDialog(null, "You have notified the attendant.");
 			}
 		}	
 	}
