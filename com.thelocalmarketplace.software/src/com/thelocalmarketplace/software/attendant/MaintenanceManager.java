@@ -80,7 +80,7 @@ public class MaintenanceManager {
      * @throws NotDisabledSessionException if the session is not disabled
      */
     public void openHardware(Session session) throws NotDisabledSessionException {
-        this.session = session;
+    	this.session = session;
         state = session.getState();
         if (state == SessionState.DISABLED) {
             scs = session.getStation();
