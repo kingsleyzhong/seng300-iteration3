@@ -394,21 +394,19 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * and return the system to the normal runtime state (IN_SESSION)
 	 * 
 	 * Expected behavior: State is changed to SessionState.In_SESSION
-	 * 
-	 * Temp remove: is cancel still a thing?
 	 */
-//	@Test
-//	public void test_cancelAddBags_updatesState() {
-//		// start session:
-//
-//		// call addBags
-//		session.addBags();
-//
-//		// call cancelAddBags()
-//
-//		// check state to make sure the system has updates
-//		assertTrue(session.getState() == SessionState.IN_SESSION);
-//	}
+	@Test
+	public void test_cancelAddBags_updatesState() {
+		// call addBags
+		session.addBags();
+
+		// call cancelAddBags()
+		session.cancelAddBags();
+
+		// check state to make sure the system has updates
+		assertFalse("Not Discrepancy", weight.isDiscrepancy());
+		assertEquals(SessionState.IN_SESSION, session.getState());
+	}
 
 	/*
 	 * Tests calling cancelAddBags(). When in the addBags state, this method should
@@ -416,48 +414,45 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * any changes in the bagging area result in a weight discrepancy.
 	 *
 	 * Expected behavior: Expected Weight of the session is not updated
-	 * 
-	 * Temp remove: is cancel still a thing?
 	 */
-//	@Test
-//	public void test_cancelAddBags_doesntUpdateExpectedWeight() {
-//		// start session:
-//
-//		// save the expected Mass before adding the bag
-//		Mass expectedMassBefore = weight.getExpectedWeight();
-//
-//		// call addBags
-//		session.addBags();
-//
-//		// call cancelAddBags()
-//
-//		// add the heavy bag to the bagging area
-//		scs.getBaggingArea().addAnItem(bag);
-//
-//		// check the expected weight after the interaction
-//		Mass expectedMassAfter = weight.getExpectedWeight();
-//
-//		// compare the masses to see they have not updated
-//		assertTrue(expectedMassAfter.compareTo(expectedMassBefore) == 0);
-//	}
+	@Test
+	public void test_cancelAddBags_doesntUpdateExpectedWeight() {
+		// save the expected Mass before adding the bag
+		Mass expectedMassBefore = weight.getExpectedWeight();
+
+		// call addBags
+		session.addBags();
+
+		// call cancelAddBags()
+		session.cancelAddBags();
+
+		// add the heavy bag to the bagging area
+		baggingArea.addAnItem(bag);
+
+		// check the expected weight after the interaction
+		Mass expectedMassAfter = weight.getExpectedWeight();
+
+		// compare the masses to see they have not updated
+		assertTrue(expectedMassAfter.compareTo(expectedMassBefore) == 0);
+	}
 
 	/*
 	 * Tests calling cancelAddBags(). When not in the addBags state, this method
 	 * should do nothing
 	 * 
 	 * Expected behavior: State is unchanged and remains in the PRE_SESSION state
-	 * 
-	 * Temp remove: is cancel still a thing?
 	 */
-//	@Test
-//	public void test_cancelAddBags_doesntUpdatesState_PRE_SESSION() {
-//		// dont start session
-//
-//		// call cancelAddBags
-//
-//		// check the state
-//		assertTrue(session.getState() == SessionState.PRE_SESSION);
-//	}
+	@Test
+	public void test_cancelAddBags_doesntUpdatesState_PRE_SESSION() {
+		// dont start session
+		session.cancel();
+
+		// call cancelAddBags
+		session.cancelAddBags();
+
+		// check the state
+		assertTrue(session.getState() == SessionState.PRE_SESSION);
+	}
 
 	/*
 	 * Tests calling cancelAddBags(). If the method is called and then a bag is
@@ -465,24 +460,24 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * the session should enter a blocked state (caused by a weight discrepancy)
 	 * 
 	 * Expected behavior: State is SessionState.BLOCKED
-	 * 
-	 * Temp remove: is cancel still a thing?
 	 */
-//	@Test
-//	public void test_cancelAddBags_blocksSystem() {
-//		// start session:
-//
-//		// call addBags
-//		session.addBags();
-//
-//		// call cancelAddBags()
-//
-//		// add the heavy bag to the bagging area
-//		scs.getBaggingArea().addAnItem(bag);
-//
-//		// check that the session is blocked
-//		assertTrue(session.getState() == SessionState.BLOCKED);
-//	}
+	@Test
+	public void test_cancelAddBags_blocksSystem() {
+		// start session:
+
+		// call addBags
+		session.addBags();
+
+		// call cancelAddBags()
+		session.cancelAddBags();
+
+		// add the heavy bag to the bagging area
+		baggingArea.addAnItem(bag);
+
+		// check that the session is blocked
+		assertTrue("Weight Discrepancy", weight.isDiscrepancy());
+		assertEquals("Check that the session is blocked", SessionState.BLOCKED, session.getState());
+	}
 
 	/**
 	 * Tests that Session.configureMAXBAGWEIGHT updates the maxBagWeight in the

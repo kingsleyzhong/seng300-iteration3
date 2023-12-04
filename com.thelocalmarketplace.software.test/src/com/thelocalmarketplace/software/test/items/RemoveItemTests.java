@@ -162,7 +162,7 @@ public class RemoveItemTests extends AbstractSessionTest {
         // add two different items
         itemManager.addItem(product);
         baggingArea.addAnItem(item);
-        
+
         itemManager.addItem(product2);
 
         // Check that the product was added
@@ -181,6 +181,12 @@ public class RemoveItemTests extends AbstractSessionTest {
         Mass actual = itemWeight.getExpectedWeight();
         Mass expected = new Mass(120.0);
         assertEquals(expected, actual);
+    }
+
+    // Remove an item that was not added
+    @Test(expected = ProductNotFoundException.class)
+    public void testRemoveItemNotAdded() {
+        itemManager.removeItem(product);
     }
 
 }

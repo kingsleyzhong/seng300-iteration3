@@ -189,8 +189,9 @@ g	 *
 		}
 	}
 	
-	public void cancel() {
+	public void cancelAddBags() {
 		bagCheck = false;
+		checkDiscrepancy(true);
 	}
 	
 	/*
@@ -239,9 +240,11 @@ g	 *
 	 * DisrepancyFixed() on it's listener and set isDiscrepancy False
 	 * if two value are not equal, call notifyDiscrepancy on it's listeners.
 	 * Still need to figure out how to set a range of Mass as effective error
-	 * Tolerance of +-5% and 5 grams (bronze)
+	 * Tolerance of +-5 grams
+	 * 
+	 * @param forceNotify: boolean value to force notifyDiscrepancy() to be called
 	 */
-	public void checkDiscrepancy() {
+	public void checkDiscrepancy(boolean forceNotify) {
 		double difference = expectedWeight.difference(actualWeight).abs().inGrams().doubleValue();
 		if (difference > 5) {
 			isDiscrepancy = true;
@@ -249,7 +252,7 @@ g	 *
 				l.notifyDiscrepancy();
 			}
 		} else {
-			if (isDiscrepancy) {
+			if (isDiscrepancy || forceNotify) {
 				isDiscrepancy = false;
 				for (WeightListener l : listeners) {
 					l.notifyDiscrepancyFixed();
@@ -257,6 +260,17 @@ g	 *
 			}
 		}
 	}
+
+
+	/**
+	 * This method checks if there is a Discrepancy between expectedWeight and actualWeight.
+	 * Default method for checkDiscrepancy, calls checkDiscrepancy(false)
+	 */
+	public void checkDiscrepancy(){
+		checkDiscrepancy(false);
+	}
+
+
 	
 	/**
 	 * Gets the expectedWeight of the system

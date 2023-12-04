@@ -299,7 +299,7 @@ public class Session {
 			manager.setAddItems(false);
 		} else if (sessionState != SessionState.BLOCKED) {
 			sessionState = SessionState.IN_SESSION;
-			weight.cancel();
+			weight.cancelAddBags();
 			manager.setAddItems(true);
 		}
 	}
@@ -430,6 +430,12 @@ public class Session {
 			weight.addBags();
 		}
 		// else: nothing changes about the Session's state
+	}
+
+	public void cancelAddBags() {
+		if (sessionState == SessionState.ADDING_BAGS) {
+			weight.cancelAddBags();
+		}
 	}
 	
 	/**
