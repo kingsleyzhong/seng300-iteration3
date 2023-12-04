@@ -66,22 +66,36 @@ public class MembershipNumPad {
 	
 	// JFrame size
 
-	private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-	private JPanel panel;
-	private JLabel bagOptions;
-	private PlainButton cashButton;
-
-	private JButton addPersonalBagButton;
-	private JButton addStoreBagButton;
-	private JButton membershipButton;
-	private JPanel panel_1;
-	private JPanel panel_2;
 	String number;
 	
 	JLabel num;
 	
 	private Session session;
 	private boolean validMembership;
+
+	private PlainButton one;
+
+	private PlainButton two;
+
+	private PlainButton three;
+
+	private PlainButton four;
+
+	private PlainButton five;
+
+	private PlainButton six;
+
+	private PlainButton seven;
+
+	private PlainButton eight;
+
+	private PlainButton nine;
+
+	private PlainButton delete;
+
+	private PlainButton zero;
+
+	private PlainButton done;
 			
 	public MembershipNumPad(Session session) {
 		
@@ -101,7 +115,7 @@ public class MembershipNumPad {
 		titlePane.setBackground(Colors.color2);
 		titlePane.setLayout(new BorderLayout(0, 0));
 		
-		JLabel optionlabel = new JLabel("How many Bags?");
+		JLabel optionlabel = new JLabel("Enter Membership Number:");
 		optionlabel.setAlignmentY(Component.TOP_ALIGNMENT);
 		optionlabel.setHorizontalAlignment(SwingConstants.CENTER);
 		optionlabel.setFont(new Font("Tahoma", Font.PLAIN, 30));
@@ -115,7 +129,8 @@ public class MembershipNumPad {
 		
 		number = "";
 		
-		PlainButton one = new PlainButton("1",Colors.color4);
+//All the numbers 
+		one = new PlainButton("1",Colors.color4);
 		one.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				number = number.concat("1");
@@ -125,7 +140,7 @@ public class MembershipNumPad {
 		one.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		numberPadPane.add(one);
 		
-		PlainButton two = new PlainButton("2",Colors.color4);
+		two = new PlainButton("2",Colors.color4);
 		two.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				number = number.concat("2");
@@ -135,7 +150,7 @@ public class MembershipNumPad {
 		two.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		numberPadPane.add(two);
 		
-		PlainButton three = new PlainButton("3",Colors.color4);
+		three = new PlainButton("3",Colors.color4);
 		three.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				number = number.concat("3");
@@ -145,7 +160,7 @@ public class MembershipNumPad {
 		three.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		numberPadPane.add(three);
 		
-		PlainButton four = new PlainButton("4",Colors.color4);
+		four = new PlainButton("4",Colors.color4);
 		four.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				number = number.concat("4");
@@ -155,7 +170,7 @@ public class MembershipNumPad {
 		four.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		numberPadPane.add(four);
 		
-		PlainButton five = new PlainButton("5",Colors.color4);
+		five = new PlainButton("5",Colors.color4);
 		five.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				number = number.concat("5");
@@ -165,7 +180,7 @@ public class MembershipNumPad {
 		five.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		numberPadPane.add(five);
 		
-		PlainButton six = new PlainButton("6",Colors.color4);
+		six = new PlainButton("6",Colors.color4);
 		six.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				number = number.concat("6");
@@ -175,7 +190,7 @@ public class MembershipNumPad {
 		six.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		numberPadPane.add(six);
 		
-		PlainButton seven = new PlainButton("7",Colors.color4);
+		seven = new PlainButton("7",Colors.color4);
 		seven.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				number = number.concat("7");
@@ -185,7 +200,7 @@ public class MembershipNumPad {
 		seven.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		numberPadPane.add(seven);
 		
-		PlainButton eight = new PlainButton("8",Colors.color4);
+		eight = new PlainButton("8",Colors.color4);
 		eight.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				number = number.concat("8");
@@ -195,7 +210,7 @@ public class MembershipNumPad {
 		eight.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		numberPadPane.add(eight);
 		
-		PlainButton nine = new PlainButton("9",Colors.color4);
+		nine = new PlainButton("9",Colors.color4);
 		nine.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				number = number.concat("9");
@@ -205,7 +220,8 @@ public class MembershipNumPad {
 		nine.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		numberPadPane.add(nine);
 		
-		PlainButton delete = new PlainButton("Delete",Colors.color4);
+//Delete last character		
+		delete = new PlainButton("Delete",Colors.color4);
 		delete.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		delete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -220,7 +236,7 @@ public class MembershipNumPad {
 		});
 		numberPadPane.add(delete);
 		
-		PlainButton zero = new PlainButton("0",Colors.color4);
+		zero = new PlainButton("0",Colors.color4);
 		zero.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				number = number.concat("0");
@@ -230,7 +246,8 @@ public class MembershipNumPad {
 		zero.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		numberPadPane.add(zero);
 		
-		PlainButton done = new PlainButton("Done",Colors.color4);
+//Finished entering number		
+		done = new PlainButton("Done",Colors.color4);
 		done.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		done.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -315,5 +332,58 @@ public class MembershipNumPad {
 	public boolean getValidMembership() {
 		return validMembership; 
 	}
+
+	public String getNumber() {
+		return number;
+	}
+
+	public PlainButton getOne() {
+		return one;
+	}
+
+	public PlainButton getTwo() {
+		return two;
+	}
+
+	public PlainButton getThree() {
+		return three;
+	}
+
+	public PlainButton getFour() {
+		return four;
+	}
+
+	public PlainButton getFive() {
+		return five;
+	}
+
+	public PlainButton getSix() {
+		return six;
+	}
+
+	public PlainButton getSeven() {
+		return seven;
+	}
+
+	public PlainButton getEight() {
+		return eight;
+	}
+
+	public PlainButton getNine() {
+		return nine;
+	}
+
+	public PlainButton getDelete() {
+		return delete;
+	}
+
+	public PlainButton getZero() {
+		return zero;
+	}
+
+	public PlainButton getDone() {
+		return done;
+	}
+	
 	
 }

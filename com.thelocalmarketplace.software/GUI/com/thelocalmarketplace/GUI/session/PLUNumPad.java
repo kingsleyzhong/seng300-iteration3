@@ -61,25 +61,27 @@ import java.awt.Color;
 	
 public class PLUNumPad {
 
-		JFrame frame;
+		private JFrame frame;
 		
-		// JFrame size
+		private String plu;
+		
+		private JLabel pluLabel;
+		
+		private Session session;
 
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		JPanel panel;
-		JLabel bagOptions;
-		PlainButton cashButton;
-
-		JButton addPersonalBagButton;
-		JButton addStoreBagButton;
-		JButton cancelButton;
-		JPanel panel_1;
-		JPanel panel_2;
-		String plu;
+		private PlainButton one;
+		private PlainButton two;
+		private PlainButton three;
+		private PlainButton four;
+		private PlainButton five;
+		private PlainButton six;
+		private PlainButton seven;
+		private PlainButton eight;
+		private PlainButton nine;
+		private PlainButton delete;
+		private PlainButton zero;
+		private PlainButton done;
 		
-		JLabel pluLabel;
-		
-		Session session;
 		
 		public PLUNumPad(Session session) {
 			
@@ -113,7 +115,8 @@ public class PLUNumPad {
 			
 			plu = "";
 			
-			PlainButton one = new PlainButton("1",Colors.color4);
+//All the numbers			
+			one = new PlainButton("1",Colors.color4);
 			one.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					plu = plu.concat("1");
@@ -123,7 +126,7 @@ public class PLUNumPad {
 			one.setFont(new Font("Tahoma", Font.PLAIN, 20));
 			numberPadPane.add(one);
 			
-			PlainButton two = new PlainButton("2",Colors.color4);
+			two = new PlainButton("2",Colors.color4);
 			two.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					plu = plu.concat("2");
@@ -133,7 +136,7 @@ public class PLUNumPad {
 			two.setFont(new Font("Tahoma", Font.PLAIN, 20));
 			numberPadPane.add(two);
 			
-			PlainButton three = new PlainButton("3",Colors.color4);
+			three = new PlainButton("3",Colors.color4);
 			three.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					plu = plu.concat("3");
@@ -143,7 +146,7 @@ public class PLUNumPad {
 			three.setFont(new Font("Tahoma", Font.PLAIN, 20));
 			numberPadPane.add(three);
 			
-			PlainButton four = new PlainButton("4",Colors.color4);
+			four = new PlainButton("4",Colors.color4);
 			four.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					plu = plu.concat("4");
@@ -153,7 +156,7 @@ public class PLUNumPad {
 			four.setFont(new Font("Tahoma", Font.PLAIN, 20));
 			numberPadPane.add(four);
 			
-			PlainButton five = new PlainButton("5",Colors.color4);
+			five = new PlainButton("5",Colors.color4);
 			five.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					plu = plu.concat("5");
@@ -163,7 +166,7 @@ public class PLUNumPad {
 			five.setFont(new Font("Tahoma", Font.PLAIN, 20));
 			numberPadPane.add(five);
 			
-			PlainButton six = new PlainButton("6",Colors.color4);
+			six = new PlainButton("6",Colors.color4);
 			six.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					plu = plu.concat("6");
@@ -173,7 +176,7 @@ public class PLUNumPad {
 			six.setFont(new Font("Tahoma", Font.PLAIN, 20));
 			numberPadPane.add(six);
 			
-			PlainButton seven = new PlainButton("7",Colors.color4);
+			seven = new PlainButton("7",Colors.color4);
 			seven.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					plu = plu.concat("7");
@@ -183,7 +186,7 @@ public class PLUNumPad {
 			seven.setFont(new Font("Tahoma", Font.PLAIN, 20));
 			numberPadPane.add(seven);
 			
-			PlainButton eight = new PlainButton("8",Colors.color4);
+			eight = new PlainButton("8",Colors.color4);
 			eight.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					plu = plu.concat("8");
@@ -193,7 +196,7 @@ public class PLUNumPad {
 			eight.setFont(new Font("Tahoma", Font.PLAIN, 20));
 			numberPadPane.add(eight);
 			
-			PlainButton nine = new PlainButton("9",Colors.color4);
+			nine = new PlainButton("9",Colors.color4);
 			nine.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					plu = plu.concat("9");
@@ -203,7 +206,8 @@ public class PLUNumPad {
 			nine.setFont(new Font("Tahoma", Font.PLAIN, 20));
 			numberPadPane.add(nine);
 			
-			PlainButton delete = new PlainButton("Delete",Colors.color4);
+//Deletes the last character			
+			delete = new PlainButton("Delete",Colors.color4);
 			delete.setFont(new Font("Tahoma", Font.PLAIN, 20));
 			delete.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -218,7 +222,7 @@ public class PLUNumPad {
 			});
 			numberPadPane.add(delete);
 			
-			PlainButton zero = new PlainButton("0",Colors.color4);
+			zero = new PlainButton("0",Colors.color4);
 			zero.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					plu = plu.concat("0");
@@ -228,7 +232,8 @@ public class PLUNumPad {
 			zero.setFont(new Font("Tahoma", Font.PLAIN, 20));
 			numberPadPane.add(zero);
 			
-			PlainButton done = new PlainButton("Done",Colors.color4);
+//Finished entering PLU number			
+			done = new PlainButton("Done",Colors.color4);
 			done.setFont(new Font("Tahoma", Font.PLAIN, 20));
 			done.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -306,6 +311,62 @@ public class PLUNumPad {
 		public void reset() {
 			plu = "";
 			pluLabel.setText("0");			
+		}
+
+		public boolean isVisible() {
+			return frame.isVisible();
+		}
+
+		public String getPlu() {
+			return plu;
+		}
+
+		public PlainButton getOne() {
+			return one;
+		}
+
+		public PlainButton getTwo() {
+			return two;
+		}
+
+		public PlainButton getThree() {
+			return three;
+		}
+
+		public PlainButton getFour() {
+			return four;
+		}
+
+		public PlainButton getFive() {
+			return five;
+		}
+
+		public PlainButton getSix() {
+			return six;
+		}
+
+		public PlainButton getSeven() {
+			return seven;
+		}
+
+		public PlainButton getEight() {
+			return eight;
+		}
+
+		public PlainButton getNine() {
+			return nine;
+		}
+
+		public PlainButton getDelete() {
+			return delete;
+		}
+
+		public PlainButton getZero() {
+			return zero;
+		}
+
+		public PlainButton getDone() {
+			return done;
 		}
 	
 }

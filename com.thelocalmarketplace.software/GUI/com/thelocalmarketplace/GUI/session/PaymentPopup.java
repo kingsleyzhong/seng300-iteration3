@@ -78,6 +78,8 @@ public class PaymentPopup {
 		totalRemainingLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		totalDisplay.add(totalRemainingLabel, BorderLayout.NORTH);
 		totalRemainingLabel.setFont(new Font("Tahoma", Font.PLAIN, 30));
+
+//Amount that is subject to the total - amount paid by customer
 		
 		amountLabel = new JLabel("$ 0.00");
 		amountLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -98,7 +100,8 @@ public class PaymentPopup {
 		paymentOptionsLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		paymentOptionsLabel.setFont(new Font("Tahoma", Font.PLAIN, 30));
 		panel.add(paymentOptionsLabel);
-		
+
+//Cash Option Button
 		cashButton = new PlainButton("Cash", new Color(220, 196, 132));
 		cashButton.setFont(new Font("Tahoma", Font.PLAIN, 30));
 		cashButton.addActionListener(new ActionListener() {
@@ -116,7 +119,8 @@ public class PaymentPopup {
             }
         });
 		panel.add(cashButton);
-		
+
+//Card Option Button
 		cardButton = new PlainButton("Debit/Credit", new Color(220, 196, 132));
 		cardButton.setFont(new Font("Tahoma", Font.PLAIN, 30));
 		cardButton.addActionListener(new ActionListener() {
@@ -130,13 +134,13 @@ public class PaymentPopup {
                     JOptionPane.showMessageDialog(cardButton, "Cannot Pay for Empty Order");
             	}
 
-            	
             }
         });
 		panel.add(cardButton);
+
+//Membership Option Button
 		
-		membershipButton = new PlainButton("New button", new Color(220, 196, 132));
-		membershipButton.setText("Cancel Payment");
+		membershipButton = new PlainButton("Are you a Member?", new Color(220, 196, 132));
 		membershipButton.setFont(new Font("Tahoma", Font.PLAIN, 30));
 		
 		membershipPad = new MembershipNumPad(session);
@@ -144,12 +148,19 @@ public class PaymentPopup {
             @Override
             public void actionPerformed(ActionEvent e) {
                 hide();
-                membershipPad.popUp();
+                if (session.getMembershipNumber() != "") {
+                	membershipPad.popUp();
+                }
+                else {
+                    JOptionPane.showMessageDialog(membershipButton, "Membership already entered");
+                    popUp();
+
+                }
                 
                 if (membershipPad.getValidMembership() == true) {
                 	popUp();
                 }
-                
+
             }
         });
 		panel.add(membershipButton);
