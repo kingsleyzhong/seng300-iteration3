@@ -7,7 +7,7 @@ import com.jjjwelectronics.bag.ReusableBag;
 
 public class ReusableBagStub extends ReusableBag {
 	public Mass getMass() {
-		return new Mass(BigInteger.valueOf(5_000_000 * 2)); 
+		return new Mass(BigInteger.valueOf(5_000_000 * 3)); 
 	}
 
 }

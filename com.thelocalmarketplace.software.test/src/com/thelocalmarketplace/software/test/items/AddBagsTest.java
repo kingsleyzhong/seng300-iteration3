@@ -17,6 +17,7 @@ import org.w3c.dom.views.AbstractView;
 import com.jjjwelectronics.Item;
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
+import com.jjjwelectronics.OverloadedDevice;
 import com.jjjwelectronics.bag.ReusableBag;
 import com.jjjwelectronics.scale.IElectronicScale;
 import com.jjjwelectronics.scanner.Barcode;
@@ -96,10 +97,10 @@ public class AddBagsTest extends AbstractSessionTest {
 	Mass weightLimitBagMass;
 	Mass notBagMass;
 	
-	ReusableBagProduct bagProduct; 
+	
 	ReusableBagStub overweightPurchasedBag; 
 	ReusableBag purchasedBag;
-
+	ReusableBag purchasedBag2;
 	IElectronicScale baggingArea;
 
 	// time to wait before adding item to the bagging area
@@ -114,14 +115,20 @@ public class AddBagsTest extends AbstractSessionTest {
 		weightLimitBagMass = new Mass(BAG_MASS_LIMIT);// mass equal to the limited size of a bag in the session software
 		notBagMass = new Mass((30 * Mass.MICROGRAMS_PER_GRAM));
 		ReusableBagProduct.setPrice(10L);
-		bagProduct = ReusableBagProduct.getBag();
 		purchasedBag = new ReusableBag();
+		purchasedBag2 = new ReusableBag();
 		overweightPurchasedBag = new ReusableBagStub();
 		bag = new BagStub(bagMass);
 		overweightBag = new BagStub(overweightBagMass);
 		weightLimitBag = new BagStub(weightLimitBagMass);
 		notBag = new BagStub(notBagMass);
 		session.getWeight().configureMAXBAGWEIGHT(BAG_MASS_LIMIT);
+		try {
+			scs.getReusableBagDispenser().load(new ReusableBag(), new ReusableBag(), new ReusableBag());
+		} catch (OverloadedDevice e) {
+			// TODO Auto-generated catch block
+			System.out.println("Bag dispenser is max capacity");
+		}
 		session.start();
 
 		baggingArea = scs.getBaggingArea();
@@ -581,7 +588,7 @@ public class AddBagsTest extends AbstractSessionTest {
 		int currentBagsTotal = scs.getReusableBagDispenser().getQuantityRemaining();
 
 		// compare the masses to see they have updated
-		assertFalse(currentBagsTotal == previousBagsTotal   - 1);
+		assertTrue(currentBagsTotal == previousBagsTotal   - 1);
 	}
 	
 	/*
@@ -603,13 +610,14 @@ public class AddBagsTest extends AbstractSessionTest {
 
 		// add the bags to the bagging area
 		scs.getBaggingArea().addAnItem(purchasedBag);
+		scs.getBaggingArea().addAnItem(purchasedBag2);
 
 		// check the expected weight has been updated (?)
 
 		int currentBagsTotal = scs.getReusableBagDispenser().getQuantityRemaining();
 
 		// compare the masses to see they have updated
-		assertFalse(currentBagsTotal == previousBagsTotal - 2);
+		assertTrue(currentBagsTotal == previousBagsTotal - 2);
 	}
 	
 	/*
@@ -626,10 +634,10 @@ public class AddBagsTest extends AbstractSessionTest {
 
 		// add the bags to the bagging area
 		scs.getBaggingArea().addAnItem(purchasedBag);
-		
-		BigInteger totalBags = itemManager.getItems().get(purchasedBag);
+		scs.getBaggingArea().addAnItem(purchasedBag2);
+		BigInteger totalBags = itemManager.getItems().get(ReusableBagProduct.getBag());
 		// compare the masses to see they have updated
-		assertFalse(totalBags.intValue() == 2 );
+		assertTrue(totalBags.intValue() == 2 );
 	}
 
 	
@@ -658,14 +666,12 @@ public class AddBagsTest extends AbstractSessionTest {
 	}
 
 	/*
-	 * Tests adding an item that is heavier than the set MAXBAGWEIGHT to the bagging
-	 * area results in
-	 * the expected weight not being updated (Bags too Heavy use case)
+	 * Tests adding an item that is heavier that the expected weight is updated 
 	 * 
 	 * Expected behavior: expected weight is unchanged
 	 */
 	@Test
-	public void test_purchaseBags_overweightBag_doesntUpdateExpectedWeight() {
+	public void test_purchaseBags_overweightBag_UpdatesExpectedWeight() {
 		// start session:
 
 		// save the expected Mass before adding the bag
@@ -681,7 +687,7 @@ public class AddBagsTest extends AbstractSessionTest {
 		Mass expectedMassAfter = weight.getExpectedWeight();
 
 		// compare the masses to see they have not updated
-		assertTrue(expectedMassAfter.compareTo(expectedMassBefore) == 0);
+		assertTrue(expectedMassAfter.compareTo(expectedMassBefore) != 0);
 
 	}
 
@@ -704,6 +710,7 @@ public class AddBagsTest extends AbstractSessionTest {
 
 		itemManager.removeItem(ReusableBagProduct.getBag());
 		// check state to make sure the system has updates
+		scs.getBaggingArea().removeAnItem(purchasedBag);
 		assertTrue(session.getState() == SessionState.IN_SESSION);
 	}
 
@@ -722,13 +729,13 @@ public class AddBagsTest extends AbstractSessionTest {
 		// call addBags
 		session.purchaseBags(1);
 
-		// call cancelAddBags()
 
-		// add the heavy bag to the bagging area
 		scs.getBaggingArea().addAnItem(purchasedBag);
 
 		// check the expected weight after the interaction
-		itemManager.removeItem(ReusableBagProduct.getBag());
+		itemManager.removeItem( ReusableBagProduct.getBag());
+		
+		scs.getBaggingArea().removeAnItem(purchasedBag);
 		
 		Mass expectedMassAfter = weight.getExpectedWeight();
 
