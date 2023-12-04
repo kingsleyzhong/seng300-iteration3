@@ -76,12 +76,16 @@ public class AttendantGUI {
 		int val = 0;
 		if (sessions.size() != 0) {
 			for(Session session : sessions.keySet()) {
-				JPanel panel = new StationPanel(session, attendant, manager);
+				// maintenance managers?
+				// issue predictors?
+				JPanel panel = new StationPanel(session, attendant, , );
 				panel.setPreferredSize(new Dimension(width/6, width/6));
 				asScreen.getFrame().getContentPane().add(panel, BorderLayout.SOUTH);
 			}
 		} else {
-			JPanel panel = new StationPanel(null, attendant, manager);
+			// maintenance managers?
+			// issue predictors?
+			JPanel panel = new StationPanel(null, attendant, , );
 			panel.setPreferredSize(new Dimension(width/6, width/6));
 			asScreen.getFrame().getContentPane().add(panel, BorderLayout.SOUTH);
 		}

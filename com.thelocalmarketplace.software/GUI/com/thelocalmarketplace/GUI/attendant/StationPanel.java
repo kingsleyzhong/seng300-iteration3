@@ -71,7 +71,7 @@ public class StationPanel extends JPanel implements ActionListener {
 	public StationPanel(Session session, Attendant attendant, IssuePredictor predictor, MaintenanceManager manager) {
 		this.attendant = attendant;
 		this.session = session;
-		this.searchCatalogue = new SearchCatalogue(session);
+		this.searchCatalogue = new AttendantCatalogue(session, attendant);
 		
 		// register listeners
 		predictor.register(new InnerPredictionListener());
