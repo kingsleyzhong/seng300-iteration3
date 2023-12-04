@@ -45,7 +45,7 @@ public class Simulation {
 	private AttendantGUI attendantGUI;
 	private SoftwareGUI softwareGUI;
 	
-	public Simulation() {
+	public Simulation() throws NotDisabledSessionException {
 		setupData();
 		setupLogic();
 		setupLoading();
