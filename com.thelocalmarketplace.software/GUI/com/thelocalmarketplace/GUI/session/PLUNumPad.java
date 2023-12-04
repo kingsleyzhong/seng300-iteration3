@@ -3,12 +3,9 @@
 	import java.awt.Dimension;
 	import java.awt.Font;
 	import java.awt.GridLayout;
-	import java.awt.Toolkit;
 	import java.awt.event.ActionEvent;
 	import java.awt.event.ActionListener;
 
-	import javax.swing.BorderFactory;
-	import javax.swing.JButton;
 	import javax.swing.JFrame;
 	import javax.swing.JLabel;
 	import javax.swing.JOptionPane;
@@ -19,14 +16,11 @@
 	import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.software.Session;
-	import com.thelocalmarketplace.software.SessionState;
-import com.thelocalmarketplace.software.exceptions.InvalidActionException;
+	import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 
 import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
 
-import java.awt.Color;
-	import java.awt.BorderLayout;
-	import javax.swing.BoxLayout;
+import java.awt.BorderLayout;
 	import java.awt.Component;
 
 	/***
