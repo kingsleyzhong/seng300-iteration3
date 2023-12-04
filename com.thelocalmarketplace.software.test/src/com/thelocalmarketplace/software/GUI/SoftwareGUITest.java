@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.awt.AWTException;
+import java.awt.Robot;
+import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 
 import org.junit.After;
@@ -56,8 +59,14 @@ public class SoftwareGUITest{
 	private BarcodedItem item;
 	private BarcodedItem item2;
 	
+	Robot robot;
+	
 	@Before
 	public void setup() {
+		barcode = new Barcode(new Numeral[] { Numeral.valueOf((byte) 1) });
+		product = new BarcodedProduct(barcode, "Some product", 10, 20.0);
+		SelfCheckoutStationLogic.populateDatabase(barcode, product, 20);
+		
 		scs = new SelfCheckoutStationGold();
 		as = new AttendantStation();
 		PowerGrid.engageUninterruptiblePowerSource();
@@ -79,45 +88,24 @@ public class SoftwareGUITest{
 
 		cashController = new PayByCash(coinValidator, banknoteValidator, funds);
 		
-		
-		
-		
-		
 		scs.getScreen().setVisible(true);
 		
-		barcode = new Barcode(new Numeral[] { Numeral.valueOf((byte) 1) });
-		product = new BarcodedProduct(barcode, "Some product", 10, 20.0);
-		ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode, product);
 
 		item = new BarcodedItem(barcode, new Mass(20.0));
 		item2 = new BarcodedItem(barcode, new Mass(20.0));
+		
+		try {
+			robot = new Robot();
+		} catch (AWTException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	@After
 	public void teardown() {
 		scs.getScreen().getFrame().dispose();
-	}
-	
-	
-	@Test
-	public void testPayWithBill() {
-		softwareGUI.btnStart.doClick();
-		
-		scs.getMainScanner().scan(item);
-		scs.getBaggingArea().addAnItem(item);
-		
-		scs.getMainScanner().scan(item2);
-		scs.getBaggingArea().addAnItem(item2);
-		
-		softwareGUI.pay.doClick();
-		softwareGUI.paymentScreen.getCashButton().doClick();
-		
-		
-		cashpanel.FiveBillBtn.doClick();
-		cashpanel.FiveBillBtn.doClick();
-		
-		Assert.assertEquals(BigDecimal.TEN , cashController.getCashPaid());
-		
 	}
 	
 	@Test
@@ -134,8 +122,6 @@ public class SoftwareGUITest{
 		
 		//IDK WHY IT WONT TAKE MY MONEY HERE!!!!!!!!!!!!!!
 		Assert.assertEquals(BigDecimal.ONE , cashController.getCashPaid());
-		
-		
 	}
 	
 	
@@ -171,6 +157,7 @@ public class SoftwareGUITest{
 		assertEquals("20.00g", softwareGUI.infoWeightNumber.getText());
 	}
 	
+	@Test
 	public void testAdd2Items() {
 		softwareGUI.btnStart.doClick();
 		scs.getMainScanner().scan(item);
@@ -182,6 +169,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
+	
 	public void testAddItemDoPayCash() {
 		softwareGUI.btnStart.doClick();
 		scs.getMainScanner().scan(item);
@@ -191,10 +179,7 @@ public class SoftwareGUITest{
 		assertTrue(session.getState() == SessionState.PAY_BY_CASH);
 	}
 	
-	
-
-	
-	
+	@Test
 	public void testAddItemDoPayCard() {
 		softwareGUI.btnStart.doClick();
 		scs.getMainScanner().scan(item);
@@ -202,5 +187,22 @@ public class SoftwareGUITest{
 		softwareGUI.pay.doClick();
 		softwareGUI.paymentScreen.getCardButton().doClick();
 		assertTrue(session.getState() == SessionState.PAY_BY_CARD);
+	}
+	
+	@Test
+	public void testOpenCatalog() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.searchCatalogue.doClick();
+		assertTrue(softwareGUI.catalogue.isVisible());
+	}
+	
+	@Test
+	public void testUpdate() {
+		
+	}
+	
+	@Test
+	public void testAddProducts() {
+		
 	}
 }

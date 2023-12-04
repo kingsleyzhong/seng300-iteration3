@@ -17,7 +17,7 @@ import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
 
 public class ButtonPanel extends JPanel implements ActionListener {
-	private ReusableBag[] bags;
+	private ReusableBag[] bags = new ReusableBag[50];
 	private int numBags = 0;
 	
 	JButton mainScanner;
