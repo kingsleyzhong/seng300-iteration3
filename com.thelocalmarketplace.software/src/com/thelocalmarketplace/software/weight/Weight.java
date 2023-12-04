@@ -53,7 +53,7 @@ public class Weight {
 	private Mass lastWeightAdded = Mass.ZERO;
 	private Mass personalBagsWeight;
 	private Mass purchasedBagsWeight;
-	private boolean inSession;
+	private boolean inSession = false;
 	
 	private Mass MAXBAGWEIGHT = new Mass(500 * Mass.MICROGRAMS_PER_GRAM);
 

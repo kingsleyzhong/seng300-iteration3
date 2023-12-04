@@ -15,6 +15,7 @@ import com.thelocalmarketplace.software.attendant.IssuePredictor;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.funds.PayByCard;
 import com.thelocalmarketplace.software.funds.PayByCash;
+import com.thelocalmarketplace.software.items.BagDispenserController;
 import com.thelocalmarketplace.software.items.ItemAddedRule;
 import com.thelocalmarketplace.software.items.ItemManager;
 import com.thelocalmarketplace.software.membership.Membership;
@@ -103,8 +104,9 @@ public class SelfCheckoutStationLogic {
 		Receipt receipt = new Receipt(scs.getPrinter());
 		ItemManager itemManager = new ItemManager();
 		Membership membership = new Membership(scs.getCardReader());
-
-		session.setup(itemManager, funds, weight, receipt, membership, scs);
+		// Will also need the touch screen/ keyboard for GUI interaction
+		BagDispenserController bagdispenser = new BagDispenserController(scs.getReusableBagDispenser(), itemManager);
+		session.setup(itemManager, funds, weight, receipt, membership, scs, bagdispenser );
 
 		// register scanner and handheld scanner with the item manager
 		new ItemAddedRule(scs.getMainScanner(), scs.getHandheldScanner(), itemManager);

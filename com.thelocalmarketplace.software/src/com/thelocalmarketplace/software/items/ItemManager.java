@@ -60,6 +60,10 @@ public class ItemManager {
 		addPLUItemState = false;
 	}
 	
+	public boolean getAddItems() {
+		return addItems;
+	}
+	
 	//Get PLU code from the GUI
 	public void addItem(PriceLookUpCode code) {
 		if(addItems) { 
@@ -140,6 +144,47 @@ public class ItemManager {
 		}
 	}
 	
+	
+	/**
+	 * Update the hashmap of bought products, the expected weight, 
+	 * and the total cost of customer's purchase after a bag is dispensed
+	 * @param product - a reusable bag 
+	 */
+	public void addPurchasedBags(ReusableBagProduct product) {
+		if (addedProducts.containsKey(product)) {
+			addedProducts.replace(product, addedProducts.get(product).add(BigInteger.valueOf(1)));
+		} else {
+			addedProducts.put(product, BigInteger.valueOf(1));
+		}
+		double weight = product.getExpectedWeight();
+		long price = product.getPrice();
+		Mass mass = new Mass(weight);
+		BigDecimal itemPrice = new BigDecimal(price);
+		notifyItemAdded(product, mass, itemPrice);	
+	}
+	
+	/**
+	 * Removes a selected product from the hashMap of current session's products .
+	 * Updates the weight and price of the products.
+	 * @param product - reusable bag
+	 */
+	public void removeItem(ReusableBagProduct product) {
+		double weight = product.getExpectedWeight();
+		long price = product.getPrice(); 
+		Mass mass = new Mass(weight);
+		BigDecimal itemPrice = new BigDecimal(price);
+
+		
+		if (addedProducts.containsKey(product) && addedProducts.get(product).intValue() > 1) {
+			addedProducts.replace(product, addedProducts.get(product).subtract(BigInteger.valueOf(1)));
+		} else if (addedProducts.containsKey(product) && addedProducts.get(product).intValue() == 1) {
+			addedProducts.remove(product);
+		} else {
+			throw new ProductNotFoundException("Item not found");
+		}
+		
+		notifyItemRemoved(product, mass, itemPrice);
+	} 
 	/**
 	 * Removes a selected product from the hashMap of barcoded items.
 	 * Updates the weight and price of the products.
