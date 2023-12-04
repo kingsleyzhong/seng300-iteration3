@@ -57,6 +57,7 @@ public class SoftwareGUI{
 	
     public PaymentPopup paymentScreen;
 	public AddBagsPopup addBagsScreen;
+	public PLUNumPad pluNumPad;
 
 
     int quantity = 0;
@@ -349,6 +350,7 @@ public class SoftwareGUI{
 		    	  addBagsScreen.popUp();		          	            	            
 		       }
 		});
+		pluNumPad = new PLUNumPad(session);
 		pluCode.addActionListener(new ButtonListener());
 		searchCatalogue.addActionListener(new ButtonListener());
 		callAttendant.addActionListener(new ButtonListener());
@@ -480,18 +482,10 @@ public class SoftwareGUI{
 			}
 			else if(source == pluCode) {
 				if(session.getState() == SessionState.IN_SESSION) {
-					String result = JOptionPane.showInputDialog(null,"Input PLU Code", 
-							"Input PLU Code", JOptionPane.PLAIN_MESSAGE);
-					if(result != null && !result.equals("")) {
-						PriceLookUpCode plu = new PriceLookUpCode(result);
-						try {
-							session.getManager().addItem(plu);
-						} catch (InvalidActionException e1) {
-							JOptionPane.showMessageDialog(null, "This is not a valid PLU Code");
-						}
-					}
+					pluNumPad.popUp();					
 				}
-				else JOptionPane.showMessageDialog(null, "Cannot add PLU item right now.");
+				else JOptionPane.showMessageDialog(null, "You cannot add an item right now.");
+
 			}
 		}	
 	}
