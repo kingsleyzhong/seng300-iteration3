@@ -100,45 +100,29 @@ public class IssuePredictor  {
 
 		@Override
 		public void itemAdded(Session session, Product product, Mass ofProduct, Mass currentExpectedWeight,
-				BigDecimal currentExpectedPrice) {
-			
-		}
+				BigDecimal currentExpectedPrice) {}
 
 		@Override
 		public void itemRemoved(Session session, Product product, Mass ofProduct, Mass currentExpectedMass,
-				BigDecimal currentExpectedPrice) {
-			
-		}
+				BigDecimal currentExpectedPrice) {}
 
 		@Override
-		public void addItemToScaleDiscrepancy(Session session) {
-			
-		}
+		public void addItemToScaleDiscrepancy(Session session) {}
 
 		@Override
-		public void removeItemFromScaleDiscrepancy(Session session) {
-			
-		}
+		public void removeItemFromScaleDiscrepancy(Session session) {}
 
 		@Override
-		public void discrepancy(Session session, String message) {
-			
-		}
+		public void discrepancy(Session session, String message) {}
 
 		@Override
-		public void discrepancyResolved(Session session) {
-			
-		}
+		public void discrepancyResolved(Session session) {}
 
 		@Override
-		public void pricePaidUpdated(Session session, BigDecimal amountDue) {
-			
-		}
+		public void pricePaidUpdated(Session session, BigDecimal amountDue) {}
 
 		@Override
-		public void sessionAboutToStart(Session session) {
-			
-		}
+		public void sessionAboutToStart(Session session) {}
 
 		@Override
 		public void sessionEnded(Session session) {
@@ -147,19 +131,13 @@ public class IssuePredictor  {
 		}
 
 		@Override
-		public void pluCodeEntered(PLUCodedProduct product) {
-			
-		}
+		public void pluCodeEntered(PLUCodedProduct product) {}
 
 		@Override
-		public void sessionStateChanged() {
-			
-		}
+		public void sessionStateChanged() {}
 
 		@Override
-		public void getRequest(Session session, Requests request) {
-			
-		}
+		public void getRequest(Session session, Requests request) {}
 		
 	}
 
@@ -195,7 +173,7 @@ public class IssuePredictor  {
 		@Override
 		public void notifiyInkRefilled() {
 			lowInk = false;
-			estimatedInk = ReceiptPrinterBronze.MAXIMUM_INK;			
+			estimatedInk = ReceiptPrinterBronze.MAXIMUM_INK;
 		}
 		/**
 		 * Announces that a receipt was printed successfully
@@ -210,6 +188,7 @@ public class IssuePredictor  {
 
 	/**
 	 * Runs all checks on a given session
+	 * Notify a no issues event if all checks are cleared
 	 */
 	private void predictionCheck(Session session) {
 		checkLowInk(session, receiptPrinter);
@@ -225,6 +204,7 @@ public class IssuePredictor  {
 				hasIssue = true;
 			}
 		}
+		// If there are no issues, notify as no issues
 		if (hasIssue == false) {
 			notifyNoIssues(session);
 			session.enable();
@@ -246,7 +226,6 @@ public class IssuePredictor  {
     	
     	if (receiptPrinter instanceof ReceiptPrinterBronze) {
 			threshold = ReceiptPrinterBronze.MAXIMUM_INK;
-			
     		if (estimatedInk <= threshold * 0.1) {
 				notifyLowInk(s);
 				lowInk = true;
@@ -271,7 +250,7 @@ public class IssuePredictor  {
     		
     		currentInk = gold.inkRemaining();
     		threshold = ReceiptPrinterGold.MAXIMUM_INK;
-    		
+
     		if (currentInk <= threshold * 0.1) {
 				notifyLowInk(s);
 				lowInk = true;
@@ -296,7 +275,7 @@ public class IssuePredictor  {
     	
 		if (receiptPrinter instanceof ReceiptPrinterBronze) {
 			threshold = ReceiptPrinterBronze.MAXIMUM_PAPER;
-			
+
 			if (estimatedPaper <= threshold * 0.1) {
 				notifyLowPaper(s);
 				lowPaper = true;
@@ -309,7 +288,7 @@ public class IssuePredictor  {
 			
 			currentPaper = silver.paperRemaining();
 			threshold = ReceiptPrinterSilver.MAXIMUM_PAPER;
-			
+
 			if (currentPaper <= threshold * 0.1) {
 				notifyLowPaper(s);
 				lowPaper = true;
@@ -322,7 +301,7 @@ public class IssuePredictor  {
 			
 			currentPaper = gold.paperRemaining();
 			threshold = ReceiptPrinterGold.MAXIMUM_PAPER;
-			
+
 			if (currentPaper <= threshold * 0.1) {
 				notifyLowPaper(s);
 				lowPaper = true;

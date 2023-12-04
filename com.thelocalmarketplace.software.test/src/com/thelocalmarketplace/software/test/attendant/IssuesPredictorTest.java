@@ -91,7 +91,7 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 
 
 		// Bronze Printer
-		bronzePrinter = new ReceiptPrinterBronze();
+		bronzePrinter = (ReceiptPrinterBronze) scs.getPrinter();
 		bronzePrinter.plugIn(powerGrid);
 		bronzePrinter.turnOn();
 
@@ -290,9 +290,27 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 	
 	
 	@Test
-	public void testPredictionCheckSessionEnded() throws NotDisabledSessionException {
-		session.printReceipt();
-		Assert.assertEquals(SessionState.DISABLED, session.getState()); // Disabled since there may be prediction issues
+	public void testPredictionCheckSessionEnded() throws NotDisabledSessionException, SimulationException, CashOverloadException, OverloadedDevice {
+		 
+		 bronzePrinter.addPaper(ReceiptPrinterBronze.MAXIMUM_PAPER);
+		 bronzePrinter.addInk(ReceiptPrinterBronze.MAXIMUM_INK);
+		 for (IBanknoteDispenser dispenser : scs.getBanknoteDispensers().values()) {
+			 for (int i = 0; i < 50; i++) { // Add 50 banknotes
+				 dispenser.load(banknote);
+			}
+		 }
+		 for (ICoinDispenser dispenser : scs.getCoinDispensers().values()) {
+			 for (int i = 0; i < 50; i++) { // Add 50 coins
+				 dispenser.load(coin);
+			 }
+		 }
+		 
+		 session.start();
+		 session.getFunds().setPay(true);
+		 session.getFunds().update(new BigDecimal(0.1));
+		 session.printReceipt();
+		 Assert.assertEquals(SessionState.PRE_SESSION, session.getState()); // Disabled since there may be prediction issues
+
 	}
 	
 	@Test

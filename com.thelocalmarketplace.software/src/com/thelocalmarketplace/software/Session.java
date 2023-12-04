@@ -266,8 +266,6 @@ public class Session {
 
 		@Override
 		public void notifiyReceiptPrinted(int linesPrinted, int charsPrinted) {
-			// Should notifyPaid() not wait until receipt is successfully printed to change
-			// to PRE_SESSION?
 			notifySessionEnd();
 		}
 
@@ -386,9 +384,9 @@ public class Session {
 			l.sessionEnded(this);
 		}
 		// if the session is slated to be disabled, do that
-		if (disableSelf) {
-			disable();
-		}
+//		if (!disableSelf) {
+//			disable();
+//		}
 	}
 
 	/**
