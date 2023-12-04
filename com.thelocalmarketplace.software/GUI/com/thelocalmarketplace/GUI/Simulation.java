@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.OverloadedDevice;
+import com.jjjwelectronics.bag.ReusableBag;
 import com.jjjwelectronics.scanner.Barcode;
 import com.tdc.CashOverloadException;
 import com.tdc.banknote.Banknote;
@@ -22,6 +23,7 @@ import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
 import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.attendant.Attendant;
+
 import ca.ucalgary.seng300.simulation.SimulationException;
 import powerutility.PowerGrid;
 
@@ -163,10 +165,41 @@ public class Simulation {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        ReusableBag[] bags = new ReusableBag[50];
+        for(int i = 0; i<50; i++) {
+        	ReusableBag bag = new ReusableBag();
+        	bags[i] = bag;
+        }
+        try {
+			scs.getReusableBagDispenser().load(bags);
+		} catch (OverloadedDevice e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void unhide() {
 		HardwareGUI.setVisibility(true);
 		softwareGUI.unhide();
+	}
+	
+	public SoftwareGUI getSoftwareGUI() {
+		return softwareGUI;
+	}
+	
+	public HardwareGUI getHardwareGUI() {
+		return hardwareGUI;
+	}
+	
+	public AttendantGUI getAttendantGUI() {
+		return attendantGUI;
+	}
+	
+	public AbstractSelfCheckoutStation getCheckoutStation() {
+		return scs;
+	}
+	
+	public AttendantStation getAttendantStation() {
+		return as;
 	}
 }

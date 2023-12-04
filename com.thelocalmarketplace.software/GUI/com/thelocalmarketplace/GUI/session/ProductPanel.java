@@ -61,14 +61,13 @@ public class ProductPanel extends JPanel {
 		gbc_label.gridy = 0;
 		add(label, gbc_label);
 		
-		String productDescription;
+		String productDescription = "";
 		if(product instanceof BarcodedProduct) {
 			productDescription = ((BarcodedProduct) product).getDescription();
 		} 
 		else if(product instanceof PLUCodedProduct) {
 			productDescription = ((PLUCodedProduct) product).getDescription();
 		}
-		else productDescription = "Some product";
 		
 		JLabel description = new JLabel("<html>" + productDescription + "</html>");
 		description.setHorizontalAlignment(JLabel.CENTER);
