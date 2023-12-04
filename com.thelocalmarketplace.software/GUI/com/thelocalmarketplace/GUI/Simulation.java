@@ -77,7 +77,7 @@ public class Simulation {
 		manager = new MaintenanceManager();
 		manager.openHardware(session);
 		
-		predictor = new IssuePredictor(session, scs);
+		predictor = attendant.getIssuePredictor(session);
 		
 		hardwareGUI = new HardwareGUI(scs, as);
 		attendantGUI = new AttendantGUI(attendant, manager, predictor);

@@ -89,11 +89,11 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         station.plugIn(powerGrid);
         station.turnOn();
         attendant = new Attendant(station);
-        attendant.registerOn(session);
+        attendant.registerOn(session,scs);
 
         maintenanceManager = new MaintenanceManager();
-        predictor = new IssuePredictor(session, scs);
-        attendant.addIssuePrediction(predictor);
+        attendant.addIssuePrediction(session);
+        predictor = attendant.getIssuePredictor(session);
 
         Coin.DEFAULT_CURRENCY = Currency.getInstance(Locale.CANADA);
         nickel = new Coin(new BigDecimal(0.05));
