@@ -27,5 +27,7 @@ package com.thelocalmarketplace.software.membership;
  */
 public interface MembershipListener {
 
+    /** Signals an event in which a membership number was entered by the user.
+     * @param membershipNumber The membership number. */
     void membershipEntered(String membershipNumber);
 }
