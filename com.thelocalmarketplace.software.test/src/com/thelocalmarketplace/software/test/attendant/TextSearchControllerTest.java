@@ -242,18 +242,20 @@ public class TextSearchControllerTest extends AbstractTest {
     }
  
     // -------------------- END TESTS --------------------
-    
+
+    // The following may be removed
+
     /**
      * This is a utility method that will convert a string into the associated key presses on the
      * USKeyboardQWERTY, a similar function may be included in the GUI, but that is outside
-     * the scope of this test class.
+     * the scope of this test class. This may be removed.
      * @param input
      * @throws DisabledDevice
      */
     public void stringToKeyboard(String input) throws DisabledDevice {
         USKeyboardQWERTY keyboard = a.getStation().keyboard;
 
-        // Generate Mapping for Non Alphabetical Shift Modified Keys
+        // Generate Mapping for Non-Alphabetical Shift Modified Keys
         Map<Character, Boolean> shiftModified = new HashMap<>();
         Map<Character, String> labelLookup = new HashMap<>();
 
