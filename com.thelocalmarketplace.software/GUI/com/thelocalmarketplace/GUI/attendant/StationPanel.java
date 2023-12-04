@@ -159,6 +159,11 @@ public class StationPanel extends JPanel implements ActionListener {
 			status.setText("STATUS: STABLE");
 		}
 		
+		if(!enabled) {
+			status.setForeground(urgentColor);
+			status.setText("STATUS: DISABLED");
+		}
+		
 		info.setText(issuesText);
 	}
 	
@@ -170,11 +175,13 @@ public class StationPanel extends JPanel implements ActionListener {
 				enabled = true;
 				power.setText("ON");
 				power.setBackground(new Color(158, 228, 144));
+				updateIssues(issues);
 			} else {
 				attendant.enableStation(session);
 				enabled = false;
 				power.setText("OFF");
 				power.setBackground(new Color(205, 92, 92));
+				updateIssues(issues);
 			}
 		} else if (e.getSource() == addBySearch) {
 			searchCatalogue.setVisible(true);
