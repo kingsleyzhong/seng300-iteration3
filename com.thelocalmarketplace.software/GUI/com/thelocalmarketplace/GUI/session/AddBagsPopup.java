@@ -113,7 +113,7 @@ public class AddBagsPopup {
 		});
 		panel.add(addPersonalBagButton);
 		
-		NumberOfBags numOfBagsScreen = new NumberOfBags();
+		NumberOfBags numOfBagsScreen = new NumberOfBags(session);
 		addStoreBagButton = new PlainButton("Add Stores Bags", Colors.color4);
 		addStoreBagButton.setFont(new Font("Tahoma", Font.PLAIN, 25));
 		addStoreBagButton.addActionListener(new ActionListener() {
@@ -121,6 +121,7 @@ public class AddBagsPopup {
 				if (session.getState() != SessionState.BLOCKED) {
 					numOfBagsScreen.popUp();
 					hide();
+					
 				}
 				else {
 	            JOptionPane.showMessageDialog(addPersonalBagButton, "Cannot Add Bag at this moment");

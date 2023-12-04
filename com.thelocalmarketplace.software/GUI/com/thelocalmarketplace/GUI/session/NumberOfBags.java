@@ -74,7 +74,11 @@ public class NumberOfBags {
 		
 		JLabel num;
 		
-		public NumberOfBags() {
+		Session session;
+		
+		public NumberOfBags(Session session) {
+			
+			this.session = session;
 					
 			frame = new JFrame();
 			frame.setResizable(true);
@@ -257,7 +261,7 @@ public class NumberOfBags {
 			this.frame.setVisible(false);
 		}
 		
-		public int returnNum() {
+		public void returnNum() {
 			
 			int intNumber = 0;
 			
@@ -270,7 +274,7 @@ public class NumberOfBags {
 			}
 			
 			
-			return intNumber;
+			session.purchasebags(intNumber);
 			
 		}
 			

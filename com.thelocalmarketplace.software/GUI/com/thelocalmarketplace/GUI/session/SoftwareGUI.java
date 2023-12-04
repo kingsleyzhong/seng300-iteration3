@@ -668,6 +668,15 @@ public class SoftwareGUI{
 		@Override
 		public void sessionStateChanged() {
 			
+			if (session.getState() == SessionState.PAY_BY_CASH) {
+				paymentScreen.paymentTypeLabel.setText("Payment Selected: Cash");
+			}
+			
+			if (session.getState() == SessionState.PAY_BY_CARD) {
+				paymentScreen.paymentTypeLabel.setText("Payment Selected: Card");
+			}
+
+			
 		}
 
 		
