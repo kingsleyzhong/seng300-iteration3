@@ -372,6 +372,7 @@ public class Session {
 		prevState = sessionState;
 		sessionState = SessionState.PRE_SESSION;
 		stateChanged();
+		funds.disableCash();
 		weight.setInSession(false);
 		receipt.printReceipt(getItems());
 
@@ -451,7 +452,7 @@ public class Session {
 	 * items by freezing session.
 	 */
 	public void payByCash() {
-		if (sessionState == SessionState.IN_SESSION) {
+		if (sessionState == SessionState.IN_SESSION || sessionState == SessionState.PAY_BY_CARD) {
 			if (!manager.getItems().isEmpty()) {
 				sessionState = SessionState.PAY_BY_CASH;
 				stateChanged();
@@ -474,6 +475,7 @@ public class Session {
 			if (!manager.getItems().isEmpty()) {
 				sessionState = SessionState.PAY_BY_CARD;
 				stateChanged();
+				funds.disableCash();
 				funds.setPay(true);
 				manager.setAddItems(false);
 			} else {
