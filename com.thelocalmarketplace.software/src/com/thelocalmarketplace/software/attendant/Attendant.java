@@ -2,6 +2,7 @@ package com.thelocalmarketplace.software.attendant;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.jjjwelectronics.Mass;
 import com.thelocalmarketplace.hardware.AttendantStation;
@@ -45,7 +46,7 @@ import com.thelocalmarketplace.software.weight.WeightListener;
 public class Attendant {
 	private AttendantStation as;
 	private TextSearchController ts;
-	private ArrayList<Session> sessions = new ArrayList<>();
+	private HashMap<Session, Requests> sessions = new HashMap<Session, Requests>(); //
 	
 	/**
 	 * default constructor
@@ -174,8 +175,10 @@ public class Attendant {
 
 	}
 	public void registerOn(Session session) {
+		// register the Attendant as a listener
 		session.register(new InnerSessionListener());
-		sessions.add(session);
+		// start tracking the session and its requests
+		sessions.put(session,Requests.NO_REQUEST);
 	}
 
 	/**

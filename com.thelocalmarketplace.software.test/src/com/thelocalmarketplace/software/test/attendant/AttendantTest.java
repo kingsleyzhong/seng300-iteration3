@@ -75,4 +75,14 @@ public class AttendantTest extends AbstractTest {
         assertNotNull(tempAttendant);
     }
 
+    
+    @Test
+    public void testEnableSession() {
+    	
+    }
+    
+    @Test
+    public void testDisableSession() {
+    	
+    }
 }

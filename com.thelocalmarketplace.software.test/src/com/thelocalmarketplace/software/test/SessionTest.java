@@ -117,7 +117,7 @@ public class SessionTest extends AbstractTest {
         product = new BarcodedProduct(barcode, "Sample Product", 10, 100.0);
         product2 = new BarcodedProduct(barcode2, "Sample Product 2", 15, 20.0);
         funds = new Funds(scs);
-        itemManager = new ItemManager(session);
+        itemManager = new ItemManager();
 
         IElectronicScale baggingArea = scs.getBaggingArea();
         weight = new Weight(baggingArea);
@@ -254,5 +254,13 @@ public class SessionTest extends AbstractTest {
         assertTrue(session.getState() == SessionState.PRE_SESSION);
     	
     }
-       
+      
+    
+    @Test
+    public void testDisableSession() {
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
+        session.start();
+        session.disable();
+        assertTrue(session.getState()== SessionState.DISABLED);
+    }
 }
