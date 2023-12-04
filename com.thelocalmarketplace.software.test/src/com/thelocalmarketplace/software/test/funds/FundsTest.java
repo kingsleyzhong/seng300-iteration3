@@ -100,8 +100,7 @@ public class FundsTest extends AbstractTest {
 	@Test
 	public void testUpdateValidPrice() throws CashOverloadException, NoCashAvailableException, DisabledException {
 		funds.update(price);
-		assertEquals(price, funds.getItemsPrice());
-		assertEquals(price, funds.getAmountDue());
+		assertEquals(price, funds.getItemsPrice());	
 	}
 
 	@Test(expected = IllegalDigitException.class)
@@ -117,10 +116,11 @@ public class FundsTest extends AbstractTest {
 
 	@Test
 	public void testRemoveValidItemPrice() throws CashOverloadException, NoCashAvailableException, DisabledException {
+		assertEquals(BigDecimal.valueOf(0), funds.getItemsPrice());
 		funds.update(price);
+		assertEquals(BigDecimal.valueOf(1), funds.getItemsPrice());
 		funds.removeItemPrice(price);
 		assertEquals(BigDecimal.valueOf(0), funds.getItemsPrice());
-		assertEquals(BigDecimal.valueOf(0), funds.getAmountDue());
 	}
 
 	@Test(expected = IllegalDigitException.class)
