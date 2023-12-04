@@ -14,10 +14,11 @@ import com.jjjwelectronics.printer.IReceiptPrinter;
 import com.jjjwelectronics.printer.ReceiptPrinterListener;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
-import com.thelocalmarketplace.software.attendant.PrintListener;
 import powerutility.NoPowerException;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
+
+import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 /*
  * 
  * Project Iteration 3 Group 1
@@ -52,7 +53,6 @@ public class Receipt {
 	private boolean duplicateNeeded = false; //Flag for if the receipt was not printed out fully and a duplicate is needed.
 	private String receipt; //The receipt that should be printed
 	private IReceiptPrinter printer; //The printer associated with the session;
-	private ArrayList<PrintListener> printListeners = new ArrayList<>();
 
 	int charsPrinted;
 	int linesUsed;
@@ -186,11 +186,9 @@ public class Receipt {
         	}
         	// If the condition is passed, then all characters were successfully printed to the receipt
         		for(ReceiptListener l : listeners) {
-    				l.notifiyReceiptPrinted();
+    				l.notifiyReceiptPrinted(linesUsed, charsPrinted);
     			}
-				for(PrintListener p : printListeners) {
-					p.aReceiptHasBeenPrinted(linesUsed, charsPrinted);
-				}
+
 			linesUsed = 0;
 			charsPrinted = 0;
 
@@ -226,10 +224,9 @@ public class Receipt {
 	}
 
 	public final synchronized void register(ReceiptListener listener) {
+		if (listener == null)
+			throw new NullPointerSimulationException("listener");
 		listeners.add(listener);
 	}
 
-	public final synchronized void registerPrintListener(PrintListener listener) {
-		printListeners.add(listener);
-	}
 }

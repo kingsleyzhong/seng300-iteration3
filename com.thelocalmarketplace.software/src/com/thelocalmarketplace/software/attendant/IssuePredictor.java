@@ -60,7 +60,6 @@ public class IssuePredictor  {
 	private BanknoteStorageUnit banknoteStorage;
 	private Map<BigDecimal, IBanknoteDispenser> banknoteDispensers;
 	private Map<BigDecimal, ICoinDispenser> coinDispensers;
-	private Receipt receipt;
 	private int estimatedInk;
 	private int estimatedPaper;
 
@@ -84,9 +83,9 @@ public class IssuePredictor  {
 		banknoteStorage = scs.getBanknoteStorage();
 		banknoteDispensers = scs.getBanknoteDispensers();
 		coinDispensers = scs.getCoinDispensers();
-		scs.getPrinter().register(new InnerReceiptPrinterListener());
-		this.receipt = receipt;
-		this.receipt.registerPrintListener(new PrintTracker());
+		receipt.register(new InnerReceiptListener());
+
+
 		estimatedInk = 0;
 		estimatedPaper = 0;
 	}
@@ -180,28 +179,24 @@ public class IssuePredictor  {
 		
 	}
 
-	private class InnerReceiptPrinterListener implements ReceiptPrinterListener {
+	private class InnerReceiptListener implements ReceiptListener {
 		@Override
-		public void aDeviceHasBeenEnabled(IDevice<? extends IDeviceListener> device) {}
+		public void notifiyOutOfPaper() {
+			lowPaper = true;
+			estimatedPaper = 0;
+		
+		}
+
 		@Override
-		public void aDeviceHasBeenDisabled(IDevice<? extends IDeviceListener> device) {}
-		@Override
-		public void aDeviceHasBeenTurnedOn(IDevice<? extends IDeviceListener> device) {}
-		@Override
-		public void aDeviceHasBeenTurnedOff(IDevice<? extends IDeviceListener> device) {}
-		@Override
-		public void thePrinterIsOutOfPaper() {}
-		@Override
-		public void thePrinterIsOutOfInk() {}
-		@Override
-		public void thePrinterHasLowInk() {}
-		@Override
-		public void thePrinterHasLowPaper() {}
+		public void notifiyOutOfInk() {
+			lowInk = true;
+			estimatedInk = 0;
+		}
 		/**
 		 * Announces that paper has been added to the printer.
 		 */
 		@Override
-		public void paperHasBeenAddedToThePrinter() {
+		public void notifiyPaperRefilled() {
 			lowPaper = false;
 			estimatedPaper = ReceiptPrinterBronze.MAXIMUM_PAPER;
 		}
@@ -209,15 +204,16 @@ public class IssuePredictor  {
 		 * Announces that ink has been added to the printer.
 		 */
 		@Override
-		public void inkHasBeenAddedToThePrinter() {
+		public void notifiyInkRefilled() {
 			lowInk = false;
-			estimatedInk = ReceiptPrinterBronze.MAXIMUM_INK;
+			estimatedInk = ReceiptPrinterBronze.MAXIMUM_INK;			
 		}
-	}
-
-	private class PrintTracker implements PrintListener {
+		/**
+		 * Announces that a receipt was printed successfully
+		 * Tells us the number of characters and lines printed. 
+		 */
 		@Override
-		public void aReceiptHasBeenPrinted(int linesPrinted, int charsPrinted) {
+		public void notifiyReceiptPrinted(int linesPrinted, int charsPrinted) {
 			estimatedPaper -= linesPrinted;
 			estimatedInk -= charsPrinted;
 		}
@@ -255,7 +251,6 @@ public class IssuePredictor  {
 	 */
     public void checkLowInk(Session s, IReceiptPrinter printer) {
     	receiptPrinter = printer;
-    	SessionState state = s.getState();
     	
     	int currentInk;
     	int threshold;
@@ -306,7 +301,6 @@ public class IssuePredictor  {
      */
     public void checkLowPaper(Session s, IReceiptPrinter printer) {
     	receiptPrinter = printer;
-    	SessionState state = s.getState();
 
     	int currentPaper;
     	int threshold;
@@ -359,7 +353,6 @@ public class IssuePredictor  {
     public void checkLowCoins(Session s, 
     		Map<BigDecimal, ICoinDispenser> dispensers) {
     	coinDispensers = dispensers;
-    	SessionState state = s.getState();
 
     	for (ICoinDispenser dispenser : coinDispensers.values()) {
 			int currentCoins = dispenser.size();
@@ -384,7 +377,6 @@ public class IssuePredictor  {
     public void checkLowBanknotes(Session s, 
     		Map<BigDecimal, IBanknoteDispenser> dispensers) {
     	banknoteDispensers = dispensers;
-    	SessionState state = s.getState();
 
     	for (IBanknoteDispenser dispenser : banknoteDispensers.values()) {
 			int currentBanknotes = dispenser.size();

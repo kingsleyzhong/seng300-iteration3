@@ -23,6 +23,7 @@ import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.AttendantStation;
 import com.thelocalmarketplace.hardware.ISelfCheckoutStation;
 import com.thelocalmarketplace.software.attendant.Attendant;
+import com.thelocalmarketplace.software.attendant.IssuePredictor;
 import com.thelocalmarketplace.software.attendant.IssuePredictorListener;
 import com.thelocalmarketplace.software.attendant.Issues;
 import com.thelocalmarketplace.software.attendant.MaintenanceManager;
@@ -32,6 +33,7 @@ import com.thelocalmarketplace.software.attendant.TextSearchController;
 public class AttendantGUI {
 	Attendant attendant;
 	MaintenanceManager manager;
+	IssuePredictor predictor;
 	HashMap<Session, Requests> sessions;
 	List<JPanel> stationPanels;
 	ITouchScreen asScreen;
@@ -50,7 +52,7 @@ public class AttendantGUI {
 		this.manager = manager;
 		this.asScreen = attendant.getStation().screen;
 		this.textSearch = attendant.getTextSearchController();
-		
+
 		sessions = attendant.getSessions();
 		width = (int) screenSize.getWidth();
 		height = (int) screenSize.getHeight();

@@ -7,7 +7,9 @@ import java.util.Map;
 import java.util.Set;
 
 import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
+import com.jjjwelectronics.DisabledDevice;
 import com.jjjwelectronics.Mass;
+import com.jjjwelectronics.keyboard.USKeyboardQWERTY;
 import com.thelocalmarketplace.hardware.AttendantStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
@@ -48,7 +50,6 @@ public class Attendant {
 	private AttendantStation as;
 	private TextSearchController ts;
 	private HashMap<Session, Requests> sessions = new HashMap<>();
-
 	public ArrayList<AttendantListener> listeners = new ArrayList<>();
 	
 	/**
@@ -186,11 +187,11 @@ public class Attendant {
 		}
 
 	}
-	public void registerOn(Session session, IssuePredictor predictior) {
+	public void registerOn(Session session) {
+		// register the Attendant as a listener
 		session.register(new InnerSessionListener());
-		//sessions.add(session);
-		//as.supervisedStations();
-		sessions.put(session, Requests.NO_REQUEST);
+		// start tracking the session and its requests
+		sessions.put(session,Requests.NO_REQUEST);
 	}
 
 	/**
@@ -254,7 +255,63 @@ public class Attendant {
 		}
 		sessions.put(session, Requests.NO_REQUEST); // Replace with a general request cancellation method?
 	}
-	
+
+	/**
+	 * This is a utility method that will convert a string into the associated key presses on the
+	 * USKeyboardQWERTY
+	 * @param input
+	 * @throws DisabledDevice
+	 */
+	public void stringToKeyboard(String input) throws DisabledDevice {
+		USKeyboardQWERTY keyboard = as.keyboard;
+
+		// Generate Mapping for Non-Alphabetical Shift Modified Keys
+		Map<Character, Boolean> shiftModified = new HashMap<>();
+		Map<Character, String> labelLookup = new HashMap<>();
+
+		for (String label : USKeyboardQWERTY.WINDOWS_QWERTY) {
+			if (label.length() == 3 && label.charAt(1) == ' ') { // Desired Format
+				Character c1 = label.charAt(0);
+				Character c2 = label.charAt(2);
+
+				shiftModified.put(c1, false);
+				shiftModified.put(c2, true);
+
+				labelLookup.put(c1, label);
+				labelLookup.put(c2, label);
+			}
+		}
+
+		for (int i = 0; i < input.length(); i++) {
+			Character c = input.charAt(i);
+			boolean shift = false;
+			String targetLabel;
+
+			if (c == ' ') {
+				targetLabel = "Spacebar";
+			} else if (Character.isLowerCase(c)) {
+				targetLabel = String.valueOf(Character.toUpperCase(c));
+			} else if (Character.isUpperCase(c)) {
+				targetLabel = String.valueOf(c);
+				shift = true;
+			} else if (labelLookup.containsKey(c)) {
+				targetLabel = labelLookup.get(c);
+				shift = shiftModified.get(c);
+			} else {
+				continue;
+			}
+
+			if (shift) {
+				keyboard.getKey("Shift (Left)").press();
+			}
+			keyboard.getKey(targetLabel).press();
+			keyboard.getKey(targetLabel).release();
+			if (shift) {
+				keyboard.getKey("Shift (Left)").release();
+			}
+		}
+	}
+
 	/**
 	 * Method for associating the Attendant with an instance of IssuePredictor.
 	 * @param predictor
