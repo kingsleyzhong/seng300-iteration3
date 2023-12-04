@@ -64,7 +64,7 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
  *
  */
 public class Session {
-	public ArrayList<SessionListener> listeners = new ArrayList<>();
+	private ArrayList<SessionListener> listeners = new ArrayList<>();
 	private ArrayList<HardwareListener> hardwareListeners = new ArrayList<>();
 	private AbstractSelfCheckoutStation scs;
 	protected SessionState sessionState;
@@ -228,43 +228,6 @@ public class Session {
 	}
 	
 	/**
-	 * Handles receiving notifications from the Attendant when a request has been made
-	 * 
-	 */
-	private class InnerAttendantListener implements AttendantListener{
-
-		@Override
-		public void notifyOverrideWeightDiscrepancy() {
-			
-		}
-
-		@Override
-		public void notifyOkayBulkyItem() {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void notifyOkayHeavyBags() {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void notifyForceEndSession() {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void notifyRequestResolved() {
-			// TODO Auto-generated method stub
-			
-		}
-		
-	}
-	
-	/**
 	 * Constructor for the session method. Requires to be installed on self-checkout
 	 * system
 	 * with logic to function
@@ -349,7 +312,11 @@ public class Session {
 		sessionState = SessionState.BLOCKED;
 		manager.setAddItems(false);
 	}
-
+	
+	/**
+	 * Ends the current session, returning state to PRE_SESSION.
+	 * 
+	 */
 	private void end() {
 		prevState = sessionState;
 		sessionState = SessionState.PRE_SESSION;
@@ -381,7 +348,7 @@ public class Session {
 	 *
 	 * @throws InvalidActionException
 	 */
-	public void enteringMembership() {
+	public void enterMembership() {
 		if (sessionState == SessionState.IN_SESSION) {
 			membership.setAddingItems(true);
 		} else {
@@ -493,7 +460,7 @@ public class Session {
 		}	
 	}
 	
-	// Move to receiptPrinter class (possible rename of receiptPrinter to just reciept
+	// Move to receiptPrinter class 
 	public void printReceipt() {
 		receipt.printReceipt(manager.getItems());
 	}
@@ -530,8 +497,27 @@ public class Session {
 	 */
 	public void attendantApprove(Requests request) {
 		requestApproved = true;
-		if (request == Requests.BULKY_ITEM) {
+		switch(request) {
+		case ADD_ITEM_SEARCH:
+			break;
+		case BAGS_TOO_HEAVY:
+			break;
+		case BULKY_ITEM:
 			addBulkyItem();
+			break;
+		case CANT_MAKE_CHANGE:
+			break;
+		case CANT_PRINT_RECEIPT:
+			break;
+		case HELP_REQUESTED:
+			break;
+		case NO_REQUEST:
+			break;
+		case WEIGHT_DISCREPANCY:
+			break;
+		default:
+			break;
+		
 		}
 	}
 
@@ -559,7 +545,7 @@ public class Session {
 	/**
 	 * Called when hardware for the session is opened
 	 */
-	public void openHardware() {
+	public void notifyOpenHardware() {
 		for (HardwareListener l: hardwareListeners) {
 			l.aStationHasBeenOpened();
 		}
@@ -568,7 +554,7 @@ public class Session {
 	/**
 	 * Called when hardware for the session is closed
 	 */
-	public void closeHardware() {
+	public void notifyCloseHardware() {
 		for (HardwareListener l : hardwareListeners) {
 			l.aStationHasBeenClosed();
 		}

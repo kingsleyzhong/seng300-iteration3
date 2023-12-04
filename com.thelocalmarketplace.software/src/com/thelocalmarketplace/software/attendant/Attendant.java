@@ -231,6 +231,22 @@ public class Attendant {
 
 
 	
+	/**
+	 * Handles all possible ways an attendant could "approve" a customer's request
+	 * @param session
+	 * 					an instance of Session
+	 */
+	public void approveRequest(Session session) {
+		if(sessions.containsKey(session)) {
+			Requests request = sessions.get(session);
+			session.attendantApprove(request);// session will have to handle the rest
+		}
+		else {
+			throw new SessionNotRegisteredException();
+		}
+		
+	}
+	
 	
 	/**
 	 * Method for enabling a Customer SelfCheckoutStation associated with a given session, unlocking the 

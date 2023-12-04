@@ -1,9 +1,7 @@
 package com.thelocalmarketplace.software.attendant;
 
 import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
-import ca.ucalgary.seng300.simulation.SimulationException;
 import com.jjjwelectronics.OverloadedDevice;
-import com.jjjwelectronics.bag.ReusableBagDispenserListener;
 import com.jjjwelectronics.printer.IReceiptPrinter;
 import com.tdc.CashOverloadException;
 import com.tdc.banknote.Banknote;
@@ -14,7 +12,6 @@ import com.tdc.coin.CoinStorageUnit;
 import com.tdc.coin.ICoinDispenser;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.software.Session;
-import com.thelocalmarketplace.software.SessionListener;
 import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.exceptions.ClosedHardwareException;
 import com.thelocalmarketplace.software.exceptions.IncorrectDenominationException;
@@ -84,7 +81,7 @@ public class MaintenanceManager {
         state = session.getState();
         if (state == SessionState.DISABLED) {
             scs = session.getStation();
-            session.openHardware();
+            session.notifyOpenHardware();
             banknoteDenominations = scs.getBanknoteDenominations();
             coinDenominations = scs.getCoinDenominations();
             receiptPrinter = scs.getPrinter();
@@ -200,7 +197,7 @@ public class MaintenanceManager {
      * Simulates closing the hardware
      */
     public void closeHardware() {
-        session.closeHardware();
+        session.notifyCloseHardware();
         session = null;
         state = null;
         scs = null;
