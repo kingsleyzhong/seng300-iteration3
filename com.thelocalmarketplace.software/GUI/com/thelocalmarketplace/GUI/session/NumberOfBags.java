@@ -3,12 +3,9 @@ package com.thelocalmarketplace.GUI.session;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -18,10 +15,7 @@ import javax.swing.SwingConstants;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 import com.thelocalmarketplace.software.Session;
-import com.thelocalmarketplace.software.SessionState;
-import java.awt.Color;
 import java.awt.BorderLayout;
-import javax.swing.BoxLayout;
 import java.awt.Component;
 
 public class NumberOfBags {
@@ -278,7 +272,7 @@ public class NumberOfBags {
 			}
 			
 			
-			session.purchasebags(intNumber);
+			session.purchaseBags(intNumber);
 			
 		}
 			

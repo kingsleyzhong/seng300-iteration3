@@ -4,15 +4,12 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.RenderingHints;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -28,11 +25,40 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import javax.swing.JButton;
 
+/**
+ * A panel that displays a product that can be added by the visual catalogue.
+ * 
+ * Project Iteration 3 Group 1
+ *
+ * Derek Atabayev : 30177060
+ * Enioluwafe Balogun : 30174298
+ * Subeg Chahal : 30196531
+ * Jun Heo : 30173430
+ * Emily Kiddle : 30122331
+ * Anthony Kostal-Vazquez : 30048301
+ * Jessica Li : 30180801
+ * Sua Lim : 30177039
+ * Savitur Maharaj : 30152888
+ * Nick McCamis : 30192610
+ * Ethan McCorquodale : 30125353
+ * Katelan Ng : 30144672
+ * Arcleah Pascual : 30056034
+ * Dvij Raval : 30024340
+ * Chloe Robitaille : 30022887
+ * Danissa Sandykbayeva : 30200531
+ * Emily Stein : 30149842
+ * Thi My Tuyen Tran : 30193980
+ * Aoi Ueki : 30179305
+ * Ethan Woo : 30172855
+ * Kingsley Zhong : 30197260
+ */
+
 public class ProductPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private Product product;
 	private Session session;
+	private PlainButton addButton;
 	
 	/**
 	 * Create the panel.
@@ -100,9 +126,9 @@ public class ProductPanel extends JPanel {
 		gbc_priceLbl.fill = GridBagConstraints.HORIZONTAL;
 		add(priceLbl, gbc_priceLbl);
 		
-		JButton btnNewButton = new PlainButton("Add", Colors.color2);
-		btnNewButton.setForeground(Colors.color3);
-		btnNewButton.addActionListener(new ActionListener() {
+		addButton = new PlainButton("Add", Colors.color2);
+		addButton.setForeground(Colors.color3);
+		addButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -121,7 +147,7 @@ public class ProductPanel extends JPanel {
 		gbc_btnNewButton.gridy = 3;
 		gbc_btnNewButton.weightx = 1;
 		gbc_btnNewButton.fill = GridBagConstraints.HORIZONTAL;
-		add(btnNewButton, gbc_btnNewButton);
+		add(addButton, gbc_btnNewButton);
 	}
 
     @Override
@@ -140,6 +166,10 @@ public class ProductPanel extends JPanel {
         graphics.fillRoundRect(0, 0, width-1, height-1, arcs.width, arcs.height); //paint background
         //graphics.setColor(getForeground());
         //graphics.drawRoundRect(0, 0, width-1, height-1, arcs.width, arcs.height); //paint border
+    }
+    
+    public JButton getAddButton() {
+    	return addButton;
     }
 
 }

@@ -2,37 +2,54 @@ package com.thelocalmarketplace.GUI.attendant;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
 import com.thelocalmarketplace.software.Session;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-
 import com.jjjwelectronics.screen.ITouchScreen;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
 import com.thelocalmarketplace.GUI.session.SoftwareGUI;
-import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
-import com.thelocalmarketplace.hardware.AttendantStation;
-import com.thelocalmarketplace.hardware.ISelfCheckoutStation;
 import com.thelocalmarketplace.software.attendant.Attendant;
 import com.thelocalmarketplace.software.attendant.IssuePredictor;
-import com.thelocalmarketplace.software.attendant.IssuePredictorListener;
-import com.thelocalmarketplace.software.attendant.Issues;
 import com.thelocalmarketplace.software.attendant.MaintenanceManager;
 import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.attendant.TextSearchController;
+
+/**
+ * An interface to display interactions with the attendant and attendant station.
+ * 
+ * Project Iteration 3 Group 1
+ *
+ * Derek Atabayev : 30177060
+ * Enioluwafe Balogun : 30174298
+ * Subeg Chahal : 30196531
+ * Jun Heo : 30173430
+ * Emily Kiddle : 30122331
+ * Anthony Kostal-Vazquez : 30048301
+ * Jessica Li : 30180801
+ * Sua Lim : 30177039
+ * Savitur Maharaj : 30152888
+ * Nick McCamis : 30192610
+ * Ethan McCorquodale : 30125353
+ * Katelan Ng : 30144672
+ * Arcleah Pascual : 30056034
+ * Dvij Raval : 30024340
+ * Chloe Robitaille : 30022887
+ * Danissa Sandykbayeva : 30200531
+ * Emily Stein : 30149842
+ * Thi My Tuyen Tran : 30193980
+ * Aoi Ueki : 30179305
+ * Ethan Woo : 30172855
+ * Kingsley Zhong : 30197260
+ */
 
 public class AttendantGUI {
 	Attendant attendant;
