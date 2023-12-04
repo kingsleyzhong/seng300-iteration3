@@ -44,6 +44,7 @@ import com.thelocalmarketplace.software.weight.WeightListener;
  */
 
 public class Attendant {
+	private IssuePredictor predictor;
 	private AttendantStation as;
 	private TextSearchController ts;
 	private HashMap<Session, Requests> sessions = new HashMap<>();

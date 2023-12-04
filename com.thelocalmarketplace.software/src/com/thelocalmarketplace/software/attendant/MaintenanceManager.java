@@ -1,7 +1,9 @@
 package com.thelocalmarketplace.software.attendant;
 
+import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 import ca.ucalgary.seng300.simulation.SimulationException;
 import com.jjjwelectronics.OverloadedDevice;
+import com.jjjwelectronics.bag.ReusableBagDispenserListener;
 import com.jjjwelectronics.printer.IReceiptPrinter;
 import com.tdc.CashOverloadException;
 import com.tdc.banknote.Banknote;
@@ -12,12 +14,14 @@ import com.tdc.coin.CoinStorageUnit;
 import com.tdc.coin.ICoinDispenser;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.software.Session;
+import com.thelocalmarketplace.software.SessionListener;
 import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.exceptions.ClosedHardwareException;
 import com.thelocalmarketplace.software.exceptions.IncorrectDenominationException;
 import com.thelocalmarketplace.software.exceptions.NotDisabledSessionException;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -49,6 +53,7 @@ import java.util.Map;
  * Kingsley Zhong 			: 30197260
  */
 public class MaintenanceManager {
+	private ArrayList<MaintenanceManagerListener> listeners = new ArrayList<>();
     private boolean isOpen = false;
     private int amountOfInkRefilled = 0;
     private int amountOfPaperRefilled = 0;
@@ -88,6 +93,9 @@ public class MaintenanceManager {
             banknoteStorage = scs.getBanknoteStorage();
             coinStorage = scs.getCoinStorage();
             isOpen = true;
+            
+            // signal listeners
+            notifyHardwareOpened(session);
         }
         else {
             throw new NotDisabledSessionException("Session is not disabled!");
@@ -112,6 +120,7 @@ public class MaintenanceManager {
                 }
                 coinDispensers.get(cd).load(coins);
             }
+            notifyCoinAdded(session);
         }
         else {
             throw new ClosedHardwareException("Hardware is closed!");
@@ -125,6 +134,7 @@ public class MaintenanceManager {
      */
     public List<Coin> removeCoins() throws ClosedHardwareException {
         if (isOpen) {
+            notifyCoinRemoved(session, coinStorage);
             return coinStorage.unload();
         }
         else {
@@ -163,6 +173,7 @@ public class MaintenanceManager {
                     }
                 }
                 banknoteDispensers.get(bd).load(banknotes);
+                notifyBanknoteAdded(session);
             }
         }
         else {
@@ -177,6 +188,7 @@ public class MaintenanceManager {
      */
     public List<Banknote> removeBanknotes() throws ClosedHardwareException {
         if (isOpen) {
+        	notifyBanknoteRemoved(session, banknoteStorage);
             return banknoteStorage.unload();
         }
         else {
@@ -198,6 +210,7 @@ public class MaintenanceManager {
         banknoteDispensers = null;
         coinDispensers = null;
         isOpen = false;
+        notifyHardwareClosed(session);
     }
 
 
@@ -212,6 +225,8 @@ public class MaintenanceManager {
             this.receiptPrinter.addInk(amount);
             this.amountOfInkRefilled = 0;
             this.amountOfInkRefilled += amount;
+            
+            notifyInkAdded(session);
 
         } else {
             throw new ClosedHardwareException("Hardware is closed!");
@@ -229,7 +244,9 @@ public class MaintenanceManager {
             this.receiptPrinter.addPaper(amount);
             this.amountOfPaperRefilled = 0;
             this.amountOfPaperRefilled += amount;
-
+            
+            notifyPaperAdded(session);
+            
         } else {
             throw new ClosedHardwareException("Hardware is closed!");
         }
@@ -239,4 +256,88 @@ public class MaintenanceManager {
 
     public int getCurrentAmountOfPaper() { return this.amountOfPaperRefilled; }
 
+    // notifications of events
+    
+    /**
+     * Signals listeners when ink has been added
+     */
+    protected void notifyInkAdded(Session session) {
+		for(MaintenanceManagerListener listener : listeners)
+			listener.notifyInkAdded(session);
+    }
+
+    /**
+     * Signals listeners when paper has been added
+     */
+    protected void notifyPaperAdded(Session session) {
+		for(MaintenanceManagerListener listener : listeners)
+			listener.notifyPaperAdded(session);
+    }
+
+    /**
+     * Signals listeners when coins have been added
+     */
+    protected void notifyCoinAdded(Session session) {
+		for(MaintenanceManagerListener listener : listeners)
+			listener.notifyCoinAdded(session);
+    }
+
+    /**
+     * Signals listeners when banknotes have been added
+     */
+    protected void notifyBanknoteAdded(Session session) {
+		for(MaintenanceManagerListener listener : listeners)
+			listener.notifyBanknoteAdded(session);
+    }
+
+    /**
+     * Signals when coins have been removed
+     */
+    protected void notifyCoinRemoved(Session session, CoinStorageUnit coinStorage) {
+		for(MaintenanceManagerListener listener : listeners)
+			listener.notifyCoinRemoved(session, coinStorage);
+    }
+
+    /**
+     * Signals listeners when banknotes have been removed
+     */
+    protected void notifyBanknoteRemoved(Session session, BanknoteStorageUnit banknoteStorage) {
+		for(MaintenanceManagerListener listener : listeners)
+			listener.notifyBanknoteRemoved(session, banknoteStorage);
+    }
+    /**
+     * Signals when the hardware has been opened
+     * @param session 
+     */
+    protected void notifyHardwareOpened(Session session) {
+		for(MaintenanceManagerListener listener : listeners)
+			listener.notifyHardwareOpened(session);
+    }
+    
+    /**
+     * Signals when the hardware has been closed
+     */
+    protected void notifyHardwareClosed(Session session) {
+		for(MaintenanceManagerListener listener : listeners)
+			listener.notifyHardwareClosed(session);
+    }
+
+    // listener stuff
+    // register listeners
+ 	public final synchronized void register(MaintenanceManagerListener listener) {
+ 		if (listener == null)
+ 			throw new NullPointerSimulationException("listener");
+ 		listeners.add(listener);
+ 	}
+
+ 	// de-register listeners
+ 	public final synchronized void deRegister(MaintenanceManagerListener listener) {
+ 		if (listener == null)
+ 			throw new NullPointerSimulationException("listener");
+ 		listeners.remove(listener);
+ 	}
+ 	
+ 	public ArrayList<MaintenanceManagerListener> getListeners(){
+ 		return listeners;
+ 	}
 }
