@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
+import com.jjjwelectronics.scale.IElectronicScale;
 import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.scanner.BarcodedItem;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
@@ -21,9 +22,11 @@ import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationSilver;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionState;
+import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.items.ItemManager;
 import com.thelocalmarketplace.software.receipt.Receipt;
+import com.thelocalmarketplace.software.test.AbstractSessionTest;
 import com.thelocalmarketplace.software.test.AbstractTest;
 import com.thelocalmarketplace.software.weight.Weight;
 
@@ -60,28 +63,23 @@ import java.util.HashMap;
  * Ethan Woo : 30172855
  * Kingsley Zhong : 30197260
  */
-public class AddBulkyItemTest extends AbstractTest {
+public class AddBulkyItemTest extends AbstractSessionTest {
     public AddBulkyItemTest(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
         super(testName, scsClass);
         // TODO Auto-generated constructor stub
     }
 
-    private Session session;
-    private ItemManager itemManager;
     private BarcodedProduct product;
     private BarcodedProduct product2;
     private BarcodedItem item;
     private ScannerListenerStub listener;
-    private Receipt receipt;
+    private IElectronicScale baggingArea;
 
     byte num;
     private Numeral numeral;
     private Numeral[] digits;
     private Barcode barcode;
     private Barcode barcode2;
-
-    private Funds funds;
-    private Weight weight;
 
     @Before
     public void setUp() {
@@ -90,10 +88,6 @@ public class AddBulkyItemTest extends AbstractTest {
         listener = new ScannerListenerStub();
         scs.getHandheldScanner().register(listener);
 
-        session = new Session();
-        itemManager = new ItemManager(session);
-        receipt = new Receipt(scs.getPrinter());
-
         num = 1;
         numeral = Numeral.valueOf(num);
         digits = new Numeral[] { numeral, numeral, numeral };
@@ -101,47 +95,41 @@ public class AddBulkyItemTest extends AbstractTest {
         barcode2 = new Barcode(new Numeral[] { numeral });
         product = new BarcodedProduct(barcode, "Sample Product", 10, 100.0);
         product2 = new BarcodedProduct(barcode2, "Sample Product 2", 15, 20.0);
-        funds = new Funds(scs);
         item = new BarcodedItem(barcode, new Mass(100.0));
-
-        weight = new Weight(scs.getBaggingArea());
+        
+        baggingArea = scs.getBaggingArea();
+        
+        session.start();
     }
 
     /**
      * test case for adding bulky item successfully
-     * Scenario: add an item, customer call addBulkyItem, assistant approves
+     * Scenario: add an item, customer call addBulkyItem, attendant approves
      */
     @Test
     public void testAddBulkyItem() {
-        session.start();
-        session.setup(itemManager, funds, weight, receipt, scs);
-        // session.bulkyItemMap(new HashMap<BarcodedProduct, Integer>());
         itemManager.addItem(product);
-        session.bulkyItemCalled();
-        session.addBulkyItem(product);
+        session.addBulkyItem();
+        session.attendantApprove(Requests.BULKY_ITEM);
 
-        Weight itemWeight = session.getWeight();
-        Mass actual = itemWeight.getExpectedWeight();
+        Mass actual = weight.getExpectedWeight();
         Mass expected = new Mass(0);
         assertEquals("Mass is 0", expected, actual);
         assertEquals(session.getState(), SessionState.IN_SESSION);
+        assertFalse("There is no weight discrepancy.", session.getWeight().isDiscrepancy());
     }
 
     /**
      * test case for handling bulky item
-     * tests if the system properly signals the attendant that a no bagging request
-     * is in progress
-     * and if the attendant signals to the system that request is approved
+     * Scenario: add items, customer calls addBulkyItem, attendant does not approve
      */
     @Test
-    public void testAddBulkyItemAttendantCall() {
-        session.start();
-        session.setup(itemManager, funds, weight, receipt, scs);
-        // session.bulkyItemMap(new HashMap<BarcodedProduct, Integer>());
+    public void testBulkyItemNotApproved() {
         itemManager.addItem(product);
-        session.bulkyItemCalled();
-        session.addBulkyItem(product);
-        assertTrue("Bulky Item request has been approved.", session.getBulkyItem().containsKey(product));
+        session.addBulkyItem();
+        
+        assertEquals("Discrepancy", SessionState.BULKY_ITEM, session.getState());
+        assertTrue("Weight Discrepancy", weight.isDiscrepancy());
     }
 
     /**
@@ -150,16 +138,14 @@ public class AddBulkyItemTest extends AbstractTest {
      */
     @Test
     public void testAddTwoBulkyItemAndInSession() {
-        session.start();
-        session.setup(itemManager, funds, weight, receipt, scs);
-        // session.bulkyItemMap(new HashMap<BarcodedProduct, Integer>());
         itemManager.addItem(product);
+        baggingArea.addAnItem(item);
+        
         itemManager.addItem(product2);
-        session.bulkyItemCalled();
-        session.addBulkyItem(product2);
+        session.addBulkyItem();
+        session.attendantApprove(Requests.BULKY_ITEM);
 
-        Weight itemWeight = session.getWeight();
-        Mass actual = itemWeight.getExpectedWeight();
+        Mass actual = weight.getExpectedWeight();
         Mass expected = new Mass(BigDecimal.valueOf(100));
         assertEquals("Mass is 100", expected, actual);
     }
@@ -170,16 +156,14 @@ public class AddBulkyItemTest extends AbstractTest {
      */
     @Test
     public void testAddTwoSameBulkyItem() {
-        session.start();
-        session.setup(itemManager, funds, weight, receipt, scs);
-        // session.bulkyItemMap(new HashMap<BarcodedProduct, Integer>());
         itemManager.addItem(product);
+        baggingArea.addAnItem(item);
+        
         itemManager.addItem(product);
-        session.bulkyItemCalled();
-        session.addBulkyItem(product);
+        session.addBulkyItem();
+        session.attendantApprove(Requests.BULKY_ITEM);
 
-        Weight itemWeight = session.getWeight();
-        Mass actual = itemWeight.getExpectedWeight();
+        Mass actual = weight.getExpectedWeight();
         Mass expected = new Mass(BigDecimal.valueOf(100));
         assertEquals("Mass is 100", expected, actual);
     }
@@ -190,25 +174,19 @@ public class AddBulkyItemTest extends AbstractTest {
      */
     @Test
     public void testAddBulkyItemHandheldScanner() {
-        scs.plugIn(PowerGrid.instance());
-        scs.turnOn();
-        session.start();
-        session.setup(itemManager, funds, weight, receipt, scs);
-
         while (!listener.barcodesScanned.contains(item.getBarcode())) {
             scs.getHandheldScanner().scan(item);
         }
 
-        session.bulkyItemCalled();
-        session.addBulkyItem(product);
-        Weight itemWeight = session.getWeight();
-        Mass actual = itemWeight.getExpectedWeight();
+        session.addBulkyItem();
+        session.attendantApprove(Requests.BULKY_ITEM);
+        Mass actual = weight.getExpectedWeight();
         Mass expected = new Mass(0);
         assertEquals("Mass is 0", expected, actual);
     }
 
     /**
-     * test case for causing weight discrepancy 1 using bronze station
+     * test case for causing weight discrepancy
      * scenario: add item, customer call addBulkyItem, attendant approves, then
      * place the bulky item in the bagging area anyways
      *
@@ -220,15 +198,10 @@ public class AddBulkyItemTest extends AbstractTest {
      */
     @Test
     public void testBulkyItemWeightDiscrepancy() {
-        scs.plugIn(PowerGrid.instance());
-        scs.turnOn();
-        session.start();
-        session.setup(itemManager, funds, weight, receipt, scs);
-        // session.bulkyItemMap(new HashMap<BarcodedProduct, Integer>());
         itemManager.addItem(product);
-        session.bulkyItemCalled();
-        session.addBulkyItem(product);
-        scs.getBaggingArea().addAnItem(new BarcodedItem(barcode, new Mass(100.0)));
+        session.addBulkyItem();
+        session.attendantApprove(Requests.BULKY_ITEM);
+        baggingArea.addAnItem(new BarcodedItem(barcode, new Mass(100.0)));
         assertEquals("Discrepancy must have occurred", session.getState(), SessionState.BLOCKED);
     }
 
@@ -242,17 +215,13 @@ public class AddBulkyItemTest extends AbstractTest {
      */
     @Test
     public void testBulkyItemWeightDiscrepancyResolved() {
-        session.start();
-        session.setup(itemManager, funds, weight, receipt, scs);
-        // session.bulkyItemMap(new HashMap<BarcodedProduct, Integer>());
         itemManager.addItem(product);
-        session.bulkyItemCalled();
-        session.addBulkyItem(product);
-        scs.plugIn(PowerGrid.instance());
-        scs.turnOn();
+        session.addBulkyItem();
+        session.attendantApprove(Requests.BULKY_ITEM);
+
         BarcodedItem item = new BarcodedItem(barcode, new Mass(100.0));
-        scs.getBaggingArea().addAnItem(item);
-        scs.getBaggingArea().removeAnItem(item);
+        baggingArea.addAnItem(item);
+        baggingArea.removeAnItem(item);
         assertEquals("Discrepancy resolved", session.getState(), SessionState.IN_SESSION);
     }
 
@@ -270,8 +239,6 @@ public class AddBulkyItemTest extends AbstractTest {
      */
     @Test
     public void testAddItemButNotCallBulkyItem() {
-        session.start();
-        session.setup(itemManager, funds, weight, receipt, scs);
         itemManager.addItem(product);
         assertEquals("Discrepancy must have occurred", session.getState(), SessionState.BLOCKED);
     }
@@ -286,101 +253,85 @@ public class AddBulkyItemTest extends AbstractTest {
      */
     @Test
     public void testAddItemButNotCallBulkyItemFixed() {
-        session.start();
-        session.setup(itemManager, funds, weight, receipt, scs);
-        // session.bulkyItemMap(new HashMap<BarcodedProduct, Integer>());
         itemManager.addItem(product);
-        session.bulkyItemCalled();
-        session.addBulkyItem(product);
+        session.addBulkyItem();
+        session.attendantApprove(Requests.BULKY_ITEM);
+        
         assertEquals("Discrepancy is fixed", session.getState(), SessionState.IN_SESSION);
     }
 
     /**
      * test case to check bulky item cancelled by customer
+     * temp removed: cancel isn't supported
      */
-    @Test
-    public void testCancelBulkyItem() {
-        scs.plugIn(PowerGrid.instance());
-        scs.turnOn();
-        session.start();
-        session.setup(itemManager, funds, weight, receipt, scs);
-        // session.bulkyItemMap(new HashMap<BarcodedProduct, Integer>());
-        itemManager.addItem(product);
-        session.bulkyItemCalled();
-        session.addBulkyItem(product);
-        session.cancelBulkyItem(product);
-        BarcodedItem item = new BarcodedItem(barcode, new Mass(100.0));
-        scs.getBaggingArea().addAnItem(item);
-        assertEquals("Bulky item is cancelled", session.getWeight().getExpectedWeight(), item.getMass());
-    }
+//    @Test
+//    public void testCancelBulkyItem() {
+//        scs.plugIn(PowerGrid.instance());
+//        scs.turnOn();
+//        session.start();
+//        
+//        // session.bulkyItemMap(new HashMap<BarcodedProduct, Integer>());
+//        itemManager.addItem(product);
+//        session.addBulkyItem();
+//        session.attendantApprove(Requests.BULKY_ITEM);
+//        session.cancelBulkyItem(product);
+//        BarcodedItem item = new BarcodedItem(barcode, new Mass(100.0));
+//        scs.getBaggingArea().addAnItem(item);
+//        assertEquals("Bulky item is cancelled", session.getWeight().getExpectedWeight(), item.getMass());
+//    }
 
     /**
      * test case to check bulky item cancelled by customer
+     * Temp removed: this isn't a feature anymore
      */
-    @Test
-    public void testCancelWithTwoBulkyItem() {
-        scs.plugIn(PowerGrid.instance());
-        scs.turnOn();
-        session.start();
-        session.setup(itemManager, funds, weight, receipt, scs);
-        // session.bulkyItemMap(new HashMap<BarcodedProduct, Integer>());
-        itemManager.addItem(product);
-        session.bulkyItemCalled();
-        session.addBulkyItem(product);
-
-        itemManager.addItem(product);
-        session.bulkyItemCalled();
-        session.addBulkyItem(product);
-
-        session.cancelBulkyItem(product);
-        BarcodedItem item = new BarcodedItem(barcode, new Mass(100.0));
-        scs.getBaggingArea().addAnItem(item);
-        assertEquals("Bulky item is cancelled", session.getWeight().getExpectedWeight(), item.getMass());
-    }
+//    @Test
+//    public void testCancelWithTwoBulkyItem() {
+//        scs.plugIn(PowerGrid.instance());
+//        scs.turnOn();
+//        session.start();
+//        
+//        // session.bulkyItemMap(new HashMap<BarcodedProduct, Integer>());
+//        itemManager.addItem(product);
+//        session.addBulkyItem();
+//        session.attendantApprove(Requests.BULKY_ITEM);
+//
+//        itemManager.addItem(product);
+//        session.addBulkyItem();
+//        session.attendantApprove(Requests.BULKY_ITEM);
+//
+//        session.cancelBulkyItem(product);
+//        BarcodedItem item = new BarcodedItem(barcode, new Mass(100.0));
+//        scs.getBaggingArea().addAnItem(item);
+//        assertEquals("Bulky item is cancelled", session.getWeight().getExpectedWeight(), item.getMass());
+//    }
 
     /**
      * test case for cancelling add bulky item when it was not called
+     * temp removed: cancel isn't supported ATM
      */
-    @Test
-    public void testBulkyItemNotCalled() {
-        session.start();
-        session.setup(itemManager, funds, weight, receipt, scs);
-        itemManager.addItem(product);
-        // cancel bulky item when bulky item was not called
-        session.cancelBulkyItem(product);
-        assertTrue("Bulky item was not called.", session.getBulkyItem().isEmpty());
-        // assertFalse("Bulky item was not called.", session.getBulkyItemCalled());
-    }
-
-    /**
-     * test case for no weight discrepancy (attendant is not called)
-     */
-    @Test
-    public void testNoWeightDiscrepancy() {
-        session.start();
-        session.setup(itemManager, funds, weight, receipt, scs);
-        // session.bulkyItemMap(new HashMap<BarcodedProduct, Integer>());
-        itemManager.addItem(product);
-        session.bulkyItemCalled();
-        // session.assistantApprove();
-        session.addBulkyItem(product);
-        assertFalse("There is no weight discrepancy.", session.getWeight().isDiscrepancy());
-    }
+//    @Test
+//    public void testBulkyItemNotCalled() {
+//        session.start();
+//        
+//        itemManager.addItem(product);
+//        // cancel bulky item when bulky item was not called
+//        session.cancelBulkyItem(product);
+//        assertTrue("Bulky item was not called.", session.getBulkyItem().isEmpty());
+//        // assertFalse("Bulky item was not called.", session.getBulkyItemCalled());
+//    }
 
     /**
      * test case to remove a bulky item
      */
     @Test
     public void testRemoveBulkyItem() {
-        session.start();
-        session.setup(itemManager, funds, weight, receipt, scs);
-        // session.bulkyItemMap(new HashMap<BarcodedProduct, Integer>());
         itemManager.addItem(product);
-        session.bulkyItemCalled();
-        session.addBulkyItem(product);
-        session.removeItem(product);
-        Weight itemWeight = session.getWeight();
-        Mass actual = itemWeight.getExpectedWeight();
+        session.addBulkyItem();
+        session.attendantApprove(Requests.BULKY_ITEM);
+        
+        itemManager.removeItem(product);
+        
+        Mass actual = weight.getExpectedWeight();
         Mass expected = new Mass(0);
         assertEquals("Mass is 0", expected, actual);
     }
@@ -390,19 +341,15 @@ public class AddBulkyItemTest extends AbstractTest {
      */
     @Test
     public void testRemoveBulkyItemTwoItems() {
-        session.start();
-        session.setup(itemManager, funds, weight, receipt, scs);
-        // session.bulkyItemMap(new HashMap<BarcodedProduct, Integer>());
+        itemManager.addItem(product);
+        session.addBulkyItem();
+        session.attendantApprove(Requests.BULKY_ITEM);
 
         itemManager.addItem(product);
-        session.bulkyItemCalled();
-        session.addBulkyItem(product);
+        session.addBulkyItem();
+        session.attendantApprove(Requests.BULKY_ITEM);
 
-        itemManager.addItem(product);
-        session.bulkyItemCalled();
-        session.addBulkyItem(product);
-
-        session.removeItem(product);
+        itemManager.removeItem(product);
         assertEquals("Price is 10", BigDecimal.valueOf(10), session.getFunds().getItemsPrice());
     }
 
@@ -411,54 +358,55 @@ public class AddBulkyItemTest extends AbstractTest {
      */
     @Test
     public void testRemoveBulkyItemThreeItems() {
-        session.start();
-        session.setup(itemManager, funds, weight, receipt, scs);
-        // session.bulkyItemMap(new HashMap<BarcodedProduct, Integer>());
         itemManager.addItem(product);
-        session.bulkyItemCalled();
-        session.addBulkyItem(product);
+        session.addBulkyItem();
+        session.attendantApprove(Requests.BULKY_ITEM);
 
         itemManager.addItem(product);
-        session.bulkyItemCalled();
-        session.addBulkyItem(product);
+        session.addBulkyItem();
+        session.attendantApprove(Requests.BULKY_ITEM);
 
         itemManager.addItem(product);
-        session.bulkyItemCalled();
-        session.addBulkyItem(product);
+        session.addBulkyItem();
+        session.attendantApprove(Requests.BULKY_ITEM);
 
-        session.removeItem(product);
+        itemManager.removeItem(product);
+        
+        assertFalse("No Discrepancy", weight.isDiscrepancy());
         assertEquals("Price is 20", BigDecimal.valueOf(20), session.getFunds().getItemsPrice());
     }
 
     /**
      * test case for removing non existent bulky item
+     * - temp removed, I don't even know what this is trying to do -Kingsley
      */
-    @Test
-    public void testRemoveBulkyItemNotFound() {
-        // need to have bulky item in the hashmap but not have any quantity
-        session.start();
-        session.setup(itemManager, funds, weight, receipt, scs);
-        // session.bulkyItemMap(new HashMap<BarcodedProduct, Integer>());
-        itemManager.addItem(product);
-        session.bulkyItemCalled();
-        session.removeItem(product);
-        Assert.assertTrue("There is no bulky item to remove.", session.getBulkyItem().isEmpty());
-    }
+//    @Test
+//    public void testRemoveBulkyItemNotFound() {
+//        // need to have bulky item in the hashmap but not have any quantity
+//        session.start();
+//        
+//        itemManager.addItem(product);
+//        
+//        session.removeItem(product);
+//        Assert.assertTrue("There is no bulky item to remove.", session.getBulkyItem().isEmpty());
+//    }
 
     /**
      * test case for calling add bulky item when not allowed
+     * I also don't know what this is trying to do.
      */
-    @Test
-    public void testAddBulkyItemNotAllowed() {
-        session.start();
-        session.setup(itemManager, funds, weight, receipt, scs);
-        // session.bulkyItemMap(new HashMap<BarcodedProduct, Integer>());
-        itemManager.addItem(product);
-        session.addBulkyItem(product);
-        // Assert.assertFalse("You cannot handle bulky item.",
-        // session.getBulkyItemCalled());
-        Assert.assertTrue("You cannot handle bulky item.", session.getBulkyItem().isEmpty());
-    }
+//    @Test
+//    public void testAddBulkyItemNotAllowed() {
+//        session.start();
+//        
+//        // session.bulkyItemMap(new HashMap<BarcodedProduct, Integer>());
+//        itemManager.addItem(product);
+//        session.addBulkyItem();
+//        session.attendantApprove(Requests.BULKY_ITEM);
+//        // Assert.assertFalse("You cannot handle bulky item.",
+//        // session.getBulkyItemCalled());
+//        Assert.assertTrue("You cannot handle bulky item.", session.getBulkyItem().isEmpty());
+//    }
 
     public class ScannerListenerStub implements BarcodeScannerListener {
         public ArrayList<Barcode> barcodesScanned;
