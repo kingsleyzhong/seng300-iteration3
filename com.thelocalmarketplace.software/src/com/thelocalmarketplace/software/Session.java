@@ -180,6 +180,9 @@ public class Session {
 			itemAdded = false;
 			itemRemoved = false;
 			resume();
+			for (SessionListener l : listeners) {
+				l.discrepancyResolved(outerSession);
+			}
 		}
 
 		@Override
@@ -345,7 +348,10 @@ public class Session {
 			sessionState = SessionState.PRE_SESSION;
 			stateChanged();
 			manager.setAddItems(false);
-		} else if (sessionState != SessionState.BLOCKED) {
+		} else if(sessionState == SessionState.BULKY_ITEM) {
+			sessionState = SessionState.BLOCKED;
+		}
+		else if (sessionState != SessionState.BLOCKED) {
 			sessionState = SessionState.IN_SESSION;
 			stateChanged();
 			weight.cancel();
@@ -519,7 +525,7 @@ public class Session {
 	 */
 	public void addBulkyItem() {
 		// Only able to add when in a discrepancy after adding bags
-		if (sessionState == SessionState.BLOCKED) {
+		if (sessionState == SessionState.BLOCKED && !requestApproved) {
 			sessionState = SessionState.BULKY_ITEM;
 			stateChanged();
 			notifyAttendant(Requests.BULKY_ITEM);

@@ -16,6 +16,7 @@ import java.text.DecimalFormat;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -25,6 +26,7 @@ import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.GradientPanel;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
+import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.Product;
@@ -67,6 +69,10 @@ public class SoftwareGUI{
     public JLabel infoWeightNumber;
     String cartPrice;
     public JLabel cartTotalInDollars;
+    
+    private String lastProductDescription = "";
+    
+    private boolean inDiscrepancy = false;
 	
 	// JFrame size
 	private int width;
@@ -505,6 +511,30 @@ public class SoftwareGUI{
 			cartItemsPanel.addProduct(product, ofProduct);
 			quantity = quantity + 1;
 			update(currentExpectedPrice.doubleValue(), currentExpectedWeight.inGrams().doubleValue());
+			if (product instanceof BarcodedProduct) {
+				lastProductDescription = ((BarcodedProduct) product).getDescription();
+			}
+			else if (product instanceof PLUCodedProduct) {
+				lastProductDescription = ((PLUCodedProduct) product).getDescription();
+			}
+			frame.setVisible(true);
+			paymentScreen.frame.setVisible(false);
+			catalogue.setVisible(false);
+			inDiscrepancy = true;
+			Object[] options = {"OK", "Do not bag", "Cancel"};
+			int result = JOptionPane.showOptionDialog(null, "Please add " + lastProductDescription + " to the bagging area.", 
+					"Add to scale", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+			if(result == JOptionPane.CANCEL_OPTION) {
+				Product lastProduct = session.getManager().getLastProduct();
+				if (lastProduct instanceof BarcodedProduct) {
+					session.getManager().removeItem((BarcodedProduct) lastProduct);
+				}
+				else if (lastProduct instanceof PLUCodedProduct) {
+					session.getManager().removeItem((PLUCodedProduct) lastProduct);
+				}
+			} else if(result == JOptionPane.NO_OPTION) {
+				session.addBulkyItem();
+			}
 		}
 
 		@Override
@@ -513,18 +543,55 @@ public class SoftwareGUI{
 			cartItemsPanel.removeProduct(product, ofProduct);
 			quantity = quantity - 1;
 			update(currentExpectedPrice.doubleValue(), currentExpectedMass.inGrams().doubleValue());
+			if (product instanceof BarcodedProduct) {
+				lastProductDescription = lastProductDescription + ", " + ((BarcodedProduct) product).getDescription();
+			}
+			else if (product instanceof PLUCodedProduct) {
+				lastProductDescription = lastProductDescription + ", " + ((PLUCodedProduct) product).getDescription();
+			}
+			inDiscrepancy = true;
+			frame.setVisible(true);
+			paymentScreen.frame.setVisible(false);
+			catalogue.setVisible(false);
+			paymentScreen.frame.setVisible(false);
+			catalogue.setVisible(false);
+			JOptionPane.showMessageDialog(null, "Please remove " + lastProductDescription + " from the scale");
 		}
 
 		@Override
 		public void addItemToScaleDiscrepancy(Session session) {
-			// TODO Auto-generated method stub
+			if(inDiscrepancy) {
+				frame.setVisible(true);
+				paymentScreen.frame.setVisible(false);
+				catalogue.setVisible(false);
+				Object[] options = {"OK", "Do not bag", "Cancel"};
+				int result = JOptionPane.showOptionDialog(null, "Please add " + lastProductDescription + " to the bagging area.", 
+						"Add to scale", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+				if(result == JOptionPane.CANCEL_OPTION) {
+					Product lastProduct = session.getManager().getLastProduct();
+					if (lastProduct instanceof BarcodedProduct) {
+						session.getManager().removeItem((BarcodedProduct) lastProduct);
+					}
+					else if (lastProduct instanceof PLUCodedProduct) {
+						session.getManager().removeItem((PLUCodedProduct) lastProduct);
+					}
+				} else if(result == JOptionPane.NO_OPTION) {
+					session.addBulkyItem();
+				}
+			}
 			
 		}
 
 		@Override
 		public void removeItemFromScaleDiscrepancy(Session session) {
-			// TODO Auto-generated method stub
-			
+			if(inDiscrepancy) {
+				frame.setVisible(true);
+				paymentScreen.frame.setVisible(false);
+				catalogue.setVisible(false);
+				paymentScreen.frame.setVisible(false);
+				catalogue.setVisible(false);
+				JOptionPane.showMessageDialog(null, "Please remove " + lastProductDescription + " from the scale");
+			}
 		}
 
 		@Override
@@ -535,8 +602,8 @@ public class SoftwareGUI{
 
 		@Override
 		public void discrepancyResolved(Session session) {
-			// TODO Auto-generated method stub
-			
+			lastProductDescription = "";
+			inDiscrepancy = false;
 		}
 
 		@Override
@@ -549,7 +616,27 @@ public class SoftwareGUI{
 
 		@Override
 		public void getRequest(Session session, Requests request) {
-			// TODO Auto-generated method stub
+			if(request == Requests.BULKY_ITEM) {
+				System.out.println("here2");
+				int result2 = JOptionPane.showConfirmDialog(null, "Wait for request approval.");
+				if(result2 == JOptionPane.CANCEL_OPTION || result2 == JOptionPane.NO_OPTION) {
+					session.cancel();
+					Object[] options = {"OK", "Do not bag", "Cancel"};
+					int result = JOptionPane.showOptionDialog(null, "Please add " + lastProductDescription + " to the bagging area.", 
+							"Add to scale", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+					if(result == JOptionPane.CANCEL_OPTION) {
+						Product lastProduct = session.getManager().getLastProduct();
+						if (lastProduct instanceof BarcodedProduct) {
+							session.getManager().removeItem((BarcodedProduct) lastProduct);
+						}
+						else if (lastProduct instanceof PLUCodedProduct) {
+							session.getManager().removeItem((PLUCodedProduct) lastProduct);
+						}
+					} else if(result == JOptionPane.NO_OPTION) {
+						session.addBulkyItem();
+					}
+				}
+			}
 			
 		}
 
