@@ -67,7 +67,7 @@ public class StationPanel extends JPanel implements ActionListener {
 	public StationPanel(Session session, Attendant attendant) {
 		this.attendant = attendant;
 		this.session = session;
-		this.searchCatalogue = new SearchCatalogue(session);
+		this.searchCatalogue = new AttendantCatalogue(session, attendant);
 		
 		GridLayout layout = new GridLayout(1,6,0,0);
 		layout.setHgap(20);

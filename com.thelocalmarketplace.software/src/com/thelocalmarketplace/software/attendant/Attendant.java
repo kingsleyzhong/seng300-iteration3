@@ -209,6 +209,7 @@ public class Attendant {
 			Product selectedProduct = ts.getSearchResults().get(description);
 
 			// The product could be a Barcoded Product
+			System.out.println("ADDED");
 			if (selectedProduct instanceof BarcodedProduct) {
 				session.getManager().addItem((BarcodedProduct) selectedProduct);
 			}
@@ -219,6 +220,7 @@ public class Attendant {
 				session.getManager().addItem(pluProduct.getPLUCode());
 			}
 		} else {
+			System.out.println(description);
 			// Product not found in the visual catalogue
 			throw new ProductNotFoundException("Item not found");
 		}
