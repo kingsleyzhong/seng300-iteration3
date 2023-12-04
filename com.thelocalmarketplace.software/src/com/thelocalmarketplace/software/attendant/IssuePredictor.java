@@ -447,11 +447,6 @@ public class IssuePredictor  {
 		}
     }
     
-    private void notifyUnsupportedFeature(Session session, Issues issue) {
-    	for (IssuePredictorListener l : listeners)
-    		l.notifyPredictUnsupportedFeature(session, issue);
-    }
-    
     private void notifyLowInk(Session session) {
     	for (IssuePredictorListener l : listeners) 
 			l.notifyPredictLowInk(session);

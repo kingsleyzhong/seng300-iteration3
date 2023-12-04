@@ -136,12 +136,6 @@ public class Attendant {
 	private class InnerPredictionListener implements IssuePredictorListener{
 
 		@Override
-		public void notifyPredictUnsupportedFeature(Session session, Issues issue) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
 		public void notifyPredictLowInk(Session session) {
 			session.disable();
 		}
