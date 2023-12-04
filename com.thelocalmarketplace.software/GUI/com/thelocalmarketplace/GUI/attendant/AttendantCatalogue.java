@@ -70,7 +70,6 @@ public class AttendantCatalogue extends JFrame {
 		productPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 		productPanel.setBackground(Colors.color1);
 		
-		System.out.println(inventory.size());
 		inventory.forEach((key, value) -> {
 			productPanel.add(new ProductItem(value, session, attendant));
 		});
