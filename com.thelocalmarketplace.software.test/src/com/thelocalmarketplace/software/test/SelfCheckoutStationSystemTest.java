@@ -15,6 +15,7 @@ import java.util.Currency;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,18 +24,34 @@ import org.junit.runners.Parameterized;
 
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
+import com.jjjwelectronics.bag.IReusableBagDispenser;
 import com.jjjwelectronics.card.Card;
+import com.jjjwelectronics.card.ICardReader;
 import com.jjjwelectronics.card.MagneticStripeFailureException;
+import com.jjjwelectronics.printer.IReceiptPrinter;
+import com.jjjwelectronics.scale.IElectronicScale;
 import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.scanner.BarcodedItem;
+import com.jjjwelectronics.scanner.IBarcodeScanner;
+import com.jjjwelectronics.screen.ITouchScreen;
 import com.tdc.CashOverloadException;
 import com.tdc.DisabledException;
 import com.tdc.NoCashAvailableException;
 import com.tdc.banknote.Banknote;
+import com.tdc.banknote.BanknoteDispensationSlot;
+import com.tdc.banknote.BanknoteInsertionSlot;
+import com.tdc.banknote.BanknoteStorageUnit;
+import com.tdc.banknote.BanknoteValidator;
+import com.tdc.banknote.IBanknoteDispenser;
 import com.tdc.coin.Coin;
+import com.tdc.coin.CoinSlot;
+import com.tdc.coin.CoinStorageUnit;
+import com.tdc.coin.CoinValidator;
+import com.tdc.coin.ICoinDispenser;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.AttendantStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.hardware.CoinTray;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
@@ -540,6 +557,72 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 		scs.getBaggingArea().removeAnItem(item2);
 		assertEquals(SessionState.PAY_BY_CASH, session.getState());
 		assertTrue(funds.isPay());
+	}
+
+	@Test
+	public void powerCycle(){
+		scs.getBaggingArea().turnOff();
+		scs.getScanningArea().turnOff();
+		scs.getMainScanner().turnOff();
+		scs.getHandheldScanner().turnOff();
+		scs.getScreen().turnOff();
+		scs.getReusableBagDispenser().turnOff();
+		scs.getPrinter().turnOff();
+		scs.getCardReader().turnOff();
+		scs.getCoinValidator()
+		
+		scs.getBaggingArea().turnOn();
+		scs.getScanningArea().turnOn();
+		scs.getMainScanner().turnOn();
+		scs.getHandheldScanner().turnOn();
+		scs.getScreen().turnOn();
+		scs.getReusableBagDispenser().turnOn();
+		scs.getPrinter().turnOn();
+		scs.getCardReader().turnOn();
+
+		scs.getBaggingArea().disable();
+		scs.getScanningArea().disable();
+		scs.getScreen().disable();
+		scs.getReusableBagDispenser().disable();
+		scs.getPrinter().disable();
+		scs.getCardReader().disable();
+		scs.getMainScanner().disable();
+		scs.getHandheldScanner().disable();
+		scs.getBanknoteInput().disable();
+		scs.getBanknoteOutput().disable();
+		scs.getBanknoteValidator().disable();
+		scs.getBanknoteStorage().disable();
+		scs.getCoinSlot().disable();
+		scs.getCoinValidator().disable();
+		scs.getCoinStorage().disable();
+
+		scs.getBaggingArea().enable();
+		scs.getScanningArea().enable();
+		scs.getScreen().enable();
+		scs.getReusableBagDispenser().enable();
+		scs.getPrinter().enable();
+		scs.getCardReader().enable();
+		scs.getMainScanner().enable();
+		scs.getHandheldScanner().enable();
+		scs.getBanknoteInput().enable();
+		scs.getBanknoteOutput().enable();
+		scs.getBanknoteValidator().enable();
+		scs.getBanknoteStorage().enable();
+		scs.getCoinSlot().enable();
+		scs.getCoinValidator().enable();
+		scs.getCoinStorage().enable();
+		
+		for(BigDecimal denomination : scs.getBanknoteDenominations()){
+			scs.getBanknoteDispensers().get(denomination).disable();
+			scs.getBanknoteDispensers().get(denomination).enable();
+		}
+		for(BigDecimal denomination : scs.getCoinDenominations()){
+			scs.getCoinDispensers().get(denomination).disable();
+			scs.getCoinDispensers().get(denomination).enable();
+		}
+
+	
+		assertEquals(SessionState.PRE_SESSION, session.getState());
 	}
 
 }
