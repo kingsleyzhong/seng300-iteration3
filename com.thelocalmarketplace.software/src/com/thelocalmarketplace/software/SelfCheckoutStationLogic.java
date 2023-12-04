@@ -59,6 +59,7 @@ public class SelfCheckoutStationLogic {
 
 	private static Attendant attendant;
 	private Session session;
+	private IssuePredictor predictor;
 
 	public static void installAttendantStation(AttendantStation as) {
 		attendant = new Attendant(as);
@@ -110,7 +111,7 @@ public class SelfCheckoutStationLogic {
 		new ItemAddedRule(scs.getMainScanner(), scs.getHandheldScanner(), itemManager);
 
 		// Register IssuePredictor with Session
-		IssuePredictor predictor = new IssuePredictor(session, scs, receiptPrinter);
+		this.predictor  = new IssuePredictor(session, scs, receiptPrinter);
 		// tell the Attendant about the Predictor
 		attendant.addIssuePrediction(predictor);
 
@@ -124,6 +125,10 @@ public class SelfCheckoutStationLogic {
 
 	public Session getSession() {
 		return session;
+	}
+	
+	public IssuePredictor getPredictor() {
+		return predictor;
 	}
 
 	/**
