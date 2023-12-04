@@ -58,7 +58,6 @@ public class SelfCheckoutStationLogic {
 
 	private static Attendant attendant;
 	private Session session;
-	private IssuePredictor predictor;
 
 	/**
 	 * Installs an instance of Attendant onto an AttendantStation
@@ -123,10 +122,6 @@ public class SelfCheckoutStationLogic {
 
 	public Session getSession() {
 		return session;
-	}
-	
-	public IssuePredictor getPredictor() {
-		return predictor;
 	}
 
 	/**
