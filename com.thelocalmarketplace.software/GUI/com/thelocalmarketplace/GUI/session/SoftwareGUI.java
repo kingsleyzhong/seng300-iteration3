@@ -22,6 +22,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import com.jjjwelectronics.Mass;
+import com.thelocalmarketplace.GUI.attendant.AttendantGUI;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.GradientPanel;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
@@ -213,13 +214,18 @@ public class SoftwareGUI{
 				
 		JButton hardwareButton = new PlainButton("Hardware GUI", Colors.color5);
 		hardwareButton.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				HardwareGUI.setVisibility(true);
 					
-			}
-					
+			}		
+		});
+		JButton attendantButton = new PlainButton("Attendant GUI", Colors.color5);
+		hardwareButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AttendantGUI.unhide();
+			}		
 		});
 				
 		JPanel oLeft = new JPanel();

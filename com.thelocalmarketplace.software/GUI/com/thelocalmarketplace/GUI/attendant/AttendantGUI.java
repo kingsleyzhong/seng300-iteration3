@@ -36,7 +36,7 @@ public class AttendantGUI {
 	IssuePredictor predictor;
 	HashMap<Session, Requests> sessions;
 	List<JPanel> stationPanels;
-	ITouchScreen asScreen;
+	static ITouchScreen asScreen;
 	TextSearchController textSearch;
 	
 	private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -89,11 +89,11 @@ public class AttendantGUI {
 		}
 	}
 	
-	public void hide() {
+	public static void hide() {
 		asScreen.getFrame().setVisible(false);
 	}
 	
-	public void unhide() {
+	public static void unhide() {
 		asScreen.getFrame().setVisible(true);
 	}
 	

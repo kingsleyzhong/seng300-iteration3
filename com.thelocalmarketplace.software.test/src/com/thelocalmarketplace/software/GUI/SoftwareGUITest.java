@@ -6,8 +6,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.awt.AWTException;
 import java.awt.Robot;
+import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
+
+import javax.swing.Timer;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -64,6 +69,8 @@ public class SoftwareGUITest{
 	private BarcodedItem item2;
 	
 	Robot robot;
+	Timer timer;
+	int runs = 0;
 	
 	@Before
 	public void setup() {
@@ -105,12 +112,30 @@ public class SoftwareGUITest{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		runs=0;
+		timer = new Timer(1000, new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				robot.keyPress(KeyEvent.VK_ENTER);
+				robot.keyRelease(KeyEvent.VK_ENTER);
+				runs +=1;
+				if(runs>4) {
+					timer.stop();
+				}
+			}
+			
+		});
+		timer.start();
 	}
 	
 	@After
 	public void teardown() {
-		scs.getScreen().getFrame().dispose();
+		Window[] windows = Window.getWindows();
+		for(Window window: windows) {
+			window.dispose();
+		}
+		timer.stop();
 	}
 	
 	@Test
