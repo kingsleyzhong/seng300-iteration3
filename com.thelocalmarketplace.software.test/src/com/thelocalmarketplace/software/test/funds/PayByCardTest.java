@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,13 +14,17 @@ import java.util.Currency;
 import java.util.HashMap;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.jjjwelectronics.IllegalDigitException;
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.card.Card;
+import com.jjjwelectronics.card.ChipFailureException;
+import com.jjjwelectronics.card.InvalidPINException;
 import com.jjjwelectronics.card.MagneticStripeFailureException;
 import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.card.BlockedCardException;
@@ -80,8 +85,8 @@ import powerutility.PowerGrid;
 
 public class PayByCardTest extends AbstractTest {
 
-	public PayByCardTest(String testName, AbstractSelfCheckoutStation scs) {
-		super(testName, scs);
+	public PayByCardTest(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
+		super(testName, scsClass);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -95,34 +100,15 @@ public class PayByCardTest extends AbstractTest {
 	private Card cdnDep;
 	private Card debit;
 	private Funds funds;
-	private MockSession mockSession;
-
-	/***
-	 * Mock Session to make the session pay mode in Pay by Card
-	 */
-	public class MockSession extends Session {
-
-		@Override
-		public void payByCard() {
-			sessionState = SessionState.PAY_BY_CARD;
-		}
-
-		public void block() {
-			sessionState = SessionState.BLOCKED;
-		}
-
-		public void reset() {
-			sessionState = SessionState.PRE_SESSION;
-		}
-	}
+	private PayByCard pbc;
 
 	@Before
 	public void setup() {
 		basicDefaultSetup();
 
-		mockSession = new MockSession();
-
 		funds = new Funds(scs);
+
+		pbc = new PayByCard(scs.getCardReader(), funds);
 
 		ci1 = new CardIssuer(SupportedCardIssuers.ONE.getIssuer(), 1);
 		ci2 = new CardIssuer(SupportedCardIssuers.TWO.getIssuer(), 5);
@@ -140,10 +126,14 @@ public class PayByCardTest extends AbstractTest {
 			index++;
 		}
 
-		disCard = new Card(SupportedCardIssuers.ONE.getIssuer(), "5299334598001547", "Brandon Chan", "666");
-		viva = new Card(SupportedCardIssuers.TWO.getIssuer(), "4504389022574000", "Doris Giles", "343");
-		cdnDep = new Card(SupportedCardIssuers.THREE.getIssuer(), "1111111111111111", "Not A Real Person", "420");
-		debit = new Card(SupportedCardIssuers.FOUR.getIssuer(), "5160617843321186", "Robehrt Lazar", "111");
+		disCard = new Card(SupportedCardIssuers.ONE.getIssuer(), "5299334598001547", "Brandon Chan", "666", "1234",
+				true, true);
+		viva = new Card(SupportedCardIssuers.TWO.getIssuer(), "4504389022574000", "Doris Giles", "343", "1234", true,
+				true);
+		cdnDep = new Card(SupportedCardIssuers.THREE.getIssuer(), "1111111111111111", "Not A Real Person", "420",
+				"1234", true, true);
+		debit = new Card(SupportedCardIssuers.FOUR.getIssuer(), "5160617843321186", "Robehrt Lazar", "111", "1234",
+				true, true);
 
 		Calendar exp = Calendar.getInstance();
 		exp.set(Calendar.YEAR, 2099);
@@ -153,6 +143,13 @@ public class PayByCardTest extends AbstractTest {
 		ci2.addCardData(viva.number, viva.cardholder, exp, viva.cvv, 7500);
 		ci3.addCardData("0", cdnDep.cardholder, exp, cdnDep.cvv, 1000);
 		ci4.addCardData(debit.number, debit.cardholder, exp, debit.cvv, 2000);
+	}
+
+	@After
+	public void tearDown() {
+		// Clear the CARD_ISSUER_DATABASE after each test
+		CardIssuerDatabase.CARD_ISSUER_DATABASE.clear();
+		scs.getCardReader().deregisterAll();
 	}
 
 	// ---------- BRONZE TESTS ----------
@@ -169,7 +166,7 @@ public class PayByCardTest extends AbstractTest {
 
 	@Test(expected = InvalidActionException.class)
 	public void swipeIncorrectState() throws IOException {
-		mockSession.block();
+		funds.setPay(false);
 		while (!funds.successfulSwipe) {
 			try {
 				scs.getCardReader().swipe(debit);
@@ -182,13 +179,14 @@ public class PayByCardTest extends AbstractTest {
 	}
 
 	@Test(expected = InvalidActionException.class)
-	public void testInvalidCardNumber() throws IOException {
+	public void testInvalidCardNumber()
+			throws IOException, CashOverloadException, NoCashAvailableException, DisabledException {
 		long price = 100;
 		BigDecimal itemPrice = new BigDecimal(price);
-		mockSession.payByCard();
 		funds.update(itemPrice);
-		funds.beginPayment();
+		funds.setPay(true);
 		while (!funds.successfulSwipe) {
+			System.out.print("I ran");
 			try {
 				scs.getCardReader().swipe(cdnDep);
 			} catch (MagneticStripeFailureException e) {
@@ -200,12 +198,12 @@ public class PayByCardTest extends AbstractTest {
 	}
 
 	@Test(expected = InvalidActionException.class)
-	public void testBlockedCard() throws IOException {
+	public void testBlockedCard()
+			throws IOException, CashOverloadException, NoCashAvailableException, DisabledException {
 		long price = 100;
 		BigDecimal itemPrice = new BigDecimal(price);
-		mockSession.payByCard();
 		funds.update(itemPrice);
-		funds.beginPayment();
+		funds.setPay(true);
 		ci4.block(debit.number);
 		while (!funds.successfulSwipe) {
 			try {
@@ -223,13 +221,13 @@ public class PayByCardTest extends AbstractTest {
 	// Otherwise testing both that cards are counting correct hold counts or not
 	// (redundant?)
 	@Test(expected = InvalidActionException.class)
-	public void testHoldCountDecline() throws IOException {
+	public void testHoldCountDecline()
+			throws IOException, CashOverloadException, NoCashAvailableException, DisabledException {
 		ci1.authorizeHold(disCard.number, 1);
 		long price = 100;
 		BigDecimal itemPrice = new BigDecimal(price);
-		mockSession.payByCard();
 		funds.update(itemPrice);
-		funds.beginPayment();
+		funds.setPay(true);
 		ci1.authorizeHold(disCard.number, 1);
 		assertEquals(-1, ci1.authorizeHold(disCard.number, 1));
 		ci1.releaseHold(disCard.number, 1);
@@ -242,12 +240,12 @@ public class PayByCardTest extends AbstractTest {
 	}
 
 	@Test(expected = InvalidActionException.class)
-	public void testAvailableBalanceDecline() throws IOException {
+	public void testAvailableBalanceDecline()
+			throws IOException, CashOverloadException, NoCashAvailableException, DisabledException {
 		long price = 1000000;
 		BigDecimal itemPrice = new BigDecimal(price);
 		funds.update(itemPrice);
-		mockSession.payByCard();
-		funds.beginPayment();
+		funds.setPay(true);
 		while (!funds.successfulSwipe) {
 			try {
 				scs.getCardReader().swipe(viva);
@@ -259,22 +257,78 @@ public class PayByCardTest extends AbstractTest {
 	}
 
 	@Test
-	public void testSuccessfulPostingTransaction()
+	public void testSuccessfulSwipe()
 			throws CashOverloadException, NoCashAvailableException, DisabledException, IOException {
-		mockSession.payByCard();
 		long price = 10;
 		BigDecimal itemPrice = new BigDecimal(price);
 		funds.update(itemPrice);
-		funds.beginPayment();
+		funds.setPay(true);
 
 		while (!funds.payed) {
 			try {
-				scs.getCardReader().swipe(viva);
-				assertTrue(funds.payed);
+				scs.getCardReader().swipe(debit);
+
 			} catch (MagneticStripeFailureException e) {
 			}
 		}
 		// This will post a successful charge on the given card
 		// postTransaction should return true
+		assertTrue(funds.payed);
 	}
+
+	@Test
+	public void testSuccessfulTap()
+			throws CashOverloadException, NoCashAvailableException, DisabledException, IOException {
+		long price = 2;
+		BigDecimal itemPrice = new BigDecimal(price);
+		funds.update(itemPrice);
+		funds.setPay(true);
+
+		while (!funds.payed) {
+			try {
+				scs.getCardReader().tap(disCard);
+
+			} catch (ChipFailureException e) {
+			}
+		}
+		// This will post a successful charge on the given card
+		// postTransaction should return true
+		assertTrue(funds.payed);
+	}
+
+	@Test(expected = InvalidPINException.class)
+	public void testIncorrectPin()
+			throws CashOverloadException, NoCashAvailableException, DisabledException, IOException {
+		long price = 10;
+		BigDecimal itemPrice = new BigDecimal(price);
+		funds.update(itemPrice);
+		funds.setPay(true);
+
+		try {
+			scs.getCardReader().insert(viva, "4321");
+		} finally {
+			scs.getCardReader().remove();
+		}
+	}
+
+	@Test
+	public void testSuccessfulInsert()
+			throws CashOverloadException, NoCashAvailableException, DisabledException, IOException {
+		long price = 10;
+		BigDecimal itemPrice = new BigDecimal(price);
+		funds.update(itemPrice);
+		funds.setPay(true);
+		while (!funds.payed) {
+			try {
+				scs.getCardReader().insert(debit, "1234");
+				scs.getCardReader().remove();
+
+			} catch (InvalidPINException | ChipFailureException e) {
+			}
+		}
+		// This will post a successful charge on the given card
+		// postTransaction should return true
+		assertTrue(funds.payed);
+	}
+
 }

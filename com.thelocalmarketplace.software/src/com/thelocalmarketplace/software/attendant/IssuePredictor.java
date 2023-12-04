@@ -15,6 +15,7 @@ import com.tdc.banknote.BanknoteStorageUnit;
 import com.tdc.banknote.IBanknoteDispenser;
 import com.tdc.coin.*;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionListener;
@@ -69,7 +70,6 @@ public class IssuePredictor  {
 	private boolean fullCoins;
 	private boolean lowBanknotes;
 	private boolean fullBanknotes;
-	private boolean[] issues = {lowInk, lowPaper, lowCoins, fullCoins, lowBanknotes, fullBanknotes};
 	
 	
 	public IssuePredictor(Session session, AbstractSelfCheckoutStation scs, Receipt receipt) {
@@ -149,7 +149,7 @@ public class IssuePredictor  {
 		}
 
 		@Override
-		public void pricePaidUpdated(Session session) {
+		public void pricePaidUpdated(Session session, BigDecimal amountDue) {
 			// TODO Auto-generated method stub
 			
 		}
@@ -164,6 +164,18 @@ public class IssuePredictor  {
 		public void sessionEnded(Session session) {
 			// run the prediction algorithm
 			predictionCheck(session);
+		}
+
+		@Override
+		public void pluCodeEntered(PLUCodedProduct product) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void sessionStateChanged() {
+			// TODO Auto-generated method stub
+			
 		}
 		
 	}
@@ -221,13 +233,16 @@ public class IssuePredictor  {
 		checkLowBanknotes(session, banknoteDispensers);
 		checkCoinsFull(session, coinStorage);
 		checkBanknotesFull(session, banknoteStorage);
+		boolean[] issues = {lowInk, lowPaper, lowCoins, fullCoins, lowBanknotes, fullBanknotes};
+		boolean hasIssue = false;
 		for (boolean i : issues) {
 			if (i) {
-				break;
+				hasIssue = true;
 			}
-			else {
-				notifyNoIssues(session);
-			}
+		}
+		if (hasIssue == false) {
+			notifyNoIssues(session);
+			session.enable();
 		}
 	}
 	
@@ -241,9 +256,6 @@ public class IssuePredictor  {
     public void checkLowInk(Session s, IReceiptPrinter printer) {
     	receiptPrinter = printer;
     	SessionState state = s.getState();
-    	
-    	if (!(state == SessionState.PRE_SESSION)) 
-    		return;
     	
     	int currentInk;
     	int threshold;
@@ -295,10 +307,7 @@ public class IssuePredictor  {
     public void checkLowPaper(Session s, IReceiptPrinter printer) {
     	receiptPrinter = printer;
     	SessionState state = s.getState();
-    	
-    	if (!(state == SessionState.PRE_SESSION)) 
-    		return;
-    		
+
     	int currentPaper;
     	int threshold;
     	
@@ -351,10 +360,7 @@ public class IssuePredictor  {
     		Map<BigDecimal, ICoinDispenser> dispensers) {
     	coinDispensers = dispensers;
     	SessionState state = s.getState();
-    	
-		if (!(state == SessionState.PRE_SESSION)) 
-			return;
-		
+
     	for (ICoinDispenser dispenser : coinDispensers.values()) {
 			int currentCoins = dispenser.size();
 			int threshold = 5;
@@ -379,10 +385,7 @@ public class IssuePredictor  {
     		Map<BigDecimal, IBanknoteDispenser> dispensers) {
     	banknoteDispensers = dispensers;
     	SessionState state = s.getState();
-    	
-    	if (!(state == SessionState.PRE_SESSION))  
-    		return;
-    	
+
     	for (IBanknoteDispenser dispenser : banknoteDispensers.values()) {
 			int currentBanknotes = dispenser.size();
     		int threshold = 5;
@@ -407,10 +410,10 @@ public class IssuePredictor  {
     public void checkCoinsFull(Session s, CoinStorageUnit storage) {
     	coinStorage = storage;
     	SessionState state = s.getState();
-    	
-    	if (!(state == SessionState.PRE_SESSION)) 
+
+    	if (!(state == SessionState.PRE_SESSION))
     		return;
-    	
+
 		if (!coinStorage.hasSpace()) {
 			notifyCoinsFull(s);
 			fullCoins = true;
@@ -430,10 +433,10 @@ public class IssuePredictor  {
     public void checkBanknotesFull(Session s, BanknoteStorageUnit storage) {
     	banknoteStorage = storage;
     	SessionState state = s.getState();
-    	
-    	if (!(state == SessionState.PRE_SESSION)) 
+
+    	if (!(state == SessionState.PRE_SESSION))
     		return;
-    	
+
     	if (!banknoteStorage.hasSpace()) {
 			notifyBanknotesFull(s);
 			fullBanknotes = true;
@@ -442,11 +445,6 @@ public class IssuePredictor  {
 			notifyNoIssues(s);
 			fullBanknotes = false;
 		}
-    }
-    
-    private void notifyUnsupportedFeature(Session session, Issues issue) {
-    	for (IssuePredictorListener l : listeners)
-    		l.notifyPredictUnsupportedFeature(session, issue);
     }
     
     private void notifyLowInk(Session session) {

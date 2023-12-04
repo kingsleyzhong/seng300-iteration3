@@ -57,8 +57,8 @@ import powerutility.PowerGrid;
 
 public class PrintReceiptTest extends AbstractSessionTest {
 
-    public PrintReceiptTest(String testName, AbstractSelfCheckoutStation scs) {
-        super(testName, scs);
+    public PrintReceiptTest(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
+        super(testName, scsClass);
         // TODO Auto-generated constructor stub
     }
 

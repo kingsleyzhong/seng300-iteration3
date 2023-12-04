@@ -46,7 +46,7 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 public class Funds {
 	protected ArrayList<FundsListener> listeners = new ArrayList<>();
 	private BigDecimal itemsPrice; // Summed price of all items in the session (in cents)
-	private BigDecimal paid; // Amount paid by the customer (in cents)
+	//private BigDecimal paid; // Amount paid by the customer (in cents)
 	private BigDecimal amountDue; // Remaining amount to be paid (in cents)
 	private boolean isPay; // Flag indicating if the session is in pay mode
 	private final BigDecimal[] banknoteDenominations;
@@ -55,8 +55,7 @@ public class Funds {
   // from old version, delete if unused/ it breaks stuff
 	// Testing ONLY
 	public boolean payed;
-	public boolean successfulSwipe;
-  // end old version stuff to delete
+	public boolean successfulSwipe;  // end old version stuff to delete
   
 	private AbstractSelfCheckoutStation scs;
 
@@ -72,7 +71,6 @@ public class Funds {
 			throw new IllegalArgumentException("SelfCheckoutStation should not be null.");
 		}
 		this.itemsPrice = BigDecimal.ZERO;
-		this.paid = BigDecimal.ZERO;
 		this.amountDue = BigDecimal.ZERO;
 		this.isPay = false;
 		this.payed = false;
@@ -96,13 +94,13 @@ public class Funds {
 			throw new IllegalDigitException("Price should be positive.");
 		}
 		this.itemsPrice = this.itemsPrice.add(price);
-		calculateAmountDue();
+		calculateAmountDue(new BigDecimal(0));
 	}
 
 	/**
 	 * Updates the total items price after an item has been removed.
 	 * 
-	 * @param price The price to be added (in cents)
+	 * @param price The price to be removed (in cents)
 	 */
 	public void removeItemPrice(BigDecimal price) {
 		if (price.compareTo(BigDecimal.ZERO) <= 0) {
@@ -110,7 +108,7 @@ public class Funds {
 		}
 		
 		this.itemsPrice = this.itemsPrice.subtract(price);
-		calculateAmountDue();
+		calculateAmountDue(price.negate());
 	}
 
 	/**
@@ -124,16 +122,16 @@ public class Funds {
 	
 	public void enableCash() {
 		scs.getCoinSlot().enable();
-		scs.getBanknoteInput().disable();
+		scs.getBanknoteInput().enable();
 	}
 
 	public BigDecimal getItemsPrice() {
 		return itemsPrice;
 	}
 
-	public BigDecimal getPaid() {
+	/*public BigDecimal getPaid() {
 		return paid;
-	}
+	}*/
 
 	public BigDecimal getAmountDue() {
 		return amountDue;
@@ -147,10 +145,12 @@ public class Funds {
 	 * Calculates the amount due by subtracting the paid amount from the total items
 	 * price.
 	 */
-	private void calculateAmountDue() {
+	private void calculateAmountDue(BigDecimal amountPaid) {
 
-		this.amountDue = this.itemsPrice.subtract(this.paid);
+		this.amountDue = this.itemsPrice.subtract(amountPaid);
 
+		for (FundsListener l : listeners)
+			l.notifyUpdateAmountDue(this.amountDue);
 		// To account for any rounding errors, checks if less that 0.0005 rather than
 		// just 0
 		if (amountDue.intValue() <= 0.0005 && isPay) {
@@ -172,8 +172,7 @@ public class Funds {
 	public void updatePaidCard(boolean paidBool) {
 		if (isPay) {
 			if (paidBool) {
-				this.paid = amountDue;
-				calculateAmountDue();
+				calculateAmountDue(amountDue);
 			}
 		} else {
 			throw new InvalidActionException("Not in Card Payment state");
@@ -185,8 +184,7 @@ public class Funds {
 	 */
 	public void updatePaidCash(BigDecimal paid) {
 		if (isPay) {
-			this.paid = paid;
-			calculateAmountDue();
+			calculateAmountDue(paid);
 		}
 
 	}

@@ -68,10 +68,6 @@ public class MaintenanceManager {
      */
     public MaintenanceManager() {
     }
-
-    public void disableStation(Session session){
-    	
-    }
     
     /**
      * Simulates the act of opening the hardware

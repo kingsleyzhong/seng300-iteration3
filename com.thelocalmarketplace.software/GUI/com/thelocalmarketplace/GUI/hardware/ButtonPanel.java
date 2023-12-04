@@ -94,9 +94,12 @@ public class ButtonPanel extends JPanel implements ActionListener {
 		}
 		else if(e.getSource() == receiptPrinter) {
 			String receipt = "";
+			gui.getStation().getPrinter().cutPaper();
 			try {
 				receipt = gui.getStation().getPrinter().removeReceipt();
+				if(receipt.length()>0)
 				JOptionPane.showMessageDialog(null, receipt);
+				else JOptionPane.showMessageDialog(null, "There is no receipt to collect.");
 			} catch(InvalidArgumentSimulationException e1) {
 				JOptionPane.showMessageDialog(null, "There is no receipt to collect.");
 			}

@@ -13,7 +13,6 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-
 import com.thelocalmarketplace.GUI.attendant.SearchBar;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.CustomBarUI;

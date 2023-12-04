@@ -59,11 +59,6 @@ public class AddedProducts extends JPanel {
 				current = panels.get(i);
 			}
 		}
-		/*
-		if(productList.containsKey(temp)) {
-			current = productList.get(temp);
-		}
-		*/
 		if(current == null || !(product instanceof BarcodedProduct)) {
 			CartProduct newPanel = new CartProduct(product, session, mass);
 			centralPanel.add(newPanel);
@@ -100,5 +95,48 @@ public class AddedProducts extends JPanel {
 				centralPanel.revalidate();
 			}
 		}
+	}
+	
+	public ArrayList<ArrayList<Object>> getProducts() {
+		return products;
+	}
+	
+	public ArrayList<CartProduct> getPanels(){
+		return panels;
+	}
+	
+	public boolean contains(Product product) {
+		for(int i = 0; i<products.size(); i++) {
+			if(product.equals(products.get(i).get(0))) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public JPanel getPanel(Product product) {
+		for(int i = 0; i<products.size(); i++) {
+			if(product.equals(products.get(i).get(0))) {
+				return panels.get(i);
+			}
+		}
+		return null;
+	}
+	
+	public JPanel getPanel(Product product, Mass mass) {
+		ArrayList<Object> temp = new ArrayList<Object>();
+		temp.add(product);
+		temp.add(mass);
+		
+		for(int i = 0; i<products.size(); i++) {
+			if(temp.equals(products.get(i))) {
+				return panels.get(i);
+			}
+		}
+		return null;
+	}
+	
+	public int amount() {
+		return panels.size();
 	}
 }

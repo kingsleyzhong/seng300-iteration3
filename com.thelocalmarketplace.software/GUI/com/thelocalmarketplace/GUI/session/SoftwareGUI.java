@@ -5,9 +5,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,54 +14,57 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.border.Border;
-
 import com.jjjwelectronics.Mass;
-import com.jjjwelectronics.screen.ITouchScreen;
-import com.thelocalmarketplace.GUI.Simulation;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.GradientPanel;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
-import com.thelocalmarketplace.GUI.startscreen.StartScreenGUI;
-import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionListener;
+import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.attendant.Requests;
 
 import javax.swing.SwingConstants;
+import javax.swing.Timer;
 
 public class SoftwareGUI{
-	JFrame frame;
+	public JFrame frame;
 	JFrame catalogue;
-	JPanel mainPane;
-	JPanel startPane;
-	JPanel endPane;
+	public JPanel mainPane;
+	public JPanel startPane;
+	public JPanel endPane;
 	
 	Session session;
 	
 	// Buttons for user to interact with:
-	JButton exit;
-	JButton addBags;
-	JButton pluCode;
-	JButton searchCatalogue;
-	JButton callAttendant;
-	JButton pay;
+	public JButton btnStart;
+	public JButton cancel;
+	public JButton addBags;
+	public JButton pluCode;
+	public JButton searchCatalogue;
+	public JButton callAttendant;
+	public JButton pay;
 	
-    PaymentPopup paymentScreen;
+    public PaymentPopup paymentScreen;
+	public AddBagsPopup addBagsScreen;
 
-    String quantity;
-    String itemCount;
+
+    int quantity = 0;
+    public JLabel itemAmount;
+    int productCount;
+    public JLabel productAmount;
     String weight;
-    JLabel infoWeightNumber;
+    public JLabel infoWeightNumber;
     String cartPrice;
-    JLabel cartTotalInDollars;
+    public JLabel cartTotalInDollars;
 	
 	// JFrame size
 	private int width;
@@ -73,7 +75,7 @@ public class SoftwareGUI{
 	// Panel components of JFrame
 	JPanel orangePanel;
 	JPanel cartInfoPanel;
-	private AddedProducts cartItemsPanel;
+	public AddedProducts cartItemsPanel;
 	JPanel buttonPanel;
 	
 	// Buttons
@@ -93,19 +95,30 @@ public class SoftwareGUI{
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setVisible(true);
 		
-		mainPane = mainPanel();
-		startPane = start();
-		//endPane = end();
-		
 		displayStart();
 	}
 
 	public JPanel start() {
 		JPanel main = new GradientPanel(Colors.color2, Colors.color1);
+		
 		main.setLayout(new GridLayout(0,1,50,50));
 		
+		JButton hardwareBtn = new PlainButton("Hardware GUI", Colors.color1);
+		hardwareBtn.setOpaque(false);
+		hardwareBtn.setBorder(BorderFactory.createEmptyBorder());
+		hardwareBtn.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				HardwareGUI.setVisibility(true);
+			}
+		});
+		
+		main.add(hardwareBtn, BorderLayout.NORTH);
+		
+		
 		//this is the start button
-		JButton btnStart = new PlainButton("Start", Colors.color1);
+		btnStart = new PlainButton("Start", Colors.color1);
 		btnStart.setOpaque(false);
 		btnStart.setFont(new Font("Dialog", Font.BOLD, 40));
 		btnStart.setBorder(BorderFactory.createEmptyBorder());
@@ -125,7 +138,7 @@ public class SoftwareGUI{
 		lblWelcome.setBackground(Color.RED);
 		lblWelcome.setForeground(Colors.color3);
 		lblWelcome.setHorizontalAlignment(SwingConstants.CENTER);
-		lblWelcome.setVerticalAlignment(SwingConstants.BOTTOM);
+		lblWelcome.setVerticalAlignment(SwingConstants.TOP);
 		lblWelcome.setFont(new Font("Dialog", Font.BOLD, 92));
 		main.add(lblWelcome, JLabel.CENTER_ALIGNMENT);
 		main.add(btnStart, JButton.CENTER_ALIGNMENT);	
@@ -133,6 +146,52 @@ public class SoftwareGUI{
 		return main;
 	}
 	
+	public JPanel end() {
+		JPanel main = new GradientPanel(Colors.color1, Colors.color2);
+		main.setLayout(new GridLayout(1, 0, 0, 0));
+		
+		JButton hardwareBtn = new PlainButton("Hardware GUI", Colors.color1);
+		hardwareBtn.setOpaque(false);
+		hardwareBtn.setBorder(BorderFactory.createEmptyBorder());
+		hardwareBtn.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				HardwareGUI.setVisibility(true);
+			}
+		});
+		main.add(hardwareBtn);
+		
+		Timer timer = new Timer(20000, new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				displayStart();
+			}
+			
+		});
+		timer.setRepeats(false);
+		timer.start();
+		
+		JButton thankYouButton = new PlainButton("<html>Thanks For Shopping!<br><br>Please Collect Your Receipt</html>", Colors.color1);
+		thankYouButton.setOpaque(false);
+		thankYouButton.setFont(new Font("Dialog", Font.BOLD, 40));
+		thankYouButton.setForeground(Colors.color3);
+		thankYouButton.setBorder(BorderFactory.createEmptyBorder());
+		thankYouButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				displayStart();
+				timer.stop();
+			}
+			
+		});
+		
+		main.add(thankYouButton);
+		
+		return main;
+	}
 	
 	public JPanel mainPanel() {
 		JPanel main = new JPanel();
@@ -199,24 +258,24 @@ public class SoftwareGUI{
 		JPanel infoTop1 = new JPanel();
 		infoTop1.setLayout(new BorderLayout());
 		infoTop1.setBackground(Colors.color4);
-		JLabel infoQtyString = new JLabel("Quantity");
+		JLabel infoQtyString = new JLabel("Number of Items");
 		infoQtyString.setFont(new Font("Dialog", Font.BOLD,20));
-		JLabel infoQtyNumber = new JLabel("0");
-		infoQtyNumber.setFont(new Font("Dialog", Font.BOLD,20));
+		itemAmount = new JLabel("0");
+		itemAmount.setFont(new Font("Dialog", Font.BOLD,20));
 		infoTop1.setLayout(new BorderLayout(0, 0));
 		infoTop1.add(infoQtyString, BorderLayout.WEST);
-		infoTop1.add(infoQtyNumber, BorderLayout.EAST);
+		infoTop1.add(itemAmount, BorderLayout.EAST);
 				
 		JPanel infoTop2 = new JPanel();
 		infoTop2.setBackground(Colors.color4);
 		infoTop2.setLayout(new BorderLayout());
 		infoTop2.setBackground(Colors.color4);
-		JLabel infoItemString = new JLabel("Item Count");
+		JLabel infoItemString = new JLabel("Number of Products");
 		infoItemString.setFont(new Font("Dialog", Font.BOLD,20));
-		JLabel infoItemNumber = new JLabel("0");
-		infoItemNumber.setFont(new Font("Dialog", Font.BOLD,20));
+		productAmount = new JLabel("0");
+		productAmount.setFont(new Font("Dialog", Font.BOLD,20));
 		infoTop2.add(infoItemString, BorderLayout.WEST);
-		infoTop2.add(infoItemNumber, BorderLayout.EAST);
+		infoTop2.add(productAmount, BorderLayout.EAST);
 				
 		JPanel infoTop3 = new JPanel();
 		infoTop3.setBackground(Colors.color4);
@@ -232,7 +291,7 @@ public class SoftwareGUI{
 		infoTop.add(infoTop1);
 		infoTop.add(infoTop2);
 		infoTop.add(infoTop3);
-			
+		
 		JPanel infoBottom = new JPanel();
 		infoBottom.setBackground(Colors.color4);
 		infoBottom.setLayout(new GridLayout(0,1));
@@ -253,8 +312,13 @@ public class SoftwareGUI{
 				
 		infoBottom.add(infoBottomInner);
 			
+		ImageIcon image = new ImageIcon(new ImageIcon("images/sheepIcon.png").getImage().getScaledInstance(200, 200, Image.SCALE_DEFAULT));
+		JLabel label = new JLabel(image);
+		label.setVerticalAlignment(JLabel.BOTTOM);
+		
 		cartInfoPanel.add(infoTop, BorderLayout.NORTH);
 		cartInfoPanel.add(infoBottom, BorderLayout.SOUTH);
+		cartInfoPanel.add(label, BorderLayout.CENTER);
 				
 		cartItemsPanel = new AddedProducts(session);
 		//cartItemsPanel.setBackground(Colors.color3);
@@ -266,7 +330,7 @@ public class SoftwareGUI{
 		buttonPanel.setLayout(new GridLayout(1,0, 20,0));
 			
 		// Create buttons
-		exit = new PlainButton("Exit session", Colors.color4);
+		cancel = new PlainButton("Cancel", Colors.color4);
 		addBags = new PlainButton("Add Bags", Colors.color4);
 		pluCode = new PlainButton("<html>Enter PLU <br/>&nbsp;&nbsp;&nbsp;Code</html>", Colors.color4);
 		searchCatalogue = new PlainButton("<html>&nbsp;&nbsp;Search <br/>Catalogue</html>", Colors.color4);
@@ -274,8 +338,15 @@ public class SoftwareGUI{
 		pay = new PlainButton("PAY", Colors.color4);
 		
 		//Add action listeners to buttons
-		exit.addActionListener(new ButtonListener());
-		addBags.addActionListener(new ButtonListener());
+		cancel.addActionListener(new ButtonListener());
+		
+		addBagsScreen = new AddBagsPopup(session);
+		addBags.addActionListener(new ButtonListener(){
+		      @Override
+		       public void actionPerformed(ActionEvent e) {
+		    	  addBagsScreen.popUp();		          	            	            
+		       }
+		});
 		pluCode.addActionListener(new ButtonListener());
 		searchCatalogue.addActionListener(new ButtonListener());
 		callAttendant.addActionListener(new ButtonListener());
@@ -288,12 +359,11 @@ public class SoftwareGUI{
 		            
 		            //we need to put session into pay mode here//
 		            
-		            
-		       }
+		          }
 		});
 				
 		//Set button sizes
-		exit.setFont(new Font("Dialog", Font.BOLD, 30));
+		cancel.setFont(new Font("Dialog", Font.BOLD, 30));
 		addBags.setFont(new Font("Dialog", Font.BOLD, 30));
 		pluCode.setFont(new Font("Dialog", Font.BOLD, 30));
 		searchCatalogue.setFont(new Font("Dialog", Font.BOLD, 30));
@@ -301,7 +371,7 @@ public class SoftwareGUI{
 		pay.setFont(new Font("Dialog", Font.BOLD, 75));
 			
 		// Align texts for buttons
-		exit.setHorizontalTextPosition(JButton.CENTER);
+		cancel.setHorizontalTextPosition(JButton.CENTER);
 		addBags.setHorizontalTextPosition(JButton.CENTER);		
 		pluCode.setHorizontalTextPosition(JButton.CENTER);		
 		searchCatalogue.setHorizontalTextPosition(JButton.CENTER);		
@@ -309,7 +379,7 @@ public class SoftwareGUI{
 		pay.setHorizontalTextPosition(JButton.CENTER);		
 			
 		buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-		buttonPanel.add(exit);
+		buttonPanel.add(cancel);
 		buttonPanel.add(addBags);
 		buttonPanel.add(pluCode);
 		buttonPanel.add(searchCatalogue);
@@ -332,23 +402,29 @@ public class SoftwareGUI{
 	
 	public void displayStart() {
 		frame.getContentPane().removeAll();
+		startPane = start();
 		frame.getContentPane().add(startPane, BorderLayout.CENTER);
 		frame.getContentPane().revalidate();
 		frame.getContentPane().repaint();
+		frame.setVisible(true);
 	}
 	
 	public void displayMain() {
 		frame.getContentPane().removeAll();
+		mainPane = mainPanel();
 		frame.getContentPane().add(mainPane, BorderLayout.CENTER);
 		frame.getContentPane().revalidate();
 		frame.getContentPane().repaint();
+		frame.setVisible(true);
 	}
 	
 	public void displayEnd() {
 		frame.getContentPane().removeAll();
+		endPane = end();
 		frame.getContentPane().add(endPane);
 		frame.getContentPane().revalidate();
 		frame.getContentPane().repaint();
+		frame.setVisible(true);
 	}
 	
 	public void update(double price, double mass) {
@@ -361,6 +437,9 @@ public class SoftwareGUI{
 		}
 		else weight = df.format(mass) + "g";
 		infoWeightNumber.setText(weight);
+		productCount = cartItemsPanel.amount();
+		productAmount.setText(Integer.toString(productCount));
+		itemAmount.setText(Integer.toString(quantity));
 	}
 	
 	public void hide() {
@@ -378,8 +457,15 @@ public class SoftwareGUI{
 			JButton source = (JButton) e.getSource();
 			if(source == searchCatalogue) {
 				catalogue.setVisible(true);
-			} else if(source == callAttendant) {
-				session.notifyAttendant(Requests.HELP_REQUESTED);
+			}
+			else if(source == cancel) {
+				if(session.getState() == SessionState.IN_SESSION) {
+					displayStart();
+				}
+				else if(session.getState() == SessionState.BLOCKED) {
+					JOptionPane.showMessageDialog(null, "Cannot cancel. Please resolve discrepancy on weight scale.");
+				}
+				session.cancel();
 			}
 			
 		}	
@@ -391,6 +477,7 @@ public class SoftwareGUI{
 		public void itemAdded(Session session, Product product, Mass ofProduct, Mass currentExpectedWeight,
 				BigDecimal currentExpectedPrice) {
 			cartItemsPanel.addProduct(product, ofProduct);
+			quantity = quantity + 1;
 			update(currentExpectedPrice.doubleValue(), currentExpectedWeight.inGrams().doubleValue());
 		}
 
@@ -398,7 +485,8 @@ public class SoftwareGUI{
 		public void itemRemoved(Session session, Product product, Mass ofProduct, Mass currentExpectedMass,
 				BigDecimal currentExpectedPrice) {
 			cartItemsPanel.removeProduct(product, ofProduct);
-			
+			quantity = quantity - 1;
+			update(currentExpectedPrice.doubleValue(), currentExpectedMass.inGrams().doubleValue());
 		}
 
 		@Override
@@ -426,8 +514,10 @@ public class SoftwareGUI{
 		}
 
 		@Override
-		public void pricePaidUpdated(Session session) {
-			// TODO Auto-generated method stub
+		public void pricePaidUpdated(Session session, BigDecimal amountDue) {
+			DecimalFormat df = new DecimalFormat("#.00");
+			String s = "$" + df.format(amountDue);
+			paymentScreen.amountLabel.setText(s);
 			
 		}
 
@@ -439,6 +529,18 @@ public class SoftwareGUI{
 
 		@Override
 		public void sessionEnded(Session session) {
+			paymentScreen.hide();
+			displayEnd();
+		}
+
+		@Override
+		public void pluCodeEntered(PLUCodedProduct product) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void sessionStateChanged() {
 			// TODO Auto-generated method stub
 			
 		}

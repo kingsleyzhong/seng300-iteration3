@@ -1,18 +1,22 @@
 package com.thelocalmarketplace.software.items;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.jjjwelectronics.Mass;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.Product;
-import com.thelocalmarketplace.software.Session;
+import com.thelocalmarketplace.hardware.external.ProductDatabases;
+import com.thelocalmarketplace.hardware.PLUCodedProduct;
+import com.thelocalmarketplace.hardware.PriceLookUpCode;
+import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 import com.thelocalmarketplace.software.exceptions.ProductNotFoundException;
 import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 
 /**
- * Manages aspects to adding items
+ * Manages aspects to adding items to an order
  * 
  * Project Iteration 3 Group 1
  *
@@ -41,23 +45,44 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 
 public class ItemManager {
 	protected ArrayList<ItemListener> listeners = new ArrayList<>();
-	private HashMap<BarcodedProduct, Integer> barcodedItems = new HashMap<BarcodedProduct, Integer>();
+	private HashMap<Product, BigInteger> addedProducts = new HashMap<Product, BigInteger>(); //hashMap for both barcodedProduct and PLUCodedProduct
 	private HashMap<BarcodedProduct, Integer> bulkyItems = new HashMap<BarcodedProduct, Integer>();
+	private HashMap<String, Product> visualCatalogue = new HashMap<String, Product>();
+	private HashMap<Product, Mass> PLUProductWeights = new HashMap<Product, Mass>();
+	
+	private PLUCodedProduct pluProduct;
 	private BarcodedProduct lastProduct;
-	private Session session;
-	private boolean addItems = true;
-	
-	
-	public ItemManager(Session session) {
-		this.session = session;
-	}
+	private boolean addItems = false;
+	private boolean addPLUItemState = false;
 
 	public void setAddItems(boolean value) {
 		addItems = value;
+		addPLUItemState = false;
+	}
+	
+	//Get PLU code from the GUI
+	public void addItem(PriceLookUpCode code) {
+		if(addItems) {
+			if (ProductDatabases.PLU_PRODUCT_DATABASE.containsKey(code)) {
+				addPLUItemState = true;
+				pluProduct = ProductDatabases.PLU_PRODUCT_DATABASE.get(code);
+				notifyPLUCode(pluProduct);
+			} else {
+				throw new InvalidActionException("Item not in Database");
+			}
+		}
+	}
+	
+	public boolean isAddPLUItemState() {
+		return addPLUItemState;
+	}
+	
+	public PLUCodedProduct getPluProduct() {
+		return pluProduct;
 	}
 	
 	/**
-	 * Adds a barcoded product to the hashMap of the barcoded products. Updates the
+	 * Adds a barcoded product to the hashMap of the products. Updates the
 	 * expected weight and price
 	 * of the system based on the weight and price of the product.
 	 *
@@ -66,10 +91,10 @@ public class ItemManager {
 	 */
 	public void addItem(BarcodedProduct product) {
 		if(addItems) {
-			if (barcodedItems.containsKey(product)) {
-				barcodedItems.replace(product, barcodedItems.get(product) + 1);
+			if (addedProducts.containsKey(product)) {
+				addedProducts.replace(product, addedProducts.get(product).add(BigInteger.valueOf(1)));
 			} else {
-				barcodedItems.put(product, 1);
+				addedProducts.put(product, BigInteger.valueOf(1));
 			}
 			double weight = product.getExpectedWeight();
 			long price = product.getPrice();
@@ -81,6 +106,55 @@ public class ItemManager {
 		}
 	}
 	
+	
+	//Method for adding PLU coded item
+	public void addItem(PLUCodedProduct product, Mass mass) {
+		if(addItems) {
+			if (addedProducts.containsKey(product)) {
+				addedProducts.replace(product, addedProducts.get(product).add(mass.inMicrograms()));
+			} else {
+				addedProducts.put(product, mass.inMicrograms());
+				PLUProductWeights.put(product,mass);
+			}
+			
+			BigDecimal price = new BigDecimal(product.getPrice());
+			final int MICROGRAM_PER_KILOGRAM = 1_000_000_000;
+			BigDecimal weightInKilogram = BigDecimal.valueOf(mass.inMicrograms().doubleValue()/MICROGRAM_PER_KILOGRAM);
+			BigDecimal itemPrice = price.multiply(weightInKilogram);
+			
+			notifyItemAdded(product, mass, itemPrice);
+		}
+	}
+
+	/**
+	 * Adds an item from the visual catalogue. Assumes that only instances of PLUCodedProduct and BarcodedProduct are possible.
+	 *
+	 * @param description
+	 *                The text from the GUI representing the product in the catalogue.
+	 */
+	public void addVisualItem(String description) {
+		if (addItems) {
+			// Check if the product with given description exists in the catalogue
+			if (visualCatalogue.containsKey(description)) {
+				Product selectedProduct = visualCatalogue.get(description);
+
+				// The product could be a Barcoded Product
+				if (selectedProduct instanceof BarcodedProduct) {
+					this.addItem((BarcodedProduct) selectedProduct);
+				}
+
+				// The product could be a PLU Coded Product
+				else if (selectedProduct instanceof PLUCodedProduct) {
+					// to be complete
+				}
+			} else {
+				// Product not found in the visual catalogue
+				throw new ProductNotFoundException("Item not found");
+			}
+			
+		}
+	}
+
 	public void addBulkyItem() {
 		if (bulkyItems.containsKey(lastProduct)) {
 			bulkyItems.replace(lastProduct, bulkyItems.get(lastProduct) + 1);
@@ -101,17 +175,17 @@ public class ItemManager {
 		long price = product.getPrice(); 
 		Mass mass = new Mass(weight);
 		BigDecimal itemPrice = new BigDecimal(price);
+
 		
-		if (barcodedItems.containsKey(product) && barcodedItems.get(product) > 1 ) {
-			barcodedItems.replace(product, barcodedItems.get(product)-1);
-		} else if (barcodedItems.containsKey(product) && barcodedItems.get(product) == 1 ) { 
-			barcodedItems.remove(product);
+		if (addedProducts.containsKey(product) && addedProducts.get(product).intValue() > 1) {
+			addedProducts.replace(product, addedProducts.get(product).subtract(BigInteger.valueOf(1)));
+		} else if (addedProducts.containsKey(product) && addedProducts.get(product).intValue() == 1) {
+			addedProducts.remove(product);
 		} else {
 			throw new ProductNotFoundException("Item not found");
 		}
-		
-		HashMap<BarcodedProduct, Integer> bulkyItems = session.getBulkyItems();
-		if (bulkyItems.containsKey(product) && bulkyItems.get(product) >= 1 ) {
+
+		if (bulkyItems.containsKey(product) && bulkyItems.get(product) > 1 ) {
 			bulkyItems.replace(product, bulkyItems.get(product)-1);
 			mass = new Mass(0);
 		} else if (bulkyItems.containsKey(product) && bulkyItems.get(product) == 1 ) {
@@ -121,6 +195,25 @@ public class ItemManager {
 		
 		notifyItemRemoved(product, mass, itemPrice);
 	} 
+	
+	public void removeItem(PLUCodedProduct product) {
+		long price = product.getPrice(); 
+		Mass mass = PLUProductWeights.get(product);
+		BigDecimal itemPrice = new BigDecimal(price);
+
+		
+		if (addedProducts.containsKey(product) &&
+		addedProducts.get(product).doubleValue() > mass.inMicrograms().doubleValue()) {
+			addedProducts.replace(product, addedProducts.get(product).subtract(mass.inMicrograms()));
+		} else if (addedProducts.containsKey(product) && 
+		addedProducts.get(product).doubleValue() == mass.inMicrograms().doubleValue()) {
+			addedProducts.remove(product);
+			PLUProductWeights.remove(product);
+		} else {
+			throw new ProductNotFoundException("Item not found");
+		}
+		notifyItemRemoved(product, mass, itemPrice);
+	}
 	
 	public void notifyItemAdded(Product product, Mass mass, BigDecimal price) {
 		for (ItemListener l : listeners)
@@ -132,9 +225,14 @@ public class ItemManager {
 			l.anItemHasBeenRemoved(product, mass, price);
 	}
 	
+	public void notifyPLUCode(PLUCodedProduct product) {
+		for (ItemListener l : listeners)
+			l.aPLUCodeHasBeenEntered(product);
+	}
+	
 	
 	/**
-	 * Methods for adding funds listeners to the funds
+	 * Methods for adding funds listeners to the items
 	 */
 	public synchronized boolean deregister(ItemListener listener) {
 		if (listener == null)
@@ -154,12 +252,20 @@ public class ItemManager {
 		listeners.add(listener);
 	}
 	
-	public HashMap<BarcodedProduct, Integer> getItems(){
-		return barcodedItems;
+	public ArrayList<ItemListener> getListeners(){
+		return listeners;
+	}
+
+	public HashMap<Product, BigInteger> getItems() {
+		return addedProducts;
 	}
 	
 	public HashMap<BarcodedProduct, Integer> getBulkyItems(){
 		return bulkyItems;
 	}
-	
+
+	public HashMap<String, Product> getVisualCatalogue() {
+		return visualCatalogue;
+	}
+
 }

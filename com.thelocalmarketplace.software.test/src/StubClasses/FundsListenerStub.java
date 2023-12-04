@@ -1,5 +1,6 @@
 package StubClasses;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import com.thelocalmarketplace.software.funds.FundsListener;
@@ -21,7 +22,8 @@ import com.thelocalmarketplace.software.funds.FundsListener;
  */
 
 public class FundsListenerStub implements FundsListener {
-	ArrayList<String> events;
+	private ArrayList<String> events;
+	private boolean insufficient;
 
 	public FundsListenerStub() {
 		events = new ArrayList<String>();
@@ -35,5 +37,15 @@ public class FundsListenerStub implements FundsListener {
 
 	public ArrayList<String> getEvents() {
 		return events;
+	}
+
+	@Override
+	public void notifyInsufficentChange() {
+		insufficient = true;
+		
+	}
+	
+	public boolean getInsufficient() {
+		return insufficient;
 	}
 }

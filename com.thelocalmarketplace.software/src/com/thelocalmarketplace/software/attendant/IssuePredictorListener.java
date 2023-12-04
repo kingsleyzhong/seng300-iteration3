@@ -29,9 +29,7 @@ import com.thelocalmarketplace.software.Session;
  * Kingsley Zhong 			: 30197260 
  */
 public interface IssuePredictorListener {
-	 
-	void notifyPredictUnsupportedFeature(Session session, Issues issue);
-	
+		
 	/**
 	 * Signals an event that a low ink issue will shortly occur
 	 */

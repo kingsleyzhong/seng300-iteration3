@@ -105,8 +105,8 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	private Banknote ten;
 	private Banknote twenty;
 
-	public SelfCheckoutStationSystemTest(String testName, AbstractSelfCheckoutStation scs) {
-		super(testName, scs);
+	public SelfCheckoutStationSystemTest(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
+		super(testName, scsClass);
 	}
 
 	@Before

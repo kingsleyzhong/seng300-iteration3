@@ -50,6 +50,7 @@ public class Weight {
 	private boolean bagCheck = false;
 	private Mass lastWeightAdded = Mass.ZERO;
 	private Mass personalBagsWeight;
+	private Mass purchasedBagsWeight;
 	
 	private Mass MAXBAGWEIGHT = new Mass(500 * Mass.MICROGRAMS_PER_GRAM);
 
@@ -116,11 +117,11 @@ public class Weight {
 	}
 	
 	/**
-	 * Method used to set adding bags to true
+	 * Method used to indicate a desire to add a bag to the bagging area
 	 */
 	public void addBags() {
 			bagCheck = true;
-		}
+	}
 	
 	/*
 	 * Occurs when the bags the Customer added to the bagging area are above the
