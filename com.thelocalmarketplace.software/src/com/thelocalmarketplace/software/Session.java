@@ -334,6 +334,7 @@ public class Session {
 		membershipNumber = null;
 		manager.clear();
 		funds.clear();
+		weight.setInSession(true);
 		weight.clear();
 	}
 
@@ -344,6 +345,7 @@ public class Session {
 		if (sessionState == SessionState.IN_SESSION) {
 			sessionState = SessionState.PRE_SESSION;
 			stateChanged();
+			weight.setInSession(false);
 			manager.setAddItems(false);
 		} else if(sessionState == SessionState.BULKY_ITEM) {
 			sessionState = SessionState.BLOCKED;
@@ -370,6 +372,7 @@ public class Session {
 		prevState = sessionState;
 		sessionState = SessionState.PRE_SESSION;
 		stateChanged();
+		weight.setInSession(false);
 		receipt.printReceipt(getItems());
 
 		
