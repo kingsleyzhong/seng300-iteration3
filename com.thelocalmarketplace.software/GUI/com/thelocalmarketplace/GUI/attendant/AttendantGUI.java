@@ -78,14 +78,14 @@ public class AttendantGUI {
 			for(Session session : sessions.keySet()) {
 				// maintenance managers?
 				// issue predictors?
-				JPanel panel = new StationPanel(session, attendant, , );
+				JPanel panel = new StationPanel(session, attendant, predictor, manager);
 				panel.setPreferredSize(new Dimension(width/6, width/6));
 				asScreen.getFrame().getContentPane().add(panel, BorderLayout.SOUTH);
 			}
 		} else {
 			// maintenance managers?
 			// issue predictors?
-			JPanel panel = new StationPanel(null, attendant, , );
+			JPanel panel = new StationPanel(null, attendant, predictor, manager);
 			panel.setPreferredSize(new Dimension(width/6, width/6));
 			asScreen.getFrame().getContentPane().add(panel, BorderLayout.SOUTH);
 		}

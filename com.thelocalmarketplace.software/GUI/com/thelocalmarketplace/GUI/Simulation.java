@@ -71,7 +71,8 @@ public class Simulation {
 		
 		manager = new MaintenanceManager();
 		manager.openHardware(session);
-		
+
+		predictor = new IssuePredictor(session, scs);
 		SelfCheckoutStationLogic logic = SelfCheckoutStationLogic.installOn(scs);
 		session = logic.getSession();
 		session.getStation().setSupervisor(as);

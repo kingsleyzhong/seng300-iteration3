@@ -94,8 +94,8 @@ public class SelfCheckoutStationLogic {
 
 		// Registers the attendant with the session
 		// issue predictor??
-		attendant.registerOn(session, );
-		System.out.println("SESSIONS: "+attendant.getSessions().size());
+		attendant.registerOn(session);
+		//System.out.println("SESSIONS: "+attendant.getSessions().size());
 
 		// create Funds, Weight, Receipt, and ItemManger classes to associate w/ Session
 		Funds funds = new Funds(scs);
@@ -111,7 +111,7 @@ public class SelfCheckoutStationLogic {
 		new ItemAddedRule(scs.getMainScanner(), scs.getHandheldScanner(), itemManager);
 
 		// Register IssuePredictor with Session
-		this.predictor  = new IssuePredictor(session, scs, receiptPrinter);
+		this.predictor  = new IssuePredictor(session, scs);
 		// tell the Attendant about the Predictor
 		attendant.addIssuePrediction(predictor);
 
