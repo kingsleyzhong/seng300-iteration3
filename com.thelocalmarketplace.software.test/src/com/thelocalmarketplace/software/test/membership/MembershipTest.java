@@ -43,7 +43,6 @@ import java.io.IOException;
 
 public class MembershipTest extends AbstractSessionTest {
 
-    private Membership membership;
     private StubListener stubListener;
     private static final String membershipNumber = "1234";
     private static final String memberName = "John Doe";
@@ -62,7 +61,6 @@ public class MembershipTest extends AbstractSessionTest {
     @Before
     public void setup() {
         basicDefaultSetup();
-        membership = new Membership(scs.getCardReader());
         membership.register(stubListener = new StubListener());
     }
 
@@ -87,14 +85,14 @@ public class MembershipTest extends AbstractSessionTest {
         membership.register(listener2);
         membership.setAddingItems(true);
         membership.typeMembership(membershipNumber);
-        Assert.assertEquals(listener2.membershipNumber, membershipNumber);
+        Assert.assertEquals(listener2.enteredMembershipNumber, membershipNumber);
     }
 
     @Test
     public void testDeregisterListener() {
         membership.deregister(stubListener);
         membership.typeMembership(membershipNumber);
-        Assert.assertNull(stubListener.membershipNumber);
+        Assert.assertNull(stubListener.enteredMembershipNumber);
     }
 
     @Test
@@ -103,38 +101,38 @@ public class MembershipTest extends AbstractSessionTest {
         membership.register(stubListener2);
         membership.deregisterAll();
         membership.typeMembership(membershipNumber);
-        Assert.assertNull(stubListener.membershipNumber);
-        Assert.assertNull(stubListener2.membershipNumber);
+        Assert.assertNull(stubListener.enteredMembershipNumber);
+        Assert.assertNull(stubListener2.enteredMembershipNumber);
     }
 
     @Test
     public void testTypeMembershipNotAddingItems() {
         membership.typeMembership(membershipNumber);
-        Assert.assertNull(stubListener.membershipNumber);
+        Assert.assertNull(stubListener.enteredMembershipNumber);
     }
 
     @Test
     public void testTypeNotAMember() {
         membership.setAddingItems(true);
         membership.typeMembership("1");
-        Assert.assertNull(stubListener.membershipNumber);
+        Assert.assertNull(stubListener.enteredMembershipNumber);
     }
 
     @Test
     public void testTypeValidMembership() {
         membership.setAddingItems(true);
         membership.typeMembership(membershipNumber);
-        Assert.assertEquals(stubListener.membershipNumber, membershipNumber);
+        Assert.assertEquals(stubListener.enteredMembershipNumber, membershipNumber);
     }
 
     @Test
     public void testSwipeMembershipNotAddingItems() throws IOException {
         int success = 0;
         for (int i = 0; i < 1000; i++) { // loop to account for swipe failures in hardware
-            stubListener.membershipNumber = null;
+            stubListener.enteredMembershipNumber = null;
             try {
                 scs.getCardReader().swipe(membershipCard);
-                if (stubListener.membershipNumber == null)
+                if (stubListener.enteredMembershipNumber == null)
                     success++;
             } catch (MagneticStripeFailureException ignored) {
             }
@@ -147,10 +145,10 @@ public class MembershipTest extends AbstractSessionTest {
         membership.setAddingItems(true);
         int success = 0;
         for (int i = 0; i < 1000; i++) { // loop to account for swipe failures in hardware
-            stubListener.membershipNumber = null;
+            stubListener.enteredMembershipNumber = null;
             try {
                 scs.getCardReader().swipe(membershipCard);
-                if (stubListener.membershipNumber != null && stubListener.membershipNumber.equals(membershipNumber))
+                if (stubListener.enteredMembershipNumber != null && stubListener.enteredMembershipNumber.equals(membershipNumber))
                     success++;
             } catch (MagneticStripeFailureException ignored) {
             }
@@ -164,10 +162,10 @@ public class MembershipTest extends AbstractSessionTest {
         membership.setAddingItems(true);
         int success = 0;
         for (int i = 0; i < 1000; i++) { // loop to account for swipe failures in hardware
-            stubListener.membershipNumber = null;
+            stubListener.enteredMembershipNumber = null;
             try {
                 scs.getCardReader().swipe(otherCard);
-                if (stubListener.membershipNumber == null)
+                if (stubListener.enteredMembershipNumber == null)
                     success++;
             } catch (MagneticStripeFailureException ignored) {
             }
@@ -181,10 +179,10 @@ public class MembershipTest extends AbstractSessionTest {
         membership.setAddingItems(true);
         int success = 0;
         for (int i = 0; i < 1000; i++) { // loop to account for swipe failures in hardware
-            stubListener.membershipNumber = null;
+            stubListener.enteredMembershipNumber = null;
             try {
                 scs.getCardReader().swipe(otherCard);
-                if (stubListener.membershipNumber == null)
+                if (stubListener.enteredMembershipNumber == null)
                     success++;
             } catch (MagneticStripeFailureException ignored) {
             }
@@ -193,11 +191,11 @@ public class MembershipTest extends AbstractSessionTest {
     }
 
     static class StubListener implements MembershipListener {
-        String membershipNumber;
+        String enteredMembershipNumber;
 
         @Override
         public void membershipEntered(String membershipNumber) {
-            this.membershipNumber = membershipNumber;
+            enteredMembershipNumber = membershipNumber;
         }
     }
 }

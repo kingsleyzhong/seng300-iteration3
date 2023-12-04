@@ -227,15 +227,6 @@ public class Session {
 
 	}
 
-	private class MemberListener implements MembershipListener {
-		/** Sets the membership number for the session. */
-		@Override
-		public void membershipEntered(String membershipNumber) {
-			Session.this.membershipNumber = membershipNumber;
-			Session.this.hasMembership = true;
-		}
-	}
-
 	/**
 	 * Constructor for the session method. Requires to be installed on self-checkout
 	 * system
@@ -277,7 +268,10 @@ public class Session {
 		this.receiptPrinter = receiptPrinter;
 		this.receiptPrinter.register(new PrinterListener());
 		this.membership = membership;
-		membership.register(new MemberListener());
+		membership.register((membershipNumber) -> {
+			Session.this.membershipNumber = membershipNumber;
+			Session.this.hasMembership = true;
+		});
 		this.scs = scs;
 	}
 
