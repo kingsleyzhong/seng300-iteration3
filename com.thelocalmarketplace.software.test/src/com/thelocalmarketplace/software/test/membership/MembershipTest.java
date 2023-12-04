@@ -4,6 +4,7 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 import com.jjjwelectronics.card.Card;
 import com.jjjwelectronics.card.MagneticStripeFailureException;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 import com.thelocalmarketplace.software.membership.Membership;
 import com.thelocalmarketplace.software.membership.MembershipDatabase;
 import com.thelocalmarketplace.software.membership.MembershipListener;
@@ -90,6 +91,7 @@ public class MembershipTest extends AbstractSessionTest {
 
     @Test
     public void testDeregisterListener() {
+        membership.setAddingItems(true);
         membership.deregister(stubListener);
         membership.typeMembership(membershipNumber);
         Assert.assertNull(stubListener.enteredMembershipNumber);
@@ -97,6 +99,7 @@ public class MembershipTest extends AbstractSessionTest {
 
     @Test
     public void testDeregisterAllListeners() {
+        membership.setAddingItems(true);
         StubListener stubListener2 = new StubListener();
         membership.register(stubListener2);
         membership.deregisterAll();
@@ -107,14 +110,13 @@ public class MembershipTest extends AbstractSessionTest {
 
     @Test
     public void testTypeMembershipNotAddingItems() {
-        membership.typeMembership(membershipNumber);
-        Assert.assertNull(stubListener.enteredMembershipNumber);
+        Assert.assertThrows(InvalidActionException.class, () -> membership.typeMembership(membershipNumber));
     }
 
     @Test
     public void testTypeNotAMember() {
         membership.setAddingItems(true);
-        membership.typeMembership("1");
+        Assert.assertThrows(InvalidActionException.class, () -> membership.typeMembership("1"));
         Assert.assertNull(stubListener.enteredMembershipNumber);
     }
 
