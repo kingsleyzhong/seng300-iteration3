@@ -1,4 +1,4 @@
-package com.thelocalmarketplace.GUI.session;
+package com.thelocalmarketplace.GUI.attendant;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -13,26 +13,23 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import com.thelocalmarketplace.GUI.attendant.SearchBar;
+
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.CustomBarUI;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
+import com.thelocalmarketplace.GUI.session.ProductPanel;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.Session;
 
-public class SearchCatalogue extends JFrame {
-
-	/**
-	 * 
-	 */
+public class AttendantCatalogue extends JFrame{
 	private static final long serialVersionUID = 1L;
 	private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	private Map<Product, Integer> inventory = ProductDatabases.INVENTORY;
 	Session session;
 	private JFrame frame = this;
 	
-	public SearchCatalogue(Session session) {
+	public AttendantCatalogue(Session session) {
 		this.session = session;
 		this.setTitle("Search Catalog");
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -44,7 +41,7 @@ public class SearchCatalogue extends JFrame {
 		
 		JPanel orangePanel = new JPanel();
 		orangePanel.setBackground(Colors.color5);
-		orangePanel.setPreferredSize(new Dimension(5000, 60));
+		orangePanel.setPreferredSize(new Dimension(5000, 50));
 		orangePanel.setLayout(new BorderLayout());
 		
 		JButton backButton = new PlainButton("Cancel",  Colors.color5);
@@ -56,10 +53,8 @@ public class SearchCatalogue extends JFrame {
 			}
 			
 		});
-		
-		SearchBar searchBar = new SearchBar(inventory);
 		orangePanel.add(backButton, BorderLayout.WEST);
-		orangePanel.add(searchBar, BorderLayout.CENTER);
+		
 		mainPanel.add(orangePanel, BorderLayout.NORTH);
 		
 		JPanel productPanel = new JPanel();

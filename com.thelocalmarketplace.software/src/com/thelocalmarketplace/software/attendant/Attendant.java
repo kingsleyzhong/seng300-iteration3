@@ -3,7 +3,10 @@ package com.thelocalmarketplace.software.attendant;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
+import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 import com.jjjwelectronics.Mass;
 import com.thelocalmarketplace.hardware.AttendantStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
@@ -11,9 +14,7 @@ import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionListener;
-import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.exceptions.ProductNotFoundException;
-import com.thelocalmarketplace.software.weight.WeightListener;
 
 /**
  * Simulation of attendant station, its functions, and its interactions with customer stations/session
@@ -47,6 +48,8 @@ public class Attendant {
 	private AttendantStation as;
 	private TextSearchController ts;
 	private HashMap<Session, Requests> sessions = new HashMap<>();
+
+	public ArrayList<AttendantListener> listeners = new ArrayList<>();
 	
 	/**
 	 * default constructor
@@ -98,24 +101,27 @@ public class Attendant {
 		public void pricePaidUpdated(Session session, BigDecimal amountDue) {
 			
 		}
-		
+
 		/**
-		 * Example of how getRequest could be written. It should include the request and the session the request comes from.
-		 * Note you will also have to add any of these methods to SessionListener along with the @Override keyword
+		 * Allows for the attendant station to be notified of a request from a session it is tracking and what the request is.
 		 * @param session
 		 * @param request
 		 */
 		@Override
 		public void getRequest(Session session, Requests request) {
-			
+			sessions.put(session, request);
 		}
 
 		@Override
 		public void sessionAboutToStart(Session session) {
+			// TODO Auto-generated method stub
+			
 		}
 
 		@Override
 		public void sessionEnded(Session session) {
+			// TODO Auto-generated method stub
+			
 		}
 
 		@Override
@@ -134,7 +140,13 @@ public class Attendant {
 
 	/**
 	 * Receives notifications when an issue (eg. low ink, paper, low coins) is likely to occur for a given Session
-	 * Used to let Attendant know when a customer station might have issues before they happen
+	 * Used to let Attendant know when a customer station might have issues before they happen.
+	 * 
+	 * @param session
+	 * 					an instance of Session tha the Attendant is responsible for acting on
+	 * 
+	 * 
+	 * 
 	 */
 	private class InnerPredictionListener implements IssuePredictorListener{
 
@@ -211,23 +223,32 @@ public class Attendant {
 	 *                The text from the GUI representing the product in the search results.
 	 */
 	public void addSearchedItem(String description, Session session) {
-		if (ts.getSearchResults().containsKey(description)) {
-			Product selectedProduct = ts.getSearchResults().get(description);
+		if (sessions.get(session).equals(Requests.HELP_REQUESTED)) { // Replace with ADD_ITEM_SEARCH ?
+			if (ts.getSearchResults().containsKey(description)) {
+				Product selectedProduct = ts.getSearchResults().get(description);
 
-			// The product could be a Barcoded Product
-			if (selectedProduct instanceof BarcodedProduct) {
-				session.getManager().addItem((BarcodedProduct) selectedProduct);
-			}
+				// The product could be a Barcoded Product
+				if (selectedProduct instanceof BarcodedProduct) {
+					session.getManager().addItem((BarcodedProduct) selectedProduct);
+				}
 
-			// The product could be a PLU Coded Product
-			else if (selectedProduct instanceof PLUCodedProduct) {
-				PLUCodedProduct pluProduct = (PLUCodedProduct) selectedProduct;
-				session.getManager().addItem(pluProduct.getPLUCode());
+				// The product could be a PLU Coded Product
+				else if (selectedProduct instanceof PLUCodedProduct) {
+					PLUCodedProduct pluProduct = (PLUCodedProduct) selectedProduct;
+					session.getManager().addItem(pluProduct.getPLUCode());
+				}
+
+				// Cancel search/request?
+				else if (description.equals("CANCEL SEARCH")){
+					sessions.put(session, Requests.NO_REQUEST);
+					return;
+				}
+			} else {
+				// Product not found for some reason - is this needed?
+				throw new ProductNotFoundException("Item not found");
 			}
-		} else {
-			// Product not found in the visual catalogue
-			throw new ProductNotFoundException("Item not found");
 		}
+		sessions.put(session, Requests.NO_REQUEST); // Replace with a general request cancellation method?
 	}
 	
 	/**
@@ -242,8 +263,29 @@ public class Attendant {
 	public AttendantStation getStation() {
 		return as;
 	}
+	public HashMap<Session, Requests> getSessions(){
+		return sessions;
+	}
 
 	public TextSearchController getTextSearchController() {
 		return ts;
+	}
+
+	// register listeners
+	public final synchronized void register(AttendantListener listener) {
+		if (listener == null)
+			throw new NullPointerSimulationException("listener");
+		listeners.add(listener);
+	}
+
+	// de-register listeners
+	public final synchronized void deRegister(AttendantListener listener) {
+		if (listener == null)
+			throw new NullPointerSimulationException("listener");
+		listeners.remove(listener);
+	}
+
+	public ArrayList<AttendantListener> getListeners(){
+		return listeners;
 	}
 }

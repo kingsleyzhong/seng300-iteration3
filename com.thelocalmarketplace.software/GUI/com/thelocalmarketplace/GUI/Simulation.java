@@ -31,8 +31,8 @@ import powerutility.PowerGrid;
 public class Simulation {
 	private AbstractSelfCheckoutStation scs;
 	private AttendantStation as;
-	private Session session;
 	private Attendant attendant;
+	private Session session;
 	
 	private HardwareGUI hardwareGUI;
 	private AttendantGUI attendantGUI;
@@ -58,12 +58,13 @@ public class Simulation {
 		as.turnOn();
 		
 		SelfCheckoutStationLogic.installAttendantStation(as);
+		attendant = SelfCheckoutStationLogic.getAttendant();
 		SelfCheckoutStationLogic logic = SelfCheckoutStationLogic.installOn(scs);
 		session = logic.getSession();
-		attendant = SelfCheckoutStationLogic.getAttendant();
+		session.getStation().setSupervisor(as);
 		
-		hardwareGUI = new HardwareGUI(scs);
-		//attendantGUI = new AttendantGUI(attendant, as.screen);
+		hardwareGUI = new HardwareGUI(scs, as);
+		attendantGUI = new AttendantGUI(attendant);
 		softwareGUI = new SoftwareGUI(session);
 		
 		// hidden by default
@@ -93,7 +94,7 @@ public class Simulation {
 		Barcode barcode4 = new Barcode(new Numeral[] {Numeral.four});
 		BarcodedProduct product4 = new BarcodedProduct(barcode4, "flock of socks", 7, 50.0);
 		SelfCheckoutStationLogic.populateDatabase(barcode4, product4, 20);
-		
+
 		PriceLookUpCode plu1 = new PriceLookUpCode(new String("0000"));
 		PLUCodedProduct pluProduct1 = new PLUCodedProduct(plu1, "baaananas", 10);
 		SelfCheckoutStationLogic.populateDatabase(plu1, pluProduct1, 10);
