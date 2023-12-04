@@ -499,6 +499,9 @@ public class SoftwareGUI{
 				else JOptionPane.showMessageDialog(null, "You cannot add an item right now.");
 
 			}
+			else if(source == callAttendant) {
+				session.notifyAttendant(Requests.HELP_REQUESTED);
+			}
 		}	
 	}
 	
@@ -637,7 +640,6 @@ public class SoftwareGUI{
 					}
 				}
 			}
-			
 		}
 
 		@Override
