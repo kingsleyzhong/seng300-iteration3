@@ -60,8 +60,10 @@ public class CashPanel extends JPanel{
 	private static final long serialVersionUID = 1L;
 	private AbstractSelfCheckoutStation scs;
 	
+	//buttons
 	public JButton FiveBillBtn;
 	public JButton button_one_coin;
+	public JButton RemoveInputBill;
 	
 	//coins
 	private Coin Five_Cent_Coin;
@@ -192,7 +194,7 @@ public class CashPanel extends JPanel{
 		
 		
 		//Remove input bill
-		JButton RemoveInputBill = new PlainButton("Remove Input Bill", Colors.color1);
+		RemoveInputBill = new PlainButton("Remove Input Bill", Colors.color1);
 		RemoveInputBill.setForeground(Colors.color3);
 		RemoveInputBill.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

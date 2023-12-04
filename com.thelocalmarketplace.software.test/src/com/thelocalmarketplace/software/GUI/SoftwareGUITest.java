@@ -152,22 +152,6 @@ public class SoftwareGUITest{
 		timer.stop();
 	}
 	
-	@Test
-	public void testPayWithCoin() {
-		softwareGUI.btnStart.doClick();
-		
-		scs.getMainScanner().scan(item);
-		scs.getBaggingArea().addAnItem(item);
-		
-		softwareGUI.pay.doClick();
-		softwareGUI.paymentScreen.getCashButton().doClick();
-		
-		cashpanel.button_one_coin.doClick();
-		
-		//IDK WHY IT WONT TAKE MY MONEY HERE!!!!!!!!!!!!!!
-		Assert.assertEquals(BigDecimal.ONE , cashController.getCashPaid());
-	}
-	
 	
 	
 	@Test
