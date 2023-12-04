@@ -89,6 +89,7 @@ public class SoftwareGUI{
 	JPanel buttonPanel;
 	
 	Timer discrepancyTimer;
+	Timer endTimer = null;
 	
 	// Buttons
 	public SoftwareGUI(Session session) {
@@ -179,7 +180,7 @@ public class SoftwareGUI{
 		});
 		main.add(hardwareBtn);
 		
-		Timer timer = new Timer(20000, new ActionListener() {
+		endTimer = new Timer(20000, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -187,8 +188,8 @@ public class SoftwareGUI{
 			}
 			
 		});
-		timer.setRepeats(false);
-		timer.start();
+		endTimer.setRepeats(false);
+		endTimer.start();
 		
 		JButton thankYouButton = new PlainButton("<html>Thanks For Shopping!<br><br>Please Collect Your Receipt</html>", Colors.color1);
 		thankYouButton.setOpaque(false);
@@ -200,7 +201,7 @@ public class SoftwareGUI{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				displayStart();
-				timer.stop();
+				endTimer.stop();
 			}
 			
 		});
@@ -426,6 +427,8 @@ public class SoftwareGUI{
 	
 	public void displayStart() {
 		frame.getContentPane().removeAll();
+		quantity = 0;
+		if(endTimer != null) endTimer.stop();
 		startPane = start();
 		frame.getContentPane().add(startPane, BorderLayout.CENTER);
 		frame.getContentPane().revalidate();
