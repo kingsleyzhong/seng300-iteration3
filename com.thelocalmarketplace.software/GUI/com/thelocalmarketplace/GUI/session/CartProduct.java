@@ -7,6 +7,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -34,6 +36,7 @@ public class CartProduct extends JPanel {
 	private String price;
 	private String mass;
 	private String description;
+	private JLabel weightLabel;
 	
 
 	/**
@@ -135,7 +138,7 @@ public class CartProduct extends JPanel {
     	plusButton.setPreferredSize(new Dimension(20,20));
     	panel_1.add(plusButton);
     	
-    	JLabel weightLabel = new JLabel(this.mass);
+    	weightLabel = new JLabel(this.mass);
     	GridBagConstraints gbc_weightLabel = new GridBagConstraints();
     	gbc_weightLabel.insets = new Insets(0, 0, 0, 5);
     	gbc_weightLabel.gridx = 2;
@@ -177,6 +180,19 @@ public class CartProduct extends JPanel {
 			return false;
 		}
 		return true;
+	}
+
+	public void updateMass(BigDecimal inGrams) {
+		DecimalFormat df = new DecimalFormat("#.00");
+		double mass = inGrams.doubleValue();
+		String s = "";
+		if(mass>=1000) {
+			double temp = mass/1000;
+			s = df.format(temp) + "kg";
+		}
+		else s = df.format(mass) + "g";
+		weightLabel.setText(s);
+		
 	}
 
 }

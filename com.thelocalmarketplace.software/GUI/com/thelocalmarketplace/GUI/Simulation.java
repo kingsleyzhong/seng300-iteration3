@@ -13,7 +13,6 @@ import com.tdc.coin.Coin;
 import com.thelocalmarketplace.GUI.attendant.AttendantGUI;
 import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
 import com.thelocalmarketplace.GUI.session.SoftwareGUI;
-import com.thelocalmarketplace.GUI.startscreen.StartScreenGUI;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.AttendantStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
@@ -23,8 +22,6 @@ import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
 import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.attendant.Attendant;
-import com.thelocalmarketplace.software.items.ItemManager;
-
 import ca.ucalgary.seng300.simulation.SimulationException;
 import powerutility.PowerGrid;
 

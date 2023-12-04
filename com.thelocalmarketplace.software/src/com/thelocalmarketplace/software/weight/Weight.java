@@ -228,7 +228,7 @@ g	 *
 		// Mass(massToSubtract.inMicrograms().multiply(conversion));
 	
 		this.expectedWeight = new Mass(NewValue);
-	
+		checkDiscrepancy();
 	}
 	
 	/*
