@@ -26,12 +26,16 @@ import com.thelocalmarketplace.GUI.session.SoftwareGUI;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.AttendantStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.hardware.PLUCodedProduct;
+import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.attendant.Attendant;
+import com.thelocalmarketplace.software.exceptions.CartEmptyException;
+import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.funds.PayByCash;
 
@@ -96,6 +100,7 @@ public class SoftwareGUITest{
 		
 		try {
 			robot = new Robot();
+
 		} catch (AWTException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -198,11 +203,355 @@ public class SoftwareGUITest{
 	
 	@Test
 	public void testUpdate() {
+		assertTrue(false);
 		
 	}
 	
 	@Test
 	public void testAddProducts() {
+		assertTrue(false);
+	}
+	
+	@Test
+	public void testOpenAddBags() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		assertTrue(softwareGUI.addBagsScreen.isVisible());
+	}
+	
+	@Test
+	public void testAddPersonalBags() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getAddPersonalBagButton().doClick();
+		assertTrue(session.getState() == SessionState.ADDING_BAGS);
+	}
+	
+	@Test
+	public void testOpenAddStoreBag() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
+		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().isVisible());
+
+	}
+	
+	@Test
+	public void testAddStoreBagOne() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
+		softwareGUI.addBagsScreen.getNumOfBagsScreen().getOne().doClick();
+		System.out.println(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber());
+		Assert.assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("1"));
+
+	}
+	
+	@Test
+	public void testAddStoreBagTwo() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
+		softwareGUI.addBagsScreen.getNumOfBagsScreen().getTwo().doClick();
+		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("2"));
+
+	}
+	
+	@Test
+	public void testAddStoreBagThree() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
+		softwareGUI.addBagsScreen.getNumOfBagsScreen().getThree().doClick();
+		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("3"));
+
+	}
+	
+	@Test
+	public void testAddStoreBagFour() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
+		softwareGUI.addBagsScreen.getNumOfBagsScreen().getFour().doClick();
+		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("4"));
+
+	}
+	
+	@Test
+	public void testAddStoreBagFive() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
+		softwareGUI.addBagsScreen.getNumOfBagsScreen().getFive().doClick();
+		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("5"));
+
+	}
+	
+	@Test
+	public void testAddStoreBagSix() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
+		softwareGUI.addBagsScreen.getNumOfBagsScreen().getSix().doClick();
+		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("6"));
+
+	}
+	
+	@Test
+	public void testAddStoreBagSeven() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
+		softwareGUI.addBagsScreen.getNumOfBagsScreen().getSeven().doClick();
+		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("7"));
+
+	}
+	
+	@Test
+	public void testAddStoreBagEight() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
+		softwareGUI.addBagsScreen.getNumOfBagsScreen().getEight().doClick();
+		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("8"));
+
+	}
+	
+	@Test
+	public void testAddStoreBagNine() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
+		softwareGUI.addBagsScreen.getNumOfBagsScreen().getNine().doClick();
+		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("9"));
+
+	}
+	
+	@Test
+	public void testAddStoreBagZero() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
+		softwareGUI.addBagsScreen.getNumOfBagsScreen().getZero().doClick();
+		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("0"));
+
+	}
+	
+	@Test
+	public void testAddStoreBagDelete() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
+		softwareGUI.addBagsScreen.getNumOfBagsScreen().getOne().doClick();
+		softwareGUI.addBagsScreen.getNumOfBagsScreen().getDelete().doClick();
+		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals(""));
+
+	}
+	
+	@Test 
+	public void testAddStoreBagDone() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
+		softwareGUI.addBagsScreen.getNumOfBagsScreen().getDone().doClick();
+		//Where to check for bags 
+		assertTrue(false);
+
+	}
+	
+	@Test
+	public void testOpenAddBagsClose() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getCancelButton().doClick();
+		assertFalse(softwareGUI.addBagsScreen.getNumOfBagsScreen().isVisible());
+
+	}
+	
+	@Test
+	public void testAddPLUOpen() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		assertTrue(softwareGUI.pluNumPad.isVisible());
 		
 	}
+	
+	@Test
+	public void testAddPLUCodeOne() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		softwareGUI.pluNumPad.getOne().doClick();
+		assertTrue(softwareGUI.pluNumPad.getPlu().equals("1"));
+		
+	}
+	
+	@Test
+	public void testAddPLUCodeTwo() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		softwareGUI.pluNumPad.getTwo().doClick();
+		assertTrue(softwareGUI.pluNumPad.getPlu().equals("2"));
+
+	}
+	
+	@Test
+	public void testAddPLUCodeThree() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		softwareGUI.pluNumPad.getThree().doClick();
+		assertTrue(softwareGUI.pluNumPad.getPlu().equals("3"));
+
+	}
+	
+	@Test
+	public void testAddPLUCodeFour() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		softwareGUI.pluNumPad.getFour().doClick();
+		assertTrue(softwareGUI.pluNumPad.getPlu().equals("4"));
+
+	}
+	
+	@Test
+	public void testAddPLUCodeFive() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		softwareGUI.pluNumPad.getFive().doClick();
+		assertTrue(softwareGUI.pluNumPad.getPlu().equals("5"));
+
+	}
+	
+	@Test
+	public void testAddPLUCodeSix() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		softwareGUI.pluNumPad.getSix().doClick();
+		assertTrue(softwareGUI.pluNumPad.getPlu().equals("6"));
+
+	}
+	
+	@Test
+	public void testAddPLUCodeSeven() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		softwareGUI.pluNumPad.getSeven().doClick();
+		assertTrue(softwareGUI.pluNumPad.getPlu().equals("7"));
+
+	}
+	
+	@Test
+	public void testAddPLUCodeEight() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		softwareGUI.pluNumPad.getEight().doClick();
+		assertTrue(softwareGUI.pluNumPad.getPlu().equals("8"));
+
+	}
+	
+	@Test
+	public void testAddPLUCodeNine() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		softwareGUI.pluNumPad.getNine().doClick();
+		assertTrue(softwareGUI.pluNumPad.getPlu().equals("9"));
+
+	}
+	
+	@Test
+	public void testAddPLUCodeZero() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		softwareGUI.pluNumPad.getZero().doClick();
+		assertTrue(softwareGUI.pluNumPad.getPlu().equals("0"));
+
+
+	}
+	
+	@Test
+	public void testAddPLUCodeDelete() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		softwareGUI.pluNumPad.getOne().doClick();
+		softwareGUI.pluNumPad.getDelete().doClick();
+		assertTrue(softwareGUI.pluNumPad.getPlu().equals(""));
+
+	}
+	
+	@Test
+	public void testAddPLUCodeDone() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		softwareGUI.pluNumPad.getOne().doClick();
+		softwareGUI.pluNumPad.getDone().doClick();
+		//Maybe add a bool for valid PLU for testing
+		assertTrue(false);
+	}
+	
+//Testing 0000	
+	@Test
+	public void testAddPLUValid() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		softwareGUI.pluNumPad.getZero().doClick();
+		softwareGUI.pluNumPad.getZero().doClick();
+		softwareGUI.pluNumPad.getZero().doClick();
+		softwareGUI.pluNumPad.getZero().doClick();
+		softwareGUI.pluNumPad.getDone().doClick();
+		
+		//I need to press ok for JDialog but idk how 
+		PriceLookUpCode plu1 = new PriceLookUpCode(new String("0000"));
+		//assertTrue(session.getManager().getPluProduct() == new PLUCodedProduct(plu1, "baaananas", 10));
+		//
+		
+	}
+	
+	@Test(expected = InvalidActionException.class)
+	public void testAddPLUInvalid() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		softwareGUI.pluNumPad.getZero().doClick();
+		softwareGUI.pluNumPad.getZero().doClick();
+		softwareGUI.pluNumPad.getZero().doClick();
+		softwareGUI.pluNumPad.getTwo().doClick();
+		softwareGUI.pluNumPad.getDone().doClick();
+		//Dialog here needs to be shown idk how
+		assertTrue(false);
+		
+	}
+	
+	@Test 
+	public void testSearchCatalogueItem1() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.searchCatalogue.doClick();
+		//Uh oh I don't know how buttons are set up in the catalogue
+		assertTrue(false);
+		
+	}
+	
+	@Test
+	public void testCashCannotPayForEmpty() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getCashButton();
+		assertTrue(session.getState() == SessionState.IN_SESSION);
+
+	}
+	
+	@Test
+	public void testCardCannotPayForEmpty() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getCardButton();
+		assertTrue(session.getState() == SessionState.IN_SESSION);
+	}
+	
+	@Test 
+	public void testMembershipButton() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getMembershipButton().doClick();
+		assertTrue(softwareGUI.paymentScreen.getMembershipPad().isVisible());
+	}
+	
+	
 }

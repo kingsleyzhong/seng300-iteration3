@@ -384,6 +384,10 @@ public class MembershipNumPad {
 	public PlainButton getDone() {
 		return done;
 	}
+
+	public boolean isVisible() {
+		return frame.isVisible();
+	}
 	
 	
 }

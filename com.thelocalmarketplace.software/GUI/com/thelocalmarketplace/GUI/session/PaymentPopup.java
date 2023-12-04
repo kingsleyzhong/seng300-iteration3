@@ -190,7 +190,12 @@ public class PaymentPopup {
 		return cardButton;
 	}
 	
-	public JButton getCancelButton() {
+	public JButton getMembershipButton() {
 		return membershipButton;
+	}
+	
+	public MembershipNumPad getMembershipPad() {
+		return membershipPad;
+		
 	}
 }
