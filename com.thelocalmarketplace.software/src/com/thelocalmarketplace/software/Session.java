@@ -15,6 +15,7 @@ import com.thelocalmarketplace.software.exceptions.CartEmptyException;
 import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.funds.FundsListener;
+import com.thelocalmarketplace.software.items.BagDispenserController;
 import com.thelocalmarketplace.software.items.ItemListener;
 import com.thelocalmarketplace.software.items.ItemManager;
 import com.thelocalmarketplace.software.membership.Membership;
@@ -79,6 +80,7 @@ public class Session {
 	private boolean requestApproved = false;
 	private boolean itemAdded = false;
 	private boolean itemRemoved = false;
+	private BagDispenserController bagDispenser;
 
 	private class ItemManagerListener implements ItemListener {
 		private Session outerSession;
@@ -302,7 +304,7 @@ public class Session {
 	 *                       The software for managing adding and removing items
 	 */
 	public void setup(ItemManager manager, Funds funds, Weight weight, Receipt receiptPrinter, Membership membership,
-			AbstractSelfCheckoutStation scs) {
+			AbstractSelfCheckoutStation scs, BagDispenserController bagdispenser) {
 		this.manager = manager;
 		this.funds = funds;
 		this.weight = weight;
@@ -317,6 +319,7 @@ public class Session {
 			Session.this.hasMembership = true;
 		});
 		this.scs = scs;
+		this.bagDispenser = bagdispenser;
 	}
 
 	/**
@@ -517,11 +520,10 @@ public class Session {
 	 * 
 	 * 
 	 */
-	public void purchasebags(int num) {
+	public void purchaseBags(int num) {
 		if (sessionState == SessionState.IN_SESSION) {
-			// signal item manager somehow		
-			// enter the addBags() state
-			addBags();
+				bagDispenser.dispenseBag(num);
+				
 		}	
 	}
 	
