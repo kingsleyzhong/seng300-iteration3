@@ -42,7 +42,7 @@ import javax.swing.Timer;
 
 public class SoftwareGUI{
 	public static JFrame frame;
-	public JFrame catalogue;
+	public SearchCatalogue catalogue;
 	public JPanel mainPane;
 	public JPanel startPane;
 	public JPanel endPane;

@@ -5,6 +5,7 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
@@ -27,6 +28,7 @@ public class SearchCatalogue extends JFrame{
 	private Map<Product, Integer> inventory = ProductDatabases.INVENTORY;
 	Session session;
 	private JFrame frame = this;
+	private HashMap<Product, ProductPanel>  hashMapForButtons;
 	
 	public SearchCatalogue(Session session) {
 		this.session = session;
@@ -61,9 +63,16 @@ public class SearchCatalogue extends JFrame{
 		productPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 		productPanel.setBackground(Colors.color1);
 		
+		hashMapForButtons = new HashMap<>();
+
+		
 		inventory.forEach((key, value) -> {
 			productPanel.add(new ProductPanel(key, session));
+			hashMapForButtons.put(key, new ProductPanel(key, session));
+
 		});
+		
+		
 		
 		JScrollPane scroll = new JScrollPane(productPanel);
 		scroll.setMaximumSize(screenSize);
@@ -78,4 +87,10 @@ public class SearchCatalogue extends JFrame{
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setAlwaysOnTop(true);
 	}
+	
+
+	public HashMap<Product, ProductPanel> getHashMapForButtons() {
+		return hashMapForButtons;
+	}
+	
 }
