@@ -87,7 +87,7 @@ public class AttendantGUI {
 			}		
 		});
 		JButton softwareButton = new PlainButton("Software GUI", Colors.color5);
-		hardwareButton.addActionListener(new ActionListener() {
+		softwareButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				SoftwareGUI.unhide();
@@ -101,7 +101,7 @@ public class AttendantGUI {
 		asScreen.getFrame().getContentPane().add(orangePanel, BorderLayout.NORTH);
 		
 		populateSessions();
-		asScreen.setVisible(true);
+		asScreen.setVisible(false);
 	}
 	
 	public void populateSessions() {

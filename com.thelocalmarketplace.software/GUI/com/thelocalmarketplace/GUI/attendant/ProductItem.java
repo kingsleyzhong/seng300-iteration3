@@ -20,6 +20,7 @@ import javax.swing.JPanel;
 
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
+import com.thelocalmarketplace.GUI.session.SoftwareGUI;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
@@ -112,6 +113,8 @@ public class ProductItem extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				AttendantCatalogue.remove();
+				SoftwareGUI.unhide();
 				attendant.addSearchedItem(productDescription, session);
 			}
 			

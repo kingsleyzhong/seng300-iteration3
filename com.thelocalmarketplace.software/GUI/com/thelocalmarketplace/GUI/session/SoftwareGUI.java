@@ -105,7 +105,12 @@ public class SoftwareGUI{
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setVisible(true);
 		
-		displayStart();
+		if(session.getState() == SessionState.DISABLED) {
+			displayDisabled();
+		}
+		else {
+			displayStart();
+		}
 	}
 
 	public JPanel start() {
@@ -221,7 +226,7 @@ public class SoftwareGUI{
 			}		
 		});
 		JButton attendantButton = new PlainButton("Attendant GUI", Colors.color5);
-		hardwareButton.addActionListener(new ActionListener() {
+		attendantButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				AttendantGUI.unhide();
@@ -232,6 +237,7 @@ public class SoftwareGUI{
 		oLeft.setBackground(Colors.color5);
 		oLeft.setLayout(new FlowLayout());
 		oLeft.add(hardwareButton);
+		oLeft.add(attendantButton);
 		oLeft.setPreferredSize(new Dimension(width/3, height/13));
 		
 		JPanel oRight = new JPanel();
@@ -438,6 +444,31 @@ public class SoftwareGUI{
 		frame.getContentPane().removeAll();
 		endPane = end();
 		frame.getContentPane().add(endPane);
+		frame.getContentPane().revalidate();
+		frame.getContentPane().repaint();
+		frame.setVisible(true);
+	}
+	
+	public void displayDisabled() {
+		frame.getContentPane().removeAll();
+		JLabel disabled = new JLabel("THIS STATION IS DISABLED!");
+		disabled.setBackground(Colors.color1);
+		disabled.setForeground(Colors.color5);
+		disabled.setAlignmentX(JLabel.CENTER);
+		disabled.setFont(new Font("Dialog", Font.BOLD, 60));
+		disabled.setPreferredSize(new Dimension(width, height/2));
+		JButton hardware = new PlainButton("Hardware GUI", Colors.color1);
+		hardware.setForeground(Colors.color3);
+		hardware.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				HardwareGUI.setVisibility(true);
+			}
+			
+		});
+		frame.getContentPane().add(disabled, BorderLayout.NORTH);
+		frame.getContentPane().add(hardware, BorderLayout.CENTER);
 		frame.getContentPane().revalidate();
 		frame.getContentPane().repaint();
 		frame.setVisible(true);
@@ -669,16 +700,25 @@ public class SoftwareGUI{
 
 		@Override
 		public void sessionStateChanged() {
-			
-			if (session.getState() == SessionState.PAY_BY_CASH) {
+			SessionState state = session.getState();
+			System.out.println(state);
+			if (state == SessionState.PAY_BY_CASH) {
 				paymentScreen.paymentTypeLabel.setText("Payment Selected: Cash");
 			}
 			
-			if (session.getState() == SessionState.PAY_BY_CARD) {
+			else if (state == SessionState.PAY_BY_CARD) {
 				paymentScreen.paymentTypeLabel.setText("Payment Selected: Card");
 			}
 
+			else if (state == SessionState.DISABLED) {
+				displayDisabled();
+			}
 			
+			else if(state == SessionState.PRE_SESSION) {
+				if(session.getPrevState() == SessionState.DISABLED) {
+					displayStart();
+				}
+			}
 		}
 	}
 }

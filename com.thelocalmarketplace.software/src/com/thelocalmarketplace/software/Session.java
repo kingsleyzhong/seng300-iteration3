@@ -254,14 +254,14 @@ public class Session {
 
 		@Override
 		public void notifiyPaperRefilled() {
-			if(sessionState != SessionState.PRE_SESSION)
-			resume();
+			if(sessionState != SessionState.PRE_SESSION && sessionState != SessionState.DISABLED)
+				resume();
 		}
 
 		@Override
 		public void notifiyInkRefilled() {
-			if(sessionState != SessionState.PRE_SESSION)
-			resume();
+			if(sessionState != SessionState.PRE_SESSION && sessionState != SessionState.DISABLED)
+				resume();
 		}
 
 		@Override
@@ -415,6 +415,7 @@ public class Session {
 	public void enable() {
 		// sets the session's state to PRE_SESSION
 		if (this.sessionState == SessionState.DISABLED) {
+			prevState = SessionState.DISABLED;
 			this.sessionState = SessionState.PRE_SESSION;
 			stateChanged();
 			disableSelf = false;
@@ -571,7 +572,6 @@ public class Session {
 	 */
 	public void notifyAttendant(Requests request) {
 		for (SessionListener l : listeners) {
-			l.getRequest(this, request);
 		}
 	}
 	

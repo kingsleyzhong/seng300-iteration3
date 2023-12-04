@@ -33,9 +33,10 @@ public class AttendantCatalogue extends JFrame {
 	private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	private Map<String, Product> inventory;
 	Session session;
-	private JFrame frame = this;
+	private static JFrame frame;
 	
 	public AttendantCatalogue(Session session, Attendant attendant) {
+		frame = this;
 		inventory = attendant.getTextSearchController().getSearchResults();
 		this.session = session;
 		this.setTitle("Search Catalog");
@@ -87,5 +88,9 @@ public class AttendantCatalogue extends JFrame {
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setVisible(true);
 		setAlwaysOnTop(true);
+	}
+	
+	public static void remove() {
+		frame.dispose();
 	}
 }
