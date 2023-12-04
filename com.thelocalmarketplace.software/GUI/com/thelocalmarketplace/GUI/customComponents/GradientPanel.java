@@ -8,6 +8,10 @@ import java.awt.RenderingHints;
 
 import javax.swing.JPanel;
 
+/**
+ * A panel that can be colored as a gradient.
+ */
+
 public class GradientPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
