@@ -1,6 +1,5 @@
 package com.thelocalmarketplace.software;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.jjjwelectronics.scanner.Barcode;
@@ -28,9 +27,9 @@ import com.thelocalmarketplace.software.weight.Weight;
  * A facade for the logic, supporting its installation on a self checkout
  * station.
  * Creates and associates Attendants and Sessions.
- * 
- * Allows for a database to be constructed
- * 
+ *
+ * Allows for a product database to be constructed
+ *
  * Project Iteration 3 Group 1
  *
  * Derek Atabayev : 30177060
@@ -61,18 +60,20 @@ public class SelfCheckoutStationLogic {
 	private static Attendant attendant;
 	private Session session;
 
+	/**
+	 * Installs an instance of Attendant onto an AttendantStation
+	 * @param as
+	 * 				an instance of AttendantStation hardware
+	 */
 	public static void installAttendantStation(AttendantStation as) {
 		attendant = new Attendant(as);
 	}
 
 	/**
-	 * Installs an instance of the logic on the selfCheckoutStation and the session
-	 * run on the station
-	 * 
+	 * Installs an instance of the Session logic on the selfCheckoutStation. 
+	 *
 	 * @param scs
 	 *                The self-checkout station that the logic shall be installed
-	 * @param session
-	 *                The session that the logic shall be installed on
 	 * @return
 	 *         returns an instance of the SelfCheckoutStationLogic on a
 	 *         SelfChekoutStation and Session
@@ -83,40 +84,38 @@ public class SelfCheckoutStationLogic {
 
 	/**
 	 * Constructors for the instance of logic
-	 * 
+	 *
 	 * @param scs
 	 *                The self-checkout station that the logic is installed on
-	 * @param session
-	 *                The session that the logic shall be installed on
 	 */
 	private SelfCheckoutStationLogic(AbstractSelfCheckoutStation scs) {
 		// creates a new Session
 		session = new Session();
 
 		// Registers the attendant with the session
-		attendant.registerOn(session);
+		// issue predictor??
+		attendant.registerOn(session, scs);
 
-		// create Funds, Weight, Receipt, and ItemManger classes to associate w/ Session
+		// create Funds, Weight, Receipt, Membership, and ItemManger classes to associate w/ Session
 		Funds funds = new Funds(scs);
 		new PayByCash(scs.getCoinValidator(), scs.getBanknoteValidator(), funds);
 		new PayByCard(scs.getCardReader(), funds);
 		Weight weight = new Weight(scs.getBaggingArea());
-		Receipt receiptPrinter = new Receipt(scs.getPrinter());
+		Receipt receipt = new Receipt(scs.getPrinter());
 		ItemManager itemManager = new ItemManager();
 		Membership membership = new Membership(scs.getCardReader());
 		// Will also need the touch screen/ keyboard for GUI interaction
 		BagDispenserController bagdispenser = new BagDispenserController(scs.getReusableBagDispenser(), itemManager);
 		session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagdispenser );
 
+		// register scanner and handheld scanner with the item manager
 		new ItemAddedRule(scs.getMainScanner(), scs.getHandheldScanner(), itemManager);
-
-		// Register IssuePredictor with Session
-		IssuePredictor predictor = new IssuePredictor(session, scs);
-		// tell the Attendant about the Predictor
-		attendant.addIssuePrediction(predictor);
-
 		// register scanning area scale with the PLU Item manager
 		new PLUItemAddedRule(scs.getScanningArea(), itemManager);
+		
+		// Attendant will create an IssuePredictor to go with the provided session
+		attendant.addIssuePrediction(session);
+
 	}
 
 	public static Attendant getAttendant() {
@@ -129,7 +128,7 @@ public class SelfCheckoutStationLogic {
 
 	/**
 	 * populates the database with a barcode and barcoded product into the inventory
-	 * 
+	 *
 	 * @param barcode
 	 * @param product
 	 */

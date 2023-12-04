@@ -385,7 +385,7 @@ public class PrintReceiptTest extends AbstractSessionTest {
         }
 
         @Override
-        public void notifiyReceiptPrinted() {
+        public void notifiyReceiptPrinted(int linesPrinted, int charsPrinted) {
             success = true;
         }
     }

@@ -1,5 +1,6 @@
-package com.thelocalmarketplace.software.receipt;
-/*
+package com.thelocalmarketplace.software.attendant;
+/**
+ * Interface for an attendant listener class
  * 
  * Project Iteration 3 Group 1
  *
@@ -23,32 +24,18 @@ package com.thelocalmarketplace.software.receipt;
  * Thi My Tuyen Tran 		: 30193980 
  * Aoi Ueki 				: 30179305 
  * Ethan Woo 				: 30172855 
- * Kingsley Zhong 			: 30197260 
+ * Kingsley Zhong 			: 30197260
  */
-public interface ReceiptListener {
-
-	/**
-	 * Signals an event that the printer is out of paper
-	 */
-	void notifiyOutOfPaper();
+public interface AttendantListener {
 	
-	/**
-	 * Signals an event that the printer is out of ink
-	 */
-	void notifiyOutOfInk();
+	public void notifyOverrideWeightDiscrepancy();
 	
-	/**
-	 * Signals an event that the printer paper has been refilled
-	 */
-	void notifiyPaperRefilled();
+	public void notifyOkayBulkyItem();
 	
-	/**
-	 * Signals an event that the ink has been refilled
-	 */
-	void notifiyInkRefilled();
+	public void notifyOkayHeavyBags();
 	
-	/**
-	 * Signals that the receipt was successfully printed 
-	 */
-	void notifiyReceiptPrinted(int linesPrinted, int charsPrinted);
+	public void notifyForceEndSession();
+	
+	public void notifyRequestResolved();
+	
 }

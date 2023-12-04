@@ -59,7 +59,6 @@ public class AddedProducts extends JPanel {
 				current = panels.get(i);
 			}
 		}
-		
 		if(current == null || !(product instanceof BarcodedProduct)) {
 			CartProduct newPanel = new CartProduct(product, session, mass);
 			centralPanel.add(newPanel);

@@ -8,8 +8,9 @@ import com.jjjwelectronics.Mass;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
-import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.Product;
+import com.thelocalmarketplace.software.attendant.AttendantListener;
+import com.thelocalmarketplace.software.attendant.HardwareListener;
 import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
 import com.thelocalmarketplace.software.exceptions.InvalidActionException;
@@ -19,7 +20,6 @@ import com.thelocalmarketplace.software.items.BagDispenserController;
 import com.thelocalmarketplace.software.items.ItemListener;
 import com.thelocalmarketplace.software.items.ItemManager;
 import com.thelocalmarketplace.software.membership.Membership;
-import com.thelocalmarketplace.software.membership.MembershipListener;
 import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.receipt.ReceiptListener;
 import com.thelocalmarketplace.software.weight.Weight;
@@ -65,7 +65,8 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
  *
  */
 public class Session {
-	public ArrayList<SessionListener> listeners = new ArrayList<>();
+	private ArrayList<SessionListener> listeners = new ArrayList<>();
+	private ArrayList<HardwareListener> hardwareListeners = new ArrayList<>();
 	private AbstractSelfCheckoutStation scs;
 	protected SessionState sessionState;
 	private SessionState prevState;
@@ -73,7 +74,7 @@ public class Session {
 	private Funds funds;
 	private Weight weight;
 	private ItemManager manager;
-	private Receipt receiptPrinter;
+	private Receipt receipt;
 	private Membership membership;
 	private String membershipNumber;
 	private boolean hasMembership = false;
@@ -212,23 +213,22 @@ public class Session {
 
 		@Override
 		public void notifiyPaperRefilled() {
-			resume();
 		}
 
 		@Override
 		public void notifiyInkRefilled() {
-			resume();
 		}
 
 		@Override
-		public void notifiyReceiptPrinted() {
+		public void notifiyReceiptPrinted(int linesPrinted, int charsPrinted) {
 			// Should notifyPaid() not wait until receipt is successfully printed to change
 			// to PRE_SESSION?
-			//end();
+			end();
+			notifySessionEnd();
 		}
 
 	}
-
+	
 	/**
 	 * Constructor for the session method. Requires to be installed on self-checkout
 	 * system
@@ -267,8 +267,8 @@ public class Session {
 		this.weight.register(new WeightDiscrepancyListener());
 		this.funds.register(new PayListener(this));
 		this.manager.register(new ItemManagerListener(this));
-		this.receiptPrinter = receiptPrinter;
-		this.receiptPrinter.register(new PrinterListener());
+		this.receipt = receiptPrinter;
+		this.receipt.register(new PrinterListener());
 		this.membership = membership;
 		membership.register((membershipNumber) -> {
 			Session.this.membershipNumber = membershipNumber;
@@ -315,11 +315,15 @@ public class Session {
 		sessionState = SessionState.BLOCKED;
 		manager.setAddItems(false);
 	}
-
+	
+	/**
+	 * Ends the current session, returning state to PRE_SESSION.
+	 * 
+	 */
 	private void end() {
 		prevState = sessionState;
 		sessionState = SessionState.PRE_SESSION;
-		receiptPrinter.printReceipt(getItems());
+		receipt.printReceipt(getItems());
 		
 		for(SessionListener l:listeners) {
 			l.sessionEnded(this);
@@ -347,7 +351,7 @@ public class Session {
 	 *
 	 * @throws InvalidActionException
 	 */
-	public void enteringMembership() {
+	public void enterMembership() {
 		if (sessionState == SessionState.IN_SESSION) {
 			membership.setAddingItems(true);
 		} else {
@@ -458,9 +462,9 @@ public class Session {
 		}	
 	}
 	
-	// Move to receiptPrinter class (possible rename of receiptPrinter to just reciept
+	// Move to receiptPrinter class 
 	public void printReceipt() {
-		receiptPrinter.printReceipt(manager.getItems());
+		receipt.printReceipt(manager.getItems());
 	}
 
 	/**
@@ -495,8 +499,27 @@ public class Session {
 	 */
 	public void attendantApprove(Requests request) {
 		requestApproved = true;
-		if (request == Requests.BULKY_ITEM) {
+		switch(request) {
+		case ADD_ITEM_SEARCH:
+			break;
+		case BAGS_TOO_HEAVY:
+			break;
+		case BULKY_ITEM:
 			addBulkyItem();
+			break;
+		case CANT_MAKE_CHANGE:
+			break;
+		case CANT_PRINT_RECEIPT:
+			break;
+		case HELP_REQUESTED:
+			break;
+		case NO_REQUEST:
+			break;
+		case WEIGHT_DISCREPANCY:
+			break;
+		default:
+			break;
+		
 		}
 	}
 
@@ -514,20 +537,41 @@ public class Session {
 			l.getRequest(this, request);
 		}
 	}
+	
+	private void notifySessionEnd() {
+		for (SessionListener l : listeners) {
+			l.sessionEnded(this);
+		}
+	}
 
+	/**
+	 * Called when hardware for the session is opened
+	 */
+	public void notifyOpenHardware() {
+		for (HardwareListener l: hardwareListeners) {
+			l.aStationHasBeenOpened();
+		}
+	}
+
+	/**
+	 * Called when hardware for the session is closed
+	 */
+	public void notifyCloseHardware() {
+		for (HardwareListener l : hardwareListeners) {
+			l.aStationHasBeenClosed();
+		}
+	}
+	
 	/**
 	 * User demonstrates they wish to ask the attendent for help
 	 */
 	public void askForHelp() {
 		notifyAttendant(Requests.HELP_REQUESTED);
 	}
-
 	/**
 	 * getter methods
 	 */
-	public boolean getRequestApproved() {
-		return this.requestApproved;
-	}
+
 
 	public HashMap<Product, BigInteger> getItems() {
 		return manager.getItems();
@@ -544,6 +588,11 @@ public class Session {
 	public Weight getWeight() {
 		return weight;
 	}
+	
+	public Receipt getReceipt() {
+		return receipt;
+		
+	}
 
 	public Membership getMembership() {
 		return membership;
@@ -559,6 +608,10 @@ public class Session {
 
 	public AbstractSelfCheckoutStation getStation() {
 		return scs;
+	}
+
+	public ItemManager getManager() {
+		return manager;
 	}
 
 	/**
@@ -587,6 +640,18 @@ public class Session {
 	
 	public ArrayList<SessionListener> getListeners(){
 		return listeners;
+	}
+
+	public final synchronized void registerHardwareListener(HardwareListener listener) {
+		if (listener == null)
+			throw new NullPointerSimulationException("listener");
+			hardwareListeners.add(listener);
+	}
+
+	public final synchronized void deRegisterHardwareListener(HardwareListener listener) {
+		if (listener == null)
+			throw new NullPointerSimulationException("listener");
+			hardwareListeners.remove(listener);
 	}
 
 }

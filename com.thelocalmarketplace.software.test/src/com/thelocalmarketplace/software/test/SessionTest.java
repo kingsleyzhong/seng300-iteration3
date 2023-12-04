@@ -257,5 +257,42 @@ public class SessionTest extends AbstractTest {
         assertTrue(session.getState() == SessionState.PRE_SESSION);
     	
     }
-       
+      
+    /*
+     *Sessions can only be disabled when in the pre-session state 
+     */
+    @Test
+    public void testDisableSession() {
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
+     	
+        session.disable();
+        assertTrue(session.getState()== SessionState.DISABLED);
+    }
+    @Test
+    public void testDisableSessionStarted() {
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
+     	session.start();
+        session.disable();
+        assertTrue(session.getState() != SessionState.DISABLED);
+    }
+    /*
+     * Sessions can only be enabled when they are disabled, no effect otherwise
+     */
+    @Test
+    public void testEnableSession() {
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
+        session.disable();
+        session.enable();
+        assertTrue(session.getState() != SessionState.DISABLED);
+    }
+    @Test
+    public void testEnableSessionNotDisabled() {
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
+        session.start();
+        SessionState preState = session.getState();
+        session.enable();
+        SessionState postState = session.getState();
+        assertTrue(preState == postState);
+    }
+   
 }
