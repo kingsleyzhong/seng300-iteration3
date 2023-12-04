@@ -335,9 +335,9 @@ public class Session {
 		manager.setAddItems(true);
 		hasMembership = false;
 		membershipNumber = null;
-		// manager.clear();
-		// funds.clear();
-		// weight.clear();
+		manager.clear();
+		funds.clear();
+		weight.clear();
 	}
 
 	/**

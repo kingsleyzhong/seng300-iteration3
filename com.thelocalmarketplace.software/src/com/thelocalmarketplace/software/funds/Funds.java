@@ -291,4 +291,8 @@ public class Funds {
 		listeners.add(listener);
 	}
 
+    public void clear() {
+		itemsPrice = new BigDecimal(0);
+		amountDue = new BigDecimal(0);
+    }
 }

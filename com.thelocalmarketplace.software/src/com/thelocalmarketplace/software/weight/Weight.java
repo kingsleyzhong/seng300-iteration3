@@ -65,7 +65,11 @@ public class Weight {
 		baggingArea.register(new innerListener());
 	}
 
-	public class innerListener implements ElectronicScaleListener {
+    public void clear() {
+		expectedWeight = Mass.ZERO;
+    }
+
+    public class innerListener implements ElectronicScaleListener {
 
 		@Override
 		public void aDeviceHasBeenEnabled(IDevice<? extends IDeviceListener> device) {
