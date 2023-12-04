@@ -58,6 +58,7 @@ public class SoftwareGUITest{
 	
 	@Before
 	public void setup() {
+		fuck
 		scs = new SelfCheckoutStationGold();
 		as = new AttendantStation();
 		PowerGrid.engageUninterruptiblePowerSource();
