@@ -596,7 +596,7 @@ public class SoftwareGUI{
 
 		@Override
 		public void discrepancy(Session session, String message) {
-			// TODO Auto-generated method stub
+			JOptionPane.showMessageDialog(null, message);
 			
 		}
 

@@ -132,7 +132,7 @@ public class Session {
 		@Override
 		public void notifyDiscrepancy(double difference) {
 			// <0 means that actual weight on scale is greater than expected
-			if (difference < 0) {
+			if (weight.getExpectedWeight().inGrams().doubleValue()<weight.getActualWeight().inGrams().doubleValue()) {
 				if(itemRemoved) {
 					for (SessionListener l : listeners) {
 						l.removeItemFromScaleDiscrepancy(outerSession);
@@ -140,7 +140,7 @@ public class Session {
 				}
 				else {
 					for (SessionListener l : listeners) {
-						l.discrepancy(outerSession, "There is too much weight on the scale!");;
+						l.discrepancy(outerSession, "There is too much weight on the scale. Please remove un-entered items.");;
 					}
 				}
 			}
@@ -152,7 +152,7 @@ public class Session {
 				}
 				else {
 					for (SessionListener l : listeners) {
-						l.discrepancy(outerSession, "There is not enough weight on the scale!");;
+						l.discrepancy(outerSession, "There is not enough weight on the scale. Put that item back.");;
 					}
 				}
 			}
