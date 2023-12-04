@@ -91,7 +91,7 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 
 
 		// Bronze Printer
-		bronzePrinter = new ReceiptPrinterBronze();
+		bronzePrinter = (ReceiptPrinterBronze) scs.getPrinter();
 		bronzePrinter.plugIn(powerGrid);
 		bronzePrinter.turnOn();
 
