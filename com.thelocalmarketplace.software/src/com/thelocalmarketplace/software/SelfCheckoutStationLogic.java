@@ -27,7 +27,7 @@ import com.thelocalmarketplace.software.weight.Weight;
  * station.
  * Creates and associates Attendants and Sessions.
  *
- * Allows for a database to be constructed
+ * Allows for a product database to be constructed
  *
  * Project Iteration 3 Group 1
  *
@@ -60,18 +60,20 @@ public class SelfCheckoutStationLogic {
 	private Session session;
 	private IssuePredictor predictor;
 
+	/**
+	 * Installs an instance of Attendant onto an AttendantStation
+	 * @param as
+	 * 				an instance of AttendantStation hardware
+	 */
 	public static void installAttendantStation(AttendantStation as) {
 		attendant = new Attendant(as);
 	}
 
 	/**
-	 * Installs an instance of the logic on the selfCheckoutStation and the session
-	 * run on the station
+	 * Installs an instance of the Session logic on the selfCheckoutStation. 
 	 *
 	 * @param scs
 	 *                The self-checkout station that the logic shall be installed
-	 * @param session
-	 *                The session that the logic shall be installed on
 	 * @return
 	 *         returns an instance of the SelfCheckoutStationLogic on a
 	 *         SelfChekoutStation and Session
@@ -85,8 +87,6 @@ public class SelfCheckoutStationLogic {
 	 *
 	 * @param scs
 	 *                The self-checkout station that the logic is installed on
-	 * @param session
-	 *                The session that the logic shall be installed on
 	 */
 	private SelfCheckoutStationLogic(AbstractSelfCheckoutStation scs) {
 		// creates a new Session
@@ -94,29 +94,27 @@ public class SelfCheckoutStationLogic {
 
 		// Registers the attendant with the session
 		// issue predictor??
-		attendant.registerOn(session);
-		//System.out.println("SESSIONS: "+attendant.getSessions().size());
+		attendant.registerOn(session, scs);
 
-		// create Funds, Weight, Receipt, and ItemManger classes to associate w/ Session
+		// create Funds, Weight, Receipt, Membership, and ItemManger classes to associate w/ Session
 		Funds funds = new Funds(scs);
 		new PayByCash(scs.getCoinValidator(), scs.getBanknoteValidator(), funds);
 		new PayByCard(scs.getCardReader(), funds);
 		Weight weight = new Weight(scs.getBaggingArea());
-		Receipt receiptPrinter = new Receipt(scs.getPrinter());
+		Receipt receipt = new Receipt(scs.getPrinter());
 		ItemManager itemManager = new ItemManager();
 		Membership membership = new Membership(scs.getCardReader());
-		// Will also need the touch screen/ keyboard for GUI interaction
-		session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
 
+		session.setup(itemManager, funds, weight, receipt, membership, scs);
+
+		// register scanner and handheld scanner with the item manager
 		new ItemAddedRule(scs.getMainScanner(), scs.getHandheldScanner(), itemManager);
-
-		// Register IssuePredictor with Session
-		this.predictor  = new IssuePredictor(session, scs);
-		// tell the Attendant about the Predictor
-		attendant.addIssuePrediction(predictor);
-
 		// register scanning area scale with the PLU Item manager
 		new PLUItemAddedRule(scs.getScanningArea(), itemManager);
+		
+		// Attendant will create an IssuePredictor to go with the provided session
+		attendant.addIssuePrediction(session);
+
 	}
 
 	public static Attendant getAttendant() {
