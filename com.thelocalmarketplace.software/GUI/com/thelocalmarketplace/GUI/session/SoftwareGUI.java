@@ -558,7 +558,7 @@ public class SoftwareGUI{
 			catalogue.setVisible(false);
 			inDiscrepancy = true;
 			Object[] options = {"OK", "Do not bag", "Cancel"};
-			int result = JOptionPane.showOptionDialog(null, "Please add " + lastProductDescription + " to the bagging area.", 
+			int result = JOptionPane.showOptionDialog(null, "Please make sure to add " + lastProductDescription + " to the bagging area.", 
 					"Add to scale", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 			if(result == JOptionPane.CANCEL_OPTION) {
 				Product lastProduct = session.getManager().getLastProduct();
@@ -591,7 +591,7 @@ public class SoftwareGUI{
 			catalogue.setVisible(false);
 			paymentScreen.frame.setVisible(false);
 			catalogue.setVisible(false);
-			JOptionPane.showMessageDialog(null, "Please remove " + lastProductDescription + " from the scale");
+			JOptionPane.showMessageDialog(null, "Please make sure to remove " + lastProductDescription + " from the scale");
 		}
 
 		@Override
