@@ -6,7 +6,6 @@ import java.util.*;
 
 import org.junit.*;
 import com.jjjwelectronics.*;
-import com.jjjwelectronics.printer.IReceiptPrinter;
 import com.jjjwelectronics.printer.ReceiptPrinterBronze;
 import com.jjjwelectronics.printer.ReceiptPrinterGold;
 import com.jjjwelectronics.printer.ReceiptPrinterSilver;
@@ -14,7 +13,6 @@ import com.tdc.CashOverloadException;
 import com.tdc.banknote.Banknote;
 import com.tdc.banknote.IBanknoteDispenser;
 import com.tdc.coin.Coin;
-import com.tdc.coin.CoinDispenserBronze;
 import com.tdc.coin.ICoinDispenser;
 import com.thelocalmarketplace.hardware.*;
 import com.thelocalmarketplace.software.*;
@@ -61,12 +59,10 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 	
 	private IssuePredictor issuePredictor;
 	private PowerGrid powerGrid;
-	private IReceiptPrinter printer;
 	private ReceiptPrinterSilver silverPrinter;
 	private ReceiptPrinterBronze bronzePrinter;
 	private ReceiptPrinterGold goldPrinter;
 	private MaintenanceManager mm;
-	private CoinDispenserBronze cdb;
 	private Coin coin;
 	private Banknote banknote;
 	private Attendant as;
