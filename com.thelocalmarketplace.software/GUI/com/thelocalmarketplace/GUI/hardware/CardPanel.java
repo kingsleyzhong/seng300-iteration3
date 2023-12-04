@@ -231,7 +231,7 @@ public class CardPanel extends JPanel {
 		ci1.addCardData(debitCard.number, debitCard.cardholder, exp, debitCard.cvv, 10000);
 		ci2.addCardData(creditCard.number, creditCard.cardholder, exp, creditCard.cvv, 7500);
 		ci3.addCardData("0", invalidCard.cardholder, exp, invalidCard.cvv, 1000);
-		ci4.addCardData(membershipCard.number, membershipCard.cardholder, exp, membershipCard.cvv, 2000);
+		//ci4.addCardData(membershipCard.number, membershipCard.cardholder, exp, membershipCard.cvv, 2000);
 		
 		cardSelected = creditCard;
 	}
