@@ -87,10 +87,13 @@ public class IssuesPredictorTest extends AbstractSessionTest{
         
 		// Create power source
 		PowerGrid.engageUninterruptiblePowerSource();
-    	powerGrid = PowerGrid.instance();
-    	
-    	// Bronze Printer
-    	bronzePrinter = (ReceiptPrinterBronze) scs.getPrinter();
+		powerGrid = PowerGrid.instance();
+
+
+		// Bronze Printer
+		bronzePrinter = new ReceiptPrinterBronze();
+		bronzePrinter.plugIn(powerGrid);
+		bronzePrinter.turnOn();
 
     	// Silver Printer
     	silverPrinter = new ReceiptPrinterSilver();
@@ -114,6 +117,8 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 
 	@Test
 	public void testCheckLowInk() throws OverloadedDevice {
+		//session.setup(itemManager, funds, weight, receiptPrinter, null, scs, null);
+		scs.getCoinDispensers().values();
 		// Bronze
 		issuePredictor.checkLowInk(session, scs.getPrinter());
 		Assert.assertEquals(SessionState.DISABLED, session.getState());

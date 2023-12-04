@@ -51,13 +51,17 @@ public class ItemManager {
 	private HashMap<Product, Mass> PLUProductWeights = new HashMap<Product, Mass>();
 	
 	private PLUCodedProduct pluProduct;
-	private BarcodedProduct lastProduct;
+	private Product lastProduct;
 	private boolean addItems = false;
 	private boolean addPLUItemState = false;
 
 	public void setAddItems(boolean value) {
 		addItems = value;
 		addPLUItemState = false;
+	}
+	
+	public boolean getAddItems() {
+		return addItems;
 	}
 	
 	//Get PLU code from the GUI
@@ -79,6 +83,10 @@ public class ItemManager {
 	
 	public PLUCodedProduct getPluProduct() {
 		return pluProduct;
+	}
+	
+	public Product getLastProduct() {
+		return lastProduct;
 	}
 	
 	/**
@@ -116,7 +124,7 @@ public class ItemManager {
 				addedProducts.put(product, mass.inMicrograms());
 				PLUProductWeights.put(product,mass);
 			}
-			
+			lastProduct = product;
 			BigDecimal price = new BigDecimal(product.getPrice());
 			final int MICROGRAM_PER_KILOGRAM = 1_000_000_000;
 			BigDecimal weightInKilogram = BigDecimal.valueOf(mass.inMicrograms().doubleValue()/MICROGRAM_PER_KILOGRAM);
@@ -129,13 +137,54 @@ public class ItemManager {
 	
 
 	public void addBulkyItem() {
-		if (bulkyItems.containsKey(lastProduct)) {
-			bulkyItems.replace(lastProduct, bulkyItems.get(lastProduct) + 1);
+		if (bulkyItems.containsKey((BarcodedProduct)lastProduct)) {
+			bulkyItems.replace((BarcodedProduct)lastProduct, bulkyItems.get(lastProduct) + 1);
 		} else {
-			bulkyItems.put(lastProduct, 1);
+			bulkyItems.put((BarcodedProduct)lastProduct, 1);
 		}
 	}
 	
+	
+	/**
+	 * Update the hashmap of bought products, the expected weight, 
+	 * and the total cost of customer's purchase after a bag is dispensed
+	 * @param product - a reusable bag 
+	 */
+	public void addPurchasedBags(ReusableBagProduct product) {
+		if (addedProducts.containsKey(product)) {
+			addedProducts.replace(product, addedProducts.get(product).add(BigInteger.valueOf(1)));
+		} else {
+			addedProducts.put(product, BigInteger.valueOf(1));
+		}
+		double weight = product.getExpectedWeight();
+		long price = product.getPrice();
+		Mass mass = new Mass(weight);
+		BigDecimal itemPrice = new BigDecimal(price);
+		notifyItemAdded(product, mass, itemPrice);	
+	}
+	
+	/**
+	 * Removes a selected product from the hashMap of current session's products .
+	 * Updates the weight and price of the products.
+	 * @param product - reusable bag
+	 */
+	public void removeItem(ReusableBagProduct product) {
+		double weight = product.getExpectedWeight();
+		long price = product.getPrice(); 
+		Mass mass = new Mass(weight);
+		BigDecimal itemPrice = new BigDecimal(price);
+
+		
+		if (addedProducts.containsKey(product) && addedProducts.get(product).intValue() > 1) {
+			addedProducts.replace(product, addedProducts.get(product).subtract(BigInteger.valueOf(1)));
+		} else if (addedProducts.containsKey(product) && addedProducts.get(product).intValue() == 1) {
+			addedProducts.remove(product);
+		} else {
+			throw new ProductNotFoundException("Item not found");
+		}
+		
+		notifyItemRemoved(product, mass, itemPrice);
+	} 
 	/**
 	 * Removes a selected product from the hashMap of barcoded items.
 	 * Updates the weight and price of the products.
@@ -248,4 +297,7 @@ public class ItemManager {
 		return visualCatalogue;
 	}
 
+	public void clear() {
+		addedProducts = new HashMap<>();
+	}
 }

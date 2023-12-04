@@ -11,12 +11,7 @@ import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
-import com.thelocalmarketplace.software.exceptions.InvalidActionException;
-import com.thelocalmarketplace.software.exceptions.ProductNotFoundException;
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -150,12 +145,14 @@ public class TextSearchController {
 	 * It is generally activated upon pressing the enter key when the attendant station is in search mode
 	 * @param searchField
 	 */
-	private void textSearchProduct(String searchField) {
+	public void textSearchProduct(String searchField) {
 
 		Map<Barcode, BarcodedProduct> databaseBC = ProductDatabases.BARCODED_PRODUCT_DATABASE;
 		Map<PriceLookUpCode, PLUCodedProduct> databasePLU = ProductDatabases.PLU_PRODUCT_DATABASE;
 
 		Pattern regexPattern = Pattern.compile(searchField, Pattern.CASE_INSENSITIVE);
+		
+		searchResults.clear();
 
 		String itemQuery;
 		Matcher regexMatcher;

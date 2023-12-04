@@ -85,7 +85,7 @@ public class WeightTest extends AbstractTest {
 
 		weightListener = new TestWeightListener();
 		weight.register(weightListener);
-
+		weight.setInSession(true);
 	}
 
 	@Test
@@ -123,9 +123,11 @@ public class WeightTest extends AbstractTest {
 		Barcode barcode = new Barcode(new Numeral[] { Numeral.valueOf((byte) 1) });
 		Item item = new BarcodedItem(barcode, new Mass(150.0));
 		scs.getBaggingArea().addAnItem(item); // Simulate the scale reporting a new mass
-
-		assertTrue("Discrepancy should be notified.", weightListener.discrepancyNotified);
+		
+//		System.out.println(weight.getExpectedWeight() + " " + weight.getActualWeight());
+//		System.out.println(weight.isDiscrepancy());
 		assertTrue("Discrepancy flag should be true.", weight.isDiscrepancy());
+		assertTrue("Discrepancy should be notified.", weightListener.discrepancyNotified);
 	}
 
 	@Test

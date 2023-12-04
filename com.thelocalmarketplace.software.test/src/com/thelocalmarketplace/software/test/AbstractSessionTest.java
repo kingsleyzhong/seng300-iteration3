@@ -3,6 +3,7 @@ package com.thelocalmarketplace.software.test;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.funds.Funds;
+import com.thelocalmarketplace.software.items.BagDispenserController;
 import com.thelocalmarketplace.software.items.ItemManager;
 import com.thelocalmarketplace.software.membership.Membership;
 import com.thelocalmarketplace.software.receipt.Receipt;
@@ -52,6 +53,7 @@ abstract public class AbstractSessionTest extends AbstractTest {
 	protected Weight weight;
 	protected Receipt receiptPrinter;
 	protected Membership membership;
+	protected BagDispenserController bagDispenser;
 
 
 	
@@ -66,7 +68,7 @@ abstract public class AbstractSessionTest extends AbstractTest {
 		funds = new Funds(scs);
 		receiptPrinter = new Receipt(scs.getPrinter());
 		membership = new Membership(scs.getCardReader());
-
+		bagDispenser = new BagDispenserController(scs.getReusableBagDispenser(), itemManager);
 		session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
 	}
 

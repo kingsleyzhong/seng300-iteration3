@@ -167,8 +167,8 @@ public class PayByCash {
  */
 	private void updateCoin(BigDecimal value) {
 				
-		this.cashPaid = this.cashPaid.add(value);				
-		this.fund.updatePaidCash(cashPaid);
+		this.cashPaid = this.cashPaid.add(value);
+		this.fund.updatePaidCash(value);
 				
 	}
 	
@@ -178,7 +178,7 @@ public class PayByCash {
 	private void updateBankNote(BigDecimal denomination) {
 		
 		this.cashPaid = this.cashPaid.add(denomination);
-		this.fund.updatePaidCash(cashPaid);
+		this.fund.updatePaidCash(denomination);
 	
 	}
 

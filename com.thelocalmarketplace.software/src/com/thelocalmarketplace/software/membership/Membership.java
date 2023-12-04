@@ -7,6 +7,7 @@ import com.jjjwelectronics.IDeviceListener;
 import com.jjjwelectronics.card.Card.CardData;
 import com.jjjwelectronics.card.CardReaderListener;
 import com.jjjwelectronics.card.ICardReader;
+import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +62,10 @@ public class Membership {
     public void typeMembership(String memberCardNumber) {
     	if (addingItems && MembershipDatabase.MEMBERSHIP_DATABASE.containsKey(memberCardNumber))
     		notifyMembershipEntered(memberCardNumber);
+    	else {
+    		throw new InvalidActionException("Membership not in database");
+    	}
+    	//else {} Only needed if notifyMembershipNotFound() is something that is required in the listener
     }
     
     /** Checks to see if the provided card data has a card number contained in the membership database.

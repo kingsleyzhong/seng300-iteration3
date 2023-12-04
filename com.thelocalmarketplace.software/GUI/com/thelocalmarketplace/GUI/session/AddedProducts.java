@@ -2,6 +2,7 @@ package com.thelocalmarketplace.GUI.session;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -25,9 +26,7 @@ public class AddedProducts extends JPanel {
 	private JPanel centralPanel;
 	private Session session;
 	
-	private HashMap<ArrayList<Object>, CartProduct> productList = new HashMap<ArrayList<Object>, CartProduct>();
-	private ArrayList<ArrayList<Object>> products = new ArrayList<ArrayList<Object>>();
-	private ArrayList<CartProduct> panels = new ArrayList<CartProduct>();
+	private HashMap<Product, CartProduct> productList = new HashMap<Product, CartProduct>();
 
 	/**
 	 * Create the panel.
@@ -50,39 +49,34 @@ public class AddedProducts extends JPanel {
 	
 	public void addProduct(Product product, Mass mass) {
 		CartProduct current = null;
-		ArrayList<Object> temp = new ArrayList<Object>();
-		temp.add(product);
-		temp.add(mass);
 		
-		for(int i = 0; i<products.size(); i++) {
-			if(temp.equals(products.get(i))) {
-				current = panels.get(i);
-			}
+		if(productList.containsKey(product)) {
+			current = productList.get(product);
 		}
-		if(current == null || !(product instanceof BarcodedProduct)) {
+		
+		if(current == null) {
 			CartProduct newPanel = new CartProduct(product, session, mass);
 			centralPanel.add(newPanel);
 			centralPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 			centralPanel.repaint();
 			centralPanel.revalidate();
-			products.add(temp);
-			panels.add(newPanel);
+			productList.put(product, newPanel);
 		}
 		else {
-			current.addProduct();
+			if(product instanceof BarcodedProduct) {
+				current.addProduct();
+			}else {
+				BigInteger massinMicrograms = session.getItems().get(product);
+				current.updateMass((new Mass(massinMicrograms)).inGrams());
+			}
 		}
 	}
 
 	public void removeProduct(Product product, Mass mass) {
 		CartProduct current = null;
-		ArrayList<Object> temp = new ArrayList<Object>();
-		temp.add(product);
-		temp.add(mass);
 		
-		for(int i = 0; i<products.size(); i++) {
-			if(temp.equals(products.get(i))) {
-				current = panels.get(i);
-			}
+		if(productList.containsKey(product)) {
+			current = productList.get(product);
 		}
 		if(current == null) {
 			//Do nothing
@@ -93,50 +87,27 @@ public class AddedProducts extends JPanel {
 				centralPanel.remove(current);
 				centralPanel.repaint();
 				centralPanel.revalidate();
+				productList.remove(product);
 			}
 		}
 	}
 	
-	public ArrayList<ArrayList<Object>> getProducts() {
-		return products;
-	}
-	
-	public ArrayList<CartProduct> getPanels(){
-		return panels;
+	public HashMap<Product,CartProduct> getProducts() {
+		return productList;
 	}
 	
 	public boolean contains(Product product) {
-		for(int i = 0; i<products.size(); i++) {
-			if(product.equals(products.get(i).get(0))) {
-				return true;
-			}
-		}
-		return false;
+		return productList.containsKey(product);
 	}
 	
 	public JPanel getPanel(Product product) {
-		for(int i = 0; i<products.size(); i++) {
-			if(product.equals(products.get(i).get(0))) {
-				return panels.get(i);
-			}
-		}
-		return null;
-	}
-	
-	public JPanel getPanel(Product product, Mass mass) {
-		ArrayList<Object> temp = new ArrayList<Object>();
-		temp.add(product);
-		temp.add(mass);
-		
-		for(int i = 0; i<products.size(); i++) {
-			if(temp.equals(products.get(i))) {
-				return panels.get(i);
-			}
+		if(productList.containsKey(product)) {
+			return productList.get(product);
 		}
 		return null;
 	}
 	
 	public int amount() {
-		return panels.size();
+		return productList.size();
 	}
 }

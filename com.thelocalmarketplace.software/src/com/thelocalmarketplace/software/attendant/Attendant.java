@@ -1,10 +1,8 @@
 package com.thelocalmarketplace.software.attendant;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 import com.jjjwelectronics.DisabledDevice;
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.keyboard.USKeyboardQWERTY;
@@ -52,7 +50,6 @@ public class Attendant {
 	private HashMap<Session, Requests> sessions = new HashMap<>();
 	private HashMap<Session, IssuePredictor> predictors = new HashMap<>();
 	private HashMap<Session, AbstractSelfCheckoutStation> stations = new HashMap<>();
-	public ArrayList<AttendantListener> listeners = new ArrayList<>();
 	
 	/**
 	 * Creates an instance of class Attendant given an instance of hardware AttendantStation.
@@ -303,9 +300,8 @@ public class Attendant {
 				throw new ProductNotFoundException("Item not found");
 			}
 		} else {
-			System.out.println(description);
-			// Product not found in the visual catalogue
-			throw new ProductNotFoundException("Item not found");
+			// Session does not have this request 
+			//throw new ProductNotFoundException("Item not found");
 		}
 		sessions.put(session, Requests.NO_REQUEST); // Replace with a general request cancellation method?
 	}
@@ -443,23 +439,5 @@ public class Attendant {
 	 */
 	public TextSearchController getTextSearchController() {
 		return ts;
-	}
-
-	// register listeners
-	public final synchronized void register(AttendantListener listener) {
-		if (listener == null)
-			throw new NullPointerSimulationException("listener");
-		listeners.add(listener);
-	}
-
-	// de-register listeners
-	public final synchronized void deRegister(AttendantListener listener) {
-		if (listener == null)
-			throw new NullPointerSimulationException("listener");
-		listeners.remove(listener);
-	}
-
-	public ArrayList<AttendantListener> getListeners(){
-		return listeners;
 	}
 }
