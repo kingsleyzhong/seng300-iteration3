@@ -36,10 +36,13 @@ import com.jjjwelectronics.bag.ReusableBagDispenserListener;
  * Kingsley Zhong 			: 30197260 
  */
 public class BagDispenserController {
-	private AbstractReusableBagDispenser bagDispenser; // should this instead be IReusableBagDispenser?
+	private IReusableBagDispenser bagDispenser; // should this instead be IReusableBagDispenser?
+	private ItemManager manager;
+	private boolean outOfBags = false;
 
-	public BagDispenserController(AbstractReusableBagDispenser dispenser) {
+	public BagDispenserController(IReusableBagDispenser dispenser, ItemManager manager) {
 		this.bagDispenser = dispenser; 
+		this.manager = manager;
 		
 		// register InnerListener with the hardware
 		bagDispenser.register(new InnerListener());
@@ -47,6 +50,8 @@ public class BagDispenserController {
 	
 	
 	private class InnerListener implements ReusableBagDispenserListener{
+		private boolean dispensed;
+		
 
 		@Override
 		public void aDeviceHasBeenEnabled(IDevice<? extends IDeviceListener> device) {
@@ -70,17 +75,17 @@ public class BagDispenserController {
 
 		@Override
 		public void aBagHasBeenDispensedByTheDispenser() {
-			
+			manager.addPurchasedBags(ReusableBagProduct.getBag());
 		}
 
 		@Override
 		public void theDispenserIsOutOfBags() {
-			
+			outOfBags = true;
 		}
 
 		@Override
 		public void bagsHaveBeenLoadedIntoTheDispenser(int count) {
-			
+			outOfBags = false;
 		}
 	}
 	
@@ -88,14 +93,20 @@ public class BagDispenserController {
 	 * Signals the hardware (ReusableBagDispenser) to dispense a single (one, 1) bag. 
 	 * To dispense multiple bags, keep calling this.
 	 */
-	public void dispenseBag() {
+	public void dispenseBag(int num) {
 		// signals the hardware to dispense a single bag
-		try {
-			ReusableBag bag = bagDispenser.dispense();
-		} catch (EmptyDevice e) {
-			// inform the itemManager and Session that there are not enough bags... somehow
-			// theortically this should never happen if the bag dispenser notifies when its empty ahead of time
+		if (!outOfBags) {
+			for (int i = 0; i < num; i++) {
+				try {
+					if ( manager.getAddItems()) {
+						ReusableBag bag = bagDispenser.dispense();
+					}
+				} catch (EmptyDevice e) {
+					break;		
+				}	
+			}
 		}
+		
 		
 		// else: bag goes to the bagging area, update weight and stuff
 		

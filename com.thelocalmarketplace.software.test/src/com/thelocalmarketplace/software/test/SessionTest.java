@@ -27,6 +27,7 @@ import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
 import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 import com.thelocalmarketplace.software.funds.Funds;
+import com.thelocalmarketplace.software.items.BagDispenserController;
 import com.thelocalmarketplace.software.items.ItemManager;
 import com.thelocalmarketplace.software.membership.Membership;
 import com.thelocalmarketplace.software.receipt.Receipt;
@@ -93,6 +94,7 @@ public class SessionTest extends AbstractTest {
     private Weight weight;
     private ItemManager itemManager;
     private Membership membership;
+    private BagDispenserController bagDispenser;
 
     // Code added
     private Receipt receiptPrinter;
@@ -118,6 +120,8 @@ public class SessionTest extends AbstractTest {
         product2 = new BarcodedProduct(barcode2, "Sample Product 2", 15, 20.0);
         funds = new Funds(scs);
         itemManager = new ItemManager();
+        bagDispenser = new BagDispenserController(scs.getReusableBagDispenser(), itemManager);
+        
 
         IElectronicScale baggingArea = scs.getBaggingArea();
         weight = new Weight(baggingArea);
@@ -136,7 +140,7 @@ public class SessionTest extends AbstractTest {
 
     @Test
     public void testStartSession() {
-    	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
+    	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.start();
         assertEquals(session.getState(), SessionState.IN_SESSION);
         assertFalse(session.getState().inPay());
@@ -144,7 +148,7 @@ public class SessionTest extends AbstractTest {
 
     @Test
     public void testCancelSession() {
-    	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
+    	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.start();
         session.cancel();
         assertEquals(session.getState(), SessionState.PRE_SESSION);
@@ -153,21 +157,21 @@ public class SessionTest extends AbstractTest {
 
     @Test(expected = CartEmptyException.class)
     public void payEmpty_payByCash() {
-    	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
+    	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.start();
         session.payByCash();
     }
 
     @Test(expected = CartEmptyException.class)
     public void payEmpty_payByCard() throws CashOverloadException, NoCashAvailableException, DisabledException {
-    	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
+    	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.start();
         session.payByCard();
     }
 
     @Test
     public void testPaid() throws DisabledException, CashOverloadException {
-        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.start();
         itemManager.addItem(product);
         scs.plugIn(PowerGrid.instance());
@@ -213,7 +217,7 @@ public class SessionTest extends AbstractTest {
     
     @Test
     public void anItemHasBeenAddedListenerNotified() {
-        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.start();
      	SessionListenerStub stub = new SessionListenerStub();
         session.register(stub);
@@ -230,7 +234,7 @@ public class SessionTest extends AbstractTest {
     
     @Test
     public void anItemHasBeenRemovedListenerNotified() {
-        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.start();
      	SessionListenerStub stub = new SessionListenerStub();
         session.register(stub);
@@ -245,10 +249,9 @@ public class SessionTest extends AbstractTest {
         
     }
     
-    
     @Test
     public void cancelSessionInSession() {
-        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.start();
         session.cancel();
         assertTrue(session.getState() == SessionState.PRE_SESSION);
@@ -260,14 +263,14 @@ public class SessionTest extends AbstractTest {
      */
     @Test
     public void testDisableSession() {
-        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
      	
         session.disable();
         assertTrue(session.getState()== SessionState.DISABLED);
     }
     @Test
     public void testDisableSessionStarted() {
-        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
      	session.start();
         session.disable();
         assertTrue(session.getState() != SessionState.DISABLED);
@@ -277,14 +280,14 @@ public class SessionTest extends AbstractTest {
      */
     @Test
     public void testEnableSession() {
-        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.disable();
         session.enable();
         assertTrue(session.getState() != SessionState.DISABLED);
     }
     @Test
     public void testEnableSessionNotDisabled() {
-        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs);
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.start();
         SessionState preState = session.getState();
         session.enable();
