@@ -1,6 +1,8 @@
 package com.thelocalmarketplace.software.test;
 
 import static org.junit.Assert.*;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,9 +21,13 @@ import com.tdc.coin.Coin;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.AttendantStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.hardware.PLUCodedProduct;
+import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationSilver;
+import com.thelocalmarketplace.hardware.external.ProductDatabases;
+import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
@@ -132,6 +138,12 @@ public class SessionTest extends AbstractTest {
         membership = new Membership(scs.getCardReader());
     }
 
+    @After
+    public void clearDatabase() {
+    	ProductDatabases.BARCODED_PRODUCT_DATABASE.clear();
+    	ProductDatabases.PLU_PRODUCT_DATABASE.clear();
+    }
+    
     @Test
     public void testSessionInitialization() {
         assertEquals(session.getState(), SessionState.PRE_SESSION);
@@ -247,6 +259,24 @@ public class SessionTest extends AbstractTest {
         assertEquals(stub.products.get(product), null);
         assertTrue(stub.currentExpectedPrice.compareTo(new BigDecimal(0)) == 0);
         
+    }
+    
+    @Test
+    public void aPLUCodeWasEnteredListenerNotified() {
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+        session.start();
+     	SessionListenerStub stub = new SessionListenerStub();
+        session.register(stub);
+        
+        PriceLookUpCode pluCode = new PriceLookUpCode("1234");
+        PLUCodedProduct pluProduct = new PLUCodedProduct(pluCode, "bread", 500);
+        SelfCheckoutStationLogic.populateDatabase(pluCode, pluProduct, num);
+        itemManager.addItem(pluCode);
+        
+        assertTrue(stub.pluProduct.getPLUCode().equals(pluCode));
+        
+        // Reset
+        session.deRegister(stub);
     }
     
     @Test

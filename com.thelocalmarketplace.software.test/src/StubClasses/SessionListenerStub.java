@@ -16,7 +16,7 @@ public class SessionListenerStub implements SessionListener{
 	public HashMap<Product, BigInteger> products = new HashMap<Product, BigInteger>();
 	public BigDecimal currentExpectedPrice;
 	public boolean discrepancy;
-	PLUCodedProduct pluProduct;
+	public PLUCodedProduct pluProduct;
 	
 	@Override
 	public void getRequest(Session session, Requests request) {
