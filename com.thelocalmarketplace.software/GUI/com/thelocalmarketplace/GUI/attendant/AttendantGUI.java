@@ -8,11 +8,13 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import javax.swing.JPanel;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 import com.jjjwelectronics.screen.ITouchScreen;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
@@ -23,11 +25,12 @@ import com.thelocalmarketplace.hardware.ISelfCheckoutStation;
 import com.thelocalmarketplace.software.attendant.Attendant;
 import com.thelocalmarketplace.software.attendant.IssuePredictorListener;
 import com.thelocalmarketplace.software.attendant.Issues;
+import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.attendant.TextSearchController;
 
 public class AttendantGUI {
 	Attendant attendant;
-	List<Session> sessions;
+	HashMap<Session, Requests> sessions;
 	List<JPanel> stationPanels;
 	ITouchScreen asScreen;
 	TextSearchController textSearch;
@@ -67,11 +70,10 @@ public class AttendantGUI {
 	public void populateSessions() {
 		int val = 0;
 		if (sessions.size() != 0) {
-			while(val < sessions.size()) {
-				JPanel panel = new StationPanel(sessions.get(val), attendant);
+			for(Session session : sessions.keySet()) {
+				JPanel panel = new StationPanel(session, attendant);
 				panel.setPreferredSize(new Dimension(width/6, width/6));
 				asScreen.getFrame().getContentPane().add(panel, BorderLayout.SOUTH);
-				val++;
 			}
 		} else {
 			JPanel panel = new StationPanel(null, attendant);

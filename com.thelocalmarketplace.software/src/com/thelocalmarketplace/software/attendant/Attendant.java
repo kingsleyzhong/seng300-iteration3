@@ -236,7 +236,7 @@ public class Attendant {
 	public AttendantStation getStation() {
 		return as;
 	}
-	public ArrayList<Session> getSessions(){
+	public HashMap<Session, Requests> getSessions(){
 		return sessions;
 	}
 
