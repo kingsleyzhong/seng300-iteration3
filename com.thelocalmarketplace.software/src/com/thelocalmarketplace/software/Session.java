@@ -220,7 +220,7 @@ public class Session {
 		}
 
 		@Override
-		public void notifiyReceiptPrinted() {
+		public void notifiyReceiptPrinted(int linesPrinted, int charsPrinted) {
 			// Should notifyPaid() not wait until receipt is successfully printed to change
 			// to PRE_SESSION?
 			end();
