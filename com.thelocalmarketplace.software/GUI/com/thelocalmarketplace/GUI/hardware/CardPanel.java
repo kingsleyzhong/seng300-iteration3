@@ -12,6 +12,7 @@ import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.external.CardIssuer;
 import com.thelocalmarketplace.software.funds.CardIssuerDatabase;
 import com.thelocalmarketplace.software.funds.SupportedCardIssuers;
+import com.thelocalmarketplace.software.membership.MembershipDatabase;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -218,7 +219,10 @@ public class CardPanel extends JPanel {
 		debitCard = new Card(SupportedCardIssuers.ONE.getIssuer(), "5299334598001547", "Brandon Chan", "666", "1234", true, true);
 		creditCard = new Card(SupportedCardIssuers.TWO.getIssuer(), "4504389022574000", "Doris Giles", "343", "1234", true, true);
 		invalidCard = new Card(SupportedCardIssuers.THREE.getIssuer(), "1111111111111111", "Not A Real Person", "420", "1234", true, true);
-		membershipCard = new Card(SupportedCardIssuers.FOUR.getIssuer(), "5160617843321186", "Robehrt Lazar", "111", "1234", true, true);
+		
+		membershipCard = new Card("membership", "1234", "John Doe", "", "", false,
+	            false);
+		MembershipDatabase.registerMember("1234", "John Doe");
 
 		Calendar exp = Calendar.getInstance();
 		exp.set(Calendar.YEAR, 2099);
