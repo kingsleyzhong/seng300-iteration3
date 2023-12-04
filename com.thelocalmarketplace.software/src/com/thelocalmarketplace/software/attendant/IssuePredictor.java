@@ -4,13 +4,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Map;
 
-import com.jjjwelectronics.IDevice;
-import com.jjjwelectronics.IDeviceListener;
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.printer.*;
-import com.tdc.banknote.BanknoteDispensationSlot;
-import com.tdc.banknote.BanknoteDispenserBronze;
-import com.tdc.banknote.BanknoteDispenserGold;
+
 import com.tdc.banknote.BanknoteStorageUnit;
 import com.tdc.banknote.IBanknoteDispenser;
 import com.tdc.coin.*;
@@ -20,7 +16,6 @@ import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionListener;
 import com.thelocalmarketplace.software.SessionState;
-import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.receipt.ReceiptListener;
 /*
  * 
@@ -71,25 +66,25 @@ public class IssuePredictor  {
 	private boolean fullBanknotes;
 	
 	
-	public IssuePredictor(Session session, AbstractSelfCheckoutStation scs, Receipt receipt) {
+	public IssuePredictor(Session session, AbstractSelfCheckoutStation scs) {
 		this.session = session;
 		// register IssuePredictor as a listener to the session
 		session.register(new InnerSessionListener());
 		session.registerHardwareListener(new InnerHardwareListener());
+		// register innerListener with the receipt form Session
+		session.getReceipt().register(new InnerReceiptListener());
 
+		
 		// save references to the hardware associated with session?`
 		receiptPrinter = scs.getPrinter();
 		coinStorage = scs.getCoinStorage();
 		banknoteStorage = scs.getBanknoteStorage();
 		banknoteDispensers = scs.getBanknoteDispensers();
 		coinDispensers = scs.getCoinDispensers();
-		receipt.register(new InnerReceiptListener());
-
-
 		estimatedInk = 0;
 		estimatedPaper = 0;
 	}
-
+	
 	private class InnerHardwareListener implements HardwareListener {
 		@Override
 		public void aStationHasBeenOpened() {
@@ -180,13 +175,18 @@ public class IssuePredictor  {
 	}
 
 	private class InnerReceiptListener implements ReceiptListener {
+		/**
+		 *  Associated printer is totally out of paper
+		 */
 		@Override
 		public void notifiyOutOfPaper() {
 			lowPaper = true;
 			estimatedPaper = 0;
-		
 		}
-
+		
+		/**
+		 * Associated printer is totally out of ink
+		 */
 		@Override
 		public void notifiyOutOfInk() {
 			lowInk = true;

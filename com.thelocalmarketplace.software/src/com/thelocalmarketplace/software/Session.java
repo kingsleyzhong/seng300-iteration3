@@ -75,7 +75,7 @@ public class Session {
 	private Funds funds;
 	private Weight weight;
 	private ItemManager manager;
-	private Receipt receiptPrinter;
+	private Receipt receipt;
 	private Membership membership;
 	private String membershipNumber;
 	private boolean hasMembership = false;
@@ -276,8 +276,8 @@ public class Session {
 		this.weight.register(new WeightDiscrepancyListener());
 		this.funds.register(new PayListener(this));
 		this.manager.register(new ItemManagerListener(this));
-		this.receiptPrinter = receiptPrinter;
-		this.receiptPrinter.register(new PrinterListener());
+		this.receipt = receiptPrinter;
+		this.receipt.register(new PrinterListener());
 		this.membership = membership;
 		membership.register(new MemberListener());
 		this.scs = scs;
@@ -324,7 +324,7 @@ public class Session {
 	private void end() {
 		prevState = sessionState;
 		sessionState = SessionState.PRE_SESSION;
-		receiptPrinter.printReceipt(getItems());
+		receipt.printReceipt(getItems());
 		
 		for(SessionListener l:listeners) {
 			l.sessionEnded(this);
@@ -460,7 +460,7 @@ public class Session {
 	
 	// Move to receiptPrinter class (possible rename of receiptPrinter to just reciept
 	public void printReceipt() {
-		receiptPrinter.printReceipt(manager.getItems());
+		receipt.printReceipt(manager.getItems());
 	}
 
 	/**
@@ -566,6 +566,11 @@ public class Session {
 
 	public Weight getWeight() {
 		return weight;
+	}
+	
+	public Receipt getReceipt() {
+		return receipt;
+		
 	}
 
 	public Membership getMembership() {

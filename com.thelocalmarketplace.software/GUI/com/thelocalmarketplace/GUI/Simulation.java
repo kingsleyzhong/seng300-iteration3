@@ -65,15 +65,15 @@ public class Simulation {
 		
 		SelfCheckoutStationLogic.installAttendantStation(as);
 		attendant = SelfCheckoutStationLogic.getAttendant();
-		receipt = new Receipt(scs.getPrinter());
-		predictor = new IssuePredictor(session, scs, receipt);
+
+		predictor = new IssuePredictor(session, scs);
 		SelfCheckoutStationLogic logic = SelfCheckoutStationLogic.installOn(scs);
 		session = logic.getSession();
 		session.getStation().setSupervisor(as);
 		
 		hardwareGUI = new HardwareGUI(scs, as);
 		//issue predictor??
-		attendantGUI = new AttendantGUI(attendant, );
+		attendantGUI = new AttendantGUI(attendant, manager);
 		softwareGUI = new SoftwareGUI(session);
 		
 		// hidden by default
