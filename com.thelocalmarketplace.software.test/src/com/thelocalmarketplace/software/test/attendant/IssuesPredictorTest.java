@@ -113,7 +113,7 @@ public class IssuesPredictorTest extends AbstractTest {
 		barcode2 = new Barcode(new Numeral[] { numeral });
 		product = new BarcodedProduct(barcode, "Sample Product", 10, 100.0);
 		product2 = new BarcodedProduct(barcode2, "Sample Product 2", 15, 20.0);
-		funds = new Funds(scs);
+		funds = new Funds(scs, null);
 		itemManager = new ItemManager(session);
 
 		IElectronicScale baggingArea = scs.getBaggingArea();
@@ -121,7 +121,7 @@ public class IssuesPredictorTest extends AbstractTest {
 
 		printer = scs.getPrinter();
 		receiptPrinter = new Receipt(printer);
-		issuePredictor = new IssuePredictor(session, scs);
+		issuePredictor = new IssuePredictor(session, scs, null);
 
 		// Bronze Printer
 		bronzePrinter = new ReceiptPrinterBronze();
@@ -141,7 +141,7 @@ public class IssuesPredictorTest extends AbstractTest {
 
 	@Test
 	public void testCheckLowInk() throws OverloadedDevice {
-		session.setup(itemManager, funds, weight, receiptPrinter, null, scs);
+		session.setup(itemManager, funds, weight, receiptPrinter, null, scs, null);
 		scs.getCoinDispensers().values();
 		// Bronze
 		issuePredictor.checkLowInk(session, scs.getPrinter());
@@ -159,7 +159,7 @@ public class IssuesPredictorTest extends AbstractTest {
 
 	@Test
 	public void testCheckLowInkWhenFull() throws OverloadedDevice {
-		session.setup(itemManager, funds, weight, receiptPrinter, null, scs);
+		session.setup(itemManager, funds, weight, receiptPrinter, null, scs, null);
 		// Bronze
 		issuePredictor.checkLowInk(session, scs.getPrinter());
 		// Silver
@@ -174,7 +174,7 @@ public class IssuesPredictorTest extends AbstractTest {
 
 	@Test
 	public void testCheckLowPaper() throws OverloadedDevice {
-		session.setup(itemManager, funds, weight, receiptPrinter, null, scs);
+		session.setup(itemManager, funds, weight, receiptPrinter, null, scs, null);
 		// Bronze
 		issuePredictor.checkLowPaper(session, scs.getPrinter());
 		// Silver
@@ -187,7 +187,7 @@ public class IssuesPredictorTest extends AbstractTest {
 
 	@Test
 	public void testCheckLowPaperWhenFull() throws OverloadedDevice {
-		session.setup(itemManager, funds, weight, receiptPrinter, null, scs);
+		session.setup(itemManager, funds, weight, receiptPrinter, null, scs, null);
 		// Bronze
 		issuePredictor.checkLowPaper(session, scs.getPrinter());
 		// Silver
@@ -200,7 +200,7 @@ public class IssuesPredictorTest extends AbstractTest {
 
 	@Test
 	public void testCheckLowCoins() throws OverloadedDevice {
-		session.setup(itemManager, funds, weight, receiptPrinter, scs);
+		session.setup(itemManager, funds, weight, receiptPrinter, null,  scs, null);
 
 		issuePredictor.checkLowCoins(session, scs.getCoinDispensers());
 	}
@@ -208,7 +208,7 @@ public class IssuesPredictorTest extends AbstractTest {
 	@Test
 	public void testCheckLowBanknotes() throws OverloadedDevice {
 
-		session.setup(itemManager, funds, weight, receiptPrinter, scs);
+		session.setup(itemManager, funds, weight, receiptPrinter, null, scs, null);
 
 		issuePredictor.checkLowBanknotes(session, scs.getBanknoteDispensers());
 		// System.out.println(scs.getBanknoteDispensers());
@@ -218,7 +218,7 @@ public class IssuesPredictorTest extends AbstractTest {
 	@Test
 	public void testCheckCoinsFull() throws OverloadedDevice, SimulationException, CashOverloadException {
 
-		session.setup(itemManager, funds, weight, receiptPrinter, scs);
+		session.setup(itemManager, funds, weight, receiptPrinter, null, scs, null);
 		for (int i = 0; i < 1000; i++) { // 1000 is max capacity
 			scs.getCoinStorage().load(new Coin(Currency.getInstance(Locale.CANADA), new BigDecimal("2.00"))); // Add
 																												// $2.00
@@ -233,7 +233,7 @@ public class IssuesPredictorTest extends AbstractTest {
 	@Test
 	public void testCheckBanknotesFull() throws OverloadedDevice, SimulationException, CashOverloadException {
 
-		session.setup(itemManager, funds, weight, receiptPrinter, scs);
+		session.setup(itemManager, funds, weight, receiptPrinter, null, scs, null);
 		for (int i = 0; i < 1000; i++) { // 1000 is max capacity
 			scs.getBanknoteStorage().load(new Banknote(Currency.getInstance(Locale.CANADA), new BigDecimal("5.00"))); // Add
 																														// $5.00
@@ -247,7 +247,7 @@ public class IssuesPredictorTest extends AbstractTest {
 
 	@Test
 	public void testSessionBlock() {
-		session.setup(itemManager, funds, weight, receiptPrinter, null, scs);
+		session.setup(itemManager, funds, weight, receiptPrinter, null, scs, null);
 		session.start();
 		issuePredictor.checkLowInk(session, bronzePrinter);
 		issuePredictor.checkLowPaper(session, bronzePrinter);
