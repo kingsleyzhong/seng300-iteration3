@@ -257,8 +257,6 @@ public class FundsTest extends AbstractTest {
 	@Test(expected = NotEnoughChangeException.class)
 	public void testNotEnoughChange() throws DisabledException, CashOverloadException {
 		Currency currency = Currency.getInstance(Locale.CANADA);
-		Banknote one = new Banknote(currency, BigDecimal.ONE);
-
 		FundsListenerStub stub = new FundsListenerStub();
 		price = BigDecimal.valueOf(2);
 		
@@ -269,8 +267,6 @@ public class FundsTest extends AbstractTest {
 		SessionFundsSimulationStub sampleSimulation = new SessionFundsSimulationStub();
 		sampleSimulation.setPayByCash();
 		scs.getBanknoteInput().enable();
-		scs.getBanknoteInput().receive(one);
-
 		funds.updatePaidCash(BigDecimal.TEN);
 	}
 	
