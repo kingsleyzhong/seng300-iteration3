@@ -10,6 +10,8 @@ import com.jjjwelectronics.printer.IReceiptPrinter;
 import com.jjjwelectronics.printer.ReceiptPrinterBronze;
 import com.jjjwelectronics.printer.ReceiptPrinterGold;
 import com.jjjwelectronics.printer.ReceiptPrinterSilver;
+import com.jjjwelectronics.scale.IElectronicScale;
+import com.jjjwelectronics.scanner.Barcode;
 import com.tdc.CashOverloadException;
 import com.tdc.banknote.Banknote;
 import com.tdc.banknote.IBanknoteDispenser;
@@ -24,7 +26,11 @@ import com.thelocalmarketplace.software.attendant.MaintenanceManager;
 import com.thelocalmarketplace.software.exceptions.ClosedHardwareException;
 import com.thelocalmarketplace.software.exceptions.IncorrectDenominationException;
 import com.thelocalmarketplace.software.exceptions.NotDisabledSessionException;
+import com.thelocalmarketplace.software.funds.Funds;
+import com.thelocalmarketplace.software.items.ItemManager;
+import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.test.AbstractSessionTest;
+import com.thelocalmarketplace.software.weight.Weight;
 
 import ca.ucalgary.seng300.simulation.SimulationException;
 import powerutility.PowerGrid;
@@ -59,17 +65,24 @@ import powerutility.PowerGrid;
 
 public class IssuesPredictorTest extends AbstractSessionTest{
 	
-	private IssuePredictor issuePredictor;
-	private PowerGrid powerGrid;
-	private IReceiptPrinter printer;
-	private ReceiptPrinterSilver silverPrinter;
-	private ReceiptPrinterBronze bronzePrinter;
-	private ReceiptPrinterGold goldPrinter;
-	private MaintenanceManager mm;
 	private CoinDispenserBronze cdb;
 	private Coin coin;
 	private Banknote banknote;
-	private Attendant as;
+	
+	private BarcodedProduct product;
+    private BarcodedProduct product2;
+    byte num;
+    private Numeral numeral;
+    private Barcode barcode;
+    private Barcode barcode2;
+    private Numeral[] digits;
+    
+    //private Receipt receiptPrinter;
+    
+    private AttendantStation station;
+    private Attendant attendant;
+    private MaintenanceManager maintenanceManager;
+    private IssuePredictor predictor;
 	
 	public IssuesPredictorTest(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
 		super(testName, scsClass);
@@ -79,18 +92,16 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 	public void setUp() {
 		basicDefaultSetup();
 		
-		as = new Attendant(new AttendantStation());
-		// create issuePredictor instance
-		as.registerOn(session, scs);
-        as.addIssuePrediction(session);
-        issuePredictor = as.getIssuePredictor(session);
+		station = new AttendantStation();
+        station.plugIn(powerGrid);
+        station.turnOn();
+        attendant = new Attendant(station);
+        attendant.registerOn(session,scs);
         
-		// Create power source
-		PowerGrid.engageUninterruptiblePowerSource();
-		powerGrid = PowerGrid.instance();
+        maintenanceManager = new MaintenanceManager();
+        attendant.addIssuePrediction(session);
+        predictor = attendant.getIssuePredictor(session);
 
-		// Set up session
-		session = new Session();
 		num = 1;
 		numeral = Numeral.valueOf(num);
 		digits = new Numeral[] { numeral, numeral, numeral };
@@ -98,34 +109,7 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 		barcode2 = new Barcode(new Numeral[] { numeral });
 		product = new BarcodedProduct(barcode, "Sample Product", 10, 100.0);
 		product2 = new BarcodedProduct(barcode2, "Sample Product 2", 15, 20.0);
-		funds = new Funds(scs, null);
-		itemManager = new ItemManager(session);
-
-		IElectronicScale baggingArea = scs.getBaggingArea();
-		weight = new Weight(baggingArea);
-
-		printer = scs.getPrinter();
-		receiptPrinter = new Receipt(printer);
-		issuePredictor = new IssuePredictor(session, scs, null);
-
-		// Bronze Printer
-		bronzePrinter = new ReceiptPrinterBronze();
-		bronzePrinter.plugIn(powerGrid);
-		bronzePrinter.turnOn();
-
-    	// Silver Printer
-    	silverPrinter = new ReceiptPrinterSilver();
-    	silverPrinter.plugIn(powerGrid);
-    	silverPrinter.turnOn();
-
-   		// Gold Printer
-   		goldPrinter = new ReceiptPrinterGold();
-   		goldPrinter.plugIn(powerGrid);
-    	goldPrinter.turnOn();
     	
-		// Maintenance Manager
-		mm = new MaintenanceManager();
-		
 		// Create coin & banknote
 		coin = new Coin(Currency.getInstance(Locale.CANADA), new BigDecimal ("2.00"));		
 		banknote = new Banknote(Currency.getInstance(Locale.CANADA), new BigDecimal ("5.00"));		
@@ -135,22 +119,8 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 
 	@Test
 	public void testCheckLowInk() throws OverloadedDevice {
-		session.setup(itemManager, funds, weight, receiptPrinter, null, scs, null);
-		scs.getCoinDispensers().values();
 		// Bronze
-		issuePredictor.checkLowInk(session, scs.getPrinter());
-		Assert.assertEquals(SessionState.DISABLED, session.getState());
-
-		// Silver
-		session.enable();
-		silverPrinter.addInk(100000);
-		issuePredictor.checkLowInk(session, silverPrinter);
-		Assert.assertEquals(SessionState.DISABLED, session.getState());
-
-		// Gold
-		session.enable();
-		goldPrinter.addInk(100000);
-		issuePredictor.checkLowInk(session, goldPrinter);
+		predictor.checkLowInk(session, scs.getPrinter());
 		Assert.assertEquals(SessionState.DISABLED, session.getState());
 
 	}
@@ -158,60 +128,23 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 	@Test
 	public void testCheckLowInkWhenFull() throws OverloadedDevice {
 		// Bronze
-		bronzePrinter.addInk(ReceiptPrinterBronze.MAXIMUM_INK);
-		issuePredictor.checkLowInk(session, bronzePrinter);
-		Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
-
-		// Silver
-		session.enable();
-		silverPrinter.addInk(ReceiptPrinterSilver.MAXIMUM_INK);
-		issuePredictor.checkLowInk(session, silverPrinter);
-		Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
-
-		// Gold
-		session.enable();
-		goldPrinter.addInk(ReceiptPrinterGold.MAXIMUM_INK);
-		issuePredictor.checkLowInk(session, goldPrinter);
+		scs.getPrinter().addInk(ReceiptPrinterBronze.MAXIMUM_INK);
+		predictor.checkLowInk(session, scs.getPrinter());
 		Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
 	}
 
 	@Test
 	public void testCheckLowPaper() throws OverloadedDevice {
 		// Bronze
-		issuePredictor.checkLowPaper(session, scs.getPrinter());
-		Assert.assertEquals(SessionState.DISABLED, session.getState());
-
-		// Silver
-		session.enable();
-		silverPrinter.addPaper(100);
-		issuePredictor.checkLowPaper(session, silverPrinter);
-		Assert.assertEquals(SessionState.DISABLED, session.getState());
-
-		// Gold
-		session.enable();
-		goldPrinter.addPaper(100);
-		issuePredictor.checkLowPaper(session, goldPrinter);
+		predictor.checkLowPaper(session, scs.getPrinter());
 		Assert.assertEquals(SessionState.DISABLED, session.getState());
 
 	}
 
 	@Test
 	public void testCheckLowPaperWhenFull() throws OverloadedDevice {
-		// Bronze
-		bronzePrinter.addPaper(ReceiptPrinterBronze.MAXIMUM_PAPER);
-		issuePredictor.checkLowPaper(session, scs.getPrinter());
-		Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
-
-		// Silver
-		session.enable();
-		silverPrinter.addPaper(ReceiptPrinterSilver.MAXIMUM_PAPER);
-		issuePredictor.checkLowPaper(session, silverPrinter);
-		Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
-
-		// Gold
-		session.enable();
-		goldPrinter.addPaper(ReceiptPrinterGold.MAXIMUM_PAPER);
-		issuePredictor.checkLowPaper(session, goldPrinter);
+		scs.getPrinter().addPaper(ReceiptPrinterBronze.MAXIMUM_PAPER);
+		predictor.checkLowPaper(session, scs.getPrinter());
 		Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
 
 	}
@@ -219,7 +152,7 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 	@Test
 	public void testCheckLowCoins() throws OverloadedDevice, IncorrectDenominationException, ClosedHardwareException, CashOverloadException, NotDisabledSessionException {	
 		// No coins added
-		issuePredictor.checkLowCoins(session, scs.getCoinDispensers());
+		predictor.checkLowCoins(session, scs.getCoinDispensers());
 		// Should be disabled
 		Assert.assertEquals(SessionState.DISABLED, session.getState());
 		
@@ -230,7 +163,7 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 	       }
 		}
 		
-		issuePredictor.checkLowCoins(session, scs.getCoinDispensers());
+		predictor.checkLowCoins(session, scs.getCoinDispensers());
 		// Should be in PRE_SESSION (no issues)
 		Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
 	}
@@ -239,7 +172,7 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 	@Test
 	public void testCheckLowBanknotes() throws OverloadedDevice, CashOverloadException {		
 		// No banknotes added
-		issuePredictor.checkLowBanknotes(session, scs.getBanknoteDispensers());
+		predictor.checkLowBanknotes(session, scs.getBanknoteDispensers());
 		// Should be disabled 
 		Assert.assertEquals(SessionState.DISABLED, session.getState());
 		
@@ -250,7 +183,7 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 	       }
 		}
 		
-		issuePredictor.checkLowBanknotes(session, scs.getBanknoteDispensers());
+		predictor.checkLowBanknotes(session, scs.getBanknoteDispensers());
 		// Should be in PRE_SESSION (no issues)
 		Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
 		
@@ -262,7 +195,7 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 		for (int i = 0; i < 500; i++) { 
 	        scs.getCoinStorage().load(new Coin(Currency.getInstance(Locale.CANADA), new BigDecimal ("2.00"))); // Add $2.00 500 times
 	        }
-		issuePredictor.checkCoinsFull(session, scs.getCoinStorage());
+		predictor.checkCoinsFull(session, scs.getCoinStorage());
 		// Should not be Disabled (no issue)
 		Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
 		
@@ -270,7 +203,7 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 		for (int i = 0; i < 500; i++) { 
 	        scs.getCoinStorage().load(coin); // Add $2.00 500 times
 	        }
-		issuePredictor.checkCoinsFull(session, scs.getCoinStorage());
+		predictor.checkCoinsFull(session, scs.getCoinStorage());
 		// Should be Disabled
 		Assert.assertEquals(SessionState.DISABLED, session.getState());
 	}
@@ -281,7 +214,7 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 		 for (int i = 0; i < 500; i++) { 
 		        scs.getBanknoteStorage().load(new Banknote(Currency.getInstance(Locale.CANADA), new BigDecimal ("5.00"))); // Add $5.00 500 times
 		        }
-		issuePredictor.checkBanknotesFull(session, scs.getBanknoteStorage());
+		 predictor.checkBanknotesFull(session, scs.getBanknoteStorage());
 		// Should not be Disabled (no issues)
 		Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
 		
@@ -289,7 +222,7 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 		 for (int i = 0; i < 500; i++) { 
 		        scs.getBanknoteStorage().load(banknote); // Add $5.00 500 times
 		        }
-		issuePredictor.checkBanknotesFull(session, scs.getBanknoteStorage());
+		 predictor.checkBanknotesFull(session, scs.getBanknoteStorage());
 		// Should be Disabled
 		Assert.assertEquals(SessionState.DISABLED, session.getState());
 	}
@@ -297,12 +230,12 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 	@Test
 	public void testNotPreSession() {
 		session.start();
-		issuePredictor.checkLowInk(session, bronzePrinter);
-		issuePredictor.checkLowPaper(session, bronzePrinter);
-		issuePredictor.checkLowCoins(session, scs.getCoinDispensers());
-		issuePredictor.checkLowBanknotes(session, scs.getBanknoteDispensers());
-		issuePredictor.checkCoinsFull(session, scs.getCoinStorage());
-		issuePredictor.checkBanknotesFull(session, scs.getBanknoteStorage());
+		predictor.checkLowInk(session, scs.getPrinter());
+		predictor.checkLowPaper(session, scs.getPrinter());
+		predictor.checkLowCoins(session, scs.getCoinDispensers());
+		predictor.checkLowBanknotes(session, scs.getBanknoteDispensers());
+		predictor.checkCoinsFull(session, scs.getCoinStorage());
+		predictor.checkBanknotesFull(session, scs.getBanknoteStorage());
 		Assert.assertEquals(SessionState.IN_SESSION, session.getState());
 	}
 	
@@ -316,13 +249,13 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 	@Test
 	public void testPredictionCheckHadwareClosed() throws NotDisabledSessionException {
 		session.disable();
-		mm.openHardware(session);
-		mm.closeHardware();
+		maintenanceManager.openHardware(session);
+		maintenanceManager.closeHardware();
 		Assert.assertEquals(SessionState.DISABLED, session.getState()); // Disabled since there may be prediction issues
 	}
 	
 	@After
 	public void tearDown() {
-		issuePredictor = null;
+		predictor = null;
 	}
 }
