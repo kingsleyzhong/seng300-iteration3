@@ -88,6 +88,9 @@ public class SoftwareGUI{
 	public AddedProducts cartItemsPanel;
 	JPanel buttonPanel;
 	
+	Timer discrepancyTimer;
+	Timer endTimer = null;
+	
 	// Buttons
 	public SoftwareGUI(Session session) {
 		session.register(new InnerListener());
@@ -177,7 +180,7 @@ public class SoftwareGUI{
 		});
 		main.add(hardwareBtn);
 		
-		Timer timer = new Timer(20000, new ActionListener() {
+		endTimer = new Timer(20000, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -185,8 +188,8 @@ public class SoftwareGUI{
 			}
 			
 		});
-		timer.setRepeats(false);
-		timer.start();
+		endTimer.setRepeats(false);
+		endTimer.start();
 		
 		JButton thankYouButton = new PlainButton("<html>Thanks For Shopping!<br><br>Please Collect Your Receipt</html>", Colors.color1);
 		thankYouButton.setOpaque(false);
@@ -198,7 +201,7 @@ public class SoftwareGUI{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				displayStart();
-				timer.stop();
+				endTimer.stop();
 			}
 			
 		});
@@ -424,6 +427,8 @@ public class SoftwareGUI{
 	
 	public void displayStart() {
 		frame.getContentPane().removeAll();
+		quantity = 0;
+		if(endTimer != null) endTimer.stop();
 		startPane = start();
 		frame.getContentPane().add(startPane, BorderLayout.CENTER);
 		frame.getContentPane().revalidate();
@@ -531,7 +536,7 @@ public class SoftwareGUI{
 
 			}
 			else if(source == callAttendant) {
-				session.notifyAttendant(Requests.HELP_REQUESTED);
+				session.askForHelp();
 			}
 		}	
 	}
@@ -556,7 +561,7 @@ public class SoftwareGUI{
 			catalogue.setVisible(false);
 			inDiscrepancy = true;
 			Object[] options = {"OK", "Do not bag", "Cancel"};
-			int result = JOptionPane.showOptionDialog(null, "Please add " + lastProductDescription + " to the bagging area.", 
+			int result = JOptionPane.showOptionDialog(null, "Please make sure to add " + lastProductDescription + " to the bagging area.", 
 					"Add to scale", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 			if(result == JOptionPane.CANCEL_OPTION) {
 				Product lastProduct = session.getManager().getLastProduct();
@@ -589,11 +594,19 @@ public class SoftwareGUI{
 			catalogue.setVisible(false);
 			paymentScreen.frame.setVisible(false);
 			catalogue.setVisible(false);
-			JOptionPane.showMessageDialog(null, "Please remove " + lastProductDescription + " from the scale");
+			JOptionPane.showMessageDialog(null, "Please make sure to remove " + lastProductDescription + " from the scale");
 		}
 
 		@Override
 		public void addItemToScaleDiscrepancy(Session session) {
+			discrepancyTimer = new Timer(10000, new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					JOptionPane.showMessageDialog(null, "There is still a discrepancy on the scale.");
+				}
+			});
+			discrepancyTimer.start();
 			if(inDiscrepancy) {
 				frame.setVisible(true);
 				paymentScreen.frame.setVisible(false);
@@ -618,6 +631,14 @@ public class SoftwareGUI{
 
 		@Override
 		public void removeItemFromScaleDiscrepancy(Session session) {
+			discrepancyTimer = new Timer(10000, new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					JOptionPane.showMessageDialog(null, "There is still a discrepancy on the scale.");
+				}
+			});
+			discrepancyTimer.start();
 			if(inDiscrepancy) {
 				frame.setVisible(true);
 				paymentScreen.frame.setVisible(false);
@@ -630,12 +651,21 @@ public class SoftwareGUI{
 
 		@Override
 		public void discrepancy(Session session, String message) {
+			discrepancyTimer = new Timer(10000, new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					JOptionPane.showMessageDialog(null, "There is still a discrepancy on the scale.");
+				}
+			});
+			discrepancyTimer.start();
 			JOptionPane.showMessageDialog(null, message);
 			
 		}
 
 		@Override
 		public void discrepancyResolved(Session session) {
+			discrepancyTimer.stop();
 			lastProductDescription = "";
 			inDiscrepancy = false;
 		}
@@ -651,7 +681,6 @@ public class SoftwareGUI{
 		@Override
 		public void getRequest(Session session, Requests request) {
 			if(request == Requests.BULKY_ITEM) {
-				System.out.println("here2");
 				int result2 = JOptionPane.showConfirmDialog(null, "Wait for request approval.");
 				if(result2 == JOptionPane.CANCEL_OPTION || result2 == JOptionPane.NO_OPTION) {
 					session.cancel();
@@ -701,7 +730,6 @@ public class SoftwareGUI{
 		@Override
 		public void sessionStateChanged() {
 			SessionState state = session.getState();
-			System.out.println(state);
 			if (state == SessionState.PAY_BY_CASH) {
 				paymentScreen.paymentTypeLabel.setText("Payment Selected: Cash");
 			}

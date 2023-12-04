@@ -9,8 +9,8 @@ import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
+import com.thelocalmarketplace.software.attendant.AttendantListener;
 import com.thelocalmarketplace.software.attendant.HardwareListener;
-import com.thelocalmarketplace.software.attendant.IssuePredictor;
 import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
 import com.thelocalmarketplace.software.exceptions.InvalidActionException;
@@ -19,7 +19,6 @@ import com.thelocalmarketplace.software.funds.FundsListener;
 import com.thelocalmarketplace.software.items.ItemListener;
 import com.thelocalmarketplace.software.items.ItemManager;
 import com.thelocalmarketplace.software.membership.Membership;
-import com.thelocalmarketplace.software.membership.MembershipListener;
 import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.receipt.ReceiptListener;
 import com.thelocalmarketplace.software.weight.Weight;
@@ -65,7 +64,7 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
  *
  */
 public class Session {
-	public ArrayList<SessionListener> listeners = new ArrayList<>();
+	private ArrayList<SessionListener> listeners = new ArrayList<>();
 	private ArrayList<HardwareListener> hardwareListeners = new ArrayList<>();
 	private AbstractSelfCheckoutStation scs;
 	protected SessionState sessionState;
@@ -272,7 +271,7 @@ public class Session {
 		}
 
 	}
-
+	
 	/**
 	 * Constructor for the session method. Requires to be installed on self-checkout
 	 * system
@@ -334,6 +333,7 @@ public class Session {
 		membershipNumber = null;
 		manager.clear();
 		funds.clear();
+		weight.setInSession(true);
 		weight.clear();
 	}
 
@@ -344,6 +344,7 @@ public class Session {
 		if (sessionState == SessionState.IN_SESSION) {
 			sessionState = SessionState.PRE_SESSION;
 			stateChanged();
+			weight.setInSession(false);
 			manager.setAddItems(false);
 		} else if(sessionState == SessionState.BULKY_ITEM) {
 			sessionState = SessionState.BLOCKED;
@@ -365,11 +366,17 @@ public class Session {
 		stateChanged();
 		manager.setAddItems(false);
 	}
-
+	
+	/**
+	 * Ends the current session, returning state to PRE_SESSION.
+	 * 
+	 */
 	private void end() {
 		prevState = sessionState;
 		sessionState = SessionState.PRE_SESSION;
 		stateChanged();
+		funds.disableCash();
+		weight.setInSession(false);
 		receipt.printReceipt(getItems());
 
 		
@@ -400,7 +407,7 @@ public class Session {
 	 *
 	 * @throws InvalidActionException
 	 */
-	public void enteringMembership() {
+	public void enterMembership() {
 		if (sessionState == SessionState.IN_SESSION) {
 			membership.setAddingItems(true);
 		} else {
@@ -448,7 +455,7 @@ public class Session {
 	 * items by freezing session.
 	 */
 	public void payByCash() {
-		if (sessionState == SessionState.IN_SESSION) {
+		if (sessionState == SessionState.IN_SESSION || sessionState == SessionState.PAY_BY_CARD) {
 			if (!manager.getItems().isEmpty()) {
 				sessionState = SessionState.PAY_BY_CASH;
 				stateChanged();
@@ -471,6 +478,7 @@ public class Session {
 			if (!manager.getItems().isEmpty()) {
 				sessionState = SessionState.PAY_BY_CARD;
 				stateChanged();
+				funds.disableCash();
 				funds.setPay(true);
 				manager.setAddItems(false);
 			} else {
@@ -518,7 +526,7 @@ public class Session {
 		}	
 	}
 	
-	// Move to receiptPrinter class (possible rename of receiptPrinter to just reciept
+	// Move to receiptPrinter class 
 	public void printReceipt() {
 		receipt.printReceipt(manager.getItems());
 	}
@@ -556,8 +564,27 @@ public class Session {
 	 */
 	public void attendantApprove(Requests request) {
 		requestApproved = true;
-		if (request == Requests.BULKY_ITEM) {
+		switch(request) {
+		case ADD_ITEM_SEARCH:
+			break;
+		case BAGS_TOO_HEAVY:
+			break;
+		case BULKY_ITEM:
 			addBulkyItem();
+			break;
+		case CANT_MAKE_CHANGE:
+			break;
+		case CANT_PRINT_RECEIPT:
+			break;
+		case HELP_REQUESTED:
+			break;
+		case NO_REQUEST:
+			break;
+		case WEIGHT_DISCREPANCY:
+			break;
+		default:
+			break;
+		
 		}
 	}
 
@@ -572,6 +599,7 @@ public class Session {
 	 */
 	public void notifyAttendant(Requests request) {
 		for (SessionListener l : listeners) {
+			l.getRequest(this, request);
 		}
 	}
 	
@@ -590,7 +618,7 @@ public class Session {
 	/**
 	 * Called when hardware for the session is opened
 	 */
-	public void openHardware() {
+	public void notifyOpenHardware() {
 		for (HardwareListener l: hardwareListeners) {
 			l.aStationHasBeenOpened();
 		}
@@ -599,7 +627,7 @@ public class Session {
 	/**
 	 * Called when hardware for the session is closed
 	 */
-	public void closeHardware() {
+	public void notifyCloseHardware() {
 		for (HardwareListener l : hardwareListeners) {
 			l.aStationHasBeenClosed();
 		}
@@ -614,9 +642,7 @@ public class Session {
 	/**
 	 * getter methods
 	 */
-	public boolean getRequestApproved() {
-		return this.requestApproved;
-	}
+
 
 	public HashMap<Product, BigInteger> getItems() {
 		return manager.getItems();
