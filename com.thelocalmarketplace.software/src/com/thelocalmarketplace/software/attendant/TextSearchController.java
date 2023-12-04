@@ -12,6 +12,7 @@ import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.exceptions.InvalidActionException;
+import com.thelocalmarketplace.software.exceptions.ProductNotFoundException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -195,17 +196,4 @@ public class TextSearchController {
 			}
 		}
 	}
-
-	// Now there needs to be a way to select an item and add it to cart while considering if PLU or Barcoded
-	
-	/**
-	 * Adding an item from the list of search results
-	 * @param searchField
-	 */
-	public void selectItem() {
-		// It will take some sort of input selection from the GUI
-		// It will then determine what type of item and then what addItemRule to use
-		// It will then add that item to the cart... what happens next?	
-	}
-
 }

@@ -5,11 +5,13 @@ import java.util.ArrayList;
 
 import com.jjjwelectronics.Mass;
 import com.thelocalmarketplace.hardware.AttendantStation;
+import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionListener;
 import com.thelocalmarketplace.software.SessionState;
+import com.thelocalmarketplace.software.exceptions.ProductNotFoundException;
 import com.thelocalmarketplace.software.weight.WeightListener;
 
 /**
@@ -197,7 +199,33 @@ public class Attendant {
 	public void disableStation(Session session) {
 			session.disable();
 	}
-	
+
+	/**
+	 * Adds an item found in the search results. Assumes that only instances of PLUCodedProduct and BarcodedProduct are possible.
+	 *
+	 * @param description
+	 * @param session
+	 *                The text from the GUI representing the product in the search results.
+	 */
+	public void addSearchedItem(String description, Session session) {
+		if (ts.getSearchResults().containsKey(description)) {
+			Product selectedProduct = ts.getSearchResults().get(description);
+
+			// The product could be a Barcoded Product
+			if (selectedProduct instanceof BarcodedProduct) {
+				session.getManager().addItem((BarcodedProduct) selectedProduct);
+			}
+
+			// The product could be a PLU Coded Product
+			else if (selectedProduct instanceof PLUCodedProduct) {
+				PLUCodedProduct pluProduct = (PLUCodedProduct) selectedProduct;
+				session.getManager().addItem(pluProduct.getPLUCode());
+			}
+		} else {
+			// Product not found in the visual catalogue
+			throw new ProductNotFoundException("Item not found");
+		}
+	}
 	
 	/**
 	 * Method for associating the Attendant with an instance of IssuePredictor.

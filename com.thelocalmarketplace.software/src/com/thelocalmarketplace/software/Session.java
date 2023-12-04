@@ -584,6 +584,10 @@ public class Session {
 		return scs;
 	}
 
+	public ItemManager getManager() {
+		return manager;
+	}
+
 	/**
 	 * getter for session state
 	 *
