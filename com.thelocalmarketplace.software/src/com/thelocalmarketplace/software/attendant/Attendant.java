@@ -230,6 +230,8 @@ public class Attendant {
 	}
 
 
+	
+	
 	/**
 	 * Method for enabling a Customer SelfCheckoutStation associated with a given session, unlocking the 
 	 * Session and putting it into the PRE_SESSION state
@@ -408,10 +410,21 @@ public class Attendant {
 			throw new SessionNotRegisteredException();
 		}
 	}
+	
+	/**
+	 * Returns the set of all sessions being tracked by this Attendant
+	 * @return
+	 * 			HashMap<Session, Requests>
+	 */
 	public HashMap<Session, Requests> getSessions(){
 		return sessions;
 	}
 
+	/**
+	 * Returns the instance of TextSearchController associated with this Attendant
+	 * @return
+	 * 			TextSearchController
+	 */
 	public TextSearchController getTextSearchController() {
 		return ts;
 	}

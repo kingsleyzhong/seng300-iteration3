@@ -40,8 +40,7 @@ public interface SessionListener {
 	 * @param request
 	 */
 	void getRequest(Session session, Requests request);
-	
-	
+
 	void itemAdded(Session session, Product product, Mass ofProduct, Mass currentExpectedWeight, BigDecimal currentExpectedPrice);
 	
 	void itemRemoved(Session session, Product product, Mass ofProduct, Mass currentExpectedMass, BigDecimal currentExpectedPrice);

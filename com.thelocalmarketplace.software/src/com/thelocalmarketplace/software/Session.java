@@ -8,10 +8,9 @@ import com.jjjwelectronics.Mass;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
-import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.Product;
+import com.thelocalmarketplace.software.attendant.AttendantListener;
 import com.thelocalmarketplace.software.attendant.HardwareListener;
-import com.thelocalmarketplace.software.attendant.IssuePredictor;
 import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
 import com.thelocalmarketplace.software.exceptions.InvalidActionException;
@@ -20,7 +19,6 @@ import com.thelocalmarketplace.software.funds.FundsListener;
 import com.thelocalmarketplace.software.items.ItemListener;
 import com.thelocalmarketplace.software.items.ItemManager;
 import com.thelocalmarketplace.software.membership.Membership;
-import com.thelocalmarketplace.software.membership.MembershipListener;
 import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.receipt.ReceiptListener;
 import com.thelocalmarketplace.software.weight.Weight;
@@ -228,7 +226,44 @@ public class Session {
 		}
 
 	}
+	
+	/**
+	 * Handles receiving notifications from the Attendant when a request has been made
+	 * 
+	 */
+	private class InnerAttendantListener implements AttendantListener{
 
+		@Override
+		public void notifyOverrideWeightDiscrepancy() {
+			
+		}
+
+		@Override
+		public void notifyOkayBulkyItem() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void notifyOkayHeavyBags() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void notifyForceEndSession() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void notifyRequestResolved() {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+	
 	/**
 	 * Constructor for the session method. Requires to be installed on self-checkout
 	 * system
@@ -511,7 +546,7 @@ public class Session {
 	 */
 	public void notifyAttendant(Requests request) {
 		for (SessionListener l : listeners) {
-			//l.getRequest(this, request);
+			l.getRequest(this, request);
 		}
 	}
 	
@@ -548,9 +583,7 @@ public class Session {
 	/**
 	 * getter methods
 	 */
-	public boolean getRequestApproved() {
-		return this.requestApproved;
-	}
+
 
 	public HashMap<Product, BigInteger> getItems() {
 		return manager.getItems();
