@@ -203,10 +203,7 @@ public class Funds {
 	 * @param changeDue
 	 * 	 */
 	private void changeHelper(double changeDue){
-		if (changeDue < 0) {
-			throw new InternalError("Change due is negative, which should not happen");
-		}
-
+		
 		// loop through the denominations (sorted from largest to smallest) 
         // until either the change is fully paid
         // or the system possesses insufficient change

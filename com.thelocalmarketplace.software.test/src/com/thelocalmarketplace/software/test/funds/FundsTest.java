@@ -267,8 +267,24 @@ public class FundsTest extends AbstractTest {
 		SessionFundsSimulationStub sampleSimulation = new SessionFundsSimulationStub();
 		sampleSimulation.setPayByCash();
 		scs.getBanknoteInput().enable();
+		scs.getBanknoteInput().receive(new Banknote(currency, new BigDecimal(1)));
 		funds.updatePaidCash(BigDecimal.TEN);
 	}
 	
+	@Test
+	public void attemptPayByCashNotInPay() {
+		// Cleanup from other methods
+		funds.setPay(false);
+		
+		Currency currency = Currency.getInstance(Locale.CANADA);
+		FundsListenerStub stub = new FundsListenerStub();
+		price = BigDecimal.valueOf(1);
+		funds.register(stub);
+		funds.update(price);
+		funds.updatePaidCash(BigDecimal.ONE);
+		
+		assertTrue(funds.getAmountDue().equals(BigDecimal.valueOf(1)));
+		
+	}
 	
 }
