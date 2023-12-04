@@ -94,7 +94,7 @@ public class Funds {
 			throw new IllegalDigitException("Price should be positive.");
 		}
 		this.itemsPrice = this.itemsPrice.add(price);
-		calculateAmountDue(price);
+		calculateAmountDue(price.negate());
 	}
 
 	/**
@@ -108,7 +108,7 @@ public class Funds {
 		}
 		
 		this.itemsPrice = this.itemsPrice.subtract(price);
-		calculateAmountDue(price.negate());
+		calculateAmountDue(price);
 	}
 
 	/**
@@ -150,9 +150,8 @@ public class Funds {
 	 * Calculates the amount due by subtracting the paid amount from the total items
 	 * price.
 	 */
-	private void calculateAmountDue(BigDecimal amountPaid) {
-		
-		this.amountDue = this.amountDue.add(amountPaid);
+	private void calculateAmountDue(BigDecimal amountPaid) {	
+		this.amountDue = this.amountDue.subtract(amountPaid);
 
 		for (FundsListener l : listeners)
 			l.notifyUpdateAmountDue(this.amountDue);
@@ -171,13 +170,13 @@ public class Funds {
 		}
 	}
 
-	/***
+	/*** 
 	 * Checks the status of a card payment
 	 */
 	public void updatePaidCard(boolean paidBool) {
 		if (isPay) {
 			if (paidBool) {
-				calculateAmountDue(amountDue.negate());
+				calculateAmountDue(amountDue);
 			}
 		} else {
 			throw new InvalidActionException("Not in Card Payment state");
@@ -189,7 +188,7 @@ public class Funds {
 	 */
 	public void updatePaidCash(BigDecimal paid) {
 		if (isPay) {
-			calculateAmountDue(paid.negate());
+			calculateAmountDue(paid);
 		}
 
 	}
@@ -208,10 +207,7 @@ public class Funds {
 	 * @param changeDue
 	 * 	 */
 	private void changeHelper(double changeDue){
-		if (changeDue < 0) {
-			throw new InternalError("Change due is negative, which should not happen");
-		}
-
+		
 		// loop through the denominations (sorted from largest to smallest) 
         // until either the change is fully paid
         // or the system possesses insufficient change
