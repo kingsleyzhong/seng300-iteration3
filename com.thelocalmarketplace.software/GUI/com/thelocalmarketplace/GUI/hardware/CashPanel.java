@@ -73,7 +73,6 @@ public class CashPanel extends JPanel{
 		add(Bills);
 		Bills.setLayout(new GridLayout(5, 1, 15, 15));
 		
-		
 		//5 Dollar Bill
 		FiveBillBtn = new PlainButton("5$ Bill", Colors.color1);
 		FiveBillBtn.setForeground(Colors.color3);
@@ -87,7 +86,6 @@ public class CashPanel extends JPanel{
 			}
 		});
 		Bills.add(FiveBillBtn);
-		
 		
 		//10 Dollar Bill logic
 		JButton TenBillBtn = new PlainButton("10$ Bill", Colors.color1);
@@ -210,7 +208,7 @@ public class CashPanel extends JPanel{
 		Coins.setBackground(Colors.color3);
 		add(Coins);
 		Coins.setLayout(new GridLayout(5, 1, 15, 15));
-		
+
 		//5 cent coin button
 		JButton button_five_cent = new PlainButton("5¢", Colors.color1);
 		button_five_cent.setForeground(Colors.color3);
@@ -218,7 +216,7 @@ public class CashPanel extends JPanel{
 			public void actionPerformed(ActionEvent e) {
 				try {
 					scs.getCoinSlot().receive(Five_Cent_Coin);
-					
+
 				} catch (DisabledException | CashOverloadException e1) {
 					JOptionPane.showMessageDialog(null, "Coin Not Accepted");
 				}
@@ -262,8 +260,6 @@ public class CashPanel extends JPanel{
 		});
 		Coins.add(button_twentyfive_cent);
 		
-		
-		//1 Dollar Coin
 		button_one_coin = new PlainButton("$1", Colors.color1);
 		button_one_coin.setForeground(Colors.color3);
 		button_one_coin.addActionListener(new ActionListener() {
@@ -301,7 +297,6 @@ public class CashPanel extends JPanel{
 				try {
 					scs.getCoinSlot().receive( Non_Coin );
 					//No exception gets thrown here, it just doesn't add it to the total
-					
 				} catch (DisabledException | CashOverloadException e1) {
 					JOptionPane.showMessageDialog(null, "Coin Not Accepted");
 				}
@@ -310,7 +305,6 @@ public class CashPanel extends JPanel{
 			}
 		});
 		Coins.add(btnNoncoin);
-		
 		
 		//REMOVE COINS FROM TRAY
 		JButton btn_remove_coins = new PlainButton("Remove Coin Tray Coins", Colors.color1);
@@ -345,6 +339,7 @@ public class CashPanel extends JPanel{
 		Five_Cent_Coin = new Coin(currency, new BigDecimal(0.05));
 		
 		Ten_Cent_Coin  = new Coin(currency, new BigDecimal(0.10));
+
 		TwentyFive_Cent_Coin  = new Coin(currency, BigDecimal.valueOf(0.25));
 		
 		One_Dollar_Coin  = new Coin(currency, new BigDecimal(1));

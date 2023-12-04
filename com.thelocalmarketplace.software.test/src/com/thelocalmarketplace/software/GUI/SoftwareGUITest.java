@@ -67,7 +67,7 @@ public class SoftwareGUITest{
 		SelfCheckoutStationLogic logic = SelfCheckoutStationLogic.installOn(scs);
 		session = logic.getSession();
 		softwareGUI = new SoftwareGUI(session);
-		hardwaregui = new HardwareGUI(scs);
+		hardwaregui = new HardwareGUI(scs, as);
 		
 		//cash panel stuff
 		cashpanel = new CashPanel(scs);
