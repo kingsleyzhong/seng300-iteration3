@@ -38,7 +38,6 @@ public class FundsListenerStub implements FundsListener {
 	@Override
 	public void notifyPaid() {
 		events.add("Paid");
-
 	}
 
 	public ArrayList<String> getEvents() {

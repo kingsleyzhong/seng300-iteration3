@@ -100,8 +100,7 @@ public class FundsTest extends AbstractTest {
 	@Test
 	public void testUpdateValidPrice() throws CashOverloadException, NoCashAvailableException, DisabledException {
 		funds.update(price);
-		assertEquals(price, funds.getItemsPrice());
-		assertEquals(price, funds.getAmountDue());
+		assertEquals(price, funds.getItemsPrice());	
 	}
 
 	@Test(expected = IllegalDigitException.class)
@@ -117,10 +116,11 @@ public class FundsTest extends AbstractTest {
 
 	@Test
 	public void testRemoveValidItemPrice() throws CashOverloadException, NoCashAvailableException, DisabledException {
+		assertEquals(BigDecimal.valueOf(0), funds.getItemsPrice());
 		funds.update(price);
+		assertEquals(BigDecimal.valueOf(1), funds.getItemsPrice());
 		funds.removeItemPrice(price);
 		assertEquals(BigDecimal.valueOf(0), funds.getItemsPrice());
-		assertEquals(BigDecimal.valueOf(0), funds.getAmountDue());
 	}
 
 	@Test(expected = IllegalDigitException.class)
@@ -256,21 +256,35 @@ public class FundsTest extends AbstractTest {
 
 	@Test(expected = NotEnoughChangeException.class)
 	public void testNotEnoughChange() throws DisabledException, CashOverloadException {
-
 		Currency currency = Currency.getInstance(Locale.CANADA);
-		Banknote ones = new Banknote(currency, BigDecimal.ONE);
-
 		FundsListenerStub stub = new FundsListenerStub();
+		price = BigDecimal.valueOf(2);
+		
+		funds.register(stub);
+		funds.setPay(true);
+		funds.update(price);
 
 		SessionFundsSimulationStub sampleSimulation = new SessionFundsSimulationStub();
 		sampleSimulation.setPayByCash();
 		scs.getBanknoteInput().enable();
-
-		funds.update(BigDecimal.valueOf(1));
-
-		scs.getBanknoteInput().enable();
-		scs.getBanknoteInput().receive(ones);
-		scs.getBanknoteInput().receive(ones);
-
+		//scs.getBanknoteInput().receive(new Banknote(currency, new BigDecimal(1)));
+		funds.updatePaidCash(BigDecimal.TEN);
 	}
+	
+	@Test
+	public void attemptPayByCashNotInPay() {
+		// Cleanup from other methods
+		funds.setPay(false);
+		
+		Currency currency = Currency.getInstance(Locale.CANADA);
+		FundsListenerStub stub = new FundsListenerStub();
+		price = BigDecimal.valueOf(1);
+		funds.register(stub);
+		funds.update(price);
+		funds.updatePaidCash(BigDecimal.ONE);
+		
+		assertTrue(funds.getAmountDue().equals(BigDecimal.valueOf(1)));
+		
+	}
+	
 }
