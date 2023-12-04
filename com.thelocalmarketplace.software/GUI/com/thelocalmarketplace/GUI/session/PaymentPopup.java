@@ -47,7 +47,8 @@ public class PaymentPopup {
 	private JLabel paymentOptionsLabel;
 	private PlainButton cashButton;
 	private PlainButton cardButton;
-	private PlainButton cancelPaymentButton;
+	private PlainButton membershipButton;
+	private MembershipNumPad membershipPad;
 	
 	public PaymentPopup(Session session) {
 		
@@ -107,7 +108,7 @@ public class PaymentPopup {
             		session.payByCash();
               		}
             	catch(CartEmptyException e1) {
-					frame.setVisible(false);
+                    hide();
                     JOptionPane.showMessageDialog(cashButton, "Cannot Pay for Empty Order");
             	}
 
@@ -121,12 +122,11 @@ public class PaymentPopup {
 		cardButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            	//paymentTypeLabel.setText("Payment Selected: Card");
             	try {
 					session.payByCard();
             		}
                	catch(CartEmptyException e1) {
-					frame.setVisible(false);
+                    hide();
                     JOptionPane.showMessageDialog(cardButton, "Cannot Pay for Empty Order");
             	}
 
@@ -135,19 +135,24 @@ public class PaymentPopup {
         });
 		panel.add(cardButton);
 		
-		cancelPaymentButton = new PlainButton("New button", new Color(220, 196, 132));
-		cancelPaymentButton.setText("Cancel Payment");
-		cancelPaymentButton.setFont(new Font("Tahoma", Font.PLAIN, 30));
-		cancelPaymentButton.addActionListener(new ActionListener() {
+		membershipButton = new PlainButton("New button", new Color(220, 196, 132));
+		membershipButton.setText("Cancel Payment");
+		membershipButton.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		
+		membershipPad = new MembershipNumPad(session);
+		membershipButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(cancelPaymentButton, "Payment Cancelled. All change inserted during payment session will be returned shortly.");
-                frame.setVisible(false);
-                paymentTypeLabel.setText("Payment Selected: None");
+                hide();
+                membershipPad.popUp();
+                
+                if (membershipPad.getValidMembership() == true) {
+                	popUp();
+                }
                 
             }
         });
-		panel.add(cancelPaymentButton);
+		panel.add(membershipButton);
 		
 		frame.getContentPane().add(main);
 }
@@ -175,6 +180,6 @@ public class PaymentPopup {
 	}
 	
 	public JButton getCancelButton() {
-		return cancelPaymentButton;
+		return membershipButton;
 	}
 }
