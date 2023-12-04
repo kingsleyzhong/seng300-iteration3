@@ -5,37 +5,37 @@ package com.thelocalmarketplace.software.attendant;
  * 
  * Project Iteration 3 Group 1
  *
- * Derek Atabayev : 30177060
- * Enioluwafe Balogun : 30174298
- * Subeg Chahal : 30196531
- * Jun Heo : 30173430
- * Emily Kiddle : 30122331
+ * Derek Atabayev : 		30177060
+ * Enioluwafe Balogun :	 	30174298
+ * Subeg Chahal : 			30196531
+ * Jun Heo : 				30173430
+ * Emily Kiddle : 			30122331
  * Anthony Kostal-Vazquez : 30048301
- * Jessica Li : 30180801
- * Sua Lim : 30177039
- * Savitur Maharaj : 30152888
- * Nick McCamis : 30192610
- * Ethan McCorquodale : 30125353
- * Katelan Ng : 30144672
- * Arcleah Pascual : 30056034
- * Dvij Raval : 30024340
- * Chloe Robitaille : 30022887
- * Danissa Sandykbayeva : 30200531
- * Emily Stein : 30149842
- * Thi My Tuyen Tran : 30193980
- * Aoi Ueki : 30179305
- * Ethan Woo : 30172855
- * Kingsley Zhong : 30197260
+ * Jessica Li : 			30180801
+ * Sua Lim : 				30177039
+ * Savitur Maharaj :		30152888
+ * Nick McCamis : 			30192610
+ * Ethan McCorquodale : 	30125353
+ * Katelan Ng : 			30144672
+ * Arcleah Pascual : 		30056034
+ * Dvij Raval : 			30024340
+ * Chloe Robitaille : 		30022887
+ * Danissa Sandykbayeva : 	30200531
+ * Emily Stein : 			30149842
+ * Thi My Tuyen Tran :		30193980
+ * Aoi Ueki : 				30179305
+ * Ethan Woo : 				30172855
+ * Kingsley Zhong :			 30197260
  */
 public enum Requests {
 	// core requests based on Use case version 3
-	NO_REQUEST,
-	WEIGHT_DISCREPANCY,
-	BAGS_TOO_HEAVY,
-	BULKY_ITEM,
-	CANT_MAKE_CHANGE,
-	CANT_PRINT_RECEIPT,
-	ADD_ITEM_SEARCH,
-	HELP_REQUESTED;
+	NO_REQUEST,// session has no request of the attendant
+	WEIGHT_DISCREPANCY,// weight discrepancy is occurring
+	BAGS_TOO_HEAVY,// bags added to the bagging area are over the maximum allowed bag weight
+	BULKY_ITEM,// customer wants to not bag a bulky item
+	CANT_MAKE_CHANGE,// system could not make change
+	CANT_PRINT_RECEIPT,// system could not print the receipt 
+	ADD_ITEM_SEARCH,// customer wishes the attendant to search for an item for them
+	HELP_REQUESTED;// customer wants to signal the attendant for a reason not otherwise specified
 
 }

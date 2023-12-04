@@ -1,8 +1,8 @@
 package com.thelocalmarketplace.software.exceptions;
-
-/**
- * Exception that occurs when an action in unable to occur due to 
- * the shopping cart being empty.
+/*
+ * Exception to be thrown when an Attendant is asked for information about an instance of Session it is
+ * not tracking (eg. associated hardware, current request, associated prediction software).
+ * 
  * 
  * Project Iteration 3 Group 1
  *
@@ -27,16 +27,11 @@ package com.thelocalmarketplace.software.exceptions;
  * Aoi Ueki : 30179305
  * Ethan Woo : 30172855
  * Kingsley Zhong : 30197260
- */
+*/
 @SuppressWarnings("serial")
-public class CartEmptyException extends InvalidActionException{
-	/**
-	 * Basic constructor
-	 * 
-	 * @param message
-	 * 			An explanatory message of the problem
-	 */
-	public CartEmptyException(String message) {
-		super(message);
+public class SessionNotRegisteredException extends RuntimeException{
+
+	public SessionNotRegisteredException() {
+		super("This isntance of Session is not registered with this Attendant.");
 	}
 }
