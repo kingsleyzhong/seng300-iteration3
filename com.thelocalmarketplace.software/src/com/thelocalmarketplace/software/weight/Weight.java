@@ -96,6 +96,7 @@ public class Weight {
 			actualWeight = mass;
 			if(bagCheck) {
 				checkBags();
+				checkDiscrepancy();
 			}
 			else{ // check if a weight discrepancy has occurred
 				checkDiscrepancy();

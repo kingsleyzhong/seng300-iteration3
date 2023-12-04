@@ -13,20 +13,16 @@ import org.junit.Test;
 
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
+import com.jjjwelectronics.scale.IElectronicScale;
 import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.scanner.BarcodedItem;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.Product;
-import com.thelocalmarketplace.hardware.external.ProductDatabases;
-import com.thelocalmarketplace.software.Session;
-import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 import com.thelocalmarketplace.software.exceptions.ProductNotFoundException;
-import com.thelocalmarketplace.software.funds.Funds;
-import com.thelocalmarketplace.software.items.ItemAddedRule;
 import com.thelocalmarketplace.software.items.ItemManager;
 import com.thelocalmarketplace.software.receipt.Receipt;
-import com.thelocalmarketplace.software.test.AbstractTest;
+import com.thelocalmarketplace.software.test.AbstractSessionTest;
 import com.thelocalmarketplace.software.weight.Weight;
 
 /**
@@ -64,56 +60,37 @@ import com.thelocalmarketplace.software.weight.Weight;
  * Kingsley Zhong : 30197260
  */
 
-public class RemoveItemTests extends AbstractTest {
+public class RemoveItemTests extends AbstractSessionTest {
     public RemoveItemTests(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
         super(testName, scsClass);
         // TODO Auto-generated constructor stub
     }
 
-    private Session session;
-
     private BarcodedProduct product;
     private BarcodedProduct product2;
     private Barcode barcode;
     private BarcodedItem item;
-    private ItemManager itemManager;
-    private Receipt receipt;
 
-    private Funds funds;
-
-    private Weight weight;
+    private IElectronicScale baggingArea;
 
     // sets up the test cases
     @Before
     public void setup() {
         basicDefaultSetup();
 
-        session = new Session();
-
-        itemManager = new ItemManager(session);
-
-        receipt = new Receipt(scs.getPrinter());
-
-        new ItemAddedRule(scs.getMainScanner(), scs.getHandheldScanner(), itemManager);
-
         barcode = new Barcode(new Numeral[] { Numeral.valueOf((byte) 1) });
         product = new BarcodedProduct(barcode, "Product 1", 10, 100.0);
         product2 = new BarcodedProduct(barcode, "Product 2", 10, 120.0);
 
         item = new BarcodedItem(barcode, new Mass(100.0));
+        baggingArea = scs.getBaggingArea();
 
-        weight = new Weight(scs.getBaggingArea());
-        funds = new Funds(scs);
-
+        session.start();
     }
 
     // Successfully remove item (update weight and price) , Silver, Gold
     @Test
     public void testRemoveItemInDatabase() {
-
-        // start the session
-        session.setup(itemManager, funds, weight, receipt, scs);
-        session.start();
         // add item
         itemManager.addItem(product);
 
@@ -139,23 +116,17 @@ public class RemoveItemTests extends AbstractTest {
     // remove item that hasn't been scanned , Silver, Gold
     @Test(expected = ProductNotFoundException.class)
     public void testRemoveItemNotInDatabase() {
-        // start the session
-        session.setup(itemManager, funds, weight, receipt, scs);
-        session.start();
-
         // Remove item
         itemManager.removeItem(product);
     }
 
     // remove duplicate item (update weight and price) , Silver, Gold
     @Test
-    public void testRemoveDupliacateItemInDatabase() {
-        // start the session
-        session.setup(itemManager, funds, weight, receipt, scs);
-        session.start();
-
+    public void testRemoveDuplicateItemInDatabase() {
         // add item twice
         itemManager.addItem(product);
+        baggingArea.addAnItem(item);
+
         itemManager.addItem(product);
 
         // Check that the product was added
@@ -179,8 +150,6 @@ public class RemoveItemTests extends AbstractTest {
     // remove item twice
     @Test(expected = ProductNotFoundException.class)
     public void testRemoveSameItemTwice() {
-        session.setup(itemManager, funds, weight, receipt, scs);
-        session.start();
         itemManager.addItem(product);
         HashMap<Product, BigInteger> productList = session.getItems();
         itemManager.removeItem(product);
@@ -190,12 +159,10 @@ public class RemoveItemTests extends AbstractTest {
     // remove item that was not the last added
     @Test
     public void testRemoveItemThatsNotLastAdded() {
-        // start the session
-        session.setup(itemManager, funds, weight, receipt, scs);
-        session.start();
-
         // add two different items
         itemManager.addItem(product);
+        baggingArea.addAnItem(item);
+        
         itemManager.addItem(product2);
 
         // Check that the product was added
