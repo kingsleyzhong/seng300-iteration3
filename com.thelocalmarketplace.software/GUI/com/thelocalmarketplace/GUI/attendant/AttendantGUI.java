@@ -2,19 +2,30 @@ package com.thelocalmarketplace.GUI.attendant;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
 import com.thelocalmarketplace.software.Session;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.Toolkit;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import javax.swing.JPanel;
+
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import com.jjjwelectronics.screen.ITouchScreen;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
-
+import com.thelocalmarketplace.GUI.customComponents.PlainButton;
+import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+import com.thelocalmarketplace.hardware.AttendantStation;
+import com.thelocalmarketplace.hardware.ISelfCheckoutStation;
 import com.thelocalmarketplace.software.attendant.Attendant;
 import com.thelocalmarketplace.software.attendant.IssuePredictor;
-
+import com.thelocalmarketplace.software.attendant.IssuePredictorListener;
+import com.thelocalmarketplace.software.attendant.Issues;
 import com.thelocalmarketplace.software.attendant.MaintenanceManager;
 import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.attendant.TextSearchController;
@@ -36,13 +47,15 @@ public class AttendantGUI {
 	/**
 	 * @wbp.parser.entryPoint
 	 */
-	public AttendantGUI(Attendant attendant, MaintenanceManager manager) {
+	public AttendantGUI(Attendant attendant, MaintenanceManager manager, IssuePredictor predictor) {
 		this.attendant = attendant;
 		this.manager = manager;
+		this.predictor = predictor;
 		this.asScreen = attendant.getStation().screen;
 		this.textSearch = attendant.getTextSearchController();
 
 		sessions = attendant.getSessions();
+		
 		width = (int) screenSize.getWidth();
 		height = (int) screenSize.getHeight();
 		
@@ -65,15 +78,11 @@ public class AttendantGUI {
 		int val = 0;
 		if (sessions.size() != 0) {
 			for(Session session : sessions.keySet()) {
-				// maintenance managers?
-				// issue predictors?
 				JPanel panel = new StationPanel(session, attendant, predictor, manager);
 				panel.setPreferredSize(new Dimension(width/6, width/6));
 				asScreen.getFrame().getContentPane().add(panel, BorderLayout.SOUTH);
 			}
 		} else {
-			// maintenance managers?
-			// issue predictors?
 			JPanel panel = new StationPanel(null, attendant, predictor, manager);
 			panel.setPreferredSize(new Dimension(width/6, width/6));
 			asScreen.getFrame().getContentPane().add(panel, BorderLayout.SOUTH);
