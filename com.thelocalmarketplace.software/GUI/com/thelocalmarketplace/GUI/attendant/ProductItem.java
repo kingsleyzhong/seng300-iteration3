@@ -112,7 +112,6 @@ public class ProductItem extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(productDescription);
 				attendant.addSearchedItem(productDescription, session);
 			}
 			

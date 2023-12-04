@@ -545,6 +545,12 @@ public class SoftwareGUI{
 			
 		}
 
+		@Override
+		public void getRequest(Session session, Requests request) {
+			// TODO Auto-generated method stub
+			
+		}
+
 
 	}
 }

@@ -23,7 +23,10 @@ import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
 import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.attendant.Attendant;
+import com.thelocalmarketplace.software.attendant.IssuePredictor;
+import com.thelocalmarketplace.software.attendant.MaintenanceManager;
 import com.thelocalmarketplace.software.items.ItemManager;
+import com.thelocalmarketplace.software.receipt.Receipt;
 
 import ca.ucalgary.seng300.simulation.SimulationException;
 import powerutility.PowerGrid;
@@ -33,6 +36,9 @@ public class Simulation {
 	private AttendantStation as;
 	private Attendant attendant;
 	private Session session;
+	private Receipt receipt;
+	private IssuePredictor predictor;
+	private MaintenanceManager manager;
 	
 	private HardwareGUI hardwareGUI;
 	private AttendantGUI attendantGUI;
@@ -59,12 +65,15 @@ public class Simulation {
 		
 		SelfCheckoutStationLogic.installAttendantStation(as);
 		attendant = SelfCheckoutStationLogic.getAttendant();
+		receipt = new Receipt(scs.getPrinter());
+		predictor = new IssuePredictor(session, scs, receipt);
 		SelfCheckoutStationLogic logic = SelfCheckoutStationLogic.installOn(scs);
 		session = logic.getSession();
 		session.getStation().setSupervisor(as);
 		
 		hardwareGUI = new HardwareGUI(scs, as);
-		attendantGUI = new AttendantGUI(attendant);
+		//issue predictor??
+		attendantGUI = new AttendantGUI(attendant, );
 		softwareGUI = new SoftwareGUI(session);
 		
 		// hidden by default
