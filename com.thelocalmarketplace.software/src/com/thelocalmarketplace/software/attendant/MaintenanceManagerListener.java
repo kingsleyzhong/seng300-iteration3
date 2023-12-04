@@ -1,5 +1,9 @@
 package com.thelocalmarketplace.software.attendant;
 
+import com.tdc.banknote.BanknoteStorageUnit;
+import com.tdc.coin.CoinStorageUnit;
+import com.thelocalmarketplace.software.Session;
+
 /**
  * Project Iteration 3 Group 1
  *
@@ -30,30 +34,40 @@ public interface MaintenanceManagerListener {
     /**
      * Signals when ink has been added
      */
-    void notifyInkAdded();
+    void notifyInkAdded(Session session);
 
     /**
      * Signals when paper has been added
      */
-    void notifyPaperAdded();
+    void notifyPaperAdded(Session session);
 
     /**
      * Signals when coins have been added
      */
-    void notifyCoinAdded();
+    void notifyCoinAdded(Session session);
 
     /**
      * Signals when banknotes have been added
      */
-    void notifyBanknoteAdded();
+    void notifyBanknoteAdded(Session session);
 
     /**
      * Signals when coins have been removed
      */
-    void notifyCoinRemoved();
+    void notifyCoinRemoved(Session session, CoinStorageUnit coinStorage);
 
     /**
      * Signals when banknotes have been removed
      */
-    void notifyBanknoteRemoved();
+    void notifyBanknoteRemoved(Session session, BanknoteStorageUnit banknoteStorage);
+    
+    /**
+     * Signals when the hardware has been opened
+     */
+    void notifyHardwareOpened(Session session);
+    
+    /**
+     * Signals when the hardware has been closed
+     */
+    void notifyHardwareClosed(Session session);
 }

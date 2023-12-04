@@ -50,6 +50,5 @@ public interface ReceiptListener {
 	/**
 	 * Signals that the receipt was successfully printed 
 	 */
-	void notifiyReceiptPrinted();
-
+	void notifiyReceiptPrinted(int linesPrinted, int charsPrinted);
 }

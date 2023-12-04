@@ -296,11 +296,11 @@ public class SoftwareGUI{
 		infoWeightNumber.setFont(new Font("Dialog", Font.BOLD,20));
 		infoTop3.add(infoWeightString, BorderLayout.WEST);
 		infoTop3.add(infoWeightNumber, BorderLayout.EAST);
-		
+				
 		infoTop.add(infoTop1);
 		infoTop.add(infoTop2);
 		infoTop.add(infoTop3);
-			 
+		
 		JPanel infoBottom = new JPanel();
 		infoBottom.setBackground(Colors.color4);
 		infoBottom.setLayout(new GridLayout(0,1));
@@ -672,7 +672,5 @@ public class SoftwareGUI{
 
 			
 		}
-
-		
 	}
 }

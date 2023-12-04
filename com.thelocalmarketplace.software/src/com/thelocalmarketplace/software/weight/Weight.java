@@ -122,8 +122,7 @@ public class Weight {
 	}
 	
 	/**
-	 * Method used to signal that a bag will be added to the bagging area
-g	 *
+	 * Method used to indicate a desire to add a bag to the bagging area
 	 */
 	public void addBags() {
 			bagCheck = true;

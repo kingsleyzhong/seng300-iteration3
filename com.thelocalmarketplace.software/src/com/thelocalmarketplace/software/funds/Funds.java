@@ -172,7 +172,7 @@ public class Funds {
 	public void updatePaidCard(boolean paidBool) {
 		if (isPay) {
 			if (paidBool) {
-				calculateAmountDue(amountDue);
+				calculateAmountDue(amountDue.negate());
 			}
 		} else {
 			throw new InvalidActionException("Not in Card Payment state");
@@ -184,7 +184,7 @@ public class Funds {
 	 */
 	public void updatePaidCash(BigDecimal paid) {
 		if (isPay) {
-			calculateAmountDue(paid);
+			calculateAmountDue(paid.negate());
 		}
 
 	}

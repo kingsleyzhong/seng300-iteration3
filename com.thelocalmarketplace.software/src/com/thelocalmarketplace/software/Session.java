@@ -9,6 +9,8 @@ import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
+import com.thelocalmarketplace.software.attendant.HardwareListener;
+import com.thelocalmarketplace.software.attendant.IssuePredictor;
 import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
 import com.thelocalmarketplace.software.exceptions.InvalidActionException;
@@ -64,6 +66,7 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
  */
 public class Session {
 	public ArrayList<SessionListener> listeners = new ArrayList<>();
+	private ArrayList<HardwareListener> hardwareListeners = new ArrayList<>();
 	private AbstractSelfCheckoutStation scs;
 	protected SessionState sessionState;
 	private SessionState prevState;
@@ -71,7 +74,7 @@ public class Session {
 	private Funds funds;
 	private Weight weight;
 	private ItemManager manager;
-	private Receipt receiptPrinter;
+	private Receipt receipt;
 	private Membership membership;
 	private String membershipNumber;
 	private boolean hasMembership = false;
@@ -262,10 +265,10 @@ public class Session {
 		}
 
 		@Override
-		public void notifiyReceiptPrinted() {
+		public void notifiyReceiptPrinted(int linesPrinted, int charsPrinted) {
 			// Should notifyPaid() not wait until receipt is successfully printed to change
 			// to PRE_SESSION?
-			//end();
+			notifySessionEnd();
 		}
 
 	}
@@ -308,8 +311,8 @@ public class Session {
 		this.weight.register(new WeightDiscrepancyListener(this));
 		this.funds.register(new PayListener(this));
 		this.manager.register(new ItemManagerListener(this));
-		this.receiptPrinter = receiptPrinter;
-		this.receiptPrinter.register(new PrinterListener());
+		this.receipt = receiptPrinter;
+		this.receipt.register(new PrinterListener());
 		this.membership = membership;
 		membership.register((membershipNumber) -> {
 			Session.this.membershipNumber = membershipNumber;
@@ -367,7 +370,8 @@ public class Session {
 		prevState = sessionState;
 		sessionState = SessionState.PRE_SESSION;
 		stateChanged();
-		receiptPrinter.printReceipt(getItems());
+		receipt.printReceipt(getItems());
+
 		
 		for(SessionListener l:listeners) {
 			l.sessionEnded(this);
@@ -515,7 +519,7 @@ public class Session {
 	
 	// Move to receiptPrinter class (possible rename of receiptPrinter to just reciept
 	public void printReceipt() {
-		receiptPrinter.printReceipt(manager.getItems());
+		receipt.printReceipt(manager.getItems());
 	}
 
 	/**
@@ -567,7 +571,13 @@ public class Session {
 	 */
 	public void notifyAttendant(Requests request) {
 		for (SessionListener l : listeners) {
-			l.getRequest(this, request);
+			//l.getRequest(this, request);
+		}
+	}
+	
+	private void notifySessionEnd() {
+		for (SessionListener l : listeners) {
+			l.sessionEnded(this);
 		}
 	}
 	
@@ -578,12 +588,29 @@ public class Session {
 	}
 
 	/**
+	 * Called when hardware for the session is opened
+	 */
+	public void openHardware() {
+		for (HardwareListener l: hardwareListeners) {
+			l.aStationHasBeenOpened();
+		}
+	}
+
+	/**
+	 * Called when hardware for the session is closed
+	 */
+	public void closeHardware() {
+		for (HardwareListener l : hardwareListeners) {
+			l.aStationHasBeenClosed();
+		}
+	}
+	
+	/**
 	 * User demonstrates they wish to ask the attendent for help
 	 */
 	public void askForHelp() {
 		notifyAttendant(Requests.HELP_REQUESTED);
 	}
-
 	/**
 	 * getter methods
 	 */
@@ -607,8 +634,13 @@ public class Session {
 		return weight;
 	}
 	
+
 	public ItemManager getManager() {
 		return manager;
+	}
+
+	public Receipt getReceipt() {
+		return receipt;
 	}
 
 	public Membership getMembership() {
@@ -627,6 +659,14 @@ public class Session {
 		return scs;
 	}
 
+
+
+	/**
+	 * getter for session state
+	 *
+	 * @return
+	 *         Session State
+	 */
 	public SessionState getState() {
 		return sessionState;
 	}
@@ -651,6 +691,18 @@ public class Session {
 	
 	public ArrayList<SessionListener> getListeners(){
 		return listeners;
+	}
+
+	public final synchronized void registerHardwareListener(HardwareListener listener) {
+		if (listener == null)
+			throw new NullPointerSimulationException("listener");
+			hardwareListeners.add(listener);
+	}
+
+	public final synchronized void deRegisterHardwareListener(HardwareListener listener) {
+		if (listener == null)
+			throw new NullPointerSimulationException("listener");
+			hardwareListeners.remove(listener);
 	}
 
 }

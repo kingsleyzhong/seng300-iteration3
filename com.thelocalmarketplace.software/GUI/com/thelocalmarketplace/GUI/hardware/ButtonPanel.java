@@ -9,8 +9,10 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+
 import com.jjjwelectronics.EmptyDevice;
 import com.jjjwelectronics.bag.ReusableBag;
+
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 
@@ -103,6 +105,8 @@ public class ButtonPanel extends JPanel implements ActionListener {
 		}
 		else if(e.getSource() == sessionScreen) {
 			gui.getStation().getScreen().getFrame().setVisible(true);
+		} else if (e.getSource() == attendantScreen) {
+			gui.getSupervisor().screen.getFrame().setVisible(true);
 		}
 		else if(e.getSource() == attendantScreen) {
 			
@@ -123,6 +127,5 @@ public class ButtonPanel extends JPanel implements ActionListener {
 			}
 			numBags = 0;
 		}
-		
 	}
 }

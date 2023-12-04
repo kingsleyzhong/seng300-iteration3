@@ -35,7 +35,7 @@ public class ReceiptPrinterListenerStub implements ReceiptListener{
 	}
 
 	@Override
-	public void notifiyReceiptPrinted() {
+	public void notifiyReceiptPrinted(int linesPrinted, int charsPrinted) {
 		receiptPrinted = true;
 		
 	}

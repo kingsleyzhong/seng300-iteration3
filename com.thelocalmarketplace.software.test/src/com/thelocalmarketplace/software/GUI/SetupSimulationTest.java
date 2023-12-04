@@ -10,6 +10,7 @@ import com.thelocalmarketplace.GUI.Simulation;
 import com.thelocalmarketplace.GUI.attendant.AttendantGUI;
 import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
 import com.thelocalmarketplace.GUI.session.SoftwareGUI;
+import com.thelocalmarketplace.software.exceptions.NotDisabledSessionException;
 
 public class SetupSimulationTest {
 
@@ -18,7 +19,7 @@ public class SetupSimulationTest {
 	private AttendantGUI attendantGUI;
 	
 	@Before
-	public void setup() {
+	public void setup() throws NotDisabledSessionException {
 		Simulation simulation = new Simulation();
 		hardwareGUI = simulation.getHardwareGUI();
 		softwareGUI = simulation.getSoftwareGUI();

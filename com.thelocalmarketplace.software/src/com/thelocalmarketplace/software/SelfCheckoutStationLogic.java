@@ -1,6 +1,5 @@
 package com.thelocalmarketplace.software;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.jjjwelectronics.scanner.Barcode;
@@ -27,9 +26,9 @@ import com.thelocalmarketplace.software.weight.Weight;
  * A facade for the logic, supporting its installation on a self checkout
  * station.
  * Creates and associates Attendants and Sessions.
- * 
+ *
  * Allows for a database to be constructed
- * 
+ *
  * Project Iteration 3 Group 1
  *
  * Derek Atabayev : 30177060
@@ -59,6 +58,7 @@ public class SelfCheckoutStationLogic {
 
 	private static Attendant attendant;
 	private Session session;
+	private IssuePredictor predictor;
 
 	public static void installAttendantStation(AttendantStation as) {
 		attendant = new Attendant(as);
@@ -67,7 +67,7 @@ public class SelfCheckoutStationLogic {
 	/**
 	 * Installs an instance of the logic on the selfCheckoutStation and the session
 	 * run on the station
-	 * 
+	 *
 	 * @param scs
 	 *                The self-checkout station that the logic shall be installed
 	 * @param session
@@ -82,7 +82,7 @@ public class SelfCheckoutStationLogic {
 
 	/**
 	 * Constructors for the instance of logic
-	 * 
+	 *
 	 * @param scs
 	 *                The self-checkout station that the logic is installed on
 	 * @param session
@@ -93,7 +93,9 @@ public class SelfCheckoutStationLogic {
 		session = new Session();
 
 		// Registers the attendant with the session
+		// issue predictor??
 		attendant.registerOn(session);
+		//System.out.println("SESSIONS: "+attendant.getSessions().size());
 
 		// create Funds, Weight, Receipt, and ItemManger classes to associate w/ Session
 		Funds funds = new Funds(scs);
@@ -109,7 +111,7 @@ public class SelfCheckoutStationLogic {
 		new ItemAddedRule(scs.getMainScanner(), scs.getHandheldScanner(), itemManager);
 
 		// Register IssuePredictor with Session
-		IssuePredictor predictor = new IssuePredictor(session, scs);
+		this.predictor  = new IssuePredictor(session, scs);
 		// tell the Attendant about the Predictor
 		attendant.addIssuePrediction(predictor);
 
@@ -124,10 +126,14 @@ public class SelfCheckoutStationLogic {
 	public Session getSession() {
 		return session;
 	}
+	
+	public IssuePredictor getPredictor() {
+		return predictor;
+	}
 
 	/**
 	 * populates the database with a barcode and barcoded product into the inventory
-	 * 
+	 *
 	 * @param barcode
 	 * @param product
 	 */
