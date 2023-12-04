@@ -475,7 +475,7 @@ public class AddBagsTest extends AbstractSessionTest {
 		int actualTotalBags = scs.getReusableBagDispenser().getQuantityRemaining();
 
 		// compare the masses to see they have updated
-		assertTrue(expectedTotalBags == actualTotalBags);
+		assertEquals(expectedTotalBags, actualTotalBags);
 	}
 	
 
