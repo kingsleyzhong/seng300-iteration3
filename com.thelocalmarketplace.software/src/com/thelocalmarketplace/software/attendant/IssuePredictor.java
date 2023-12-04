@@ -101,50 +101,42 @@ public class IssuePredictor  {
 		@Override
 		public void itemAdded(Session session, Product product, Mass ofProduct, Mass currentExpectedWeight,
 				BigDecimal currentExpectedPrice) {
-			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
 		public void itemRemoved(Session session, Product product, Mass ofProduct, Mass currentExpectedMass,
 				BigDecimal currentExpectedPrice) {
-			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
 		public void addItemToScaleDiscrepancy(Session session) {
-			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
 		public void removeItemFromScaleDiscrepancy(Session session) {
-			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
 		public void discrepancy(Session session, String message) {
-			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
 		public void discrepancyResolved(Session session) {
-			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
 		public void pricePaidUpdated(Session session, BigDecimal amountDue) {
-			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
 		public void sessionAboutToStart(Session session) {
-			// TODO Auto-generated method stub
 			
 		}
 
@@ -156,19 +148,16 @@ public class IssuePredictor  {
 
 		@Override
 		public void pluCodeEntered(PLUCodedProduct product) {
-			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
 		public void sessionStateChanged() {
-			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
 		public void getRequest(Session session, Requests request) {
-			// TODO Auto-generated method stub
 			
 		}
 		
