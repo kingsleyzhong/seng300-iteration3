@@ -135,13 +135,13 @@ public class Receipt {
     public void printReceipt(HashMap<Product, BigInteger> items) {
     	receipt = "";
 		for (Map.Entry<Product, BigInteger> item : items.entrySet()) {
-			if(item instanceof BarcodedProduct) {
+			if(item.getKey() instanceof BarcodedProduct) {
 				BarcodedProduct product = (BarcodedProduct)item.getKey();
 				int numberOfProduct = item.getValue().intValue();
 				// barcoded item does not store the price for items which need to be weighted
 				double overallPrice = product.getPrice()*numberOfProduct;
 				receipt = receipt.concat("Item: " + product.getDescription() + " Amount: " + numberOfProduct + " Price: " + overallPrice + "\n");
-			} else if (item instanceof PLUCodedProduct) {
+			} else if (item.getKey() instanceof PLUCodedProduct) {
 				PLUCodedProduct product = (PLUCodedProduct)item.getKey();
 				BigInteger mass = item.getValue();
 				
@@ -176,11 +176,9 @@ public class Receipt {
         		// Send the character to the printer to print
     			printer.print(receipt.charAt(i));
         	}
-        	
-        	// If the condition is passed, then all characters were successfully printed to the receipt
-        		for(ReceiptListener l : listeners) {
-    				l.notifiyReceiptPrinted();
-    			}
+    		for(ReceiptListener l : listeners) {
+				l.notifiyReceiptPrinted();
+			}
         // The empty device exception is thrown within the loop when the printer is out of paper or ink
     	} catch (EmptyDevice e) {
 			System.err.println("There is either no ink or no paper in the printer");

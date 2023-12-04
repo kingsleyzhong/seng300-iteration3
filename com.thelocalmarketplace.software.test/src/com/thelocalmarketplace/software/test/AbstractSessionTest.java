@@ -60,7 +60,7 @@ abstract public class AbstractSessionTest extends AbstractTest {
 		super.basicDefaultSetup();
 		
 		session = new Session();
-		itemManager = new ItemManager(session);
+		itemManager = new ItemManager();
 		
 		weight = new Weight(scs.getBaggingArea());
 		funds = new Funds(scs);
