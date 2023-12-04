@@ -55,7 +55,6 @@ public class SearchBar extends JPanel implements ActionListener {
 	String searchText;
 	JButton searchGo;
 	TextSearchController text;
-	private JTextField textField;
 	
 	public SearchBar(TextSearchController textSearch) {
 		text=textSearch;
