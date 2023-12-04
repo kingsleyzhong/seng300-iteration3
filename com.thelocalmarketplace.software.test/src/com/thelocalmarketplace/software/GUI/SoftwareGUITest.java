@@ -553,5 +553,137 @@ public class SoftwareGUITest{
 		assertTrue(softwareGUI.paymentScreen.getMembershipPad().isVisible());
 	}
 	
+	@Test
+	public void testMembershipOne() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getMembershipButton().doClick();
+		softwareGUI.paymentScreen.getMembershipPad().getOne().doClick();
+		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("1"));
+		
+	}
+	
+	@Test
+	public void testMembershipTwo() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getMembershipButton().doClick();
+		softwareGUI.paymentScreen.getMembershipPad().getTwo().doClick();
+		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("2"));
+
+	}
+	
+	@Test
+	public void testMembershipThree() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getMembershipButton().doClick();
+		softwareGUI.paymentScreen.getMembershipPad().getThree().doClick();
+		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("3"));
+
+	}
+	
+	@Test
+	public void testMembershipFour() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getMembershipButton().doClick();
+		softwareGUI.paymentScreen.getMembershipPad().getFour().doClick();
+		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("4"));
+
+	}
+	
+	@Test
+	public void testMembershipFive() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getMembershipButton().doClick();
+		softwareGUI.paymentScreen.getMembershipPad().getFive().doClick();
+		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("5"));
+
+	}
+	
+	@Test
+	public void testMembershipSix() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getMembershipButton().doClick();
+		softwareGUI.paymentScreen.getMembershipPad().getSix().doClick();
+		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("6"));
+
+	}
+	
+	@Test
+	public void testMembershipSeven() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getMembershipButton().doClick();
+		softwareGUI.paymentScreen.getMembershipPad().getSeven().doClick();
+		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("7"));
+
+	}
+	
+	@Test
+	public void testMembershipEight() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getMembershipButton().doClick();
+		softwareGUI.paymentScreen.getMembershipPad().getEight().doClick();
+		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("8"));
+
+	}
+	
+	@Test
+	public void testMembershipNine() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getMembershipButton().doClick();
+		softwareGUI.paymentScreen.getMembershipPad().getNine().doClick();
+		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("9"));
+
+	}
+	
+	@Test
+	public void testMembershipZero() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getMembershipButton().doClick();
+		softwareGUI.paymentScreen.getMembershipPad().getZero().doClick();
+		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("0"));
+
+	}
+	
+	@Test
+	public void testMembershipDelete() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getMembershipButton().doClick();
+		softwareGUI.paymentScreen.getMembershipPad().getZero().doClick();
+		softwareGUI.paymentScreen.getMembershipPad().getDelete().doClick();
+		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals(""));
+
+	}
+	
+	@Test
+	public void testMembershipDone() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getMembershipButton().doClick();
+		softwareGUI.paymentScreen.getMembershipPad().getZero().doClick();
+		softwareGUI.paymentScreen.getMembershipPad().getDone().doClick();
+		//same idea need to confirm that a pop up shows up idk anymore
+		assertTrue(false);
+	}
+	
+	@Test
+	public void testMembershipValid() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getMembershipButton().doClick();
+		//I don't know if we have membership at this current moment, so maybe not a good idea
+		assertTrue(false);
+
+	} 
+	
 	
 }
