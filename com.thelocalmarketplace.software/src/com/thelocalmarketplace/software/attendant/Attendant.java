@@ -303,9 +303,8 @@ public class Attendant {
 				throw new ProductNotFoundException("Item not found");
 			}
 		} else {
-			System.out.println(description);
-			// Product not found in the visual catalogue
-			throw new ProductNotFoundException("Item not found");
+			// Session does not have this request 
+			//throw new ProductNotFoundException("Item not found");
 		}
 		sessions.put(session, Requests.NO_REQUEST); // Replace with a general request cancellation method?
 	}
@@ -443,23 +442,5 @@ public class Attendant {
 	 */
 	public TextSearchController getTextSearchController() {
 		return ts;
-	}
-
-	// register listeners
-	public final synchronized void register(AttendantListener listener) {
-		if (listener == null)
-			throw new NullPointerSimulationException("listener");
-		listeners.add(listener);
-	}
-
-	// de-register listeners
-	public final synchronized void deRegister(AttendantListener listener) {
-		if (listener == null)
-			throw new NullPointerSimulationException("listener");
-		listeners.remove(listener);
-	}
-
-	public ArrayList<AttendantListener> getListeners(){
-		return listeners;
 	}
 }

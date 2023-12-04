@@ -124,6 +124,11 @@ public class Funds {
 		scs.getCoinSlot().enable();
 		scs.getBanknoteInput().enable();
 	}
+	
+	public void disableCash() {
+		scs.getCoinSlot().disable();
+		scs.getBanknoteInput().disable();
+	}
 
 	public BigDecimal getItemsPrice() {
 		return itemsPrice;
@@ -172,7 +177,7 @@ public class Funds {
 	public void updatePaidCard(boolean paidBool) {
 		if (isPay) {
 			if (paidBool) {
-				calculateAmountDue(amountDue);
+				calculateAmountDue(amountDue.negate());
 			}
 		} else {
 			throw new InvalidActionException("Not in Card Payment state");
@@ -184,7 +189,7 @@ public class Funds {
 	 */
 	public void updatePaidCash(BigDecimal paid) {
 		if (isPay) {
-			calculateAmountDue(paid);
+			calculateAmountDue(paid.negate());
 		}
 
 	}
@@ -291,4 +296,8 @@ public class Funds {
 		listeners.add(listener);
 	}
 
+    public void clear() {
+		itemsPrice = new BigDecimal(0);
+		amountDue = new BigDecimal(0);
+    }
 }

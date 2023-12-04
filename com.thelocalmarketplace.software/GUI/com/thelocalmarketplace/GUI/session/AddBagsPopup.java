@@ -61,14 +61,14 @@ public class AddBagsPopup {
 	
 	// JFrame size
 
-	private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	private JPanel panel;
 	private JLabel bagOptions;
-	private PlainButton cashButton;
 
 	private JButton addPersonalBagButton;
 	private JButton addStoreBagButton;
 	private JButton cancelButton;
+
+	private NumberOfBags numOfBagsScreen;
 	
 	public AddBagsPopup(Session session) {
 				
@@ -91,11 +91,13 @@ public class AddBagsPopup {
 		panel.setLayout(new GridLayout(0, 1, 30, 30));
 		main.add(panel);
 
+		//Header for the screen
 		bagOptions = new JLabel("Bag Options:");
 		bagOptions.setHorizontalAlignment(SwingConstants.CENTER);
 		bagOptions.setFont(new Font("Tahoma", Font.PLAIN, 30));
 		panel.add(bagOptions);
 		
+		//Personal Bag Option, puts session into ADDING_BAGS
 		addPersonalBagButton = new PlainButton("Add Personal Bag", Colors.color4);
 		addPersonalBagButton.setFont(new Font("Tahoma", Font.PLAIN, 25));
 		addPersonalBagButton.addActionListener(new ActionListener() {
@@ -113,7 +115,8 @@ public class AddBagsPopup {
 		});
 		panel.add(addPersonalBagButton);
 		
-		NumberOfBags numOfBagsScreen = new NumberOfBags();
+		//Store bags option, will open a window to see how many bags user wants
+		numOfBagsScreen = new NumberOfBags(session);
 		addStoreBagButton = new PlainButton("Add Stores Bags", Colors.color4);
 		addStoreBagButton.setFont(new Font("Tahoma", Font.PLAIN, 25));
 		addStoreBagButton.addActionListener(new ActionListener() {
@@ -121,6 +124,7 @@ public class AddBagsPopup {
 				if (session.getState() != SessionState.BLOCKED) {
 					numOfBagsScreen.popUp();
 					hide();
+					
 				}
 				else {
 	            JOptionPane.showMessageDialog(addPersonalBagButton, "Cannot Add Bag at this moment");
@@ -130,6 +134,7 @@ public class AddBagsPopup {
 		
 		panel.add(addStoreBagButton);
 		
+		//Closes window
 		cancelButton = new PlainButton("Close", Colors.color4);
 		cancelButton.setFont(new Font("Tahoma", Font.PLAIN, 25));
 		cancelButton.addActionListener(new ActionListener() {
@@ -149,5 +154,26 @@ public class AddBagsPopup {
 	public void hide() {
 		this.frame.setVisible(false);
 	}
+
+	public JButton getAddPersonalBagButton() {
+		return addPersonalBagButton;
+	}
+
+	public JButton getAddStoreBagButton() {
+		return addStoreBagButton;
+	}
+
+	public JButton getCancelButton() {
+		return cancelButton;
+	}
+	
+	public NumberOfBags getNumOfBagsScreen() {
+		return numOfBagsScreen;
+	}
+
+	public boolean isVisible() {
+		return frame.isVisible();
+	}
+	
 	
 }
