@@ -1,6 +1,5 @@
 package com.thelocalmarketplace.software;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.jjjwelectronics.scanner.Barcode;
