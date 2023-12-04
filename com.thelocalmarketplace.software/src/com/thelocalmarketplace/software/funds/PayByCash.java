@@ -7,14 +7,8 @@ import com.tdc.IComponent;
 import com.tdc.IComponentObserver;
 import com.tdc.banknote.BanknoteValidator;
 import com.tdc.banknote.BanknoteValidatorObserver;
-import com.tdc.coin.Coin;
 import com.tdc.coin.CoinValidator;
 import com.tdc.coin.CoinValidatorObserver;
-import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
-import com.thelocalmarketplace.software.Session;
-import com.thelocalmarketplace.software.SessionState;
-import com.thelocalmarketplace.software.exceptions.InvalidActionException;
-
 import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 
 /***

@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Locale;
 
@@ -16,31 +15,15 @@ import com.jjjwelectronics.IllegalDigitException;
 import com.tdc.CashOverloadException;
 import com.tdc.DisabledException;
 import com.tdc.NoCashAvailableException;
-import com.tdc.banknote.Banknote;
-import com.tdc.banknote.BanknoteDispenserBronze;
 import com.tdc.coin.Coin;
-import com.tdc.coin.CoinDispenserBronze;
-import com.tdc.coin.CoinDispenserGold;
-import com.tdc.coin.CoinValidator;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationSilver;
-import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
-import com.thelocalmarketplace.software.Session;
-import com.thelocalmarketplace.software.SessionState;
-import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 import com.thelocalmarketplace.software.exceptions.NotEnoughChangeException;
 import com.thelocalmarketplace.software.funds.Funds;
-import com.thelocalmarketplace.software.funds.FundsListener;
-import com.thelocalmarketplace.software.funds.PayByCard;
-import com.thelocalmarketplace.software.funds.PayByCash;
 import com.thelocalmarketplace.software.test.AbstractTest;
 
 import StubClasses.FundsListenerStub;
 import StubClasses.SessionFundsSimulationStub;
 import ca.ucalgary.seng300.simulation.SimulationException;
-import powerutility.PowerGrid;
 
 /**
  * Testing for the Funds class

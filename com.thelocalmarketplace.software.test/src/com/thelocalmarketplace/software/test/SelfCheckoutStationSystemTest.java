@@ -8,54 +8,28 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
-import com.jjjwelectronics.bag.IReusableBagDispenser;
 import com.jjjwelectronics.card.Card;
-import com.jjjwelectronics.card.ICardReader;
 import com.jjjwelectronics.card.MagneticStripeFailureException;
-import com.jjjwelectronics.printer.IReceiptPrinter;
-import com.jjjwelectronics.scale.IElectronicScale;
 import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.scanner.BarcodedItem;
-import com.jjjwelectronics.scanner.IBarcodeScanner;
-import com.jjjwelectronics.screen.ITouchScreen;
 import com.tdc.CashOverloadException;
 import com.tdc.DisabledException;
 import com.tdc.NoCashAvailableException;
 import com.tdc.banknote.Banknote;
-import com.tdc.banknote.BanknoteDispensationSlot;
-import com.tdc.banknote.BanknoteInsertionSlot;
-import com.tdc.banknote.BanknoteStorageUnit;
-import com.tdc.banknote.BanknoteValidator;
-import com.tdc.banknote.IBanknoteDispenser;
 import com.tdc.coin.Coin;
-import com.tdc.coin.CoinSlot;
-import com.tdc.coin.CoinStorageUnit;
-import com.tdc.coin.CoinValidator;
-import com.tdc.coin.ICoinDispenser;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.AttendantStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
-import com.thelocalmarketplace.hardware.CoinTray;
 import com.thelocalmarketplace.hardware.Product;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationSilver;
 import com.thelocalmarketplace.hardware.external.CardIssuer;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
@@ -66,8 +40,6 @@ import com.thelocalmarketplace.software.funds.CardIssuerDatabase;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.funds.SupportedCardIssuers;
 import com.thelocalmarketplace.software.weight.Weight;
-
-import powerutility.PowerGrid;
 
 /**
  * Unit test for the integration of software for selfCheckoutStation with
@@ -569,7 +541,6 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 		scs.getReusableBagDispenser().turnOff();
 		scs.getPrinter().turnOff();
 		scs.getCardReader().turnOff();
-		scs.getCoinValidator()
 		
 		scs.getBaggingArea().turnOn();
 		scs.getScanningArea().turnOn();

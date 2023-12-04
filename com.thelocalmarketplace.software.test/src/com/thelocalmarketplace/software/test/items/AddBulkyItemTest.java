@@ -6,7 +6,6 @@ import com.jjjwelectronics.IDevice;
 import com.jjjwelectronics.IDeviceListener;
 import com.jjjwelectronics.scanner.BarcodeScannerListener;
 import com.jjjwelectronics.scanner.IBarcodeScanner;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,24 +16,11 @@ import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.scanner.BarcodedItem;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationSilver;
-import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.attendant.Requests;
-import com.thelocalmarketplace.software.funds.Funds;
-import com.thelocalmarketplace.software.items.ItemManager;
-import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.test.AbstractSessionTest;
-import com.thelocalmarketplace.software.test.AbstractTest;
-import com.thelocalmarketplace.software.weight.Weight;
-
-import powerutility.PowerGrid;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Unit Test class for Add Bulky Item Use Case

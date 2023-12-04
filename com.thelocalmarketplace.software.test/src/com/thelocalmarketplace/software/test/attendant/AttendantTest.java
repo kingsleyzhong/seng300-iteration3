@@ -3,15 +3,8 @@ package com.thelocalmarketplace.software.test.attendant;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
-
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.AttendantStation;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
@@ -21,11 +14,8 @@ import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.attendant.Attendant;
-import com.thelocalmarketplace.software.attendant.IssuePredictor;
 import com.thelocalmarketplace.software.exceptions.SessionNotRegisteredException;
 import com.thelocalmarketplace.software.test.AbstractTest;
-
-import powerutility.PowerGrid;
 
 /**
  * Unit Testing for SelfCheckoutStation logic

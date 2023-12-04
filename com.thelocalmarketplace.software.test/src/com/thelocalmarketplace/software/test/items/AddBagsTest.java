@@ -4,47 +4,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.HashMap;
-
 import org.junit.Before;
 import org.junit.Test;
-import org.w3c.dom.views.AbstractView;
-
-import com.jjjwelectronics.Item;
 import com.jjjwelectronics.Mass;
-import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.OverloadedDevice;
 import com.jjjwelectronics.bag.ReusableBag;
 import com.jjjwelectronics.scale.IElectronicScale;
-import com.jjjwelectronics.scanner.Barcode;
-import com.jjjwelectronics.scanner.BarcodedItem;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
-import com.thelocalmarketplace.hardware.BarcodedProduct;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationSilver;
-import com.thelocalmarketplace.hardware.external.ProductDatabases;
-import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionState;
-import com.thelocalmarketplace.software.funds.Funds;
-import com.thelocalmarketplace.software.items.ItemAddedRule;
-import com.thelocalmarketplace.software.items.ItemManager;
 import com.thelocalmarketplace.software.items.ReusableBagProduct;
-import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.test.AbstractSessionTest;
-import com.thelocalmarketplace.software.test.AbstractTest;
-
-import com.thelocalmarketplace.software.weight.Weight;
-
 import StubClasses.BagStub;
 import StubClasses.ReusableBagStub;
-import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
-import junit.framework.Assert;
-import powerutility.PowerGrid;
 
 /*
  * Testing for methods related to the AddBags use case

@@ -15,12 +15,13 @@ import org.junit.Before;
 import org.junit.Test;
 import powerutility.NoPowerException;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.assertEquals;
 
 /**
  * <p>A class of unit tests that test specifically the functionality of

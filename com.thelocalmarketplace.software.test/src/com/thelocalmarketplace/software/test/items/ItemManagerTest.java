@@ -6,9 +6,6 @@ import static org.junit.Assert.assertTrue;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
-import java.util.Map;
-
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,7 +28,6 @@ import com.thelocalmarketplace.software.test.AbstractSessionTest;
 import com.thelocalmarketplace.software.weight.Weight;
 
 import StubClasses.ItemsListenerStub;
-import StubClasses.SessionListenerStub;
 import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 import powerutility.PowerGrid;
 

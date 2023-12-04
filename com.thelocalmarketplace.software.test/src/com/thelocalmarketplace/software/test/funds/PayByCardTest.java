@@ -1,57 +1,33 @@
 package com.thelocalmarketplace.software.test.funds;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Currency;
-import java.util.HashMap;
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.jjjwelectronics.IllegalDigitException;
-import com.jjjwelectronics.Mass;
-import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.card.Card;
 import com.jjjwelectronics.card.ChipFailureException;
 import com.jjjwelectronics.card.InvalidPINException;
 import com.jjjwelectronics.card.MagneticStripeFailureException;
-import com.jjjwelectronics.scanner.Barcode;
-import com.jjjwelectronics.card.BlockedCardException;
 import com.tdc.CashOverloadException;
 import com.tdc.DisabledException;
 import com.tdc.NoCashAvailableException;
-import com.tdc.coin.CoinValidator;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
-import com.thelocalmarketplace.hardware.BarcodedProduct;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationSilver;
 import com.thelocalmarketplace.hardware.external.CardIssuer;
-import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
-import com.thelocalmarketplace.software.Session;
-import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 import com.thelocalmarketplace.software.funds.CardIssuerDatabase;
 import com.thelocalmarketplace.software.funds.Funds;
-import com.thelocalmarketplace.software.funds.FundsListener;
 import com.thelocalmarketplace.software.funds.PayByCard;
 import com.thelocalmarketplace.software.funds.SupportedCardIssuers;
 import com.thelocalmarketplace.software.test.AbstractTest;
 
-import ca.ucalgary.seng300.simulation.SimulationException;
 import powerutility.NoPowerException;
-import powerutility.PowerGrid;
 
 /**
  * <p>
