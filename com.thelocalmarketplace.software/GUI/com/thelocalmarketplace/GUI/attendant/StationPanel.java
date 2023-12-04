@@ -1,23 +1,12 @@
 package com.thelocalmarketplace.GUI.attendant;
 
-import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -28,19 +17,43 @@ import com.tdc.banknote.BanknoteStorageUnit;
 import com.tdc.coin.CoinStorageUnit;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
-import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
-import com.thelocalmarketplace.GUI.session.SearchCatalogue;
-import com.thelocalmarketplace.hardware.ISelfCheckoutStation;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.attendant.Attendant;
 import com.thelocalmarketplace.software.attendant.IssuePredictor;
 import com.thelocalmarketplace.software.attendant.IssuePredictorListener;
-import com.thelocalmarketplace.software.attendant.Issues;
 import com.thelocalmarketplace.software.attendant.MaintenanceManager;
 import com.thelocalmarketplace.software.attendant.MaintenanceManagerListener;
+import com.thelocalmarketplace.software.attendant.Requests;
 
-import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
 import javax.swing.SwingConstants;
+
+/**
+ * Represents a panel to display a currently registered station.
+ * 
+ * Project Iteration 3 Group 1
+ *
+ * Derek Atabayev : 30177060
+ * Enioluwafe Balogun : 30174298
+ * Subeg Chahal : 30196531
+ * Jun Heo : 30173430
+ * Emily Kiddle : 30122331
+ * Anthony Kostal-Vazquez : 30048301
+ * Jessica Li : 30180801
+ * Sua Lim : 30177039
+ * Savitur Maharaj : 30152888
+ * Nick McCamis : 30192610
+ * Ethan McCorquodale : 30125353
+ * Katelan Ng : 30144672
+ * Arcleah Pascual : 30056034
+ * Dvij Raval : 30024340
+ * Chloe Robitaille : 30022887
+ * Danissa Sandykbayeva : 30200531
+ * Emily Stein : 30149842
+ * Thi My Tuyen Tran : 30193980
+ * Aoi Ueki : 30179305
+ * Ethan Woo : 30172855
+ * Kingsley Zhong : 30197260
+ */
 
 public class StationPanel extends JPanel implements ActionListener {
 	Session session;
@@ -62,6 +75,7 @@ public class StationPanel extends JPanel implements ActionListener {
 	JLabel info = new JLabel("");
 	Color detailsColor;
 	
+	JButton approveRequest;
 	JButton addBySearch;
 	JButton power;	
 	Color powerColor;
@@ -100,6 +114,10 @@ public class StationPanel extends JPanel implements ActionListener {
 			addBySearch.setFont(new Font("Tahoma", Font.BOLD, 18));
 			addBySearch.addActionListener(this);
 			
+			approveRequest = new PlainButton("Approve Request", Colors.color4);
+			approveRequest.setFont(new Font("Tahoma", Font.BOLD, 18));
+			approveRequest.addActionListener(this);
+			
 			add(stationName);
 			add(status);
 			
@@ -110,6 +128,7 @@ public class StationPanel extends JPanel implements ActionListener {
 			populateIssues(false);
 			updateIssues(issues);
 			add(info);
+			add(approveRequest);
 			add(addBySearch);
 			add(power);
 		} else {
@@ -192,6 +211,11 @@ public class StationPanel extends JPanel implements ActionListener {
 			}
 		} else if (e.getSource() == addBySearch) {
 			new AttendantCatalogue(session, attendant);
+		}
+		else if (e.getSource() == approveRequest) {
+			Requests request = attendant.getCurrentRequest(session);
+			JOptionPane.showMessageDialog(null, "Approving request: " + request.toString());
+			attendant.approveRequest(session);
 		}
 	}
 	

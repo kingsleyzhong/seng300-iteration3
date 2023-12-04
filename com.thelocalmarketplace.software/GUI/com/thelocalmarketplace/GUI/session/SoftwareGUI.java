@@ -16,7 +16,6 @@ import java.text.DecimalFormat;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -29,20 +28,49 @@ import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
-import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionListener;
 import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.attendant.Requests;
-import com.thelocalmarketplace.software.exceptions.InvalidActionException;
-
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
+/**
+ * The physical interface of the software. Responds to changes in the session and displays
+ * those changes on a physical representation.
+ * 
+ * I able to track added items, add items, enter PLU codes, enter pay modes, call attendants, 
+ * display the current cart total and weight. The number of products and number of added items.
+ * 
+ * Project Iteration 3 Group 1
+ *
+ * Derek Atabayev : 30177060
+ * Enioluwafe Balogun : 30174298
+ * Subeg Chahal : 30196531
+ * Jun Heo : 30173430
+ * Emily Kiddle : 30122331
+ * Anthony Kostal-Vazquez : 30048301
+ * Jessica Li : 30180801
+ * Sua Lim : 30177039
+ * Savitur Maharaj : 30152888
+ * Nick McCamis : 30192610
+ * Ethan McCorquodale : 30125353
+ * Katelan Ng : 30144672
+ * Arcleah Pascual : 30056034
+ * Dvij Raval : 30024340
+ * Chloe Robitaille : 30022887
+ * Danissa Sandykbayeva : 30200531
+ * Emily Stein : 30149842
+ * Thi My Tuyen Tran : 30193980
+ * Aoi Ueki : 30179305
+ * Ethan Woo : 30172855
+ * Kingsley Zhong : 30197260
+ */
+
 public class SoftwareGUI{
 	public static JFrame frame;
-	public JFrame catalogue;
+	public SearchCatalogue catalogue;
 	public JPanel mainPane;
 	public JPanel startPane;
 	public JPanel endPane;
@@ -537,6 +565,7 @@ public class SoftwareGUI{
 			}
 			else if(source == callAttendant) {
 				session.askForHelp();
+				JOptionPane.showMessageDialog(null, "You have notified the attendant.");
 			}
 		}	
 	}
