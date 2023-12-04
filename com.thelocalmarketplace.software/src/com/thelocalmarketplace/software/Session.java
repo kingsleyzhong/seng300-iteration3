@@ -9,7 +9,6 @@ import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
-import com.thelocalmarketplace.software.attendant.AttendantListener;
 import com.thelocalmarketplace.software.attendant.HardwareListener;
 import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;

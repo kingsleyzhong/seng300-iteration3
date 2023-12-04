@@ -52,7 +52,6 @@ public class Attendant {
 	private HashMap<Session, Requests> sessions = new HashMap<>();
 	private HashMap<Session, IssuePredictor> predictors = new HashMap<>();
 	private HashMap<Session, AbstractSelfCheckoutStation> stations = new HashMap<>();
-	public ArrayList<AttendantListener> listeners = new ArrayList<>();
 	
 	/**
 	 * Creates an instance of class Attendant given an instance of hardware AttendantStation.
