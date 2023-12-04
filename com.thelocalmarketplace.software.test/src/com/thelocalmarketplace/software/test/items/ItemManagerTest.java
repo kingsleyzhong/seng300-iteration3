@@ -65,8 +65,8 @@ public class ItemManagerTest extends AbstractSessionTest {
         barcodedItem2 = new BarcodedItem(barcode2, new Mass(product2.getExpectedWeight()));
         pluCode = new PriceLookUpCode("1234");
         pluCode2 = new PriceLookUpCode("4321");
-        pluProduct = new PLUCodedProduct(pluCode, "bread", 5);
-        pluProduct2 = new PLUCodedProduct(pluCode2, "meat", 10);
+        pluProduct = new PLUCodedProduct(pluCode, "bread", 500);
+        pluProduct2 = new PLUCodedProduct(pluCode2, "meat", 100);
         pluProductMass = new Mass(5);
         pluProductMass2 = new Mass(10);
         pluItem = new PLUCodedItem(pluCode, pluProductMass);
@@ -273,6 +273,7 @@ public class ItemManagerTest extends AbstractSessionTest {
     @Test
     public void addPLUProduct() {
     	session.start();
+    	itemManager.deregisterAll();
     	itemManager.addItem(pluProduct, pluProductMass);
     	
     	BigInteger expected = pluProductMass.inMicrograms();
@@ -286,8 +287,8 @@ public class ItemManagerTest extends AbstractSessionTest {
     
     @Test
     public void addTwoPLUProducts() {
+    	itemManager.deregisterAll();
     	PLUCodedItem pluItemClone = new PLUCodedItem(pluCode, pluProductMass);
-    	
     	session.start();
     	itemManager.addItem(pluProduct, pluProductMass);
     	scs.getScanningArea().addAnItem(pluItem);
@@ -303,7 +304,6 @@ public class ItemManagerTest extends AbstractSessionTest {
      	// Reset
      	itemManager.removeItem(pluProduct);
      	scs.getScanningArea().removeAnItem(pluItem);
-     	itemManager.removeItem(pluProduct);
      	scs.getScanningArea().removeAnItem(pluItemClone);
     }
     

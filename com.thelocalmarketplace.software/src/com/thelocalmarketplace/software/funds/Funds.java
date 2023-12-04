@@ -94,7 +94,7 @@ public class Funds {
 			throw new IllegalDigitException("Price should be positive.");
 		}
 		this.itemsPrice = this.itemsPrice.add(price);
-		calculateAmountDue(new BigDecimal(0));
+		calculateAmountDue(price);
 	}
 
 	/**
@@ -147,7 +147,7 @@ public class Funds {
 	 */
 	private void calculateAmountDue(BigDecimal amountPaid) {
 
-		this.amountDue = this.itemsPrice.subtract(amountPaid);
+		this.amountDue = this.itemsPrice.add(amountPaid);
 
 		for (FundsListener l : listeners)
 			l.notifyUpdateAmountDue(this.amountDue);
