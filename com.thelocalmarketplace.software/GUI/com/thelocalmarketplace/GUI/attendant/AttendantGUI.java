@@ -67,16 +67,14 @@ public class AttendantGUI {
 	public void populateSessions() {
 		int val = 0;
 		if (sessions.size() != 0) {
-		while(val < sessions.size()) {
-			JPanel panel = new StationPanel(sessions.get(val), attendant);
-			stationPanels.add(panel);
-			attendant.registerOn(sessions.get(val));
-			panel.setPreferredSize(new Dimension(width/6, width/6));
-			asScreen.getFrame().getContentPane().add(panel, BorderLayout.SOUTH);
-		}
+			while(val < sessions.size()) {
+				JPanel panel = new StationPanel(sessions.get(val), attendant);
+				panel.setPreferredSize(new Dimension(width/6, width/6));
+				asScreen.getFrame().getContentPane().add(panel, BorderLayout.SOUTH);
+				val++;
+			}
 		} else {
 			JPanel panel = new StationPanel(null, attendant);
-			//attendant.registerOn(null);
 			panel.setPreferredSize(new Dimension(width/6, width/6));
 			asScreen.getFrame().getContentPane().add(panel, BorderLayout.SOUTH);
 		}

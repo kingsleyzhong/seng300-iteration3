@@ -75,35 +75,43 @@ public class StationPanel extends JPanel implements ActionListener {
 		setLayout(layout);
 		setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
 		
-		stationName.setFont(new Font("Tahoma", Font.BOLD, 18));
-		stationName.setHorizontalAlignment(SwingConstants.LEFT);
-		stationName.setText("STATION 1");
-		
-		status.setForeground(new Color(60, 179, 113));
-		status.setFont(new Font("Tahoma", Font.BOLD, 16));
-		status.setHorizontalAlignment(SwingConstants.LEFT);
-		status.setText("STATUS: GOOD");
-		
-		power = new PlainButton("OFF", new Color(205, 92, 92));
-		power.setFont(new Font("Tahoma", Font.BOLD, 18));
-		power.addActionListener(this);
-		
-		addBySearch = new PlainButton("<html>Add by<br>search</html>", Colors.color4);
-		addBySearch.setFont(new Font("Tahoma", Font.BOLD, 18));
-		addBySearch.addActionListener(this);
-		
-		add(stationName);
-		add(status);
-		
-		info = new JLabel(issuesText);
-		info.setVerticalAlignment(SwingConstants.TOP);
-		info.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		populateIssueMessages();
-		populateIssues(false);
-		updateIssues(issues);
-		add(info);
-		add(addBySearch);
-		add(power);
+		if (session != null) {
+			stationName.setFont(new Font("Tahoma", Font.BOLD, 18));
+			stationName.setHorizontalAlignment(SwingConstants.LEFT);
+			stationName.setText("STATION 1");
+			
+			status.setForeground(new Color(60, 179, 113));
+			status.setFont(new Font("Tahoma", Font.BOLD, 16));
+			status.setHorizontalAlignment(SwingConstants.LEFT);
+			status.setText("STATUS: GOOD");
+			
+			power = new PlainButton("OFF", new Color(205, 92, 92));
+			power.setFont(new Font("Tahoma", Font.BOLD, 18));
+			power.addActionListener(this);
+			
+			addBySearch = new PlainButton("<html>Add by<br>search</html>", Colors.color4);
+			addBySearch.setFont(new Font("Tahoma", Font.BOLD, 18));
+			addBySearch.addActionListener(this);
+			
+			add(stationName);
+			add(status);
+			
+			info = new JLabel(issuesText);
+			info.setVerticalAlignment(SwingConstants.TOP);
+			info.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			populateIssueMessages();
+			populateIssues(false);
+			updateIssues(issues);
+			add(info);
+			add(addBySearch);
+			add(power);
+		} else {
+			JLabel empty = new JLabel("NO STATIONS REGISTERED");
+			empty.setForeground(new Color(60, 179, 113));
+			empty.setFont(new Font("Tahoma", Font.BOLD, 16));
+			empty.setHorizontalAlignment(SwingConstants.CENTER);
+			add(empty);
+		}
 	}
 
 	private void populateIssueMessages() {
@@ -116,8 +124,8 @@ public class StationPanel extends JPanel implements ActionListener {
 	}
 	
 	private void populateIssues(boolean stat) {
-		issues.put("ink", true);
-		issues.put("paper", true);
+		issues.put("ink", stat);
+		issues.put("paper", stat);
 		issues.put("coinsLow", stat);
 		issues.put("banknotesLow", stat);
 		issues.put("coinsFull", stat);
@@ -158,12 +166,12 @@ public class StationPanel extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == power) {
 			if(!enabled) {
-				//attendant.disableStation(session);
+				attendant.disableStation(session);
 				enabled = true;
 				power.setText("ON");
 				power.setBackground(new Color(158, 228, 144));
 			} else {
-				//attendant.enableStation(session);
+				attendant.enableStation(session);
 				enabled = false;
 				power.setText("OFF");
 				power.setBackground(new Color(205, 92, 92));

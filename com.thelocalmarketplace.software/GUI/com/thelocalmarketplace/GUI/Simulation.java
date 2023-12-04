@@ -50,7 +50,6 @@ public class Simulation {
 	public void setupLogic() {
 		scs = new SelfCheckoutStationBronze();
 		as = new AttendantStation();
-		attendant = new Attendant(as);
 		
 		PowerGrid.engageUninterruptiblePowerSource();
 		scs.plugIn(PowerGrid.instance());
@@ -59,6 +58,7 @@ public class Simulation {
 		as.turnOn();
 		
 		SelfCheckoutStationLogic.installAttendantStation(as);
+		attendant = SelfCheckoutStationLogic.getAttendant();
 		SelfCheckoutStationLogic logic = SelfCheckoutStationLogic.installOn(scs);
 		session = logic.getSession();
 		session.getStation().setSupervisor(as);
