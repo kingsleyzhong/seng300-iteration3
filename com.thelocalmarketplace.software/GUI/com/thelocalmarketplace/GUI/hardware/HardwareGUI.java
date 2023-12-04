@@ -26,6 +26,7 @@ import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.scanner.BarcodedItem;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+import com.thelocalmarketplace.hardware.AttendantStation;
 import com.thelocalmarketplace.hardware.PLUCodedItem;
 import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import java.awt.BorderLayout;

@@ -176,11 +176,6 @@ public class StationPanel extends JPanel implements ActionListener {
 	private class InnerPredictionListener implements IssuePredictorListener{
 
 		@Override
-		public void notifyPredictUnsupportedFeature(Session session, Issues issue) {
-			// what is unsupported feature??			
-		}
-
-		@Override
 		public void notifyPredictLowInk(Session session) {
 			issues.put("ink", true);
 			updateIssues(issues);

@@ -105,12 +105,6 @@ public class IssuePredictor  {
 	private class InnerSessionListener implements SessionListener{
 
 		@Override
-		public void getRequest(Session session, Requests request) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
 		public void itemAdded(Session session, Product product, Mass ofProduct, Mass currentExpectedWeight,
 				BigDecimal currentExpectedPrice) {
 			// TODO Auto-generated method stub

@@ -510,7 +510,7 @@ public class Session {
 	 */
 	public void notifyAttendant(Requests request) {
 		for (SessionListener l : listeners) {
-			l.getRequest(this, request);
+			//l.getRequest(this, request);
 		}
 	}
 	

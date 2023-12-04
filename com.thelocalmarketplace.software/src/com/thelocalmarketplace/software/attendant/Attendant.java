@@ -98,16 +98,6 @@ public class Attendant {
 			
 		}
 		
-		/**
-		 * Example of how getRequest could be written. It should include the request and the session the request comes from.
-		 * Note you will also have to add any of these methods to SessionListener along with the @Override keyword
-		 * @param session
-		 * @param request
-		 */
-		@Override
-		public void getRequest(Session session, Requests request) {
-			
-		}
 
 		@Override
 		public void sessionAboutToStart(Session session) {

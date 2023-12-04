@@ -33,7 +33,6 @@ public class Simulation {
 	private AttendantStation as;
 	private Attendant attendant;
 	private Session session;
-	private Attendant attendant;
 	
 	private HardwareGUI hardwareGUI;
 	private AttendantGUI attendantGUI;
