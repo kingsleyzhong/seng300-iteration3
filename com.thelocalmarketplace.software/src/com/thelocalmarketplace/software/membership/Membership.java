@@ -75,7 +75,6 @@ public class Membership {
     	String memberCardNumber = memberCard.getNumber();
     	if (MembershipDatabase.MEMBERSHIP_DATABASE.containsKey(memberCardNumber))
     		notifyMembershipEntered(memberCardNumber);
-    	//else {} Only needed if notifyMembershipNotFound() is something that is required in the listener
     }
 
     private class InnerListener implements CardReaderListener {

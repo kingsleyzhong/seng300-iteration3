@@ -65,7 +65,7 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 public class Session {
 	public ArrayList<SessionListener> listeners = new ArrayList<>();
 	private AbstractSelfCheckoutStation scs;
-	private SessionState sessionState;
+	protected SessionState sessionState;
 	private SessionState prevState;
 	private boolean disableSelf = false; // when true: disable the Session when it ends
 	private Funds funds;
@@ -270,15 +270,6 @@ public class Session {
 
 	}
 
-	private class MemberListener implements MembershipListener {
-		/** Sets the membership number for the session. */
-		@Override
-		public void membershipEntered(String membershipNumber) {
-			Session.this.membershipNumber = membershipNumber;
-			Session.this.hasMembership = true;
-		}
-	}
-
 	/**
 	 * Constructor for the session method. Requires to be installed on self-checkout
 	 * system
@@ -320,7 +311,10 @@ public class Session {
 		this.receiptPrinter = receiptPrinter;
 		this.receiptPrinter.register(new PrinterListener());
 		this.membership = membership;
-		membership.register(new MemberListener());
+		membership.register((membershipNumber) -> {
+			Session.this.membershipNumber = membershipNumber;
+			Session.this.hasMembership = true;
+		});
 		this.scs = scs;
 	}
 
@@ -354,7 +348,7 @@ public class Session {
 		else if (sessionState != SessionState.BLOCKED) {
 			sessionState = SessionState.IN_SESSION;
 			stateChanged();
-			weight.cancel();
+			weight.cancelAddBags();
 			manager.setAddItems(true);
 		}
 	}
@@ -493,6 +487,12 @@ public class Session {
 			weight.addBags();
 		}
 		// else: nothing changes about the Session's state
+	}
+
+	public void cancelAddBags() {
+		if (sessionState == SessionState.ADDING_BAGS) {
+			weight.cancelAddBags();
+		}
 	}
 	
 	/**

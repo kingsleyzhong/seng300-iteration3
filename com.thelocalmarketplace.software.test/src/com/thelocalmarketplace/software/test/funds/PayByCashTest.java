@@ -95,19 +95,17 @@ public class PayByCashTest extends AbstractTest {
 	@Test
 
 	public void validCoinObserved() throws DisabledException, CashOverloadException {
-
+		scs.getCoinSlot().enable();
 		Currency currency = Currency.getInstance(Locale.CANADA);
 		value = BigDecimal.valueOf(1);
 
 		Coin coin = new Coin(currency, value);
 
-		MockSession mockSession = new MockSession();
-		mockSession.payByCash();
-
+		
 		while (!cvListener.coinIsValid) {
 			scs.getCoinSlot().receive(coin);
 		}
-		Assert.assertEquals(BigDecimal.ONE, funds.getPaid());
+		Assert.assertEquals(BigDecimal.ONE, cashController.getCashPaid());
 	}
 
 	/***
@@ -120,14 +118,12 @@ public class PayByCashTest extends AbstractTest {
 	@Test
 
 	public void invalidCoinObserved() throws DisabledException, CashOverloadException {
-
+		scs.getCoinSlot().enable();
 		Currency currency = Currency.getInstance(Locale.CANADA);
 		value = BigDecimal.valueOf(2);
 
 		Coin coin = new Coin(currency, value);
 
-		MockSession mockSession = new MockSession();
-		mockSession.payByCash();
 
 		scs.getCoinSlot().receive(coin);
 		Assert.assertEquals(BigDecimal.ZERO, cashController.getCashPaid());
@@ -140,15 +136,13 @@ public class PayByCashTest extends AbstractTest {
 	 * @throws DisabledException
 	 * @throws CashOverloadException
 	 */
-	@Test(expected = InvalidActionException.class)
-
+	@Test(expected = DisabledException.class)
+	
 	public void payInactive() throws DisabledException, CashOverloadException {
-
+		scs.getCoinSlot().disable();
 		Currency currency = Currency.getInstance(Locale.CANADA);
 		value = BigDecimal.valueOf(1);
 
-		MockSession mockSession = new MockSession();
-		mockSession.block();
 
 		Coin coin = new Coin(currency, value);
 
@@ -168,14 +162,12 @@ public class PayByCashTest extends AbstractTest {
 	@Test
 
 	public void validBanknoteObserved() throws DisabledException, CashOverloadException {
-
+		scs.getBanknoteInput().enable();
 		Currency currency = Currency.getInstance(Locale.CANADA);
 		value = BigDecimal.valueOf(1);
 
 		Banknote note = new Banknote(currency, value);
 
-		MockSession mockSession = new MockSession();
-		mockSession.payByCash();
 
 		while (!bvListener.cashIsValid) {
 			if (scs.getBanknoteInput().hasDanglingBanknotes()) {
@@ -196,14 +188,11 @@ public class PayByCashTest extends AbstractTest {
 	@Test
 
 	public void invalidBanknoteObserved() throws DisabledException, CashOverloadException {
-
+		scs.getBanknoteInput().enable();
 		Currency currency = Currency.getInstance(Locale.CANADA);
 		value = BigDecimal.valueOf(2);
 
 		Banknote note = new Banknote(currency, value);
-
-		MockSession mockSession = new MockSession();
-		mockSession.payByCash();
 
 		scs.getBanknoteInput().receive(note);
 		Assert.assertEquals(BigDecimal.ZERO, cashController.getCashPaid());
@@ -216,7 +205,7 @@ public class PayByCashTest extends AbstractTest {
 	 * @throws DisabledException
 	 * @throws CashOverloadException
 	 */
-	@Test(expected = InvalidActionException.class)
+	@Test(expected = DisabledException.class)
 
 	public void payBanknoteInactive() throws DisabledException, CashOverloadException {
 
@@ -225,8 +214,6 @@ public class PayByCashTest extends AbstractTest {
 
 		Banknote note = new Banknote(currency, value);
 
-		MockSession mockSession = new MockSession();
-		mockSession.block();
 
 		while (!bvListener.cashIsValid) {
 			if (scs.getBanknoteInput().hasDanglingBanknotes()) {
@@ -237,20 +224,6 @@ public class PayByCashTest extends AbstractTest {
 
 	}
 
-	/***
-	 * Mock Session to make the session pay mode in Pay by Cash
-	 */
-	public class MockSession extends Session {
-
-		@Override
-		public void payByCash() {
-			sessionState = SessionState.PAY_BY_CASH;
-		}
-
-		public void block() {
-			sessionState = SessionState.BLOCKED;
-		}
-	}
 
 	/**
 	 * a Stub of the coin validator listener to check if coins have been "seen" or
