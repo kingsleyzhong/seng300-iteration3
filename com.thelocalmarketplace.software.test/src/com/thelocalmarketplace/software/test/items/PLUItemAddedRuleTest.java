@@ -49,13 +49,8 @@ public class PLUItemAddedRuleTest{
         item2 = new ItemManager();
         rule = new PLUItemAddedRule(bronzeScanningArea, item);
         rule2 = new PLUItemAddedRule(silverScanningArea, item2);
-        populatePLUDatabase();
+        ProductDatabases.PLU_PRODUCT_DATABASE.put(pluCode, pluProduct);
 	}
-	
-	public void populatePLUDatabase() {
-		ProductDatabases.PLU_PRODUCT_DATABASE.put(pluCode, pluProduct);
-	}
-	
 	
 	@Test
 	public void productAdded(){
@@ -87,7 +82,6 @@ public class PLUItemAddedRuleTest{
 		
 		assertEquals(item.getItems().get(pluProduct), null);
 		assertEquals(item2.getItems().get(pluProduct), null);
-		
 	}
 	
 }
