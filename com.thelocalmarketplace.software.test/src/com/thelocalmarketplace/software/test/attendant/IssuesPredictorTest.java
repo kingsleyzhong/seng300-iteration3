@@ -81,7 +81,7 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 		
 		as = new Attendant(new AttendantStation());
 		// create issuePredictor instance
-        issuePredictor = new IssuePredictor(session, scs, receiptPrinter);
+        issuePredictor = new IssuePredictor(session, scs);
         as.addIssuePrediction(issuePredictor);
         
 		// Create power source

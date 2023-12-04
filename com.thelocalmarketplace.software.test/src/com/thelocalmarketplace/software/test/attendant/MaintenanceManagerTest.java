@@ -92,7 +92,7 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         attendant.registerOn(session);
 
         maintenanceManager = new MaintenanceManager();
-        predictor = new IssuePredictor(session, scs, receiptPrinter);
+        predictor = new IssuePredictor(session, scs);
         attendant.addIssuePrediction(predictor);
 
         Coin.DEFAULT_CURRENCY = Currency.getInstance(Locale.CANADA);
