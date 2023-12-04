@@ -219,9 +219,6 @@ public class Session {
 
 		@Override
 		public void notifiyReceiptPrinted(int linesPrinted, int charsPrinted) {
-			// Should notifyPaid() not wait until receipt is successfully printed to change
-			// to PRE_SESSION?
-			end();
 			notifySessionEnd();
 		}
 
@@ -320,15 +317,15 @@ public class Session {
 	private void end() {
 		prevState = sessionState;
 		sessionState = SessionState.PRE_SESSION;
-		receipt.printReceipt(getItems());
-		
-		for(SessionListener l:listeners) {
-			l.sessionEnded(this);
-		}
+		//stateChanged();
+		//funds.disableCash();
+		//weight.setInSession(false);
+		//receipt.printReceipt(getItems());
+
 		// if the session is slated to be disabled, do that
-		if (disableSelf) {
-			disable();
-		}
+//		if (!disableSelf) {
+//			disable();
+//		}
 	}
 
 	/**
@@ -539,6 +536,12 @@ public class Session {
 	private void notifySessionEnd() {
 		for (SessionListener l : listeners) {
 			l.sessionEnded(this);
+		}
+	}
+	
+	public void stateChanged() {
+		for (SessionListener l : listeners) {
+			l.sessionStateChanged();
 		}
 	}
 
