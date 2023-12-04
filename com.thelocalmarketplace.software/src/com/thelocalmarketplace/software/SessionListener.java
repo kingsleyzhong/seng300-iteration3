@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import com.jjjwelectronics.Mass;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
+import com.thelocalmarketplace.software.attendant.Requests;
 
 /**
  * Project Iteration 3 Group 1
@@ -34,14 +35,12 @@ import com.thelocalmarketplace.hardware.Product;
 
 public interface SessionListener {
 	/**
-	 * Example of how getRequest could be written. It should include the request and the session the request comes from.
-	 * Not you will also have to add any of these methods to Attendent's InnerListener along with the @Override keyword
+	 * Allows for the attendant station to be notified of a request from a session it is tracking and what the request is.
 	 * @param session
 	 * @param request
 	 */
-	public void getRequest(Session session, Requests request);
-	
-	
+	void getRequest(Session session, Requests request);
+
 	void itemAdded(Session session, Product product, Mass ofProduct, Mass currentExpectedWeight, BigDecimal currentExpectedPrice);
 	
 	void itemRemoved(Session session, Product product, Mass ofProduct, Mass currentExpectedMass, BigDecimal currentExpectedPrice);

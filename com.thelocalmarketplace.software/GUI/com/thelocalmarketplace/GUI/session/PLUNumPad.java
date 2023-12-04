@@ -1,34 +1,38 @@
-package com.thelocalmarketplace.GUI.session;
+	package com.thelocalmarketplace.GUI.session;
 
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+	import java.awt.Dimension;
+	import java.awt.Font;
+	import java.awt.GridLayout;
+	import java.awt.Toolkit;
+	import java.awt.event.ActionEvent;
+	import java.awt.event.ActionListener;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
+	import javax.swing.BorderFactory;
+	import javax.swing.JButton;
+	import javax.swing.JFrame;
+	import javax.swing.JLabel;
+	import javax.swing.JOptionPane;
+	import javax.swing.JPanel;
+	import javax.swing.SwingConstants;
 
-import com.thelocalmarketplace.GUI.customComponents.Colors;
-import com.thelocalmarketplace.GUI.customComponents.PlainButton;
+	import com.thelocalmarketplace.GUI.customComponents.Colors;
+	import com.thelocalmarketplace.GUI.customComponents.PlainButton;
+import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.software.Session;
-import com.thelocalmarketplace.software.SessionState;
-import java.awt.Color;
-import java.awt.BorderLayout;
-import javax.swing.BoxLayout;
-import java.awt.Component;
+	import com.thelocalmarketplace.software.SessionState;
+import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 
-public class NumberOfBags {
+import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
+
+import java.awt.Color;
+	import java.awt.BorderLayout;
+	import javax.swing.BoxLayout;
+	import java.awt.Component;
+
 	/***
-	 * 
-	 * NumPad for entering the number of bags wanted to purchase
-	 * 
+	*
+	* NumPad for entering PLU Code for adding item
+	*
 	* Project Iteration 3 Group 1
 	*
 	* Derek Atabayev 			: 30177060 
@@ -54,12 +58,14 @@ public class NumberOfBags {
 	* Kingsley Zhong 			: 30197260 
 	*
 	*/
+	
+public class PLUNumPad {
 
 		private JFrame frame;
 		
-		private String number;
+		private String plu;
 		
-		private JLabel num;
+		private JLabel pluLabel;
 		
 		private Session session;
 
@@ -76,7 +82,8 @@ public class NumberOfBags {
 		private PlainButton zero;
 		private PlainButton done;
 		
-		public NumberOfBags(Session session) {
+		
+		public PLUNumPad(Session session) {
 			
 			this.session = session;
 					
@@ -94,7 +101,7 @@ public class NumberOfBags {
 			titlePane.setBackground(Colors.color2);
 			titlePane.setLayout(new BorderLayout(0, 0));
 			
-			JLabel optionlabel = new JLabel("How many Bags?");
+			JLabel optionlabel = new JLabel("Enter PLU Code:");
 			optionlabel.setAlignmentY(Component.TOP_ALIGNMENT);
 			optionlabel.setHorizontalAlignment(SwingConstants.CENTER);
 			optionlabel.setFont(new Font("Tahoma", Font.PLAIN, 30));
@@ -106,13 +113,13 @@ public class NumberOfBags {
 			numberPadPane.setBackground(Colors.color2);
 			numberPadPane.setLayout(new GridLayout(4,3,15,15));
 			
-			number = "";
-
-//All the number buttons
+			plu = "";
+			
+//All the numbers			
 			one = new PlainButton("1",Colors.color4);
 			one.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					number = number.concat("1");
+					plu = plu.concat("1");
 					updateDisplay();
 				}
 			});
@@ -122,7 +129,7 @@ public class NumberOfBags {
 			two = new PlainButton("2",Colors.color4);
 			two.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					number = number.concat("2");
+					plu = plu.concat("2");
 					updateDisplay();
 				}
 			});
@@ -132,7 +139,7 @@ public class NumberOfBags {
 			three = new PlainButton("3",Colors.color4);
 			three.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					number = number.concat("3");
+					plu = plu.concat("3");
 					updateDisplay();
 				}
 			});
@@ -142,7 +149,7 @@ public class NumberOfBags {
 			four = new PlainButton("4",Colors.color4);
 			four.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					number = number.concat("4");
+					plu = plu.concat("4");
 					updateDisplay();
 				}
 			});
@@ -152,7 +159,7 @@ public class NumberOfBags {
 			five = new PlainButton("5",Colors.color4);
 			five.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					number = number.concat("5");
+					plu = plu.concat("5");
 					updateDisplay();
 				}
 			});
@@ -162,7 +169,7 @@ public class NumberOfBags {
 			six = new PlainButton("6",Colors.color4);
 			six.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					number = number.concat("6");
+					plu = plu.concat("6");
 					updateDisplay();
 				}
 			});
@@ -172,7 +179,7 @@ public class NumberOfBags {
 			seven = new PlainButton("7",Colors.color4);
 			seven.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					number = number.concat("7");
+					plu = plu.concat("7");
 					updateDisplay();
 				}
 			});
@@ -182,7 +189,7 @@ public class NumberOfBags {
 			eight = new PlainButton("8",Colors.color4);
 			eight.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					number = number.concat("8");
+					plu = plu.concat("8");
 					updateDisplay();
 				}
 			});
@@ -192,20 +199,20 @@ public class NumberOfBags {
 			nine = new PlainButton("9",Colors.color4);
 			nine.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					number = number.concat("9");
+					plu = plu.concat("9");
 					updateDisplay();
 				}
 			});
 			nine.setFont(new Font("Tahoma", Font.PLAIN, 20));
 			numberPadPane.add(nine);
 			
-//Deletes the last character of the string			
+//Deletes the last character			
 			delete = new PlainButton("Delete",Colors.color4);
 			delete.setFont(new Font("Tahoma", Font.PLAIN, 20));
 			delete.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					try {
-						number = number.substring(0, number.length()-1);
+						plu = plu.substring(0, plu.length()-1);
 					}
 					catch(StringIndexOutOfBoundsException e2) {
 						updateDisplay();
@@ -218,23 +225,22 @@ public class NumberOfBags {
 			zero = new PlainButton("0",Colors.color4);
 			zero.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					number = number.concat("0");
+					plu = plu.concat("0");
 					updateDisplay();
 				}
 			});
 			zero.setFont(new Font("Tahoma", Font.PLAIN, 20));
 			numberPadPane.add(zero);
-
-//Finish entering number of bags
+			
+//Finished entering PLU number			
 			done = new PlainButton("Done",Colors.color4);
 			done.setFont(new Font("Tahoma", Font.PLAIN, 20));
 			done.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					
-					returnNum();
-					hide();		
-					num.setText("0");
-					number = "";
+					returnPLU();
+					pluLabel.setText("0");
+					plu = "";
 
 				}
 			});
@@ -245,10 +251,10 @@ public class NumberOfBags {
 			frame.getContentPane().add(numDisplay);
 			numDisplay.setLayout(new BorderLayout(0, 0));
 			
-			num = new JLabel("0");
-			num.setHorizontalAlignment(SwingConstants.TRAILING);
-			num.setFont(new Font("Tahoma", Font.PLAIN, 20));
-			numDisplay.add(num, BorderLayout.CENTER);
+			pluLabel = new JLabel("0");
+			pluLabel.setHorizontalAlignment(SwingConstants.TRAILING);
+			pluLabel.setFont(new Font("Tahoma", Font.PLAIN, 20));
+			numDisplay.add(pluLabel, BorderLayout.CENTER);
 			
 			JLabel space = new JLabel("  ");
 			numDisplay.add(space, BorderLayout.EAST);
@@ -264,40 +270,55 @@ public class NumberOfBags {
 			this.frame.setVisible(false);
 		}
 		
-		public void returnNum() {
+		public void returnPLU() {
 			
-			int intNumber = 0;
-			
-			try {
+			if(plu != null && !plu.equals("")) {
 				
-				intNumber = Integer.parseInt(number);
+				try {
+					PriceLookUpCode result = new PriceLookUpCode(plu);
+					session.getManager().addItem(result);
+					hide();	
 				}
-			catch (NumberFormatException e) {
-				JOptionPane.showMessageDialog(null, "Invalid Option.");
-				intNumber = 0;
-			}
-			
-			
-			session.purchasebags(intNumber);
-			
-		}
-			
-		public void updateDisplay() {
-			if (number == "") {
-			num.setText("0");
+				catch (InvalidArgumentSimulationException e) {
+					JOptionPane.showMessageDialog(null, "Invalid PLU.");
+					reset();
+				}
+				catch (InvalidActionException e) {
+					JOptionPane.showMessageDialog(null, "Item not found in database.");
+					reset();
+				}
+				
+					
 			}
 			else {
-			num.setText(number);
+				JOptionPane.showMessageDialog(null, "Invalid PLU.");
+				reset();
 			}
+		}
 			
+		
+			
+		public void updateDisplay() {
+			if (plu == "") {
+			pluLabel.setText("0");
+				}
+				else {
+				pluLabel.setText(plu);
+				}
+				
+			}
+		
+		public void reset() {
+			plu = "";
+			pluLabel.setText("0");			
 		}
 
 		public boolean isVisible() {
 			return frame.isVisible();
 		}
 
-		public String getNumber() {
-			return number;
+		public String getPlu() {
+			return plu;
 		}
 
 		public PlainButton getOne() {
@@ -347,10 +368,5 @@ public class NumberOfBags {
 		public PlainButton getDone() {
 			return done;
 		}
-		
-		
-		
-		
+	
 }
-
-

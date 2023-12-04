@@ -16,28 +16,33 @@ import java.text.DecimalFormat;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import com.jjjwelectronics.Mass;
+import com.thelocalmarketplace.GUI.attendant.AttendantGUI;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.GradientPanel;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
+import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
+import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionListener;
 import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.attendant.Requests;
+import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
 public class SoftwareGUI{
-	public JFrame frame;
-	JFrame catalogue;
+	public static JFrame frame;
+	public JFrame catalogue;
 	public JPanel mainPane;
 	public JPanel startPane;
 	public JPanel endPane;
@@ -55,6 +60,7 @@ public class SoftwareGUI{
 	
     public PaymentPopup paymentScreen;
 	public AddBagsPopup addBagsScreen;
+	public PLUNumPad pluNumPad;
 
 
     int quantity = 0;
@@ -65,6 +71,10 @@ public class SoftwareGUI{
     public JLabel infoWeightNumber;
     String cartPrice;
     public JLabel cartTotalInDollars;
+    
+    private String lastProductDescription = "";
+    
+    private boolean inDiscrepancy = false;
 	
 	// JFrame size
 	private int width;
@@ -77,6 +87,9 @@ public class SoftwareGUI{
 	JPanel cartInfoPanel;
 	public AddedProducts cartItemsPanel;
 	JPanel buttonPanel;
+	
+	Timer discrepancyTimer;
+	Timer endTimer = null;
 	
 	// Buttons
 	public SoftwareGUI(Session session) {
@@ -95,7 +108,12 @@ public class SoftwareGUI{
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setVisible(true);
 		
-		displayStart();
+		if(session.getState() == SessionState.DISABLED) {
+			displayDisabled();
+		}
+		else {
+			displayStart();
+		}
 	}
 
 	public JPanel start() {
@@ -162,7 +180,7 @@ public class SoftwareGUI{
 		});
 		main.add(hardwareBtn);
 		
-		Timer timer = new Timer(20000, new ActionListener() {
+		endTimer = new Timer(20000, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -170,8 +188,8 @@ public class SoftwareGUI{
 			}
 			
 		});
-		timer.setRepeats(false);
-		timer.start();
+		endTimer.setRepeats(false);
+		endTimer.start();
 		
 		JButton thankYouButton = new PlainButton("<html>Thanks For Shopping!<br><br>Please Collect Your Receipt</html>", Colors.color1);
 		thankYouButton.setOpaque(false);
@@ -183,7 +201,7 @@ public class SoftwareGUI{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				displayStart();
-				timer.stop();
+				endTimer.stop();
 			}
 			
 		});
@@ -204,19 +222,25 @@ public class SoftwareGUI{
 				
 		JButton hardwareButton = new PlainButton("Hardware GUI", Colors.color5);
 		hardwareButton.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				HardwareGUI.setVisibility(true);
 					
-			}
-					
+			}		
+		});
+		JButton attendantButton = new PlainButton("Attendant GUI", Colors.color5);
+		attendantButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AttendantGUI.unhide();
+			}		
 		});
 				
 		JPanel oLeft = new JPanel();
 		oLeft.setBackground(Colors.color5);
 		oLeft.setLayout(new FlowLayout());
 		oLeft.add(hardwareButton);
+		oLeft.add(attendantButton);
 		oLeft.setPreferredSize(new Dimension(width/3, height/13));
 		
 		JPanel oRight = new JPanel();
@@ -287,11 +311,11 @@ public class SoftwareGUI{
 		infoWeightNumber.setFont(new Font("Dialog", Font.BOLD,20));
 		infoTop3.add(infoWeightString, BorderLayout.WEST);
 		infoTop3.add(infoWeightNumber, BorderLayout.EAST);
-		
+				
 		infoTop.add(infoTop1);
 		infoTop.add(infoTop2);
 		infoTop.add(infoTop3);
-			 
+		
 		JPanel infoBottom = new JPanel();
 		infoBottom.setBackground(Colors.color4);
 		infoBottom.setLayout(new GridLayout(0,1));
@@ -347,6 +371,7 @@ public class SoftwareGUI{
 		    	  addBagsScreen.popUp();		          	            	            
 		       }
 		});
+		pluNumPad = new PLUNumPad(session);
 		pluCode.addActionListener(new ButtonListener());
 		searchCatalogue.addActionListener(new ButtonListener());
 		callAttendant.addActionListener(new ButtonListener());
@@ -402,6 +427,8 @@ public class SoftwareGUI{
 	
 	public void displayStart() {
 		frame.getContentPane().removeAll();
+		quantity = 0;
+		if(endTimer != null) endTimer.stop();
 		startPane = start();
 		frame.getContentPane().add(startPane, BorderLayout.CENTER);
 		frame.getContentPane().revalidate();
@@ -427,6 +454,31 @@ public class SoftwareGUI{
 		frame.setVisible(true);
 	}
 	
+	public void displayDisabled() {
+		frame.getContentPane().removeAll();
+		JLabel disabled = new JLabel("THIS STATION IS DISABLED!");
+		disabled.setBackground(Colors.color1);
+		disabled.setForeground(Colors.color5);
+		disabled.setAlignmentX(JLabel.CENTER);
+		disabled.setFont(new Font("Dialog", Font.BOLD, 60));
+		disabled.setPreferredSize(new Dimension(width, height/2));
+		JButton hardware = new PlainButton("Hardware GUI", Colors.color1);
+		hardware.setForeground(Colors.color3);
+		hardware.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				HardwareGUI.setVisibility(true);
+			}
+			
+		});
+		frame.getContentPane().add(disabled, BorderLayout.NORTH);
+		frame.getContentPane().add(hardware, BorderLayout.CENTER);
+		frame.getContentPane().revalidate();
+		frame.getContentPane().repaint();
+		frame.setVisible(true);
+	}
+	
 	public void update(double price, double mass) {
 		DecimalFormat df = new DecimalFormat("#.00");
 		cartPrice = "$" + df.format(price);
@@ -442,11 +494,11 @@ public class SoftwareGUI{
 		itemAmount.setText(Integer.toString(quantity));
 	}
 	
-	public void hide() {
+	public static void hide() {
     	frame.setVisible(false);
     }
 	
-	public void unhide() {
+	public static void unhide() {
 		frame.setVisible(true);
 	}
 	
@@ -456,18 +508,36 @@ public class SoftwareGUI{
 		public void actionPerformed(ActionEvent e) {
 			JButton source = (JButton) e.getSource();
 			if(source == searchCatalogue) {
-				catalogue.setVisible(true);
+				if(session.getState() == SessionState.IN_SESSION)
+					catalogue.setVisible(true);
+				else JOptionPane.showMessageDialog(null, "You cannot add an item right now.");
 			}
 			else if(source == cancel) {
 				if(session.getState() == SessionState.IN_SESSION) {
-					displayStart();
+					int n = JOptionPane.showConfirmDialog(null, "Are you sure you want to leave the session and cancel your order?", 
+							"Confirm Cancel", JOptionPane.YES_NO_OPTION);
+					if(n == JOptionPane.YES_OPTION) {
+						displayStart();
+					}
+					else {
+						return;
+					}
 				}
 				else if(session.getState() == SessionState.BLOCKED) {
 					JOptionPane.showMessageDialog(null, "Cannot cancel. Please resolve discrepancy on weight scale.");
 				}
 				session.cancel();
 			}
-			
+			else if(source == pluCode) {
+				if(session.getState() == SessionState.IN_SESSION) {
+					pluNumPad.popUp();					
+				}
+				else JOptionPane.showMessageDialog(null, "You cannot add an item right now.");
+
+			}
+			else if(source == callAttendant) {
+				session.askForHelp();
+			}
 		}	
 	}
 	
@@ -476,9 +546,34 @@ public class SoftwareGUI{
 		@Override
 		public void itemAdded(Session session, Product product, Mass ofProduct, Mass currentExpectedWeight,
 				BigDecimal currentExpectedPrice) {
+			catalogue.setVisible(false);
 			cartItemsPanel.addProduct(product, ofProduct);
 			quantity = quantity + 1;
 			update(currentExpectedPrice.doubleValue(), currentExpectedWeight.inGrams().doubleValue());
+			if (product instanceof BarcodedProduct) {
+				lastProductDescription = ((BarcodedProduct) product).getDescription();
+			}
+			else if (product instanceof PLUCodedProduct) {
+				lastProductDescription = ((PLUCodedProduct) product).getDescription();
+			}
+			frame.setVisible(true);
+			paymentScreen.frame.setVisible(false);
+			catalogue.setVisible(false);
+			inDiscrepancy = true;
+			Object[] options = {"OK", "Do not bag", "Cancel"};
+			int result = JOptionPane.showOptionDialog(null, "Please make sure to add " + lastProductDescription + " to the bagging area.", 
+					"Add to scale", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+			if(result == JOptionPane.CANCEL_OPTION) {
+				Product lastProduct = session.getManager().getLastProduct();
+				if (lastProduct instanceof BarcodedProduct) {
+					session.getManager().removeItem((BarcodedProduct) lastProduct);
+				}
+				else if (lastProduct instanceof PLUCodedProduct) {
+					session.getManager().removeItem((PLUCodedProduct) lastProduct);
+				}
+			} else if(result == JOptionPane.NO_OPTION) {
+				session.addBulkyItem();
+			}
 		}
 
 		@Override
@@ -487,30 +582,92 @@ public class SoftwareGUI{
 			cartItemsPanel.removeProduct(product, ofProduct);
 			quantity = quantity - 1;
 			update(currentExpectedPrice.doubleValue(), currentExpectedMass.inGrams().doubleValue());
+			if (product instanceof BarcodedProduct) {
+				lastProductDescription = lastProductDescription + ", " + ((BarcodedProduct) product).getDescription();
+			}
+			else if (product instanceof PLUCodedProduct) {
+				lastProductDescription = lastProductDescription + ", " + ((PLUCodedProduct) product).getDescription();
+			}
+			inDiscrepancy = true;
+			frame.setVisible(true);
+			paymentScreen.frame.setVisible(false);
+			catalogue.setVisible(false);
+			paymentScreen.frame.setVisible(false);
+			catalogue.setVisible(false);
+			JOptionPane.showMessageDialog(null, "Please make sure to remove " + lastProductDescription + " from the scale");
 		}
 
 		@Override
 		public void addItemToScaleDiscrepancy(Session session) {
-			// TODO Auto-generated method stub
+			discrepancyTimer = new Timer(10000, new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					JOptionPane.showMessageDialog(null, "There is still a discrepancy on the scale.");
+				}
+			});
+			discrepancyTimer.start();
+			if(inDiscrepancy) {
+				frame.setVisible(true);
+				paymentScreen.frame.setVisible(false);
+				catalogue.setVisible(false);
+				Object[] options = {"OK", "Do not bag", "Cancel"};
+				int result = JOptionPane.showOptionDialog(null, "Please add " + lastProductDescription + " to the bagging area.", 
+						"Add to scale", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+				if(result == JOptionPane.CANCEL_OPTION) {
+					Product lastProduct = session.getManager().getLastProduct();
+					if (lastProduct instanceof BarcodedProduct) {
+						session.getManager().removeItem((BarcodedProduct) lastProduct);
+					}
+					else if (lastProduct instanceof PLUCodedProduct) {
+						session.getManager().removeItem((PLUCodedProduct) lastProduct);
+					}
+				} else if(result == JOptionPane.NO_OPTION) {
+					session.addBulkyItem();
+				}
+			}
 			
 		}
 
 		@Override
 		public void removeItemFromScaleDiscrepancy(Session session) {
-			// TODO Auto-generated method stub
-			
+			discrepancyTimer = new Timer(10000, new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					JOptionPane.showMessageDialog(null, "There is still a discrepancy on the scale.");
+				}
+			});
+			discrepancyTimer.start();
+			if(inDiscrepancy) {
+				frame.setVisible(true);
+				paymentScreen.frame.setVisible(false);
+				catalogue.setVisible(false);
+				paymentScreen.frame.setVisible(false);
+				catalogue.setVisible(false);
+				JOptionPane.showMessageDialog(null, "Please remove " + lastProductDescription + " from the scale");
+			}
 		}
 
 		@Override
 		public void discrepancy(Session session, String message) {
-			// TODO Auto-generated method stub
+			discrepancyTimer = new Timer(10000, new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					JOptionPane.showMessageDialog(null, "There is still a discrepancy on the scale.");
+				}
+			});
+			discrepancyTimer.start();
+			JOptionPane.showMessageDialog(null, message);
 			
 		}
 
 		@Override
 		public void discrepancyResolved(Session session) {
-			// TODO Auto-generated method stub
-			
+			discrepancyTimer.stop();
+			lastProductDescription = "";
+			inDiscrepancy = false;
 		}
 
 		@Override
@@ -523,8 +680,26 @@ public class SoftwareGUI{
 
 		@Override
 		public void getRequest(Session session, Requests request) {
-			// TODO Auto-generated method stub
-			
+			if(request == Requests.BULKY_ITEM) {
+				int result2 = JOptionPane.showConfirmDialog(null, "Wait for request approval.");
+				if(result2 == JOptionPane.CANCEL_OPTION || result2 == JOptionPane.NO_OPTION) {
+					session.cancel();
+					Object[] options = {"OK", "Do not bag", "Cancel"};
+					int result = JOptionPane.showOptionDialog(null, "Please add " + lastProductDescription + " to the bagging area.", 
+							"Add to scale", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+					if(result == JOptionPane.CANCEL_OPTION) {
+						Product lastProduct = session.getManager().getLastProduct();
+						if (lastProduct instanceof BarcodedProduct) {
+							session.getManager().removeItem((BarcodedProduct) lastProduct);
+						}
+						else if (lastProduct instanceof PLUCodedProduct) {
+							session.getManager().removeItem((PLUCodedProduct) lastProduct);
+						}
+					} else if(result == JOptionPane.NO_OPTION) {
+						session.addBulkyItem();
+					}
+				}
+			}
 		}
 
 		@Override
@@ -541,16 +716,37 @@ public class SoftwareGUI{
 
 		@Override
 		public void pluCodeEntered(PLUCodedProduct product) {
-			// TODO Auto-generated method stub
-			
+			catalogue.setVisible(false);
+			int n = JOptionPane.showConfirmDialog(null, "Would you like to add: " + product.getDescription(), 
+					"Confirm Product", JOptionPane.YES_NO_OPTION);
+			if(n == JOptionPane.NO_OPTION) {
+				session.cancel();
+			}
+			else if(n == JOptionPane.YES_OPTION) {
+				JOptionPane.showMessageDialog(null, "Please place " + product.getDescription() + " on the scanning scale.");
+			}
 		}
 
 		@Override
 		public void sessionStateChanged() {
-			// TODO Auto-generated method stub
+			SessionState state = session.getState();
+			if (state == SessionState.PAY_BY_CASH) {
+				paymentScreen.paymentTypeLabel.setText("Payment Selected: Cash");
+			}
 			
-		}
+			else if (state == SessionState.PAY_BY_CARD) {
+				paymentScreen.paymentTypeLabel.setText("Payment Selected: Card");
+			}
 
-		
+			else if (state == SessionState.DISABLED) {
+				displayDisabled();
+			}
+			
+			else if(state == SessionState.PRE_SESSION) {
+				if(session.getPrevState() == SessionState.DISABLED) {
+					displayStart();
+				}
+			}
+		}
 	}
 }

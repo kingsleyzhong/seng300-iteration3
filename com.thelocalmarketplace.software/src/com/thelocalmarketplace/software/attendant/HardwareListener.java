@@ -1,6 +1,5 @@
-package com.thelocalmarketplace.software.receipt;
-/*
- * 
+package com.thelocalmarketplace.software.attendant;
+/**
  * Project Iteration 3 Group 1
  *
  * Derek Atabayev 			: 30177060 
@@ -23,32 +22,9 @@ package com.thelocalmarketplace.software.receipt;
  * Thi My Tuyen Tran 		: 30193980 
  * Aoi Ueki 				: 30179305 
  * Ethan Woo 				: 30172855 
- * Kingsley Zhong 			: 30197260 
+ * Kingsley Zhong 		   	: 30197260 
  */
-public interface ReceiptListener {
-
-	/**
-	 * Signals an event that the printer is out of paper
-	 */
-	void notifiyOutOfPaper();
-	
-	/**
-	 * Signals an event that the printer is out of ink
-	 */
-	void notifiyOutOfInk();
-	
-	/**
-	 * Signals an event that the printer paper has been refilled
-	 */
-	void notifiyPaperRefilled();
-	
-	/**
-	 * Signals an event that the ink has been refilled
-	 */
-	void notifiyInkRefilled();
-	
-	/**
-	 * Signals that the receipt was successfully printed 
-	 */
-	void notifiyReceiptPrinted(int linesPrinted, int charsPrinted);
+public interface HardwareListener {
+    void aStationHasBeenOpened();
+    void aStationHasBeenClosed();
 }

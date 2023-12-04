@@ -1,4 +1,5 @@
-package com.thelocalmarketplace.GUI.session;
+package com.thelocalmarketplace.GUI.attendant;
+
 
 import java.awt.Dimension;
 import java.awt.Font;
@@ -19,27 +20,32 @@ import javax.swing.JPanel;
 
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
+import com.thelocalmarketplace.GUI.session.SoftwareGUI;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
+import com.thelocalmarketplace.software.attendant.Attendant;
+
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import javax.swing.JButton;
 
-public class ProductPanel extends JPanel {
+public class ProductItem extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private Product product;
 	private Session session;
+	private Attendant attendant;
 	
 	/**
 	 * Create the panel.
 	 */
-	public ProductPanel(Product product, Session session) {
+	public ProductItem(Product product, Session session, Attendant attendant) {
 		this.product = product;
 		this.session = session;
+		this.attendant = attendant;
 		
 		//this.setSize(200, 400);
 		this.setBackground(Colors.color1);
@@ -61,13 +67,14 @@ public class ProductPanel extends JPanel {
 		gbc_label.gridy = 0;
 		add(label, gbc_label);
 		
-		String productDescription = "";
+		String productDescription;
 		if(product instanceof BarcodedProduct) {
 			productDescription = ((BarcodedProduct) product).getDescription();
 		} 
 		else if(product instanceof PLUCodedProduct) {
 			productDescription = ((PLUCodedProduct) product).getDescription();
 		}
+		else productDescription = "Some product";
 		
 		JLabel description = new JLabel("<html>" + productDescription + "</html>");
 		description.setHorizontalAlignment(JLabel.CENTER);
@@ -106,12 +113,9 @@ public class ProductPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(product instanceof BarcodedProduct) {
-					session.getManager().addItem((BarcodedProduct) product);
-				}
-				else if(product instanceof PLUCodedProduct) {
-					session.getManager().addItem(((PLUCodedProduct) product).getPLUCode());
-				}
+				AttendantCatalogue.remove();
+				SoftwareGUI.unhide();
+				attendant.addSearchedItem(productDescription, session);
 			}
 			
 		});
@@ -143,3 +147,4 @@ public class ProductPanel extends JPanel {
     }
 
 }
+
