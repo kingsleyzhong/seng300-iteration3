@@ -249,7 +249,6 @@ public class SessionTest extends AbstractTest {
         
     }
     
-    
     @Test
     public void cancelSessionInSession() {
         session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
