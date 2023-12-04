@@ -6,6 +6,7 @@ import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.scanner.BarcodedItem;
 import com.tdc.banknote.BanknoteValidator;
 import com.tdc.coin.CoinValidator;
+import com.thelocalmarketplace.GUI.hardware.ButtonPanel;
 import com.thelocalmarketplace.GUI.hardware.CashPanel;
 import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
 import com.thelocalmarketplace.GUI.session.SoftwareGUI;
@@ -16,12 +17,17 @@ import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
 import com.thelocalmarketplace.software.Session;
+import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.attendant.Attendant;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.funds.PayByCash;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Test;
 import powerutility.PowerGrid;
+
+import java.awt.*;
 
 public class HardwareGUITest {
     private AbstractSelfCheckoutStation scs;
@@ -29,7 +35,8 @@ public class HardwareGUITest {
     private AttendantStation as;
     private Session session;
     private SoftwareGUI softwareGUI;
-    private HardwareGUI hardwaregui;
+    private HardwareGUI hardwareGUI;
+    private ButtonPanel buttonPanel;
 
     private CashPanel cashpanel;
     private CoinValidator coinValidator;
@@ -55,7 +62,7 @@ public class HardwareGUITest {
         SelfCheckoutStationLogic logic = SelfCheckoutStationLogic.installOn(scs);
         session = logic.getSession();
         softwareGUI = new SoftwareGUI(session);
-        hardwaregui = new HardwareGUI(scs, as);
+        hardwareGUI = new HardwareGUI(scs, as);
 
         //cash panel stuff
         cashpanel = new CashPanel(scs);
@@ -85,4 +92,170 @@ public class HardwareGUITest {
     public void teardown() {
         scs.getScreen().getFrame().dispose();
     }
+
+    @Test
+    public void testStart() {
+        Assert.assertTrue(HardwareGUI.hardwareFrame.isVisible());
+        Container tempComponent = (Container) HardwareGUI.hardwareFrame.getContentPane().getComponent(0);
+        Assert.assertEquals(tempComponent.getComponent(0), hardwareGUI.buttonPanel.startButton);
+        Assert.assertEquals(session.getState(), SessionState.PRE_SESSION);
+    }
+
+    @Test
+    public void testStartButton() {
+        hardwareGUI.buttonPanel.startButton.doClick();
+        Container tempComponent = (Container) HardwareGUI.hardwareFrame.getContentPane().getComponent(0);
+        Assert.assertNotEquals(tempComponent.getComponent(0), hardwareGUI.buttonPanel.startButton);
+        Assert.assertEquals(session.getState(), SessionState.PRE_SESSION);
+    }
+
+    @Test
+    public void navigateToAttendantGUI() {
+        hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.buttonPanel.attendantScreen.doClick();
+        Assert.assertTrue(hardwareGUI.getSupervisor().screen.getFrame().isShowing());
+    }
+
+    @Test
+    public void navigateToSoftwareGUI() {
+        hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.buttonPanel.sessionScreen.doClick();
+        Assert.assertTrue(hardwareGUI.getStation().getScreen().getFrame().isShowing());
+    }
+
+    @Test
+    public void dragItemFromCartToBagging() {
+
+    }
+
+    @Test
+    public void dragItemFromCartToScanning() {
+
+    }
+
+    @Test
+    public void dragItemFromBaggingToCart() {
+
+    }
+
+    @Test
+    public void dragItemFromScanningToCart() {
+
+    }
+
+    @Test
+    public void dragItemFromBaggingToScanning() {
+
+    }
+
+    @Test
+    public void dragItemFromScanningToBagging() {
+
+    }
+
+    @Test
+    public void scanWithMainButton() {
+
+    }
+
+    @Test
+    public void scanWithHandheldButton() {
+
+    }
+
+    @Test
+    public void collectReceiptButton() {
+
+    }
+
+    @Test
+    public void dispenseBagsButton() {
+
+    }
+
+    @Test
+    public void removeBagsButton() {
+
+    }
+
+    @Test
+    public void inputBill() {
+
+    }
+
+    @Test
+    public void inputMultipleBills() {
+
+    }
+
+    @Test
+    public void inputNonBill() {
+
+    }
+
+    @Test
+    public void removeInputBills() {
+
+    }
+
+    @Test
+    public void removeChangeBills() {
+
+    }
+
+    @Test
+    public void inputCoin() {
+
+    }
+
+    @Test
+    public void inputMultipleCoins() {
+
+    }
+
+    @Test
+    public void inputNonCoin() {
+
+    }
+
+    @Test
+    public void removeCoinTray() {
+
+    }
+
+    @Test
+    public void selectCredit() {
+
+    }
+
+    @Test
+    public void selectDebit() {
+
+    }
+
+    @Test
+    public void selectInvalidCard() {
+
+    }
+
+    @Test
+    public void selectMembershipCard() {
+
+    }
+
+    @Test
+    public void cardSwipe() {
+
+    }
+
+    @Test
+    public void cardInsert() {
+
+    }
+
+    @Test
+    public void cardTap() {
+
+    }
+
 }

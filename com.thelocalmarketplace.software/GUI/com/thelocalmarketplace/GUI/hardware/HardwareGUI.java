@@ -74,26 +74,27 @@ import java.awt.Insets;
 public class HardwareGUI {
 	private AttendantStation supervisor;
 	private AbstractSelfCheckoutStation scs;
-	private static JFrame hardwareFrame;
-	private JPanel content;
-	private JPanel screens;
-	private JPanel start;
-	private JPanel cashInput;
-	private JPanel card;
+	public static JFrame hardwareFrame;
+	public JPanel content;
+	public JPanel screens;
+	public JPanel start;
+	public JPanel cashInput;
+	public JPanel card;
 	private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	private int width;
 	private int height;
 	public boolean clicked = false;
 	
 	private DefaultListModel<ItemObject> itemsInCart = new DefaultListModel<>();
-	private JPanel cartPanel;
-	private JList<ItemObject> cartList = new JList<ItemObject>(itemsInCart);
+	public JPanel cartPanel;
+	public JList<ItemObject> cartList = new JList<ItemObject>(itemsInCart);
 	private DefaultListModel<ItemObject> itemsInScanningArea = new DefaultListModel<>();
-	private JPanel scanningPanel;
-	private JList<ItemObject> scanningList= new JList<ItemObject>(itemsInScanningArea);
+	public JPanel scanningPanel;
+	public JList<ItemObject> scanningList= new JList<ItemObject>(itemsInScanningArea);
 	private DefaultListModel<ItemObject> itemsInBaggingArea = new DefaultListModel<>();
-	private JPanel baggingPanel;
-	private JList<ItemObject> baggingList = new JList<ItemObject>(itemsInBaggingArea);
+	public JPanel baggingPanel;
+	public ButtonPanel buttonPanel;
+	public JList<ItemObject> baggingList = new JList<ItemObject>(itemsInBaggingArea);
 	
 	private ItemObject lastObject = null;
 	protected ItemObject lastItem;
@@ -120,9 +121,10 @@ public class HardwareGUI {
 		hardwareFrame.getContentPane().setLayout(new BorderLayout(0, 0));
 		hardwareFrame.getContentPane().setBackground(Colors.color1);
 		hardwareFrame.setUndecorated(true);
+		hardwareFrame.setVisible(true);
 
 		
-		JPanel buttonPanel = new ButtonPanel(this);
+		buttonPanel = new ButtonPanel(this);
 		buttonPanel.setPreferredSize(new Dimension(width, height/4));
 		
 		start = new JPanel();
