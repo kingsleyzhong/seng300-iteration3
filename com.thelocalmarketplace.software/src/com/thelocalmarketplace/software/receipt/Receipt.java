@@ -17,6 +17,7 @@ import com.thelocalmarketplace.hardware.BarcodedProduct;
 import powerutility.NoPowerException;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
+import com.thelocalmarketplace.software.items.ReusableBagProduct;
 
 import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 /*
@@ -156,6 +157,12 @@ public class Receipt {
 				long pricePerKilogram = product.getPrice();
 				double price = pricePerKilogram * weightInKilogram;
 				receipt = receipt.concat("Item: " + product.getDescription() + " Weight: " + weightInKilogram + " /kg" + " Price: " + price + "\n");
+			}else {
+				ReusableBagProduct product = (ReusableBagProduct)item.getKey();
+				int numberOfProduct = item.getValue().intValue();
+				// barcoded item does not store the price for items which need to be weighted
+				double overallPrice = product.getPrice()*numberOfProduct;
+				receipt = receipt.concat("Item: " + product.getDescription() + " Amount: " + numberOfProduct + " Price: " + overallPrice + "\n");
 			}
 			
 		}
