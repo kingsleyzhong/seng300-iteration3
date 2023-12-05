@@ -62,15 +62,10 @@ public class Membership {
     public void typeMembership(String memberCardNumber) {
     	if (addingItems && MembershipDatabase.MEMBERSHIP_DATABASE.containsKey(memberCardNumber)) {
     		notifyMembershipEntered(memberCardNumber);
-<<<<<<< HEAD
     	}
     	else {
     		throw new InvalidActionException("Membership not in database");
     	}
-=======
-    	else
-    		throw new InvalidActionException("Membership not in database");
->>>>>>> e87b52f31b66ebf80991889ef4ad115552673590
     }
     
     /** Checks to see if the provided card data has a card number contained in the membership database.
@@ -81,7 +76,6 @@ public class Membership {
     	if (addingItems && MembershipDatabase.MEMBERSHIP_DATABASE.containsKey(memberCardNumber)) {
     		notifyMembershipEntered(memberCardNumber);
     	}
-    	// else quietly ignore so as to not interrupt the session or GUI at the wrong time
     }
 
     private class InnerListener implements CardReaderListener {
@@ -113,7 +107,7 @@ public class Membership {
 		// Listens for card data which has been successfully read by the card reader
 		@Override
 		public void theDataFromACardHasBeenRead(CardData data) {
-			if (addingItems && data.getType().equalsIgnoreCase("membership"))
+			if (data.getType().equalsIgnoreCase("membership"))
 				swipeMembership(data);
 		}
     }
@@ -142,10 +136,6 @@ public class Membership {
     /** Deregisters all MembershipListeners in this Membership facade. */
     public void deregisterAll() {
         listeners.clear();
-    }
-    
-    public List<MembershipListener> getListeners() {
-    	return listeners;
     }
 
     protected void notifyMembershipEntered(String membershipNumber) {

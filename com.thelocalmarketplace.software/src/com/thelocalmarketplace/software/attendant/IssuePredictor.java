@@ -149,7 +149,7 @@ public class IssuePredictor  {
 		 *  Associated printer is totally out of paper
 		 */
 		@Override
-		public void notifiyOutOfPaper() {
+		public void notifyOutOfPaper() {
 			lowPaper = true;
 			estimatedPaper = 0;
 		}
@@ -158,7 +158,7 @@ public class IssuePredictor  {
 		 * Associated printer is totally out of ink
 		 */
 		@Override
-		public void notifiyOutOfInk() {
+		public void notifyOutOfInk() {
 			lowInk = true;
 			estimatedInk = 0;
 		}
@@ -166,7 +166,7 @@ public class IssuePredictor  {
 		 * Announces that paper has been added to the printer.
 		 */
 		@Override
-		public void notifiyPaperRefilled() {
+		public void notifyPaperRefilled() {
 			lowPaper = false;
 			estimatedPaper = ReceiptPrinterBronze.MAXIMUM_PAPER;
 		}
@@ -174,7 +174,7 @@ public class IssuePredictor  {
 		 * Announces that ink has been added to the printer.
 		 */
 		@Override
-		public void notifiyInkRefilled() {
+		public void notifyInkRefilled() {
 			lowInk = false;
 			estimatedInk = ReceiptPrinterBronze.MAXIMUM_INK;
 		}
@@ -183,7 +183,7 @@ public class IssuePredictor  {
 		 * Tells us the number of characters and lines printed.
 		 */
 		@Override
-		public void notifiyReceiptPrinted(int linesPrinted, int charsPrinted) {
+		public void notifyReceiptPrinted(int linesPrinted, int charsPrinted) {
 			estimatedPaper -= linesPrinted;
 			estimatedInk -= charsPrinted;
 		}
