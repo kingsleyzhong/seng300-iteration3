@@ -215,19 +215,19 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	// Tests for pay via coin
 
 	@Test(expected = InvalidActionException.class)
-	public void testEnterPayWhenCartEmpty() {
+	public void enterPayWhenCartEmpty() {
 		session.start();
 		session.payByCash();
 	}
 
 	@Test(expected = DisabledException.class)
-	public void testAddCoinWhenNotInPay() throws DisabledException, CashOverloadException {
+	public void addCoinWhenNotInPay() throws DisabledException, CashOverloadException {
 		session.start();
 		scs.getCoinSlot().receive(dollar);
 	}
 
 	@Test
-	public void testPayForItemViaCash() throws DisabledException, CashOverloadException {
+	public void payForItemViaCash() throws DisabledException, CashOverloadException {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getMainScanner().scan(item);
@@ -455,7 +455,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	}
 
 	@Test
-	public void testRemoveAllItems() {
+	public void removeAllItems() {
 		session.start();
 		for (int i = 0; i < 5; i++) {
 			scs.getMainScanner().scan(item);
@@ -501,15 +501,17 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 		assertEquals(SessionState.BLOCKED, session.getState());
 	}
 
-	@Test(expected = DisabledException.class)
+	@Test
 	public void payWhenDiscrepancy() throws DisabledException, CashOverloadException {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getMainScanner().scan(item);
 		}
 		scs.getBaggingArea().addAnItem(item);
-		session.payByCash();
+		session.payByCash(); // this is a successful payment
 		scs.getBaggingArea().addAnItem(item2);
+		session.payByCash(); // won't proceed because of of session freeze from previous payment action
+		assertEquals(SessionState.BLOCKED, session.getState());
 		int count = 0;
 		while (count < 1) {
 			scs.getCoinSlot().receive(dollar);
@@ -520,7 +522,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	}
 
 	@Test(expected = DisabledException.class)
-	public void testDisabledComponentWhenPaying() throws DisabledException, CashOverloadException {
+	public void disabledComponentWhenPaying() throws DisabledException, CashOverloadException {
 		session.start();
 		for (int i = 0; i < 5; i++) {
 			scs.getMainScanner().scan(item);
