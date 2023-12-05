@@ -12,7 +12,6 @@ import com.tdc.banknote.Banknote;
 import com.tdc.banknote.BanknoteValidator;
 import com.tdc.coin.Coin;
 import com.tdc.coin.CoinValidator;
-import com.thelocalmarketplace.GUI.hardware.ButtonPanel;
 import com.thelocalmarketplace.GUI.hardware.CashPanel;
 import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
 import com.thelocalmarketplace.GUI.hardware.ItemObject;
@@ -79,7 +78,6 @@ import java.awt.Robot;
 
 public class HardwareGUITest {
     private AbstractSelfCheckoutStation scs;
-    private Attendant attendant;
     private AttendantStation as;
     private Session session;
     private SoftwareGUI softwareGUI;
@@ -90,7 +88,6 @@ public class HardwareGUITest {
     private CashPanel cashpanel;
     private CoinValidator coinValidator;
     private BanknoteValidator banknoteValidator;
-    private CoinValidator validator;
     private PayByCash cashController;
     private Funds funds;
 
@@ -124,6 +121,7 @@ public class HardwareGUITest {
          * @throws InterruptedException 
          */
         public void drag(Point startPoint, Point endPoint) throws InterruptedException {
+        	Thread.sleep(500);
             // Move the mouse to the start point
             robot.mouseMove(startPoint.x, startPoint.y);
 
@@ -285,14 +283,26 @@ public class HardwareGUITest {
     }
 
     @Test
-    public void dragItemFromCartToScanning() {
-    	
-
+    public void dragItemFromCartToScanning() throws InterruptedException {
+        hardwareGUI.buttonPanel.startButton.doClick();
+        HardwareGUI.setVisibility(true);
+    	Thread.sleep(500);
+        dragRobot.drag(new Point(100, 100), new Point(500, 200));
+        Thread.sleep(1000);
+        Assert.assertEquals(1, hardwareGUI.getItemsInScanningArea().size());
     }
-
+    
     @Test
-    public void dragItemFromBaggingToCart() {
-
+    public void dragItemFromBaggingToCart() throws InterruptedException {
+        hardwareGUI.buttonPanel.startButton.doClick();
+        HardwareGUI.setVisibility(true);
+    	Thread.sleep(500);
+        dragRobot.drag(new Point(100, 100), new Point(500, 400));
+        Thread.sleep(500);
+        Assert.assertEquals(1, hardwareGUI.getItemsInBaggingArea().size());
+        dragRobot.drag(new Point(400, 310), new Point(100, 100));
+        Thread.sleep(1000);
+        Assert.assertEquals(0, hardwareGUI.getItemsInBaggingArea().size());
     }
 
     @Test
@@ -300,10 +310,6 @@ public class HardwareGUITest {
 
     }
 
-    @Test
-    public void dragItemFromBaggingToScanning() {
-
-    }
 
     @Test
     public void dragItemFromScanningToBagging() {
