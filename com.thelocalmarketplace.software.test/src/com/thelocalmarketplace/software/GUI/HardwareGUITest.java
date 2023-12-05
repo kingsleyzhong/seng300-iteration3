@@ -28,7 +28,11 @@ import org.junit.Before;
 import org.junit.Test;
 import powerutility.PowerGrid;
 
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 import java.awt.event.InputEvent;
 
@@ -82,8 +86,11 @@ public class HardwareGUITest {
     private BarcodedItem item;
     private BarcodedItem item2;
     private DragRobot dragRobot;
+    private Robot panelRobot;
+    Timer timer;
+    int runs = 0;
 
-    public class DragRobot {
+    public class DragRobot extends Robot {
 
         private Robot robot;
 
@@ -111,6 +118,9 @@ public class HardwareGUITest {
 
             // Release the mouse button
             robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+        }
+
+        public void keyPress(int vkEnter) {
         }
     }
 
@@ -153,6 +163,28 @@ public class HardwareGUITest {
         item = new BarcodedItem(barcode, new Mass(20.0));
         item2 = new BarcodedItem(barcode, new Mass(20.0));
         dragRobot = new DragRobot();
+        try {
+            panelRobot = new Robot();
+
+        } catch (AWTException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        runs=0;
+        timer = new Timer(1000, new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                panelRobot.keyPress(KeyEvent.VK_ENTER);
+                panelRobot.keyRelease(KeyEvent.VK_ENTER);
+                runs +=1;
+                if(runs>20) {
+                    timer.stop();
+                }
+            }
+
+        });
+        timer.start();
     }
     
     @After
@@ -301,11 +333,11 @@ public class HardwareGUITest {
 		
 		scs.getMainScanner().scan(item);
 		scs.getBaggingArea().addAnItem(item);
-		
 		softwareGUI.pay.doClick();
 		softwareGUI.paymentScreen.getCashButton().doClick();
 		
 		cashpanel.button_one_coin.doClick();
+
 		
 		Assert.assertEquals(BigDecimal.ONE , cashController.getCashPaid());
 		
