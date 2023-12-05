@@ -49,7 +49,7 @@ public class Membership {
 
 	/** Initializes a new instance of a Membership facade that provides the checkout station logic with a
      * user-inputted membership number.
-     * @param cardReader The card reader to read membership cards. */
+     * @param cardReader The card reader to read membership cards. Cannot be null. */
     public Membership(ICardReader cardReader) {
     	if (cardReader == null)
             throw new NullPointerSimulationException("card reader");
@@ -60,12 +60,17 @@ public class Membership {
      * membership number is present, then listeners are notified. For use with the virtual GUI keyboard.
      * @param memberCardNumber The card number which will be checked */
     public void typeMembership(String memberCardNumber) {
-    	if (addingItems && MembershipDatabase.MEMBERSHIP_DATABASE.containsKey(memberCardNumber))
+    	if (addingItems && MembershipDatabase.MEMBERSHIP_DATABASE.containsKey(memberCardNumber)) {
     		notifyMembershipEntered(memberCardNumber);
+<<<<<<< HEAD
+    	}
     	else {
     		throw new InvalidActionException("Membership not in database");
     	}
-    	//else {} Only needed if notifyMembershipNotFound() is something that is required in the listener
+=======
+    	else
+    		throw new InvalidActionException("Membership not in database");
+>>>>>>> e87b52f31b66ebf80991889ef4ad115552673590
     }
     
     /** Checks to see if the provided card data has a card number contained in the membership database.
@@ -73,8 +78,10 @@ public class Membership {
      * @param memberCard The member card to be examined for its card number */
     private void swipeMembership(CardData memberCard) {
     	String memberCardNumber = memberCard.getNumber();
-    	if (MembershipDatabase.MEMBERSHIP_DATABASE.containsKey(memberCardNumber))
+    	if (addingItems && MembershipDatabase.MEMBERSHIP_DATABASE.containsKey(memberCardNumber)) {
     		notifyMembershipEntered(memberCardNumber);
+    	}
+    	// else quietly ignore so as to not interrupt the session or GUI at the wrong time
     }
 
     private class InnerListener implements CardReaderListener {
@@ -117,7 +124,7 @@ public class Membership {
 	}
 
     /** Registers a MembershipListener on this Membership facade.
-     * @param listener The MembershipListener to register.*/
+     * @param listener The MembershipListener to register. Cannot be null. */
     public void register(MembershipListener listener) {
         if (listener == null)
             throw new NullPointerSimulationException("membership listener");
@@ -125,7 +132,7 @@ public class Membership {
     }
 
     /** Deregisters a MembershipListener on this Membership facade.
-     * @param listener The MembershipListener to Deregister.*/
+     * @param listener The MembershipListener to Deregister. Cannot be null. */
     public boolean deregister(MembershipListener listener) {
         if (listener == null)
             throw new NullPointerSimulationException("membership listener");
@@ -135,6 +142,10 @@ public class Membership {
     /** Deregisters all MembershipListeners in this Membership facade. */
     public void deregisterAll() {
         listeners.clear();
+    }
+    
+    public List<MembershipListener> getListeners() {
+    	return listeners;
     }
 
     protected void notifyMembershipEntered(String membershipNumber) {
