@@ -1,11 +1,7 @@
 package com.thelocalmarketplace.software.test;
 
-import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-
+import StubClasses.SessionListenerStub;
+import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.printer.IReceiptPrinter;
@@ -19,32 +15,25 @@ import com.tdc.coin.Coin;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.AttendantStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationSilver;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
-import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.items.BagDispenserController;
 import com.thelocalmarketplace.software.items.ItemManager;
 import com.thelocalmarketplace.software.membership.Membership;
 import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.weight.Weight;
-
-import StubClasses.ItemsListenerStub;
-import StubClasses.SessionListenerStub;
-import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
+import org.junit.Before;
+import org.junit.Test;
 import powerutility.PowerGrid;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Currency;
-import java.util.HashMap;
 import java.util.Locale;
+
+import static org.junit.Assert.*;
 
 /**
  * Unit Test class for Session and interaction with surrounding classes Weight
@@ -133,13 +122,13 @@ public class SessionTest extends AbstractTest {
     }
 
     @Test
-    public void testSessionInitialization() {
+    public void sessionInitialization() {
         assertEquals(session.getState(), SessionState.PRE_SESSION);
         assertFalse(session.getState().inPay());
     }
 
     @Test
-    public void testStartSession() {
+    public void startSession() {
     	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.start();
         assertEquals(session.getState(), SessionState.IN_SESSION);
@@ -147,7 +136,7 @@ public class SessionTest extends AbstractTest {
     }
 
     @Test
-    public void testCancelSession() {
+    public void cancelSession() {
     	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.start();
         session.cancel();
@@ -170,7 +159,7 @@ public class SessionTest extends AbstractTest {
     }
 
     @Test
-    public void testPaid() throws DisabledException, CashOverloadException {
+    public void paid() throws DisabledException, CashOverloadException {
         session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.start();
         itemManager.addItem(product);
@@ -262,14 +251,14 @@ public class SessionTest extends AbstractTest {
      *Sessions can only be disabled when in the pre-session state 
      */
     @Test
-    public void testDisableSession() {
+    public void disableSession() {
         session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
      	
         session.disable();
         assertTrue(session.getState()== SessionState.DISABLED);
     }
     @Test
-    public void testDisableSessionStarted() {
+    public void disableSessionStarted() {
         session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
      	session.start();
         session.disable();
@@ -279,14 +268,14 @@ public class SessionTest extends AbstractTest {
      * Sessions can only be enabled when they are disabled, no effect otherwise
      */
     @Test
-    public void testEnableSession() {
+    public void enableSession() {
         session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.disable();
         session.enable();
         assertTrue(session.getState() != SessionState.DISABLED);
     }
     @Test
-    public void testEnableSessionNotDisabled() {
+    public void enableSessionNotDisabled() {
         session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.start();
         SessionState preState = session.getState();

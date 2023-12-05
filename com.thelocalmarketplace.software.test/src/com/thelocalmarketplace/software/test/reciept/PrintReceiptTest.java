@@ -27,30 +27,26 @@ package com.thelocalmarketplace.software.test.reciept;
 * Ethan Woo 				: 30172855 
 * Kingsley Zhong 			: 30197260 
  */
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.OverloadedDevice;
 import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.scanner.BarcodedItem;
-import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
-import com.thelocalmarketplace.hardware.BarcodedProduct;
-import com.thelocalmarketplace.hardware.PLUCodedItem;
-import com.thelocalmarketplace.hardware.PLUCodedProduct;
-import com.thelocalmarketplace.hardware.PriceLookUpCode;
+import com.thelocalmarketplace.hardware.*;
 import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.receipt.ReceiptListener;
 import com.thelocalmarketplace.software.test.AbstractSessionTest;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class PrintReceiptTest extends AbstractSessionTest {
 
@@ -95,12 +91,12 @@ public class PrintReceiptTest extends AbstractSessionTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testNullStation() {
+    public void nllStation() {
         receiptPrinter = new Receipt(null);
     }
 
     @Test
-    public void testBarcodedItemPrintReceipt() throws OverloadedDevice {
+    public void barcodedItemPrintReceipt() throws OverloadedDevice {
         scs.getPrinter().addPaper(512);
         scs.getPrinter().addInk(1024);
         session.start();
@@ -118,7 +114,7 @@ public class PrintReceiptTest extends AbstractSessionTest {
     }
     
     @Test
-    public void testPLUItemPrintReceipt() throws OverloadedDevice {
+    public void pLUItemPrintReceipt() throws OverloadedDevice {
         scs.getPrinter().addPaper(512);
         scs.getPrinter().addInk(1024);
         session.start();
@@ -136,7 +132,7 @@ public class PrintReceiptTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testPrintReceiptOnlyAddPaper() throws OverloadedDevice {
+    public void printReceiptOnlyAddPaper() throws OverloadedDevice {
         session.start();
         itemManager.addItem(product);
         session.printReceipt();
@@ -151,7 +147,7 @@ public class PrintReceiptTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testPrintReceiptOnlyAddInk() throws OverloadedDevice {
+    public void printReceiptOnlyAddInk() throws OverloadedDevice {
         session.start();
         
         itemManager.addItem(product);
@@ -172,7 +168,7 @@ public class PrintReceiptTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testMultipleItemPrintReceipt() throws OverloadedDevice {
+    public void multipleItemPrintReceipt() throws OverloadedDevice {
         scs.getPrinter().addPaper(512);
         scs.getPrinter().addInk(1024);
         session.start();
@@ -204,7 +200,7 @@ public class PrintReceiptTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testPrintReceiptOutOffPaper() throws OverloadedDevice {
+    public void printReceiptOutOffPaper() throws OverloadedDevice {
         scs.getPrinter().addPaper(2);
         scs.getPrinter().addInk(1024);
         session.start();
@@ -226,7 +222,7 @@ public class PrintReceiptTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testPrintReceiptOutOffInk() throws OverloadedDevice {
+    public void printReceiptOutOffInk() throws OverloadedDevice {
         scs.getPrinter().addPaper(512);
         scs.getPrinter().addInk(20);
         session.start();
@@ -246,7 +242,7 @@ public class PrintReceiptTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testPrintReceiptReloadPaper() throws OverloadedDevice {
+    public void printReceiptReloadPaper() throws OverloadedDevice {
         scs.getPrinter().addPaper(1);
         scs.getPrinter().addInk(1024);
         session.start();
@@ -276,7 +272,7 @@ public class PrintReceiptTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testPrintReceiptReloadInk() throws OverloadedDevice {
+    public void printReceiptReloadInk() throws OverloadedDevice {
         scs.getPrinter().addPaper(512);
         scs.getPrinter().addInk(20);
         session.start();
@@ -305,7 +301,7 @@ public class PrintReceiptTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testRegisterListener() throws OverloadedDevice {
+    public void registerListener() throws OverloadedDevice {
         PrinterListener stub = new PrinterListener();
         receiptPrinter.register(stub);
         scs.getPrinter().addPaper(512);
@@ -326,14 +322,14 @@ public class PrintReceiptTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testDeregisterListener() throws OverloadedDevice {
+    public void deregisterListener() throws OverloadedDevice {
         PrinterListener stub = new PrinterListener();
         receiptPrinter.register(stub);
         assertTrue(receiptPrinter.deregister(stub));
     }
 
     @Test
-    public void testDeregisterAllListeners() throws OverloadedDevice {
+    public void deregisterAllListeners() throws OverloadedDevice {
         PrinterListener stub = new PrinterListener();
         receiptPrinter.register(stub);
         receiptPrinter.deregisterAll();
@@ -341,7 +337,7 @@ public class PrintReceiptTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testPrintingLineLongerThenCharLimit() throws OverloadedDevice {
+    public void printingLineLongerThenCharLimit() throws OverloadedDevice {
         BarcodedProduct product3 = new BarcodedProduct(barcode2,
                 "A very long long long long long long long product name", 15, 20.0);
         scs.getPrinter().addPaper(512);

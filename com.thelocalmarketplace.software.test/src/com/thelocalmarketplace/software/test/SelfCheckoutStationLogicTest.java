@@ -1,27 +1,16 @@
 
 package com.thelocalmarketplace.software.test;
 
-import static org.junit.Assert.*;
-
-import java.util.Arrays;
-import java.util.Collection;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.AttendantStation;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationSilver;
-import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
+import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.weight.Weight;
+import org.junit.Before;
+import org.junit.Test;
 
-import powerutility.PowerGrid;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Unit Testing for SelfCheckoutStation logic
@@ -70,14 +59,14 @@ public class SelfCheckoutStationLogicTest extends AbstractTest {
     }
 
     @Test
-    public void testInstallation() {
+    public void installation() {
         SelfCheckoutStationLogic.installAttendantStation(station);
         logic = SelfCheckoutStationLogic.installOn(scs);
         assertNotNull(logic);
     }
 
     @Test
-    public void testInstallationComponents() {
+    public void installationComponents() {
         // Check that the logic has installed Funds, Weight, and ItemAddedRule on the
         // session and scs.
         SelfCheckoutStationLogic.installAttendantStation(station);

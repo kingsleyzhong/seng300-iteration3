@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * <p>A class of unit tests that test specifically the functionality of
@@ -107,7 +107,7 @@ public class TextSearchControllerTest extends AbstractTest {
      * @throws DisabledDevice
      */
     @Test
-    public void populateSearchFieldTest() throws DisabledDevice {
+    public void populateSearchField() throws DisabledDevice {
         String expectedSearch = "yo";
         stringToKeyboard(expectedSearch);
 
@@ -130,7 +130,7 @@ public class TextSearchControllerTest extends AbstractTest {
      * @throws DisabledDevice
      */
     @Test
-    public void successfulNumericSearchTest() throws DisabledDevice {
+    public void successfulNumericSearch() throws DisabledDevice {
         ProductDatabases.BARCODED_PRODUCT_DATABASE.putIfAbsent(barcode1, product1);
         ProductDatabases.BARCODED_PRODUCT_DATABASE.putIfAbsent(barcode2, product2);
         ProductDatabases.PLU_PRODUCT_DATABASE.putIfAbsent(plu, product3);
@@ -151,7 +151,7 @@ public class TextSearchControllerTest extends AbstractTest {
      * @throws DisabledDevice
      */
     @Test
-    public void successfulBarcodeSearchTest() throws DisabledDevice {
+    public void successfulBarcodeSearch() throws DisabledDevice {
         ProductDatabases.BARCODED_PRODUCT_DATABASE.putIfAbsent(barcode1, product1);
         ProductDatabases.BARCODED_PRODUCT_DATABASE.putIfAbsent(barcode2, product2);
         ProductDatabases.PLU_PRODUCT_DATABASE.putIfAbsent(plu, product3);
@@ -171,7 +171,7 @@ public class TextSearchControllerTest extends AbstractTest {
      * @throws DisabledDevice
      */
     @Test
-    public void successfulTextSearchTest() throws DisabledDevice {
+    public void successfulTextSearch() throws DisabledDevice {
         ProductDatabases.BARCODED_PRODUCT_DATABASE.putIfAbsent(barcode1, product1);
         ProductDatabases.BARCODED_PRODUCT_DATABASE.putIfAbsent(barcode2, product2);
         ProductDatabases.PLU_PRODUCT_DATABASE.putIfAbsent(plu, product3);
@@ -194,7 +194,7 @@ public class TextSearchControllerTest extends AbstractTest {
      * @throws DisabledDevice
      */
     @Test
-    public void failedSearchTest() throws DisabledDevice{
+    public void failedSearch() throws DisabledDevice{
         stringToKeyboard("Marlboro Gold Cigarettes");
         a.getStation().keyboard.getKey("Enter").press();
         a.getStation().keyboard.getKey("Enter").release();
@@ -206,7 +206,7 @@ public class TextSearchControllerTest extends AbstractTest {
      * @throws DisabledDevice
      */
     @Test(expected = DisabledDevice.class)
-    public void disabledPressTest() throws DisabledDevice {
+    public void disabledPress() throws DisabledDevice {
         a.getStation().keyboard.disable();
         a.getStation().keyboard.getKey("Shift (Right)").press();
     }
@@ -216,7 +216,7 @@ public class TextSearchControllerTest extends AbstractTest {
      * @throws DisabledDevice
      */
     @Test(expected = DisabledDevice.class)
-    public void disabledReleaseTest() throws DisabledDevice {
+    public void disabledRelease() throws DisabledDevice {
         a.getStation().keyboard.disable();
         a.getStation().keyboard.getKey("Shift (Right)").release();
     }
@@ -226,7 +226,7 @@ public class TextSearchControllerTest extends AbstractTest {
      * @throws DisabledDevice
      */
     @Test(expected = NoPowerException.class)
-    public void noPowerPressTest() throws DisabledDevice {
+    public void noPowerPress() throws DisabledDevice {
         a.getStation().unplug();
         a.getStation().keyboard.getKey("Shift (Right)").press();
     }
@@ -236,7 +236,7 @@ public class TextSearchControllerTest extends AbstractTest {
      * @throws DisabledDevice
      */
     @Test(expected = NoPowerException.class)
-    public void noPowerReleaseTest() throws DisabledDevice {
+    public void noPowerRelease() throws DisabledDevice {
         a.getStation().unplug();
         a.getStation().keyboard.getKey("Shift (Right)").release();
     }

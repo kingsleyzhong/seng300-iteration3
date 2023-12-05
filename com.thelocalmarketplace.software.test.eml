@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component inheritJdk="true">
-	<contentEntry url="file://$MODULE_DIR$/com.thelocalmarketplace.software.test">
-		<excludeFolder url="file://$MODULE_DIR$/com.thelocalmarketplace.software.test/src/com/thelocalmarketplace/software/test/funds"/>
-		<excludeFolder url="file://$MODULE_DIR$/com.thelocalmarketplace.software.test/src/com/thelocalmarketplace/software/test/items"/>
-		<excludeFolder url="file://$MODULE_DIR$/com.thelocalmarketplace.software.test/src/com/thelocalmarketplace/software/test/reciept"/>
-		<excludeFolder url="file://$MODULE_DIR$/com.thelocalmarketplace.software.test/src/com/thelocalmarketplace/software/test/weight"/>
-	</contentEntry>
+	<contentEntry url="file://$MODULE_DIR$/com.thelocalmarketplace.software.test"/>
 </component>

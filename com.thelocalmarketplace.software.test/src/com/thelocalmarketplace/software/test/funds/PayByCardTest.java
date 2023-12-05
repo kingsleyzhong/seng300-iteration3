@@ -1,57 +1,32 @@
 package com.thelocalmarketplace.software.test.funds;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Currency;
-import java.util.HashMap;
-import java.util.List;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import com.jjjwelectronics.IllegalDigitException;
-import com.jjjwelectronics.Mass;
-import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.card.Card;
 import com.jjjwelectronics.card.ChipFailureException;
 import com.jjjwelectronics.card.InvalidPINException;
 import com.jjjwelectronics.card.MagneticStripeFailureException;
-import com.jjjwelectronics.scanner.Barcode;
-import com.jjjwelectronics.card.BlockedCardException;
 import com.tdc.CashOverloadException;
 import com.tdc.DisabledException;
 import com.tdc.NoCashAvailableException;
-import com.tdc.coin.CoinValidator;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
-import com.thelocalmarketplace.hardware.BarcodedProduct;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationSilver;
 import com.thelocalmarketplace.hardware.external.CardIssuer;
-import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
-import com.thelocalmarketplace.software.Session;
-import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 import com.thelocalmarketplace.software.funds.CardIssuerDatabase;
 import com.thelocalmarketplace.software.funds.Funds;
-import com.thelocalmarketplace.software.funds.FundsListener;
 import com.thelocalmarketplace.software.funds.PayByCard;
 import com.thelocalmarketplace.software.funds.SupportedCardIssuers;
 import com.thelocalmarketplace.software.test.AbstractTest;
-
-import ca.ucalgary.seng300.simulation.SimulationException;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import powerutility.NoPowerException;
-import powerutility.PowerGrid;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Calendar;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * <p>
@@ -152,16 +127,11 @@ public class PayByCardTest extends AbstractTest {
 		scs.getCardReader().deregisterAll();
 	}
 
-	// ---------- BRONZE TESTS ----------
-
 	@Test(expected = NoPowerException.class)
 	public void powerOffSwipe() throws IOException {
 		scs.turnOff();
 		scs.getCardReader().swipe(debit);
 		scs.turnOn();
-		// Swiping a card when the reader is not supposed to be in use (wrong session
-		// state
-		// Expect that aCardHasBeenSwiped throws InvalidActionException
 	}
 
 	@Test(expected = InvalidActionException.class)
@@ -173,14 +143,10 @@ public class PayByCardTest extends AbstractTest {
 			} catch (MagneticStripeFailureException e) {
 			}
 		}
-		// Swiping a card when the reader is not supposed to be in use (wrong session
-		// state
-		// Expect that aCardHasBeenSwiped throws InvalidActionException
 	}
 
 	@Test(expected = InvalidActionException.class)
-	public void testInvalidCardNumber()
-			throws IOException, CashOverloadException, NoCashAvailableException, DisabledException {
+	public void invalidCardNumber() throws IOException {
 		long price = 100;
 		BigDecimal itemPrice = new BigDecimal(price);
 		funds.update(itemPrice);
@@ -192,14 +158,10 @@ public class PayByCardTest extends AbstractTest {
 			} catch (MagneticStripeFailureException e) {
 			}
 		}
-		// The card numbers do not match and will decline a card if the card is blocked
-		// authorizeHold should return -1
-		// How do we effectively call authorize hold
 	}
 
 	@Test(expected = InvalidActionException.class)
-	public void testBlockedCard()
-			throws IOException, CashOverloadException, NoCashAvailableException, DisabledException {
+	public void blockedCard() throws IOException {
 		long price = 100;
 		BigDecimal itemPrice = new BigDecimal(price);
 		funds.update(itemPrice);
@@ -212,17 +174,10 @@ public class PayByCardTest extends AbstractTest {
 			} catch (MagneticStripeFailureException e) {
 			}
 		}
-		// This will decline a card if the card is blocked
-		// authorizeHold should return -1
 	}
 
-	// PayByCard currently is not capable of doing anything with the -1 value;
-	// change this?
-	// Otherwise testing both that cards are counting correct hold counts or not
-	// (redundant?)
 	@Test(expected = InvalidActionException.class)
-	public void testHoldCountDecline()
-			throws IOException, CashOverloadException, NoCashAvailableException, DisabledException {
+	public void holdCountDecline() throws IOException {
 		ci1.authorizeHold(disCard.number, 1);
 		long price = 100;
 		BigDecimal itemPrice = new BigDecimal(price);
@@ -240,8 +195,7 @@ public class PayByCardTest extends AbstractTest {
 	}
 
 	@Test(expected = InvalidActionException.class)
-	public void testAvailableBalanceDecline()
-			throws IOException, CashOverloadException, NoCashAvailableException, DisabledException {
+	public void availableBalanceDecline() throws IOException {
 		long price = 1000000;
 		BigDecimal itemPrice = new BigDecimal(price);
 		funds.update(itemPrice);
@@ -252,13 +206,10 @@ public class PayByCardTest extends AbstractTest {
 			} catch (MagneticStripeFailureException e) {
 			}
 		}
-		// This will decline a card if there is insufficient available balance
-		// postTransaction should return false
 	}
 
 	@Test
-	public void testSuccessfulSwipe()
-			throws CashOverloadException, NoCashAvailableException, DisabledException, IOException {
+	public void successfulSwipe() throws IOException {
 		long price = 10;
 		BigDecimal itemPrice = new BigDecimal(price);
 		funds.update(itemPrice);
@@ -271,14 +222,11 @@ public class PayByCardTest extends AbstractTest {
 			} catch (MagneticStripeFailureException e) {
 			}
 		}
-		// This will post a successful charge on the given card
-		// postTransaction should return true
 		assertTrue(funds.payed);
 	}
 
 	@Test
-	public void testSuccessfulTap()
-			throws CashOverloadException, NoCashAvailableException, DisabledException, IOException {
+	public void successfulTap() throws IOException {
 		long price = 2;
 		BigDecimal itemPrice = new BigDecimal(price);
 		funds.update(itemPrice);
@@ -291,14 +239,11 @@ public class PayByCardTest extends AbstractTest {
 			} catch (ChipFailureException e) {
 			}
 		}
-		// This will post a successful charge on the given card
-		// postTransaction should return true
 		assertTrue(funds.payed);
 	}
 
 	@Test(expected = InvalidPINException.class)
-	public void testIncorrectPin()
-			throws CashOverloadException, NoCashAvailableException, DisabledException, IOException {
+	public void incorrectPin() throws IOException {
 		long price = 10;
 		BigDecimal itemPrice = new BigDecimal(price);
 		funds.update(itemPrice);
@@ -312,8 +257,7 @@ public class PayByCardTest extends AbstractTest {
 	}
 
 	@Test
-	public void testSuccessfulInsert()
-			throws CashOverloadException, NoCashAvailableException, DisabledException, IOException {
+	public void successfulInsert() throws IOException {
 		long price = 10;
 		BigDecimal itemPrice = new BigDecimal(price);
 		funds.update(itemPrice);
@@ -326,8 +270,6 @@ public class PayByCardTest extends AbstractTest {
 			} catch (InvalidPINException | ChipFailureException e) {
 			}
 		}
-		// This will post a successful charge on the given card
-		// postTransaction should return true
 		assertTrue(funds.payed);
 	}
 
