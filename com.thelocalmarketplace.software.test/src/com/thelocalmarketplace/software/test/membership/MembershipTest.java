@@ -5,6 +5,7 @@ import com.jjjwelectronics.card.Card;
 import com.jjjwelectronics.card.MagneticStripeFailureException;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.software.exceptions.InvalidActionException;
+import com.thelocalmarketplace.software.membership.Member;
 import com.thelocalmarketplace.software.membership.Membership;
 import com.thelocalmarketplace.software.membership.MembershipDatabase;
 import com.thelocalmarketplace.software.membership.MembershipListener;
@@ -106,6 +107,49 @@ public class MembershipTest extends AbstractSessionTest {
         membership.register(stubListener2);
         membership.deregisterAll();
         assertTrue(membership.getListeners().isEmpty());
+    }
+    
+    @Test
+    public void testGettingMemberName() {
+        StubListener stubListener2 = new StubListener();
+        membership.register(stubListener2);
+        membership.setAddingItems(true);
+        membership.typeMembership(membershipNumber);
+        String memberName = MembershipDatabase.MEMBERSHIP_DATABASE.get(stubListener2.enteredMembershipNumber).getName();
+        Assert.assertEquals(memberName, memberName);
+    }
+    
+    @Test
+    public void testGettingPoints() {
+        StubListener stubListener2 = new StubListener();
+        membership.register(stubListener2);
+        membership.setAddingItems(true);
+        membership.typeMembership(membershipNumber);
+        int memberPoints = MembershipDatabase.MEMBERSHIP_DATABASE.get(stubListener2.enteredMembershipNumber).getPoints();
+        Assert.assertEquals(memberPoints, 0);
+    }
+    
+    @Test
+    public void testAddingPoints() {
+        StubListener stubListener2 = new StubListener();
+        membership.register(stubListener2);
+        membership.setAddingItems(true);
+        membership.typeMembership(membershipNumber);
+        Member member = MembershipDatabase.MEMBERSHIP_DATABASE.get(stubListener2.enteredMembershipNumber);
+        member.changePoints(10);
+        Assert.assertEquals(member.getPoints(), 10);
+        member.changePoints(-10); // reset the added points for next test
+    }
+    
+    @Test
+    public void testNegativePoints() {
+        StubListener stubListener2 = new StubListener();
+        membership.register(stubListener2);
+        membership.setAddingItems(true);
+        membership.typeMembership(membershipNumber);
+        Member member = MembershipDatabase.MEMBERSHIP_DATABASE.get(stubListener2.enteredMembershipNumber);
+        member.changePoints(-10);
+        Assert.assertEquals(member.getPoints(), 0);
     }
 
     @Test(expected = InvalidActionException.class)
