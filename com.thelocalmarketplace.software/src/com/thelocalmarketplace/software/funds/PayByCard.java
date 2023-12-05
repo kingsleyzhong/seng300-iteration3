@@ -45,6 +45,9 @@ public class PayByCard {
 	private Funds funds;
 	
 	public PayByCard(ICardReader cardReader, Funds funds) {
+		if(cardReader == null) throw new NullPointerException("CardReader is null");
+		if(funds == null) throw new NullPointerException("Funds is null");
+
 		InnerListener cardListener = new InnerListener();
 		cardReader.register(cardListener);
 		
@@ -85,7 +88,6 @@ public class PayByCard {
 
 		@Override
 		public void theDataFromACardHasBeenRead(CardData data) {	
-			//card = new Card(data.getType(), data.getNumber(), data.getCardholder(), null);
 			getTransactionFromBank(data);
 		}
 
@@ -118,16 +120,15 @@ public class PayByCard {
 
 	    for (SupportedCardIssuers issuer : SupportedCardIssuers.values()) {
 	        if (card.getType().equals(issuer.getIssuer())) {
-	            long holdNumber = CardIssuerDatabase.CARD_ISSUER_DATABASE.get(issuer.getIssuer()).authorizeHold(card.getNumber(), 1);
-
+	            long holdNumber = CardIssuerDatabase.CARD_ISSUER_DATABASE.get(issuer.getIssuer()).authorizeHold(card.getNumber(), funds.getAmountDue().doubleValue());
 	            if (holdNumber != -1) {
-	                boolean post = CardIssuerDatabase.CARD_ISSUER_DATABASE.get(issuer.getIssuer()).postTransaction(card.getNumber(), holdNumber, amountDue);
+	                CardIssuerDatabase.CARD_ISSUER_DATABASE.get(issuer.getIssuer()).postTransaction(card.getNumber(), holdNumber, amountDue);
 	                CardIssuerDatabase.CARD_ISSUER_DATABASE.get(issuer.getIssuer()).releaseHold(card.getNumber(), 1);
 
 	                funds.updatePaidCard(true);
 	                transactionProcessed = true;
+					break;
 	            }
-	            break;
 	        }
 	    }
 

@@ -460,7 +460,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 		for (int i = 0; i < 5; i++) {
 			scs.getMainScanner().scan(item);
 			scs.getBaggingArea().addAnItem(item);
-			scs.getBaggingArea().removeItem(item);
+			scs.getBaggingArea().removeAnItem(item);
 		}
 
 		assertTrue(session.getItems().isEmpty());
