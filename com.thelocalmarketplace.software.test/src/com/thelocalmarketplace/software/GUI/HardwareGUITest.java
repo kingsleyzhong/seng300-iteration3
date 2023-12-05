@@ -8,6 +8,7 @@ import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.scanner.BarcodedItem;
 import com.tdc.CashOverloadException;
 import com.tdc.DisabledException;
+import com.tdc.banknote.Banknote;
 import com.tdc.banknote.BanknoteValidator;
 import com.tdc.coin.Coin;
 import com.tdc.coin.CoinValidator;
@@ -39,7 +40,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
+import java.util.Currency;
 import java.util.List;
+import java.util.Locale;
 import java.awt.event.InputEvent;
 
 import java.awt.AWTException;
@@ -90,11 +93,13 @@ public class HardwareGUITest {
     private PayByCash cashController;
     private Funds funds;
 
-
+    //items
     private BarcodedProduct product;
     private Barcode barcode;
     private BarcodedItem item;
     private BarcodedItem item2;
+    private BarcodedItem expensive_item;
+    
     private DragRobot dragRobot;
     private Robot panelRobot;
     private ItemObject testObject;
@@ -137,7 +142,7 @@ public class HardwareGUITest {
     }
 
     @Before
-    public void setup() throws AWTException {
+    public void setup() throws AWTException, CashOverloadException {
         scs = new SelfCheckoutStationGold();
         as = new AttendantStation();
         PowerGrid.engageUninterruptiblePowerSource();
@@ -156,11 +161,17 @@ public class HardwareGUITest {
         cashpanel = new CashPanel(scs);
         funds = new Funds(scs);
         
+        //telling it what banknotes it can take
 		AbstractSelfCheckoutStation.configureBanknoteDenominations(new BigDecimal[] {new BigDecimal(100), 
 				new BigDecimal(50), new BigDecimal(20), new BigDecimal(10), new BigDecimal(5) });
 		AbstractSelfCheckoutStation.configureCoinDenominations(new BigDecimal[] { new BigDecimal(2), 
 				BigDecimal.ONE, new BigDecimal(0.25), new BigDecimal(0.10), new BigDecimal(0.05)});
         
+		//adding change to the machine
+		Banknote ten = new Banknote(Currency.getInstance(Locale.CANADA), new BigDecimal(10));
+		scs.getBanknoteDispensers().get(ten.getDenomination()).load(ten);;
+		
+		
 
         coinValidator = scs.getCoinValidator();
         banknoteValidator = scs.getBanknoteValidator();
@@ -172,7 +183,7 @@ public class HardwareGUITest {
 
         cashController = new PayByCash(coinValidator, banknoteValidator, funds);
 
-
+        
 
 
 
@@ -184,6 +195,14 @@ public class HardwareGUITest {
 
         item = new BarcodedItem(barcode, new Mass(20.0));
         item2 = new BarcodedItem(barcode, new Mass(20.0));
+        
+        
+        //expensive item
+        Barcode expensive_barcode = new Barcode(new Numeral[] { Numeral.valueOf((byte) 2) });
+        BarcodedProduct expensive_product = new BarcodedProduct(barcode, "Some product1", 1000, 20.0);
+        ProductDatabases.BARCODED_PRODUCT_DATABASE.put(expensive_barcode, expensive_product);
+        expensive_item = new BarcodedItem(expensive_barcode, new Mass(20.0));
+        
         dragRobot = new DragRobot();
         try {
             panelRobot = new Robot();
@@ -327,20 +346,20 @@ public class HardwareGUITest {
 		softwareGUI.btnStart.doClick();
 		hardwareGUI.buttonPanel.startButton.doClick();
 		
-		scs.getMainScanner().scan(item2);
-		scs.getBaggingArea().addAnItem(item2);
-		scs.getMainScanner().scan(item);
-		scs.getBaggingArea().addAnItem(item);
-		
+		scs.getMainScanner().scan(expensive_item);
+		scs.getBaggingArea().addAnItem(expensive_item);
 		
 		softwareGUI.pay.doClick();
 		softwareGUI.paymentScreen.getCashButton().doClick();
 		
 		
 		cashpanel.FiveBillBtn.doClick();
-		cashpanel.FiveBillBtn.doClick();
+		cashpanel.TenBillBtn.doClick();
+		cashpanel.TwentyBillBtn.doClick();
+		cashpanel.FiftyBillBtn.doClick();
+		cashpanel.HundredBillButton.doClick();
 		
-		Assert.assertEquals(new BigDecimal(10) , cashController.getCashPaid());
+		Assert.assertEquals(new BigDecimal(185) , cashController.getCashPaid());
     }
 
     @Test
@@ -384,10 +403,25 @@ public class HardwareGUITest {
 
     @Test
     public void removeChangeBills() {
-
+		softwareGUI.btnStart.doClick();
+		hardwareGUI.buttonPanel.startButton.doClick();
+		
+		scs.getMainScanner().scan(item);
+		scs.getBaggingArea().addAnItem(item);
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getCashButton().doClick();
+		
+		//this is an overpayment by 10 so ill get 10 change
+		cashpanel.TwentyBillBtn.doClick();
+		
+		cashpanel.RemoveChangeBillBtn.doClick();
+		
+		//check that there is no change bills
+	
+		Assert.assertFalse(scs.getBanknoteOutput().hasDanglingBanknotes());
     }
     
-    //IDK WHY NONE OF THE BILL STUFF WONT WORK.... IT WORKS MANUALLY 
+
     @Test
     public void inputBill() {
 		softwareGUI.btnStart.doClick();
@@ -401,7 +435,7 @@ public class HardwareGUITest {
 		
 		
 		cashpanel.TenBillBtn.doClick();
-		//cashpanel.FiveBillBtn.doClick();
+
 		
 		Assert.assertEquals(BigDecimal.TEN , cashController.getCashPaid());
     }
@@ -440,7 +474,7 @@ public class HardwareGUITest {
 		cashpanel.button_twentyfive_cent.doClick();
 		cashpanel.button_one_coin.doClick();
 		cashpanel.btn_two_coin.doClick();
-		
+
 		Assert.assertEquals(BigDecimal.valueOf(3.4) , cashController.getCashPaid());
 		
     }
