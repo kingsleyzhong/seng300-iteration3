@@ -22,6 +22,7 @@ import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
+import com.thelocalmarketplace.software.items.ReusableBagProduct;
 
 /**
  * A panel that represents an added product to the cart after adding.
@@ -88,15 +89,21 @@ public class CartProduct extends JPanel {
 		
 		if(product instanceof BarcodedProduct) {
 			description = ((BarcodedProduct) product).getDescription();
+			quantity = 1;
 		}
 		else if(product instanceof PLUCodedProduct) {
 			description = ((PLUCodedProduct) product).getDescription();
-		}
-		else {
+			quantity = 1;
+		} 
+		else if (product instanceof ReusableBagProduct) {
+			description = ((ReusableBagProduct) product).getDescription();
+			quantity =  quantity + ReusableBagProduct.getAdded();
+		}else {
 			description = "Some product";
+			quantity = 1;
 		}
 		
-		quantity = 1;
+		
     	
 		this.setBackground(Colors.color3);
 		this.setPreferredSize(new Dimension(500, 50));
@@ -191,6 +198,13 @@ public class CartProduct extends JPanel {
 	 */
 	public boolean addProduct() {
 		quantity = quantity + 1;
+		quantityLabel.setText("" + quantity);
+		revalidate();
+		return true;
+	}
+	
+	public boolean addProduct(int quantity) {
+		this.quantity = quantity;
 		quantityLabel.setText("" + quantity);
 		revalidate();
 		return true;

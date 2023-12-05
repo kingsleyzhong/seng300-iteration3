@@ -18,6 +18,7 @@ import com.thelocalmarketplace.software.funds.FundsListener;
 import com.thelocalmarketplace.software.items.BagDispenserController;
 import com.thelocalmarketplace.software.items.ItemListener;
 import com.thelocalmarketplace.software.items.ItemManager;
+import com.thelocalmarketplace.software.items.ReusableBagProduct;
 import com.thelocalmarketplace.software.membership.Membership;
 import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.receipt.ReceiptListener;
@@ -316,6 +317,7 @@ public class Session {
 			Session.this.membershipNumber = membershipNumber;
 			Session.this.hasMembership = true;
 		});
+		ReusableBagProduct.setPrice(1);
 		this.scs = scs;
 		this.bagDispenser = bagdispenser;
 	}
@@ -382,6 +384,10 @@ public class Session {
 		
 		for(SessionListener l:listeners) {
 			l.sessionEnded(this);
+		}
+		//if the session is slated to be disabled, do that
+		if (!disableSelf) {
+			disable();
 		}
 	}
 

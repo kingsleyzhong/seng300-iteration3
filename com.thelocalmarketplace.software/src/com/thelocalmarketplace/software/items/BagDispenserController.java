@@ -75,7 +75,7 @@ public class BagDispenserController {
 
 		@Override
 		public void aBagHasBeenDispensedByTheDispenser() {
-			manager.addPurchasedBags(ReusableBagProduct.getBag());
+			
 		}
 
 		@Override
@@ -87,7 +87,8 @@ public class BagDispenserController {
 		public void bagsHaveBeenLoadedIntoTheDispenser(int count) {
 			outOfBags = false;
 		}
-	}
+	} 
+		
 	
 	/**
 	 * Signals the hardware (ReusableBagDispenser) to dispense a single (one, 1) bag. 
@@ -96,15 +97,8 @@ public class BagDispenserController {
 	public void dispenseBag(int num) {
 		// signals the hardware to dispense a single bag
 		if (!outOfBags) {
-			for (int i = 0; i < num; i++) {
-				try {
-					if ( manager.getAddItems()) {
-						ReusableBag bag = bagDispenser.dispense();
-					}
-				} catch (EmptyDevice e) {
-					break;		
-				}	
-			}
+			ReusableBagProduct.setAdded(num);
+			manager.addPurchasedBags(ReusableBagProduct.getBag(), num);	
 		}
 		
 		
