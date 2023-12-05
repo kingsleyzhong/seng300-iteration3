@@ -160,6 +160,7 @@ public class ItemManager {
 		long price = product.getPrice()*amt;
 		Mass mass = new Mass(weight);
 		BigDecimal itemPrice = new BigDecimal(price);
+		System.out.println("h");
 		notifyItemAdded(product, mass, itemPrice);	
 	}
 	

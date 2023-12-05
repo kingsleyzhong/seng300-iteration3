@@ -203,6 +203,13 @@ public class CartProduct extends JPanel {
 		return true;
 	}
 	
+	public boolean addProduct(int quantity) {
+		this.quantity = quantity;
+		quantityLabel.setText("" + quantity);
+		revalidate();
+		return true;
+	}
+	
 	/**
 	 * 
 	 * @return

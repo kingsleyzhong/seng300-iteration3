@@ -143,7 +143,7 @@ public class ButtonPanel extends JPanel implements ActionListener {
 		else if(e.getSource() == addBags) {
 			try {
 				int bagsAdded = ReusableBagProduct.getAdded();
-				System.out.println("Dispensing: " + bagsAdded);
+				JOptionPane.showMessageDialog(null, "Dispensing: " + bagsAdded);
 				for (int i = 0; i < bagsAdded; i++) {
 					ReusableBag bag = gui.getStation().getReusableBagDispenser().dispense();
 					gui.getStation().getBaggingArea().addAnItem(bag);

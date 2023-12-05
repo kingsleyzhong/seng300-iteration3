@@ -94,9 +94,7 @@ public class AddedProducts extends JPanel {
 			if(product instanceof BarcodedProduct) {
 				current.addProduct();
 			}else if (product instanceof ReusableBagProduct){
-				current.addProduct();
-				BigInteger massinMicrograms = session.getItems().get(product);
-				current.updateMass((new Mass(massinMicrograms)).inGrams());
+				current.addProduct(session.getItems().get(product).intValue());
 			}
 			else {
 				BigInteger massinMicrograms = session.getItems().get(product);
