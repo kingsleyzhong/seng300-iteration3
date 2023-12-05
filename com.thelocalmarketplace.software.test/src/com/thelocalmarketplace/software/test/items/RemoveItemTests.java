@@ -1,16 +1,5 @@
 package com.thelocalmarketplace.software.test.items;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.HashMap;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.scale.IElectronicScale;
@@ -20,10 +9,16 @@ import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.exceptions.ProductNotFoundException;
-import com.thelocalmarketplace.software.items.ItemManager;
-import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.test.AbstractSessionTest;
 import com.thelocalmarketplace.software.weight.Weight;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.HashMap;
+
+import static org.junit.Assert.*;
 
 /**
  * Unit Test class for RemoveItemMethod and interaction with surrounding classes
@@ -90,7 +85,7 @@ public class RemoveItemTests extends AbstractSessionTest {
 
     // Successfully remove item (update weight and price) , Silver, Gold
     @Test
-    public void testRemoveItemInDatabase() {
+    public void removeItemInDatabase() {
         // add item
         itemManager.addItem(product);
 
@@ -115,14 +110,14 @@ public class RemoveItemTests extends AbstractSessionTest {
 
     // remove item that hasn't been scanned , Silver, Gold
     @Test(expected = ProductNotFoundException.class)
-    public void testRemoveItemNotInDatabase() {
+    public void removeItemNotInDatabase() {
         // Remove item
         itemManager.removeItem(product);
     }
 
     // remove duplicate item (update weight and price) , Silver, Gold
     @Test
-    public void testRemoveDuplicateItemInDatabase() {
+    public void removeDuplicateItemInDatabase() {
         // add item twice
         itemManager.addItem(product);
         baggingArea.addAnItem(item);
@@ -149,7 +144,7 @@ public class RemoveItemTests extends AbstractSessionTest {
 
     // remove item twice
     @Test(expected = ProductNotFoundException.class)
-    public void testRemoveSameItemTwice() {
+    public void removeSameItemTwice() {
         itemManager.addItem(product);
         HashMap<Product, BigInteger> productList = session.getItems();
         itemManager.removeItem(product);
@@ -158,7 +153,7 @@ public class RemoveItemTests extends AbstractSessionTest {
 
     // remove item that was not the last added
     @Test
-    public void testRemoveItemThatsNotLastAdded() {
+    public void removeItemThatsNotLastAdded() {
         // add two different items
         itemManager.addItem(product);
         baggingArea.addAnItem(item);
@@ -185,7 +180,7 @@ public class RemoveItemTests extends AbstractSessionTest {
 
     // Remove an item that was not added
     @Test(expected = ProductNotFoundException.class)
-    public void testRemoveItemNotAdded() {
+    public void removeItemNotAdded() {
         itemManager.removeItem(product);
     }
 
