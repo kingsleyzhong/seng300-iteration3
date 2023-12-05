@@ -5,7 +5,6 @@ import com.jjjwelectronics.card.Card;
 import com.jjjwelectronics.card.MagneticStripeFailureException;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.software.exceptions.InvalidActionException;
-import com.thelocalmarketplace.software.membership.Member;
 import com.thelocalmarketplace.software.membership.Membership;
 import com.thelocalmarketplace.software.membership.MembershipDatabase;
 import com.thelocalmarketplace.software.membership.MembershipListener;
@@ -14,8 +13,6 @@ import com.thelocalmarketplace.software.test.AbstractSessionTest;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
@@ -66,25 +63,26 @@ public class MembershipTest extends AbstractSessionTest {
     @Before
     public void setup() {
         basicDefaultSetup();
-        stubListener = new StubListener();
-        membership.register(stubListener);
+        membership.setAddingItems(false);
+        membership.deregisterAll();
+        membership.register(stubListener = new StubListener());
     }
 
     /** Creating a new membership facade with a null card reader should throw a NullPointerSimulationException. */
     @Test
-    public void nllCardReader() {
+    public void nullCardReader() {
         Assert.assertThrows(NullPointerSimulationException.class, () -> new Membership(null));
     }
 
     /** Registering a null listener should throw a NullPointerSimulationException. */
     @Test
-    public void nllAddListener() {
+    public void nullAddListener() {
         Assert.assertThrows(NullPointerSimulationException.class, () -> membership.register(null));
     }
 
     /** Removing a null listener should throw a NullPointerSimulationException. */
     @Test
-    public void nllRemoveListener() {
+    public void nullRemoveListener() {
         Assert.assertThrows(NullPointerSimulationException.class, () -> membership.deregister(null));
     }
 
@@ -101,6 +99,7 @@ public class MembershipTest extends AbstractSessionTest {
     /** Deregistering a listener should make it so that it no longer receives events. */
     @Test
     public void deregisterListener() {
+        membership.setAddingItems(true);
         membership.deregister(stubListener);
         membership.typeMembership(membershipNumber);
         Assert.assertNull(stubListener.enteredMembershipNumber);
@@ -120,8 +119,7 @@ public class MembershipTest extends AbstractSessionTest {
     
     @Test
     public void typeMembershipNotAddingItems() {
-        membership.typeMembership(membershipNumber);
-        Assert.assertNull(stubListener.enteredMembershipNumber);
+        Assert.assertThrows(InvalidActionException.class, () -> membership.typeMembership(membershipNumber));
     }
 
     /** Typing in a membership number that is not in the database should result in no membership number being stored. */

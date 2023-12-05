@@ -1,11 +1,17 @@
 package com.thelocalmarketplace.software.test.attendant;
 
+import com.jjjwelectronics.DisabledDevice;
+import com.jjjwelectronics.Numeral;
+import com.jjjwelectronics.printer.IReceiptPrinter;
+import com.jjjwelectronics.scale.IElectronicScale;
+import com.jjjwelectronics.scanner.Barcode;
 import com.thelocalmarketplace.hardware.*;
+import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.attendant.Attendant;
-
+import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.exceptions.SessionNotRegisteredException;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.items.BagDispenserController;

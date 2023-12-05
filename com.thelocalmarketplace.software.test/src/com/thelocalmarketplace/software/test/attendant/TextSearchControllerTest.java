@@ -22,9 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-
 /**
  * <p>A class of unit tests that test specifically the functionality of
  * com.thelocalmarketplace.software.attendant.TextSearchController; it must be able to take key inputs properly into
