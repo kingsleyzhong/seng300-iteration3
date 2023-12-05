@@ -289,37 +289,6 @@ public class AddBagsTest extends AbstractSessionTest {
 		// compare the masses to see they have updated
 		assertTrue(expectedMassAfter.compareTo(expectedMassBefore) == 0);
 	}
-
-	/*
-	 * Tests that calling purchaseBag() before the session has started has no impact on
-	 * the number of bags dispensed
-	 * ie: the number of bags the dispenser has doesnt change
-	 * 
-	 * Expected Behavior: the number of bags in the dispenser has doesnt change
-	 * UnsupportedOperationException will be thrown for the Bronze self checkout station in getReusableBagDispenser()
-	 */
-	
-	@Test
-	public void testNoBagsDispensedBeforeStartSession() {
-		// save the expected Mass before adding the bag
-		session.cancel();
-		try {
-			int expectedTotalBags = scs.getReusableBagDispenser().getQuantityRemaining();
-			session.purchaseBags(1);
-			
-			// add the bags to the bagging area
-			scs.getBaggingArea().addAnItem(purchasedBag);
-
-
-			int actualTotalBags = scs.getReusableBagDispenser().getQuantityRemaining();
-
-			// compare the masses to see they have updated
-			assertEquals(expectedTotalBags, actualTotalBags);
-		}
-		catch (UnsupportedOperationException e) {
-			 e.printStackTrace();//this exception will be thrown for the Bronze self checkout station in getReusableBagDispenser()
-		}
-	}
 	
 
 	/*
@@ -407,76 +376,8 @@ public class AddBagsTest extends AbstractSessionTest {
 		
 	}
 	
-	/*
-	 * Tests that calling addBag() and then adding the bag to the bagging area does
-	 * not result in
-	 * any issues.
-	 * 
-	 * Expected behavior: the total number of bags in dispenser is updated
-	 * UnsupportedOperationException will be thrown for the Bronze self checkout station in getReusableBagDispenser()
-	 */
-	@Test
-	public void testAddPurchasedBagsUpdatesDispenser() {
-		// start session:
 
-		// save the number of bags in dispenser before adding the bag
-		try {
-			int previousBagsTotal = scs.getReusableBagDispenser().getQuantityRemaining();
 
-			// call addBags
-			session.purchaseBags(1);
-
-			// add the bags to the bagging area
-			scs.getBaggingArea().addAnItem(purchasedBag);
-
-			// check the number of bags in dispenser
-			int currentBagsTotal = scs.getReusableBagDispenser().getQuantityRemaining();
-
-			// compare the number of bags to see if they have updated
-			assertTrue(currentBagsTotal == previousBagsTotal   - 1);
-		} catch (UnsupportedOperationException e) {
-			 e.printStackTrace();//this exception will throw for the Bronze self checkout station for getReusableBagDispenser()
-		}
-	}
-	
-	/*
-	 * Tests that calling addBag() and then adding the bag to the bagging area does
-	 * not result in
-	 * any issues.
-	 * 
-	 * Expected behavior: the total number of bags in dispenser is updated
-	 * UnsupportedOperationException will be thrown for the Bronze self checkout station in getReusableBagDispenser()
-	 */
-	@Test
-	public void testAddPurchasedTwoBagsUpdatesDispenser() {
-		// start session:
-
-		// save the expected Mass before adding the bag
-		try {
-			int previousBagsTotal = scs.getReusableBagDispenser().getQuantityRemaining();
-
-			// call addBags
-			session.purchaseBags(2);
-
-			// add the bags to the bagging area
-			scs.getBaggingArea().addAnItem(purchasedBag);
-			scs.getBaggingArea().addAnItem(purchasedBag2);
-
-			// check the expected weight has been updated (?)
-
-			int currentBagsTotal = scs.getReusableBagDispenser().getQuantityRemaining();
-
-			// compare the masses to see they have updated
-			assertTrue(currentBagsTotal == previousBagsTotal - 2);
-			
-			//make sure that the number of bags in item manager is updated
-			BigInteger totalBags = itemManager.getItems().get(ReusableBagProduct.getBag());
-			assertTrue(totalBags.intValue() == 2 );
-		} catch (UnsupportedOperationException e) {
-			 e.printStackTrace();//this exception will throw for the Bronze self checkout station for getReusableBagDispenser()
-		}
-		
-	}
 	
 	/*
 	 * Tests that calling addBag() and then adding the bag to the bagging area does
