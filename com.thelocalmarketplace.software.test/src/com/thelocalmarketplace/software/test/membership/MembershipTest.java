@@ -15,7 +15,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-/*
+/* Tests related to the Membership facade, its ability to take membership numbers and announce events, and
+ * its ability to register/deregister MembershipListeners.
  *
  * Project Iteration 3 Group 1
  *
@@ -51,35 +52,41 @@ public class MembershipTest extends AbstractSessionTest {
             false);
 
     static {
-        MembershipDatabase.registerMember(membershipNumber, memberName);
+        MembershipDatabase.registerMember(membershipNumber, memberName); // add test member to database
     }
 
     public MembershipTest(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
         super(testName, scsClass);
-        // TODO Auto-generated constructor stub
     }
 
     @Before
     public void setup() {
         basicDefaultSetup();
+
+        // reregister the membership number
+        membership.deregisterAll();
         membership.register(stubListener = new StubListener());
     }
 
+    /** Creating a new membership facade with a null card reader should throw a NullPointerSimulationException. */
     @Test
     public void testNullCardReader() {
         Assert.assertThrows(NullPointerSimulationException.class, () -> new Membership(null));
     }
 
+    /** Registering a null listener should throw a NullPointerSimulationException. */
     @Test
     public void testNullAddListener() {
         Assert.assertThrows(NullPointerSimulationException.class, () -> membership.register(null));
     }
 
+    /** Removing a null listener should throw a NullPointerSimulationException. */
     @Test
     public void testNullRemoveListener() {
         Assert.assertThrows(NullPointerSimulationException.class, () -> membership.deregister(null));
     }
 
+    /** A listener that is registered should be able to receive events. */
     @Test
     public void testRegisterListener() {
         StubListener listener2 = new StubListener();
@@ -89,6 +96,7 @@ public class MembershipTest extends AbstractSessionTest {
         Assert.assertEquals(listener2.enteredMembershipNumber, membershipNumber);
     }
 
+    /** Deregistering a listener should make it so that it no longer receives events. */
     @Test
     public void testDeregisterListener() {
         membership.setAddingItems(true);
@@ -97,6 +105,7 @@ public class MembershipTest extends AbstractSessionTest {
         Assert.assertNull(stubListener.enteredMembershipNumber);
     }
 
+    /** Deregistering all listeners should make none of them receive events. */
     @Test
     public void testDeregisterAllListeners() {
         membership.setAddingItems(true);
@@ -108,11 +117,13 @@ public class MembershipTest extends AbstractSessionTest {
         Assert.assertNull(stubListener2.enteredMembershipNumber);
     }
 
+    /** Calling typeMembership during any phase other than adding items should throw an InvalidActionException. */
     @Test
     public void testTypeMembershipNotAddingItems() {
         Assert.assertThrows(InvalidActionException.class, () -> membership.typeMembership(membershipNumber));
     }
 
+    /** Typing in a membership number that is not in the database should result in no membership number being stored. */
     @Test
     public void testTypeNotAMember() {
         membership.setAddingItems(true);
@@ -120,6 +131,7 @@ public class MembershipTest extends AbstractSessionTest {
         Assert.assertNull(stubListener.enteredMembershipNumber);
     }
 
+    /** Typing in a valid membership number should store it. */
     @Test
     public void testTypeValidMembership() {
         membership.setAddingItems(true);
@@ -127,6 +139,7 @@ public class MembershipTest extends AbstractSessionTest {
         Assert.assertEquals(stubListener.enteredMembershipNumber, membershipNumber);
     }
 
+    /** Swiping a membership card while not in the add items phase should result in no membership number being stored.*/
     @Test
     public void testSwipeMembershipNotAddingItems() throws IOException {
         int success = 0;
@@ -142,6 +155,7 @@ public class MembershipTest extends AbstractSessionTest {
         Assert.assertTrue(success > 450);
     }
 
+    /** Swiping a valid membership card should result in the membership number being stored. */
     @Test
     public void testSwipeMembership() throws IOException {
         membership.setAddingItems(true);
@@ -158,6 +172,7 @@ public class MembershipTest extends AbstractSessionTest {
         Assert.assertTrue(success > 450);
     }
 
+    /** Swiping a card that is not a membership card should result in no number being stored. */
     @Test
     public void testSwipeOtherCard() throws IOException {
         Card otherCard = new Card("VISA", "4123456789012345", "John Doe", "111", "1111", true, true);
@@ -175,6 +190,7 @@ public class MembershipTest extends AbstractSessionTest {
         Assert.assertTrue(success > 450);
     }
 
+    /** Swiping a membership card with a number not in the database should result in no membership number being set. */
     @Test
     public void testSwipeNotAMember() throws IOException {
         Card otherCard = new Card("member", "1", "Jane Smith", "", "", false, false);
@@ -192,9 +208,12 @@ public class MembershipTest extends AbstractSessionTest {
         Assert.assertTrue(success > 450);
     }
 
+    /** A stub MembershipListener, that receives membership number events and stores that number. */
     static class StubListener implements MembershipListener {
-        String enteredMembershipNumber;
+        String enteredMembershipNumber; // string that can be used
 
+        /** Sets the enteredMembershipNumber to the entered membershipNumber to indicate a successful event call.
+         * @param membershipNumber The entered membership number. */
         @Override
         public void membershipEntered(String membershipNumber) {
             enteredMembershipNumber = membershipNumber;
