@@ -40,6 +40,9 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.awt.event.InputEvent;
 
+import java.awt.AWTException;
+import java.awt.Robot;
+
 /**
  * Isolated test cases for Hardware GUI
  *
@@ -179,6 +182,14 @@ public class HardwareGUITest {
 
             @Override
             public void actionPerformed(ActionEvent e) {
+                panelRobot.keyPress(KeyEvent.VK_1);
+                panelRobot.keyRelease(KeyEvent.VK_1);
+                panelRobot.keyPress(KeyEvent.VK_2);
+                panelRobot.keyRelease(KeyEvent.VK_2);
+                panelRobot.keyPress(KeyEvent.VK_3);
+                panelRobot.keyRelease(KeyEvent.VK_3);
+                panelRobot.keyPress(KeyEvent.VK_4);
+                panelRobot.keyRelease(KeyEvent.VK_4);
                 panelRobot.keyPress(KeyEvent.VK_ENTER);
                 panelRobot.keyRelease(KeyEvent.VK_ENTER);
                 runs +=1;
@@ -400,11 +411,15 @@ public class HardwareGUITest {
 		softwareGUI.paymentScreen.getCashButton().doClick();
 		
 		cashpanel.button_five_cent.doClick();
-		
+		System.out.println(cashController.getCashPaid());
 		cashpanel.button_ten_cent.doClick();
+		System.out.println(cashController.getCashPaid());
 		cashpanel.button_twentyfive_cent.doClick();
+		System.out.println(cashController.getCashPaid());
 		cashpanel.button_one_coin.doClick();
+		System.out.println(cashController.getCashPaid());
 		cashpanel.btn_two_coin.doClick();
+		System.out.println(cashController.getCashPaid());
 		
 		Assert.assertEquals(BigDecimal.valueOf(3.40) , cashController.getCashPaid());
 		
@@ -498,6 +513,7 @@ public class HardwareGUITest {
             hardwareGUI.card.insertButton.doClick();
         }
         catch (Exception e) {}
+        panelRobot.delay(1000);
         Assert.assertTrue(cardListenerStub.cardInserted);
     }
 
