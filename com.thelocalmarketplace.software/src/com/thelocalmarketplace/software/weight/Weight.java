@@ -56,6 +56,61 @@ public class Weight {
 	private Mass MAXBAGWEIGHT = new Mass(500 * Mass.MICROGRAMS_PER_GRAM);
 
 	/**
+	 * Inner Listener for scale
+	 */
+	public class innerListener implements ElectronicScaleListener {
+	
+			@Override
+			public void aDeviceHasBeenEnabled(IDevice<? extends IDeviceListener> device) {
+				// TODO Auto-generated method stub
+	
+			}
+	
+			@Override
+			public void aDeviceHasBeenDisabled(IDevice<? extends IDeviceListener> device) {
+				// TODO Auto-generated method stub
+	
+			}
+	
+			@Override
+			public void aDeviceHasBeenTurnedOn(IDevice<? extends IDeviceListener> device) {
+				// TODO Auto-generated method stub
+	
+			}
+	
+			@Override
+			public void aDeviceHasBeenTurnedOff(IDevice<? extends IDeviceListener> device) {
+				// TODO Auto-generated method stub
+	
+			}
+	
+			@Override
+			public void theMassOnTheScaleHasChanged(IElectronicScale scale, Mass mass) {
+				actualWeight = mass;
+				if(bagCheck) {
+					checkBags();
+					checkDiscrepancy();
+				}
+				else{ // check if a weight discrepancy has occurred
+					checkDiscrepancy();
+				}
+	
+			}
+	
+			@Override
+			public void theMassOnTheScaleHasExceededItsLimit(IElectronicScale scale) {
+				// TODO Auto-generated method stub
+	
+			}
+	
+			@Override
+			public void theMassOnTheScaleNoLongerExceedsItsLimit(IElectronicScale scale) {
+				// TODO Auto-generated method stub
+	
+			}
+		}
+	
+	/**
 	 * Basic constructors for weight class
 	 *
 	 * @param scs
@@ -65,7 +120,28 @@ public class Weight {
 	public Weight(IElectronicScale baggingArea) {
 		baggingArea.register(new innerListener());
 	}
+	
+	/**
+	 * Sets the maximum bag weight for this session
+	 * 
+	 * @params
+	 *         maxBagWeight: double representing the maximum weight of a bag (in
+	 *         grams)
+	 */
+	public void configureMAXBAGWEIGHT(double maxBagWeight) {
+		MAXBAGWEIGHT = new Mass(maxBagWeight);
+	}
 
+	/**
+	 * Sets the maximum bag weight for this session
+	 * 
+	 * @params
+	 *         maxBagWeight: long representing the maximum weight of a bag (in
+	 *         micrograms)
+	 */
+	public void configureMAXBAGWEIGHT(long maxBagWeight) {
+		MAXBAGWEIGHT = new Mass(maxBagWeight);
+	}
     public void clear() {
 		expectedWeight = Mass.ZERO;
 		checkDiscrepancy();
@@ -74,58 +150,7 @@ public class Weight {
     public void setInSession(boolean value) {
     	inSession = value;
     }
-    public class innerListener implements ElectronicScaleListener {
-
-		@Override
-		public void aDeviceHasBeenEnabled(IDevice<? extends IDeviceListener> device) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void aDeviceHasBeenDisabled(IDevice<? extends IDeviceListener> device) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void aDeviceHasBeenTurnedOn(IDevice<? extends IDeviceListener> device) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void aDeviceHasBeenTurnedOff(IDevice<? extends IDeviceListener> device) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void theMassOnTheScaleHasChanged(IElectronicScale scale, Mass mass) {
-			actualWeight = mass;
-			if(bagCheck) {
-				checkBags();
-				checkDiscrepancy();
-			}
-			else{ // check if a weight discrepancy has occurred
-				checkDiscrepancy();
-			}
-
-		}
-
-		@Override
-		public void theMassOnTheScaleHasExceededItsLimit(IElectronicScale scale) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void theMassOnTheScaleNoLongerExceedsItsLimit(IElectronicScale scale) {
-			// TODO Auto-generated method stub
-
-		}
-	}
-	
+    
 	/**
 	 * Method used to indicate a desire to add a bag to the bagging area
 	 */
@@ -171,25 +196,18 @@ public class Weight {
 	 */
 	private void checkBags() {
 
-		// check that the weight change was caused by adding weight
 		if (actualWeight.compareTo(expectedWeight) < 0) {
 			return;
 		}
 		
 		personalBagsWeight = actualWeight.difference(expectedWeight).abs();
 
-		// check if the updated weight is to heavy for just a bag (Throw exception??)
-		// if weight > expected weight of a bag
 		if (personalBagsWeight.compareTo(MAXBAGWEIGHT) >= 0) {
 			bagsTooHeavy();
 			return;
 		} else {
-			// else: the bag added is within the allowed weight range
-			// update the expected weight on the scale
 			update(personalBagsWeight);
-
 		}
-		// returns the Session to the normal runtime state
 		isDiscrepancy = false;
 		bagCheck = false;
 		for (WeightListener l : listeners) {
@@ -226,17 +244,7 @@ public class Weight {
 	 * This method will change the expected weight after the item is removed
 	 */
 	public void removeItemWeightUpdate(Mass massToSubtract) {
-		// Figure this part out
-		// first we make mass to subtract a negative
-		// BigInteger negative_mass =
-		// BigInteger.valueOf(massToSubtract.inMicrograms().multiply(null));
-		// BigInteger conversion = BigInteger.valueOf(-1);
-	
 		BigInteger NewValue = this.expectedWeight.inMicrograms().subtract(massToSubtract.inMicrograms());
-	
-		// Mass negativemass = new
-		// Mass(massToSubtract.inMicrograms().multiply(conversion));
-	
 		this.expectedWeight = new Mass(NewValue);
 		checkDiscrepancy();
 	}
@@ -327,27 +335,7 @@ public class Weight {
 		return isDiscrepancy;
 	}
 
-	/**
-	 * Sets the maximum bag weight for this session
-	 * 
-	 * @params
-	 *         maxBagWeight: double representing the maximum weight of a bag (in
-	 *         grams)
-	 */
-	public void configureMAXBAGWEIGHT(double maxBagWeight) {
-		MAXBAGWEIGHT = new Mass(maxBagWeight);
-	}
-
-	/**
-	 * Sets the maximum bag weight for this session
-	 * 
-	 * @params
-	 *         maxBagWeight: long representing the maximum weight of a bag (in
-	 *         micrograms)
-	 */
-	public void configureMAXBAGWEIGHT(long maxBagWeight) {
-		MAXBAGWEIGHT = new Mass(maxBagWeight);
-	}
+	
 	
 	// register listeners
 	public final synchronized void register(WeightListener listener) {
