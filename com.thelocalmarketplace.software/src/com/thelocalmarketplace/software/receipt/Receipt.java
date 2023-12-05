@@ -117,7 +117,7 @@ public class Receipt {
 		public void paperHasBeenAddedToThePrinter() {
 			isOutOfPaper = false;
 			for(ReceiptListener l : listeners) {
-				l.notifiyPaperRefilled();
+				l.notifyPaperRefilled();
 			}
 			if (duplicateNeeded) {
 				// start printing duplicate copy of the receipt again if one is needed
@@ -129,7 +129,7 @@ public class Receipt {
 		public void inkHasBeenAddedToThePrinter() {
 			isOutOfInk = false;
 			for(ReceiptListener l : listeners) {
-				l.notifiyInkRefilled();
+				l.notifyInkRefilled();
 			}
 			if (duplicateNeeded) {
 				// start printing duplicate copy of the receipt again if one is needed
@@ -170,13 +170,13 @@ public class Receipt {
         		// Notify and break out of the printing loop if out of paper or ink
         		if (isOutOfPaper) {
         			for(ReceiptListener l : listeners) {
-        				l.notifiyOutOfPaper();
+        				l.notifyOutOfPaper();
         			}
         			throw new EmptyDevice("Out of Paper");
         		}
         		if (isOutOfInk) {
         			for(ReceiptListener l : listeners) {
-        				l.notifiyOutOfInk();
+        				l.notifyOutOfInk();
         			}
         			throw new EmptyDevice("Out of Ink");
         		}
@@ -186,7 +186,7 @@ public class Receipt {
         	}
         	// If the condition is passed, then all characters were successfully printed to the receipt
         		for(ReceiptListener l : listeners) {
-    				l.notifiyReceiptPrinted(linesUsed, charsPrinted);
+    				l.notifyReceiptPrinted(linesUsed, charsPrinted);
     			}
 
 			linesUsed = 0;

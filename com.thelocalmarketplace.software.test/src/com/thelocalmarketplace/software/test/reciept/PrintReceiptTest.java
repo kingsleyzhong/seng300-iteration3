@@ -365,27 +365,27 @@ public class PrintReceiptTest extends AbstractSessionTest {
         public boolean success = false; // Flag for successful printing.
 
         @Override
-        public void notifiyOutOfPaper() {
+        public void notifyOutOfPaper() {
             block = true;
         }
 
         @Override
-        public void notifiyOutOfInk() {
+        public void notifyOutOfInk() {
             block = true;
         }
 
         @Override
-        public void notifiyPaperRefilled() {
+        public void notifyPaperRefilled() {
             block = false;
         }
 
         @Override
-        public void notifiyInkRefilled() {
+        public void notifyInkRefilled() {
             block = false;
         }
 
         @Override
-        public void notifiyReceiptPrinted(int linesPrinted, int charsPrinted) {
+        public void notifyReceiptPrinted(int linesPrinted, int charsPrinted) {
             success = true;
         }
     }
