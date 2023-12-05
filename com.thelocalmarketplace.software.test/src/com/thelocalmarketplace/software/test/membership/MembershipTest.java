@@ -4,13 +4,17 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 import com.jjjwelectronics.card.Card;
 import com.jjjwelectronics.card.MagneticStripeFailureException;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 import com.thelocalmarketplace.software.membership.Membership;
 import com.thelocalmarketplace.software.membership.MembershipDatabase;
 import com.thelocalmarketplace.software.membership.MembershipListener;
 import com.thelocalmarketplace.software.test.AbstractSessionTest;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
@@ -61,7 +65,8 @@ public class MembershipTest extends AbstractSessionTest {
     @Before
     public void setup() {
         basicDefaultSetup();
-        membership.register(stubListener = new StubListener());
+        stubListener = new StubListener();
+        membership.register(stubListener);
     }
 
     @Test
@@ -90,9 +95,9 @@ public class MembershipTest extends AbstractSessionTest {
 
     @Test
     public void testDeregisterListener() {
-        membership.deregister(stubListener);
-        membership.typeMembership(membershipNumber);
-        Assert.assertNull(stubListener.enteredMembershipNumber);
+    	StubListener stubListener2 = new StubListener();
+        membership.register(stubListener2);
+        assertTrue(membership.deregister(stubListener2));
     }
 
     @Test
@@ -100,18 +105,16 @@ public class MembershipTest extends AbstractSessionTest {
         StubListener stubListener2 = new StubListener();
         membership.register(stubListener2);
         membership.deregisterAll();
-        membership.typeMembership(membershipNumber);
-        Assert.assertNull(stubListener.enteredMembershipNumber);
-        Assert.assertNull(stubListener2.enteredMembershipNumber);
+        assertTrue(membership.getListeners().isEmpty());
     }
 
-    @Test
+    @Test(expected = InvalidActionException.class)
     public void testTypeMembershipNotAddingItems() {
         membership.typeMembership(membershipNumber);
         Assert.assertNull(stubListener.enteredMembershipNumber);
     }
 
-    @Test
+    @Test(expected = InvalidActionException.class)
     public void testTypeNotAMember() {
         membership.setAddingItems(true);
         membership.typeMembership("1");
@@ -151,7 +154,7 @@ public class MembershipTest extends AbstractSessionTest {
                 if (stubListener.enteredMembershipNumber != null && stubListener.enteredMembershipNumber.equals(membershipNumber))
                     success++;
             } catch (MagneticStripeFailureException ignored) {
-            }
+            } 
         }
         Assert.assertTrue(success > 450);
     }
