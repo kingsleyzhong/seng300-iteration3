@@ -296,24 +296,24 @@ public class HardwareGUITest {
     public void dragItemFromBaggingToCart() throws InterruptedException {
         hardwareGUI.buttonPanel.startButton.doClick();
         HardwareGUI.setVisibility(true);
-    	Thread.sleep(500);
-        dragRobot.drag(new Point(100, 100), new Point(500, 400));
-        Thread.sleep(500);
+        hardwareGUI.getItemsInBaggingArea().addElement(testObject);
         Assert.assertEquals(1, hardwareGUI.getItemsInBaggingArea().size());
-        dragRobot.drag(new Point(400, 310), new Point(100, 100));
+        Thread.sleep(500);
+        dragRobot.drag(new Point(380, 320), new Point(100, 300));
         Thread.sleep(1000);
         Assert.assertEquals(0, hardwareGUI.getItemsInBaggingArea().size());
     }
 
     @Test
-    public void dragItemFromScanningToCart() {
-
-    }
-
-
-    @Test
-    public void dragItemFromScanningToBagging() {
-
+    public void dragItemFromScanningToBagging() throws InterruptedException {
+        hardwareGUI.buttonPanel.startButton.doClick();
+        HardwareGUI.setVisibility(true);
+        hardwareGUI.getItemsInScanningArea().addElement(testObject);
+        Assert.assertEquals(1, hardwareGUI.getItemsInScanningArea().size());
+        dragRobot.drag(new Point(380, 80), new Point(400, 400));
+        Thread.sleep(1000);
+        Assert.assertEquals(0, hardwareGUI.getItemsInScanningArea().size());
+        Assert.assertEquals(1, hardwareGUI.getItemsInBaggingArea().size());
     }
 
     @Test
