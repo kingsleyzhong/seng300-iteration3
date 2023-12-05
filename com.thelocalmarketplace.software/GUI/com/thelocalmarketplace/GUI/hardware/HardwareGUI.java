@@ -475,7 +475,11 @@ public class HardwareGUI {
 	public DefaultListModel<ItemObject> getItemsInScanningArea() {
 		return itemsInScanningArea;
 	}
-	
+
+	public void setLastItem(ItemObject item) {
+		lastItem = item;
+	}
+
 	public static void setVisibility(boolean visibility) {
 		hardwareFrame.setVisible(visibility);
 	}

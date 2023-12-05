@@ -66,6 +66,7 @@ public class CardListenerStub implements CardReaderListener {
 
     @Override
     public void theCardHasBeenRemoved() {
+        cardInserted = false;
     }
 
     @Override

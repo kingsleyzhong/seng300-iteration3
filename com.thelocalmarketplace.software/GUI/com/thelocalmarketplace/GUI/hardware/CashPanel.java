@@ -64,6 +64,18 @@ public class CashPanel extends JPanel{
 	public JButton FiveBillBtn;
 	public JButton button_one_coin;
 	public JButton RemoveInputBill;
+	public JButton TenBillBtn;
+	public JButton TwentyBillBtn;
+	public JButton FiftyBillBtn;
+	public JButton HundredBillButton;
+	public JButton NonBillBtn;
+	public JButton RemoveChangeBillBtn;
+	public JButton button_ten_cent;
+	public JButton button_twentyfive_cent;
+	public JButton btn_two_coin;
+	public JButton btnNoncoin;
+	public JButton btn_remove_coins;
+	public JButton button_five_cent;
 	
 	//coins
 	private Coin Five_Cent_Coin;
@@ -119,7 +131,7 @@ public class CashPanel extends JPanel{
 		Bills.add(FiveBillBtn);
 		
 		//10 Dollar Bill logic
-		JButton TenBillBtn = new PlainButton("10$ Bill", Colors.color1);
+		TenBillBtn = new PlainButton("10$ Bill", Colors.color1);
 		TenBillBtn.setForeground(Colors.color3);
 		TenBillBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -134,7 +146,7 @@ public class CashPanel extends JPanel{
 		
 		
 		//20 Dollar Bill logic
-		JButton TwentyBillBtn = new PlainButton("20$ Bill", Colors.color1);
+		TwentyBillBtn = new PlainButton("20$ Bill", Colors.color1);
 		TwentyBillBtn.setForeground(Colors.color3);
 		TwentyBillBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -149,7 +161,7 @@ public class CashPanel extends JPanel{
 		
 		
 		//50 Dollar Bill logic
-		JButton FiftyBillBtn = new PlainButton("50$ Bill", Colors.color1);
+		FiftyBillBtn = new PlainButton("50$ Bill", Colors.color1);
 		FiftyBillBtn.setForeground(Colors.color3);
 		FiftyBillBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -164,7 +176,7 @@ public class CashPanel extends JPanel{
 		
 		
 		//100 Dollar Bill logic
-		JButton HundredBillButton = new PlainButton("100$ Bill", Colors.color1);
+		HundredBillButton = new PlainButton("100$ Bill", Colors.color1);
 		HundredBillButton.setForeground(Colors.color3);
 		HundredBillButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -179,7 +191,7 @@ public class CashPanel extends JPanel{
 		
 		
 		//NON-Bill Logic
-		JButton NonBillBtn = new PlainButton("Non-Bill", Colors.color1);
+		NonBillBtn = new PlainButton("Non-Bill", Colors.color1);
 		NonBillBtn.setForeground(Colors.color3);
 		NonBillBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -212,7 +224,7 @@ public class CashPanel extends JPanel{
 		
 		
 		//remove output bill
-		JButton RemoveChangeBillBtn = new PlainButton("Remove Change Bill", Colors.color1);
+		RemoveChangeBillBtn = new PlainButton("Remove Change Bill", Colors.color1);
 		RemoveChangeBillBtn.setForeground(Colors.color3);
 		RemoveChangeBillBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -241,7 +253,7 @@ public class CashPanel extends JPanel{
 		Coins.setLayout(new GridLayout(5, 1, 15, 15));
 
 		//5 cent coin button
-		JButton button_five_cent = new PlainButton("5¢", Colors.color1);
+		button_five_cent = new PlainButton("5¢", Colors.color1);
 		button_five_cent.setForeground(Colors.color3);
 		button_five_cent.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -259,7 +271,7 @@ public class CashPanel extends JPanel{
 		
 		
 		//TEN CENT COIN
-		JButton button_ten_cent = new PlainButton("10¢", Colors.color1);
+		button_ten_cent = new PlainButton("10¢", Colors.color1);
 		button_ten_cent.setForeground(Colors.color3);
 		button_ten_cent.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -276,7 +288,7 @@ public class CashPanel extends JPanel{
 		
 		
 		//25 cent coin
-		JButton button_twentyfive_cent = new PlainButton("25¢", Colors.color1);
+		button_twentyfive_cent = new PlainButton("25¢", Colors.color1);
 		button_twentyfive_cent.setForeground(Colors.color3);
 		button_twentyfive_cent.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -308,7 +320,7 @@ public class CashPanel extends JPanel{
 		
 		
 		//2 Dollar coin
-		JButton btn_two_coin = new PlainButton("$2", Colors.color1);
+		btn_two_coin = new PlainButton("$2", Colors.color1);
 		btn_two_coin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -321,7 +333,7 @@ public class CashPanel extends JPanel{
 		btn_two_coin.setForeground(Colors.color3);
 		Coins.add(btn_two_coin);
 		
-		JButton btnNoncoin = new PlainButton("Non-coin", Colors.color1);
+		btnNoncoin = new PlainButton("Non-coin", Colors.color1);
 		btnNoncoin.setForeground(Colors.color3);
 		btnNoncoin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -338,7 +350,7 @@ public class CashPanel extends JPanel{
 		Coins.add(btnNoncoin);
 		
 		//REMOVE COINS FROM TRAY
-		JButton btn_remove_coins = new PlainButton("Remove Coin Tray Coins", Colors.color1);
+		btn_remove_coins = new PlainButton("Remove Coin Tray Coins", Colors.color1);
 		btn_remove_coins.setForeground(Colors.color3);
 		btn_remove_coins.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -371,7 +383,7 @@ public class CashPanel extends JPanel{
 		
 		Ten_Cent_Coin  = new Coin(currency, new BigDecimal(0.10));
 
-		TwentyFive_Cent_Coin  = new Coin(currency, BigDecimal.valueOf(0.25));
+		TwentyFive_Cent_Coin  = new Coin(currency, new BigDecimal(0.25));
 		
 		One_Dollar_Coin  = new Coin(currency, new BigDecimal(1));
 		Two_Dollar_Coin  = new Coin(currency, new BigDecimal(2));

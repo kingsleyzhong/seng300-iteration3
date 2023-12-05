@@ -79,9 +79,9 @@ public class CardPanel extends JPanel {
 	
 	private boolean inserted = false;
 	
-	private JButton swipeButton;
-	private JButton insertButton;
-	private JButton tapButton;
+	public JButton swipeButton;
+	public JButton insertButton;
+	public JButton tapButton;
 	/**
 	 * Create the panel.
 	 */

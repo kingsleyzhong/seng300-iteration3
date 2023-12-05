@@ -1,14 +1,20 @@
 package com.thelocalmarketplace.software.GUI;
 
+import StubClasses.BarcodeScannerListenerStub;
+import StubClasses.CardListenerStub;
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.scanner.BarcodedItem;
+import com.tdc.CashOverloadException;
+import com.tdc.DisabledException;
 import com.tdc.banknote.BanknoteValidator;
+import com.tdc.coin.Coin;
 import com.tdc.coin.CoinValidator;
 import com.thelocalmarketplace.GUI.hardware.ButtonPanel;
 import com.thelocalmarketplace.GUI.hardware.CashPanel;
 import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
+import com.thelocalmarketplace.GUI.hardware.ItemObject;
 import com.thelocalmarketplace.GUI.session.SoftwareGUI;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.AttendantStation;
@@ -27,9 +33,17 @@ import org.junit.Before;
 import org.junit.Test;
 import powerutility.PowerGrid;
 
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
+import java.util.List;
 import java.awt.event.InputEvent;
+
+import java.awt.AWTException;
+import java.awt.Robot;
 
 /**
  * Isolated test cases for Hardware GUI
@@ -66,6 +80,8 @@ public class HardwareGUITest {
     private Session session;
     private SoftwareGUI softwareGUI;
     private HardwareGUI hardwareGUI;
+    private CardListenerStub cardListenerStub;
+    private BarcodeScannerListenerStub barcodeListenerStub;
 
     private CashPanel cashpanel;
     private CoinValidator coinValidator;
@@ -80,8 +96,13 @@ public class HardwareGUITest {
     private BarcodedItem item;
     private BarcodedItem item2;
     private DragRobot dragRobot;
+    private Robot panelRobot;
+    private ItemObject testObject;
+    private BarcodedItem testItem;
+    Timer timer;
+    int runs = 0;
 
-    public class DragRobot {
+    public class DragRobot extends Robot {
 
         private Robot robot;
 
@@ -110,6 +131,9 @@ public class HardwareGUITest {
             // Release the mouse button
             robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
         }
+
+        public void keyPress(int vkEnter) {
+        }
     }
 
     @Before
@@ -125,14 +149,26 @@ public class HardwareGUITest {
         softwareGUI = new SoftwareGUI(session);
         hardwareGUI = new HardwareGUI(scs, as);
 
+        testItem = new BarcodedItem(new Barcode(new Numeral[] { Numeral.one}), new Mass(300.0));
+        testObject = new ItemObject(testItem, "testItem");
+
         //cash panel stuff
         cashpanel = new CashPanel(scs);
-
-
         funds = new Funds(scs);
+        
+		AbstractSelfCheckoutStation.configureBanknoteDenominations(new BigDecimal[] {new BigDecimal(100), 
+				new BigDecimal(50), new BigDecimal(20), new BigDecimal(10), new BigDecimal(5) });
+		AbstractSelfCheckoutStation.configureCoinDenominations(new BigDecimal[] { new BigDecimal(2), 
+				BigDecimal.ONE, new BigDecimal(0.25), new BigDecimal(0.10), new BigDecimal(0.05)});
+        
 
         coinValidator = scs.getCoinValidator();
         banknoteValidator = scs.getBanknoteValidator();
+        cardListenerStub = new CardListenerStub();
+        scs.getCardReader().register(cardListenerStub);
+        barcodeListenerStub = new BarcodeScannerListenerStub();
+        scs.getMainScanner().register(barcodeListenerStub);
+        scs.getHandheldScanner().register(barcodeListenerStub);
 
         cashController = new PayByCash(coinValidator, banknoteValidator, funds);
 
@@ -149,6 +185,36 @@ public class HardwareGUITest {
         item = new BarcodedItem(barcode, new Mass(20.0));
         item2 = new BarcodedItem(barcode, new Mass(20.0));
         dragRobot = new DragRobot();
+        try {
+            panelRobot = new Robot();
+
+        } catch (AWTException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        runs=0;
+        timer = new Timer(1000, new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                panelRobot.keyPress(KeyEvent.VK_1);
+                panelRobot.keyRelease(KeyEvent.VK_1);
+                panelRobot.keyPress(KeyEvent.VK_2);
+                panelRobot.keyRelease(KeyEvent.VK_2);
+                panelRobot.keyPress(KeyEvent.VK_3);
+                panelRobot.keyRelease(KeyEvent.VK_3);
+                panelRobot.keyPress(KeyEvent.VK_4);
+                panelRobot.keyRelease(KeyEvent.VK_4);
+                panelRobot.keyPress(KeyEvent.VK_ENTER);
+                panelRobot.keyRelease(KeyEvent.VK_ENTER);
+                runs +=1;
+                if(runs>20) {
+                    timer.stop();
+                }
+            }
+
+        });
+        timer.start();
     }
     
     @After
@@ -226,12 +292,18 @@ public class HardwareGUITest {
 
     @Test
     public void scanWithMainButton() {
-
+        hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.setLastItem(testObject);
+        hardwareGUI.buttonPanel.mainScanner.doClick();
+        Assert.assertTrue(barcodeListenerStub.barcodeScanned);
     }
 
     @Test
     public void scanWithHandheldButton() {
-
+        hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.setLastItem(testObject);
+        hardwareGUI.buttonPanel.handheldScanner.doClick();
+        Assert.assertTrue(barcodeListenerStub.barcodeScanned);
     }
 
     @Test
@@ -252,17 +324,62 @@ public class HardwareGUITest {
 
     @Test
     public void inputMultipleBills() {
-
+		softwareGUI.btnStart.doClick();
+		hardwareGUI.buttonPanel.startButton.doClick();
+		
+		scs.getMainScanner().scan(item2);
+		scs.getBaggingArea().addAnItem(item2);
+		scs.getMainScanner().scan(item);
+		scs.getBaggingArea().addAnItem(item);
+		
+		
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getCashButton().doClick();
+		
+		
+		cashpanel.FiveBillBtn.doClick();
+		cashpanel.FiveBillBtn.doClick();
+		
+		Assert.assertEquals(new BigDecimal(10) , cashController.getCashPaid());
     }
 
     @Test
     public void inputNonBill() {
+		softwareGUI.btnStart.doClick();
+		hardwareGUI.buttonPanel.startButton.doClick();
+		
+		scs.getMainScanner().scan(item);
+		scs.getBaggingArea().addAnItem(item);
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getCashButton().doClick();
+		
+		cashpanel.NonBillBtn.doClick();
 
+		
+		Assert.assertEquals(BigDecimal.ZERO, cashController.getCashPaid());
     }
 
     @Test
     public void removeInputBills() {
+		softwareGUI.btnStart.doClick();
+		hardwareGUI.buttonPanel.startButton.doClick();
+		
+		scs.getMainScanner().scan(item);
+		scs.getBaggingArea().addAnItem(item);
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getCashButton().doClick();
+		
+		//add non bill
+		cashpanel.NonBillBtn.doClick();
+		
+		//check there is a dangling bill
+		Assert.assertTrue(scs.getBanknoteInput().hasDanglingBanknotes());
+		
+		//remove it 
+		cashpanel.RemoveInputBill.doClick();
 
+		//check that its been removed
+		Assert.assertFalse(scs.getBanknoteInput().hasDanglingBanknotes());
     }
 
     @Test
@@ -273,21 +390,20 @@ public class HardwareGUITest {
     //IDK WHY NONE OF THE BILL STUFF WONT WORK.... IT WORKS MANUALLY 
     @Test
     public void inputBill() {
-//		softwareGUI.btnStart.doClick();
-//		hardwareGUI.buttonPanel.startButton.doClick();
-//		
-//		scs.getMainScanner().scan(item2);
-//		scs.getBaggingArea().addAnItem(item2);
-//		
-//		softwareGUI.pay.doClick();
-//		softwareGUI.paymentScreen.getCashButton().doClick();
-//		
-//		//cashpanel.RemoveInputBill.doClick();
-//		
-//		cashpanel.FiveBillBtn.doClick();
-//		cashpanel.FiveBillBtn.doClick();
-//		
-//		Assert.assertEquals(BigDecimal.TEN , cashController.getCashPaid());
+		softwareGUI.btnStart.doClick();
+		hardwareGUI.buttonPanel.startButton.doClick();
+		
+		scs.getMainScanner().scan(item2);
+		scs.getBaggingArea().addAnItem(item2);
+		
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getCashButton().doClick();
+		
+		
+		cashpanel.TenBillBtn.doClick();
+		//cashpanel.FiveBillBtn.doClick();
+		
+		Assert.assertEquals(BigDecimal.TEN , cashController.getCashPaid());
     }
     
     @Test
@@ -297,29 +413,76 @@ public class HardwareGUITest {
 		
 		scs.getMainScanner().scan(item);
 		scs.getBaggingArea().addAnItem(item);
-		
 		softwareGUI.pay.doClick();
 		softwareGUI.paymentScreen.getCashButton().doClick();
 		
 		cashpanel.button_one_coin.doClick();
+
 		
 		Assert.assertEquals(BigDecimal.ONE , cashController.getCashPaid());
 		
     }
 
+    //CURSED CURSED CURSED
     @Test
     public void inputMultipleCoins() {
-
+		softwareGUI.btnStart.doClick();
+		hardwareGUI.buttonPanel.startButton.doClick();
+		
+		scs.getMainScanner().scan(item);
+		scs.getBaggingArea().addAnItem(item);
+		
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getCashButton().doClick();
+		
+		cashpanel.button_five_cent.doClick();
+		cashpanel.button_ten_cent.doClick();
+		cashpanel.button_twentyfive_cent.doClick();
+		cashpanel.button_one_coin.doClick();
+		cashpanel.btn_two_coin.doClick();
+		
+		Assert.assertEquals(BigDecimal.valueOf(3.4) , cashController.getCashPaid());
+		
     }
+
 
     @Test
-    public void inputNonCoin() {
+    public void inputNonCoin() throws DisabledException, CashOverloadException{
+		softwareGUI.btnStart.doClick();
+		hardwareGUI.buttonPanel.startButton.doClick();
+		
+		scs.getMainScanner().scan(item);
+		scs.getBaggingArea().addAnItem(item);
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getCashButton().doClick();
+		
+		cashpanel.btnNoncoin.doClick();
 
+		
+		Assert.assertEquals(BigDecimal.ZERO, cashController.getCashPaid());
     }
-
+    
     @Test
     public void removeCoinTray() {
-
+    	
+		softwareGUI.btnStart.doClick();
+		hardwareGUI.buttonPanel.startButton.doClick();
+		
+		scs.getMainScanner().scan(item);
+		scs.getBaggingArea().addAnItem(item);
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getCashButton().doClick();
+		
+		
+		cashpanel.btnNoncoin.doClick();
+		
+		//check has 1 coin
+		//Assert.assertEquals(1, coins.size());
+		
+		cashpanel.btn_remove_coins.doClick();
+		
+		List<Coin> coinchange = scs.getCoinTray().collectCoins();
+		Assert.assertEquals(0, coinchange.size());
     }
 
     @Test
@@ -352,47 +515,102 @@ public class HardwareGUITest {
 
     @Test
     public void creditCardSwipe() {
-
+        hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.card.creditCardButton.doClick();
+        try {
+            hardwareGUI.card.swipeButton.doClick();
+        }
+        catch (Exception e) {}
+        Assert.assertTrue(cardListenerStub.cardSwiped);
     }
 
     @Test
     public void creditCardInsert() {
-
+        hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.card.creditCardButton.doClick();
+        try {
+            hardwareGUI.card.insertButton.doClick();
+        }
+        catch (Exception e) {}
+        panelRobot.delay(1000);
+        Assert.assertTrue(cardListenerStub.cardInserted);
     }
 
     @Test
     public void creditCardTap() {
-
+        hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.card.creditCardButton.doClick();
+        try {
+            hardwareGUI.card.tapButton.doClick();
+        }
+        catch (Exception e) {}
+        Assert.assertTrue(cardListenerStub.cardTapped);
     }
     
     @Test
     public void debitCardSwipe() {
-
+        hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.card.debitCardButton.doClick();
+        try {
+            hardwareGUI.card.swipeButton.doClick();
+        }
+        catch (Exception e) {}
+        Assert.assertTrue(cardListenerStub.cardSwiped);
     }
 
     @Test
     public void debitCardInsert() {
-
+        hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.card.creditCardButton.doClick();
+        try {
+            hardwareGUI.card.insertButton.doClick();
+        }
+        catch (Exception e) {}
+        Assert.assertTrue(cardListenerStub.cardInserted);
     }
 
     @Test
     public void debitCardTap() {
-
+        hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.card.creditCardButton.doClick();
+        try {
+            hardwareGUI.card.tapButton.doClick();
+        }
+        catch (Exception e) {}
+        Assert.assertTrue(cardListenerStub.cardTapped);
     }
 
     @Test
     public void invalidCardSwipe() {
-
+        hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.card.invalidCardButton.doClick();
+        try {
+            hardwareGUI.card.swipeButton.doClick();
+        }
+        catch (Exception e) {}
+        Assert.assertTrue(cardListenerStub.cardSwiped);
     }
 
     @Test
     public void invalidCardInsert() {
-
+        hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.card.invalidCardButton.doClick();
+        try {
+            hardwareGUI.card.tapButton.doClick();
+        }
+        catch (Exception e) {}
+        Assert.assertTrue(cardListenerStub.cardTapped);
     }
 
     @Test
     public void invalidCardTap() {
-
+        hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.card.invalidCardButton.doClick();
+        try {
+            hardwareGUI.card.tapButton.doClick();
+        }
+        catch (Exception e) {}
+        Assert.assertTrue(cardListenerStub.cardTapped);
     }
 
 
