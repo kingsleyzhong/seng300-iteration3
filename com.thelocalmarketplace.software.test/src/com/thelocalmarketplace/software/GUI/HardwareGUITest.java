@@ -423,6 +423,7 @@ public class HardwareGUITest {
 		
     }
 
+    //CURSED CURSED CURSED
     @Test
     public void inputMultipleCoins() {
 		softwareGUI.btnStart.doClick();
@@ -434,15 +435,13 @@ public class HardwareGUITest {
 		softwareGUI.pay.doClick();
 		softwareGUI.paymentScreen.getCashButton().doClick();
 		
-		//cashpanel.button_five_cent.doClick();
-		
-		//cashpanel.button_ten_cent.doClick();
-		//cashpanel.button_twentyfive_cent.doClick();
+		cashpanel.button_five_cent.doClick();
+		cashpanel.button_ten_cent.doClick();
+		cashpanel.button_twentyfive_cent.doClick();
 		cashpanel.button_one_coin.doClick();
-		cashpanel.button_one_coin.doClick();
-		//cashpanel.btn_two_coin.doClick();
+		cashpanel.btn_two_coin.doClick();
 		
-		Assert.assertEquals(BigDecimal.valueOf(2) , cashController.getCashPaid());
+		Assert.assertEquals(BigDecimal.valueOf(3.4) , cashController.getCashPaid());
 		
     }
 
@@ -463,7 +462,6 @@ public class HardwareGUITest {
 		Assert.assertEquals(BigDecimal.ZERO, cashController.getCashPaid());
     }
     
-    //DONT KNOW WHAT TO ASSERT HERE
     @Test
     public void removeCoinTray() {
     	
@@ -483,8 +481,8 @@ public class HardwareGUITest {
 		
 		cashpanel.btn_remove_coins.doClick();
 		
-		//check empty
-		//Assert.assertEquals(0, coins.size());
+		List<Coin> coinchange = scs.getCoinTray().collectCoins();
+		Assert.assertEquals(0, coinchange.size());
     }
 
     @Test

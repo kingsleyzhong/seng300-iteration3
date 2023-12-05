@@ -383,7 +383,7 @@ public class CashPanel extends JPanel{
 		
 		Ten_Cent_Coin  = new Coin(currency, new BigDecimal(0.10));
 
-		TwentyFive_Cent_Coin  = new Coin(currency, BigDecimal.valueOf(0.25));
+		TwentyFive_Cent_Coin  = new Coin(currency, new BigDecimal(0.25));
 		
 		One_Dollar_Coin  = new Coin(currency, new BigDecimal(1));
 		Two_Dollar_Coin  = new Coin(currency, new BigDecimal(2));
