@@ -150,14 +150,14 @@ public class ItemManager {
 	 * and the total cost of customer's purchase after a bag is dispensed
 	 * @param product - a reusable bag 
 	 */
-	public void addPurchasedBags(ReusableBagProduct product) {
+	public void addPurchasedBags(ReusableBagProduct product, int amt) {
 		if (addedProducts.containsKey(product)) {
-			addedProducts.replace(product, addedProducts.get(product).add(BigInteger.valueOf(1)));
+			addedProducts.replace(product, addedProducts.get(product).add(BigInteger.valueOf(amt)));
 		} else {
-			addedProducts.put(product, BigInteger.valueOf(1));
+			addedProducts.put(product, BigInteger.valueOf(amt));
 		}
-		double weight = product.getExpectedWeight();
-		long price = product.getPrice();
+		double weight = product.getExpectedWeight()*amt;
+		long price = product.getPrice()*amt;
 		Mass mass = new Mass(weight);
 		BigDecimal itemPrice = new BigDecimal(price);
 		notifyItemAdded(product, mass, itemPrice);	

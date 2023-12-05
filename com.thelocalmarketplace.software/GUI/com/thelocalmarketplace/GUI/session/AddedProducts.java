@@ -17,6 +17,7 @@ import com.thelocalmarketplace.GUI.customComponents.CustomBarUI;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
+import com.thelocalmarketplace.software.items.ReusableBagProduct;
 
 /**
  * A class that allows products to be displayed on the screen in a scrollable list.
@@ -92,7 +93,12 @@ public class AddedProducts extends JPanel {
 		else {
 			if(product instanceof BarcodedProduct) {
 				current.addProduct();
-			}else {
+			}else if (product instanceof ReusableBagProduct){
+				current.addProduct();
+				BigInteger massinMicrograms = session.getItems().get(product);
+				current.updateMass((new Mass(massinMicrograms)).inGrams());
+			}
+			else {
 				BigInteger massinMicrograms = session.getItems().get(product);
 				current.updateMass((new Mass(massinMicrograms)).inGrams());
 			}

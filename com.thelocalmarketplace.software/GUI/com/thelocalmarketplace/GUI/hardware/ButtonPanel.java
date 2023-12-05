@@ -15,6 +15,7 @@ import com.jjjwelectronics.bag.ReusableBag;
 
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
+import com.thelocalmarketplace.software.items.ReusableBagProduct;
 
 import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
 
@@ -141,10 +142,15 @@ public class ButtonPanel extends JPanel implements ActionListener {
 		}
 		else if(e.getSource() == addBags) {
 			try {
-				ReusableBag bag = gui.getStation().getReusableBagDispenser().dispense();
-				gui.getStation().getBaggingArea().addAnItem(bag);
-				bags[numBags] = bag;
-				numBags += 1;
+				int bagsAdded = ReusableBagProduct.getAdded();
+				System.out.println("Dispensing: " + bagsAdded);
+				for (int i = 0; i < bagsAdded; i++) {
+					ReusableBag bag = gui.getStation().getReusableBagDispenser().dispense();
+					gui.getStation().getBaggingArea().addAnItem(bag);
+					ReusableBagProduct.setAdded(ReusableBagProduct.getAdded() - 1);
+					bags[numBags] = bag;
+					numBags += 1;
+				}
 			} catch (EmptyDevice e1) {
 				JOptionPane.showMessageDialog(null, "No more bags to dispense.");
 			}
