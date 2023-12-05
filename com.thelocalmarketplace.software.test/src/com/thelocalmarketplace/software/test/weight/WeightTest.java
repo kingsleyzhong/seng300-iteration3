@@ -45,7 +45,6 @@ import static org.junit.Assert.*;
 public class WeightTest extends AbstractTest {
 	public WeightTest(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
 		super(testName, scsClass);
-		// TODO Auto-generated constructor stub
 	}
 
 	private Weight weight;
@@ -123,7 +122,7 @@ public class WeightTest extends AbstractTest {
 		Barcode barcode = new Barcode(new Numeral[] { Numeral.valueOf((byte) 1) });
 		Item item = new BarcodedItem(barcode, new Mass(150.0));
 		scs.getBaggingArea().addAnItem(item); // Simulate the scale reporting a new mass
-		
+
 		assertTrue("Discrepancy flag should be true.", weight.isDiscrepancy());
 		assertTrue("Discrepancy should be notified.", weightListener.discrepancyNotified);
 	}

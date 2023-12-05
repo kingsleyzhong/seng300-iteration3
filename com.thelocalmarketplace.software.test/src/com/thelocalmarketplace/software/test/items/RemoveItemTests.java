@@ -58,7 +58,6 @@ import static org.junit.Assert.*;
 public class RemoveItemTests extends AbstractSessionTest {
     public RemoveItemTests(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
         super(testName, scsClass);
-        // TODO Auto-generated constructor stub
     }
 
     private BarcodedProduct product;

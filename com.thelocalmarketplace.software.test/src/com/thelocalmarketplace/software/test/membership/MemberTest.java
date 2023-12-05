@@ -1,4 +1,13 @@
 package com.thelocalmarketplace.software.test.membership;
+
+import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+import com.thelocalmarketplace.software.membership.Member;
+import com.thelocalmarketplace.software.membership.MembershipDatabase;
+import com.thelocalmarketplace.software.test.AbstractSessionTest;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 /* Tests related to the Member class and the MembershipDatabase
  *
  * Project Iteration 3 Group 1
@@ -26,14 +35,6 @@ package com.thelocalmarketplace.software.test.membership;
  * Kingsley Zhong 			: 30197260
  */
 
-import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
-import com.thelocalmarketplace.software.membership.Member;
-import com.thelocalmarketplace.software.membership.MembershipDatabase;
-import com.thelocalmarketplace.software.test.AbstractSessionTest;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 public class MemberTest extends AbstractSessionTest {
     private static final String memberName = "John Doe";
     private static final String membershipNumber = "1234";
@@ -42,7 +43,7 @@ public class MemberTest extends AbstractSessionTest {
         super(testName, scsClass);
     }
 
-    /** Clear the Membership database and re-register the test member*/
+    /** Clear the Membership database and re-register the test member */
     @Before
     public void setup() {
         MembershipDatabase.MEMBERSHIP_DATABASE.clear();
@@ -58,7 +59,9 @@ public class MemberTest extends AbstractSessionTest {
         Assert.assertTrue(MembershipDatabase.MEMBERSHIP_DATABASE.containsKey(membershipNumber2));
     }
 
-    /** A member object in the database should return the correct corresponding name. */
+    /**
+     * A member object in the database should return the correct corresponding name.
+     */
     @Test
     public void memberName() {
         Assert.assertEquals(memberName, MembershipDatabase.MEMBERSHIP_DATABASE.get(membershipNumber).getName());

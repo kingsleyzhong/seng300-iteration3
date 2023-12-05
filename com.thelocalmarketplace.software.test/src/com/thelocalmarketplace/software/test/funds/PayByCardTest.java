@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -88,11 +87,11 @@ public class PayByCardTest extends AbstractTest {
 		basicDefaultSetup();
 
 		funds = new Funds(scs);
-		
-		// This line looks like it's not doing anything but we're actually connecting the listener to funds
+
+		// This line looks like it's not doing anything but we're actually connecting
+		// the listener to funds
 		// The instance doesn't matter, we just need to connect the listener to funds
 		new PayByCard(scs.getCardReader(), funds);
-		
 
 		ci1 = new CardIssuer(SupportedCardIssuers.ONE.getIssuer(), 1);
 		ci2 = new CardIssuer(SupportedCardIssuers.TWO.getIssuer(), 5);
@@ -132,13 +131,6 @@ public class PayByCardTest extends AbstractTest {
 		scs.getCardReader().register(cardListener);
 		cardListener.successfulRead = false;
 	}
-
-	// @After
-	// public void tearDown() {
-	// 	// Clear the CARD_ISSUER_DATABASE after each test
-	// 	CardIssuerDatabase.CARD_ISSUER_DATABASE.clear();
-	// 	scs.getCardReader().deregisterAll();
-	// }
 
 	@Test(expected = NullPointerException.class)
 	public void nullCardReader() {
@@ -201,13 +193,13 @@ public class PayByCardTest extends AbstractTest {
 		BigDecimal itemPrice = new BigDecimal(price);
 		funds.update(itemPrice);
 		funds.setPay(true);
-		
+
 		// Account for probability failure
 		boolean blocked = ci4.block(debit.number);
-		while(!blocked) {
+		while (!blocked) {
 			blocked = ci4.block(debit.number);
 		}
-		
+
 		while (!cardListener.successfulRead) {
 			try {
 				scs.getCardReader().swipe(debit);
@@ -215,15 +207,11 @@ public class PayByCardTest extends AbstractTest {
 			} catch (MagneticStripeFailureException e) {
 			}
 		}
-		
+
 		// This will decline a card if the card is blocked
 		// authorizeHold should return -1
 	}
 
-	// PayByCard currently is not capable of doing anything with the -1 value;
-	// change this?
-	// Otherwise testing both that cards are counting correct hold counts or not
-	// (redundant?)
 	@Test(expected = InvalidActionException.class)
 	public void testHoldCountDecline()
 			throws IOException, CashOverloadException, NoCashAvailableException, DisabledException {
@@ -335,25 +323,25 @@ public class PayByCardTest extends AbstractTest {
 		assertTrue(funds.payed);
 	}
 
-	private class StubCardListener implements CardReaderListener{
+	private class StubCardListener implements CardReaderListener {
 		protected boolean successfulRead = false;
 
 		@Override
 		public void aCardHasBeenSwiped() {
 			successfulRead = false;
-			
+
 		}
 
 		@Override
 		public void theDataFromACardHasBeenRead(CardData data) {
 			successfulRead = true;
-			
+
 		}
 
 		@Override
 		public void aCardHasBeenInserted() {
 			successfulRead = false;
-			
+
 		}
 
 		@Override
@@ -367,22 +355,22 @@ public class PayByCardTest extends AbstractTest {
 
 		@Override
 		public void aDeviceHasBeenEnabled(IDevice<? extends IDeviceListener> device) {
-			
+
 		}
 
 		@Override
 		public void aDeviceHasBeenDisabled(IDevice<? extends IDeviceListener> device) {
-			
+
 		}
 
 		@Override
 		public void aDeviceHasBeenTurnedOn(IDevice<? extends IDeviceListener> device) {
-			
+
 		}
 
 		@Override
 		public void aDeviceHasBeenTurnedOff(IDevice<? extends IDeviceListener> device) {
-	}	
+		}
 	}
 
 }

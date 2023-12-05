@@ -52,7 +52,6 @@ import static org.junit.Assert.*;
 public class AddBulkyItemTest extends AbstractSessionTest {
     public AddBulkyItemTest(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
         super(testName, scsClass);
-        // TODO Auto-generated constructor stub
     }
 
     private BarcodedProduct product;
@@ -82,9 +81,9 @@ public class AddBulkyItemTest extends AbstractSessionTest {
         product = new BarcodedProduct(barcode, "Sample Product", 10, 100.0);
         product2 = new BarcodedProduct(barcode2, "Sample Product 2", 15, 20.0);
         item = new BarcodedItem(barcode, new Mass(100.0));
-        
+
         baggingArea = scs.getBaggingArea();
-        
+
         session.start();
     }
 
@@ -113,7 +112,7 @@ public class AddBulkyItemTest extends AbstractSessionTest {
     public void bulkyItemNotApproved() {
         itemManager.addItem(product);
         session.addBulkyItem();
-        
+
         assertEquals("Discrepancy", SessionState.BULKY_ITEM, session.getState());
         assertTrue("Weight Discrepancy", weight.isDiscrepancy());
     }
@@ -126,7 +125,7 @@ public class AddBulkyItemTest extends AbstractSessionTest {
     public void addTwoBulkyItemAndInSession() {
         itemManager.addItem(product);
         baggingArea.addAnItem(item);
-        
+
         itemManager.addItem(product2);
         session.addBulkyItem();
         session.attendantApprove(Requests.BULKY_ITEM);
@@ -144,7 +143,7 @@ public class AddBulkyItemTest extends AbstractSessionTest {
     public void addTwoSameBulkyItem() {
         itemManager.addItem(product);
         baggingArea.addAnItem(item);
-        
+
         itemManager.addItem(product);
         session.addBulkyItem();
         session.attendantApprove(Requests.BULKY_ITEM);
@@ -242,69 +241,9 @@ public class AddBulkyItemTest extends AbstractSessionTest {
         itemManager.addItem(product);
         session.addBulkyItem();
         session.attendantApprove(Requests.BULKY_ITEM);
-        
+
         assertEquals("Discrepancy is fixed", session.getState(), SessionState.IN_SESSION);
     }
-
-    /**
-     * test case to check bulky item cancelled by customer
-     * temp removed: cancel isn't supported
-     */
-//    @Test
-//    public void cancelBulkyItem() {
-//        scs.plugIn(PowerGrid.instance());
-//        scs.turnOn();
-//        session.start();
-//        
-//        // session.bulkyItemMap(new HashMap<BarcodedProduct, Integer>());
-//        itemManager.addItem(product);
-//        session.addBulkyItem();
-//        session.attendantApprove(Requests.BULKY_ITEM);
-//        session.cancelBulkyItem(product);
-//        BarcodedItem item = new BarcodedItem(barcode, new Mass(100.0));
-//        scs.getBaggingArea().addAnItem(item);
-//        assertEquals("Bulky item is cancelled", session.getWeight().getExpectedWeight(), item.getMass());
-//    }
-
-    /**
-     * test case to check bulky item cancelled by customer
-     * Temp removed: this isn't a feature anymore
-     */
-//    @Test
-//    public void cancelWithTwoBulkyItem() {
-//        scs.plugIn(PowerGrid.instance());
-//        scs.turnOn();
-//        session.start();
-//        
-//        // session.bulkyItemMap(new HashMap<BarcodedProduct, Integer>());
-//        itemManager.addItem(product);
-//        session.addBulkyItem();
-//        session.attendantApprove(Requests.BULKY_ITEM);
-//
-//        itemManager.addItem(product);
-//        session.addBulkyItem();
-//        session.attendantApprove(Requests.BULKY_ITEM);
-//
-//        session.cancelBulkyItem(product);
-//        BarcodedItem item = new BarcodedItem(barcode, new Mass(100.0));
-//        scs.getBaggingArea().addAnItem(item);
-//        assertEquals("Bulky item is cancelled", session.getWeight().getExpectedWeight(), item.getMass());
-//    }
-
-    /**
-     * test case for cancelling add bulky item when it was not called
-     * temp removed: cancel isn't supported ATM
-     */
-//    @Test
-//    public void bulkyItemNotCalled() {
-//        session.start();
-//        
-//        itemManager.addItem(product);
-//        // cancel bulky item when bulky item was not called
-//        session.cancelBulkyItem(product);
-//        assertTrue("Bulky item was not called.", session.getBulkyItem().isEmpty());
-//        // assertFalse("Bulky item was not called.", session.getBulkyItemCalled());
-//    }
 
     /**
      * test case to remove a bulky item
@@ -314,9 +253,9 @@ public class AddBulkyItemTest extends AbstractSessionTest {
         itemManager.addItem(product);
         session.addBulkyItem();
         session.attendantApprove(Requests.BULKY_ITEM);
-        
+
         itemManager.removeItem(product);
-        
+
         Mass actual = weight.getExpectedWeight();
         Mass expected = new Mass(0);
         assertEquals("Mass is 0", expected, actual);
@@ -357,42 +296,10 @@ public class AddBulkyItemTest extends AbstractSessionTest {
         session.attendantApprove(Requests.BULKY_ITEM);
 
         itemManager.removeItem(product);
-        
+
         assertFalse("No Discrepancy", weight.isDiscrepancy());
         assertEquals("Price is 20", BigDecimal.valueOf(20), session.getFunds().getItemsPrice());
     }
-
-    /**
-     * test case for removing non existent bulky item
-     * - temp removed, I don't even know what this is trying to do -Kingsley
-     */
-//    @Test
-//    public void removeBulkyItemNotFound() {
-//        // need to have bulky item in the hashmap but not have any quantity
-//        session.start();
-//        
-//        itemManager.addItem(product);
-//        
-//        session.removeItem(product);
-//        Assert.assertTrue("There is no bulky item to remove.", session.getBulkyItem().isEmpty());
-//    }
-
-    /**
-     * test case for calling add bulky item when not allowed
-     * I also don't know what this is trying to do.
-     */
-//    @Test
-//    public void addBulkyItemNotAllowed() {
-//        session.start();
-//        
-//        // session.bulkyItemMap(new HashMap<BarcodedProduct, Integer>());
-//        itemManager.addItem(product);
-//        session.addBulkyItem();
-//        session.attendantApprove(Requests.BULKY_ITEM);
-//        // Assert.assertFalse("You cannot handle bulky item.",
-//        // session.getBulkyItemCalled());
-//        Assert.assertTrue("You cannot handle bulky item.", session.getBulkyItem().isEmpty());
-//    }
 
     public class ScannerListenerStub implements BarcodeScannerListener {
         public ArrayList<Barcode> barcodesScanned;

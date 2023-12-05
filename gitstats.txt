@@ -1,0 +1,278 @@
+Contribution stats (by author) on the current branch:
+
+	 kngtm1 <katelan.ng@gmail.com>:
+	  insertions:    541	(1%)
+	  deletions:     84	(0%)
+	  files:         20	(1%)
+	  commits:       9	(2%)
+	  lines changed: 625	(1%)
+	  first commit:  Fri Dec 1 11:13:34 2023 -0700
+	  last commit:   Mon Dec 4 13:09:04 2023 -0700
+
+	 SubegSC <subegschahal@gmail.com>:
+	  insertions:    64	(0%)
+	  deletions:     2	(0%)
+	  files:         3	(0%)
+	  commits:       3	(1%)
+	  lines changed: 66	(0%)
+	  first commit:  Mon Dec 4 21:53:31 2023 -0700
+	  last commit:   Mon Dec 4 22:36:57 2023 -0700
+
+	 CeeRobitaille <chloe.robitaille@ucalgary.ca>:
+	  insertions:    1938	(3%)
+	  deletions:     916	(3%)
+	  files:         236	(13%)
+	  commits:       40	(8%)
+	  lines changed: 2854	(3%)
+	  first commit:  Fri Nov 24 11:23:43 2023 -0700
+	  last commit:   Mon Dec 4 23:56:00 2023 -0700
+
+	 Kingsley Zhong <kingsleyzhonghome@gmail.com>:
+	  insertions:    24195	(41%)
+	  deletions:     9646	(28%)
+	  files:         337	(18%)
+	  commits:       30	(6%)
+	  lines changed: 33841	(36%)
+	  first commit:  Fri Nov 24 01:01:23 2023 -0700
+	  last commit:   Tue Dec 5 00:38:21 2023 -0700
+
+	 estherTran26 <mtuyenucalgary@gmail.com>:
+	  insertions:    435	(1%)
+	  deletions:     77	(0%)
+	  files:         18	(1%)
+	  commits:       6	(1%)
+	  lines changed: 512	(1%)
+	  first commit:  Thu Nov 30 00:37:37 2023 -0700
+	  last commit:   Mon Dec 4 19:54:33 2023 -0700
+
+	 arcleah <arcleahpascual@gmail.com>:
+	  insertions:    360	(1%)
+	  deletions:     64	(0%)
+	  files:         9	(0%)
+	  commits:       7	(1%)
+	  lines changed: 424	(0%)
+	  first commit:  Thu Nov 30 02:17:32 2023 -0700
+	  last commit:   Sun Dec 3 01:02:34 2023 -0700
+
+	 Danissa Sandykbayeva <52815976+s0danissa@users.noreply.github.com>:
+	  insertions:    1357	(2%)
+	  deletions:     571	(2%)
+	  files:         82	(4%)
+	  commits:       25	(5%)
+	  lines changed: 1928	(2%)
+	  first commit:  Tue Nov 28 13:13:23 2023 -0700
+	  last commit:   Mon Dec 4 16:22:03 2023 -0700
+
+	 EmilyStein <emilydstein@EmilySteins-MacBook-Pro.local>:
+	  insertions:    10	(0%)
+	  deletions:     37	(0%)
+	  files:         1	(0%)
+	  commits:       1	(0%)
+	  lines changed: 47	(0%)
+	  first commit:  Sun Dec 3 09:48:55 2023 -0700
+	  last commit:   Sun Dec 3 09:48:55 2023 -0700
+
+	 N_McCamis <nicholas.m19@gmail.com>:
+	  insertions:    550	(1%)
+	  deletions:     440	(1%)
+	  files:         22	(1%)
+	  commits:       9	(2%)
+	  lines changed: 990	(1%)
+	  first commit:  Sat Dec 2 19:51:23 2023 -0700
+	  last commit:   Sun Dec 3 22:07:16 2023 -0700
+
+	 Derek Atabayev <derek.atabayev@ucalgary.ca>:
+	  insertions:    181	(0%)
+	  deletions:     39	(0%)
+	  files:         13	(1%)
+	  commits:       13	(3%)
+	  lines changed: 220	(0%)
+	  first commit:  Sun Nov 26 21:21:20 2023 -0700
+	  last commit:   Tue Dec 5 00:07:52 2023 -0700
+
+	 Kingsley Zhong <40475664+Generaleoley@users.noreply.github.com>:
+	  insertions:    4142	(7%)
+	  deletions:     7061	(20%)
+	  files:         60	(3%)
+	  commits:       3	(1%)
+	  lines changed: 11203	(12%)
+	  first commit:  Thu Nov 30 10:52:05 2023 -0700
+	  last commit:   Thu Nov 30 16:08:49 2023 -0700
+
+	 ethanw <ethansfwoo@gmail.com>:
+	  insertions:    642	(1%)
+	  deletions:     139	(0%)
+	  files:         31	(2%)
+	  commits:       16	(3%)
+	  lines changed: 781	(1%)
+	  first commit:  Tue Nov 28 18:39:21 2023 -0700
+	  last commit:   Mon Dec 4 20:31:04 2023 -0700
+
+	 Sua <sua.lim@ucalgary.ca>:
+	  insertions:    1553	(3%)
+	  deletions:     655	(2%)
+	  files:         26	(1%)
+	  commits:       18	(4%)
+	  lines changed: 2208	(2%)
+	  first commit:  Wed Nov 29 19:24:36 2023 -0700
+	  last commit:   Sun Dec 3 09:24:30 2023 -0700
+
+	 Aoi-U <aoilovepokemon@gmail.com>:
+	  insertions:    1111	(2%)
+	  deletions:     622	(2%)
+	  files:         65	(4%)
+	  commits:       23	(5%)
+	  lines changed: 1733	(2%)
+	  first commit:  Wed Nov 29 17:43:50 2023 -0700
+	  last commit:   Mon Dec 4 16:41:31 2023 -0700
+
+	 kngtm1 <127911588+kngtm1@users.noreply.github.com>:
+	  insertions:    2684	(5%)
+	  deletions:     243	(1%)
+	  files:         39	(2%)
+	  commits:       17	(4%)
+	  lines changed: 2927	(3%)
+	  first commit:  Thu Nov 30 18:22:09 2023 -0700
+	  last commit:   Mon Dec 4 22:52:33 2023 -0700
+
+	 anthony-kostalvazquez <anthony.kostalvazque@ucalgary.ca>:
+	  insertions:    879	(1%)
+	  deletions:     297	(1%)
+	  files:         50	(3%)
+	  commits:       36	(8%)
+	  lines changed: 1176	(1%)
+	  first commit:  Wed Nov 29 15:25:47 2023 -0700
+	  last commit:   Fri Dec 1 16:49:06 2023 -0700
+
+	 jessica213 <crystalstonejl@gmail.com>:
+	  insertions:    223	(0%)
+	  deletions:     550	(2%)
+	  files:         5	(0%)
+	  commits:       4	(1%)
+	  lines changed: 773	(1%)
+	  first commit:  Wed Nov 29 16:38:34 2023 -0700
+	  last commit:   Mon Dec 4 21:29:05 2023 -0700
+
+	 enibalo <abibalo@hotmail.com>:
+	  insertions:    1130	(2%)
+	  deletions:     2247	(6%)
+	  files:         30	(2%)
+	  commits:       10	(2%)
+	  lines changed: 3377	(4%)
+	  first commit:  Mon Nov 27 18:55:05 2023 -0700
+	  last commit:   Mon Dec 4 22:19:41 2023 -0700
+
+	 Kingsley Zhong <40475664+kingsleyzhong@users.noreply.github.com>:
+	  insertions:    4	(0%)
+	  deletions:     1	(0%)
+	  files:         2	(0%)
+	  commits:       2	(0%)
+	  lines changed: 5	(0%)
+	  first commit:  Thu Nov 30 16:14:40 2023 -0700
+	  last commit:   Mon Dec 4 00:03:48 2023 -0700
+
+	 Savitur Maharaj <saviturmaharaj@gmail.com>:
+	  insertions:    1479	(3%)
+	  deletions:     217	(1%)
+	  files:         58	(3%)
+	  commits:       21	(4%)
+	  lines changed: 1696	(2%)
+	  first commit:  Thu Nov 30 04:01:31 2023 -0700
+	  last commit:   Mon Dec 4 19:51:01 2023 -0700
+
+	 Competent-coder <nicholas.m19@gmail.com>:
+	  insertions:    1004	(2%)
+	  deletions:     892	(3%)
+	  files:         57	(3%)
+	  commits:       10	(2%)
+	  lines changed: 1896	(2%)
+	  first commit:  Mon Nov 27 23:49:34 2023 -0700
+	  last commit:   Mon Dec 4 19:54:25 2023 -0700
+
+	 CeeRobitaille <60759783+CeeRobitaille@users.noreply.github.com>:
+	  insertions:    1	(0%)
+	  deletions:     3	(0%)
+	  files:         2	(0%)
+	  commits:       2	(0%)
+	  lines changed: 4	(0%)
+	  first commit:  Sun Dec 3 02:34:46 2023 -0700
+	  last commit:   Mon Dec 4 20:05:50 2023 -0700
+
+	 Ekkiddle <ekkiddle@gmail.com>:
+	  insertions:    11867	(20%)
+	  deletions:     9188	(26%)
+	  files:         552	(30%)
+	  commits:       110	(23%)
+	  lines changed: 21055	(22%)
+	  first commit:  Fri Nov 24 15:02:18 2023 -0700
+	  last commit:   Mon Dec 4 22:24:47 2023 -0700
+
+	 junheoucal <junbeom.heo@ucalgary.ca>:
+	  insertions:    1609	(3%)
+	  deletions:     313	(1%)
+	  files:         54	(3%)
+	  commits:       28	(6%)
+	  lines changed: 1922	(2%)
+	  first commit:  Wed Nov 29 15:57:18 2023 -0700
+	  last commit:   Mon Dec 4 22:34:01 2023 -0700
+
+	 EmilyStein <emilydstein@emilysteins-mbp.ucalgary.ca>:
+	  insertions:    158	(0%)
+	  deletions:     189	(1%)
+	  files:         5	(0%)
+	  commits:       2	(0%)
+	  lines changed: 347	(0%)
+	  first commit:  Wed Nov 29 18:59:17 2023 -0700
+	  last commit:   Fri Dec 1 13:16:19 2023 -0700
+
+	 dvij99 <60762096+dvij99@users.noreply.github.com>:
+	  insertions:    400	(1%)
+	  deletions:     238	(1%)
+	  files:         12	(1%)
+	  commits:       9	(2%)
+	  lines changed: 638	(1%)
+	  first commit:  Thu Nov 30 20:21:25 2023 -0700
+	  last commit:   Mon Dec 4 18:38:46 2023 -0700
+
+	 anthony kostal-vazquez <anthonykostal@gmail.com>:
+	  insertions:    362	(1%)
+	  deletions:     123	(0%)
+	  files:         19	(1%)
+	  commits:       10	(2%)
+	  lines changed: 485	(1%)
+	  first commit:  Sat Dec 2 22:45:21 2023 -0700
+	  last commit:   Mon Dec 4 20:36:58 2023 -0700
+
+	 Dino-sour <ethan.mccorquodale@ucalgary.ca>:
+	  insertions:    75	(0%)
+	  deletions:     69	(0%)
+	  files:         9	(0%)
+	  commits:       3	(1%)
+	  lines changed: 144	(0%)
+	  first commit:  Sun Dec 3 19:30:23 2023 -0700
+	  last commit:   Mon Dec 4 21:31:53 2023 -0700
+
+	 e-woo <ethansfwoo@gmail.com>:
+	  insertions:    1	(0%)
+	  deletions:     0	(0%)
+	  files:         1	(0%)
+	  commits:       1	(0%)
+	  lines changed: 1	(0%)
+	  first commit:  Fri Dec 1 01:25:13 2023 -0700
+	  last commit:   Fri Dec 1 01:25:13 2023 -0700
+
+	 arcleah <arcciepasc@gmail.com>:
+	  insertions:    189	(0%)
+	  deletions:     121	(0%)
+	  files:         9	(0%)
+	  commits:       6	(1%)
+	  lines changed: 310	(0%)
+	  first commit:  Wed Nov 29 20:31:25 2023 -0700
+	  last commit:   Sat Dec 2 18:34:50 2023 -0700
+
+	total:
+	  insertions:    59144	(100%)
+	  deletions:     35044	(100%)
+	  files:         1827	(100%)
+	  commits:       474	(100%)
+
