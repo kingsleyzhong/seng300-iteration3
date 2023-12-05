@@ -1,5 +1,6 @@
 package com.thelocalmarketplace.software.GUI;
 
+import StubClasses.BarcodeScannerListenerStub;
 import StubClasses.CardListenerStub;
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
@@ -13,6 +14,7 @@ import com.tdc.coin.CoinValidator;
 import com.thelocalmarketplace.GUI.hardware.ButtonPanel;
 import com.thelocalmarketplace.GUI.hardware.CashPanel;
 import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
+import com.thelocalmarketplace.GUI.hardware.ItemObject;
 import com.thelocalmarketplace.GUI.session.SoftwareGUI;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.AttendantStation;
@@ -79,6 +81,7 @@ public class HardwareGUITest {
     private SoftwareGUI softwareGUI;
     private HardwareGUI hardwareGUI;
     private CardListenerStub cardListenerStub;
+    private BarcodeScannerListenerStub barcodeListenerStub;
 
     private CashPanel cashpanel;
     private CoinValidator coinValidator;
@@ -94,6 +97,8 @@ public class HardwareGUITest {
     private BarcodedItem item2;
     private DragRobot dragRobot;
     private Robot panelRobot;
+    private ItemObject testObject;
+    private BarcodedItem testItem;
     Timer timer;
     int runs = 0;
 
@@ -143,8 +148,10 @@ public class HardwareGUITest {
         session = logic.getSession();
         softwareGUI = new SoftwareGUI(session);
         hardwareGUI = new HardwareGUI(scs, as);
-        
-        
+
+        testItem = new BarcodedItem(new Barcode(new Numeral[] { Numeral.one}), new Mass(300.0));
+        testObject = new ItemObject(testItem, "testItem");
+
         //cash panel stuff
         cashpanel = new CashPanel(scs);
         funds = new Funds(scs);
@@ -159,6 +166,9 @@ public class HardwareGUITest {
         banknoteValidator = scs.getBanknoteValidator();
         cardListenerStub = new CardListenerStub();
         scs.getCardReader().register(cardListenerStub);
+        barcodeListenerStub = new BarcodeScannerListenerStub();
+        scs.getMainScanner().register(barcodeListenerStub);
+        scs.getHandheldScanner().register(barcodeListenerStub);
 
         cashController = new PayByCash(coinValidator, banknoteValidator, funds);
 
@@ -282,12 +292,18 @@ public class HardwareGUITest {
 
     @Test
     public void scanWithMainButton() {
-
+        hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.setLastItem(testObject);
+        hardwareGUI.buttonPanel.mainScanner.doClick();
+        Assert.assertTrue(barcodeListenerStub.barcodeScanned);
     }
 
     @Test
     public void scanWithHandheldButton() {
-
+        hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.setLastItem(testObject);
+        hardwareGUI.buttonPanel.handheldScanner.doClick();
+        Assert.assertTrue(barcodeListenerStub.barcodeScanned);
     }
 
     @Test
