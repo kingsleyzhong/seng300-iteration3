@@ -72,7 +72,7 @@ public class Membership {
      * @param memberCard The member card to be examined for its card number */
     private void swipeMembership(CardData memberCard) {
     	String memberCardNumber = memberCard.getNumber();
-    	if (MembershipDatabase.MEMBERSHIP_DATABASE.containsKey(memberCardNumber)) {
+    	if (addingItems && MembershipDatabase.MEMBERSHIP_DATABASE.containsKey(memberCardNumber)) {
     		notifyMembershipEntered(memberCardNumber);
     	}
     }
@@ -106,7 +106,7 @@ public class Membership {
 		// Listens for card data which has been successfully read by the card reader
 		@Override
 		public void theDataFromACardHasBeenRead(CardData data) {
-			if (addingItems && data.getType().equalsIgnoreCase("membership"))
+			if (data.getType().equalsIgnoreCase("membership"))
 				swipeMembership(data);
 		}
     }
