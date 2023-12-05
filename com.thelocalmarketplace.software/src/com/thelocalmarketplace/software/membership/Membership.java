@@ -49,7 +49,7 @@ public class Membership {
 
 	/** Initializes a new instance of a Membership facade that provides the checkout station logic with a
      * user-inputted membership number.
-     * @param cardReader The card reader to read membership cards. */
+     * @param cardReader The card reader to read membership cards. Cannot be null. */
     public Membership(ICardReader cardReader) {
     	if (cardReader == null)
             throw new NullPointerSimulationException("card reader");
@@ -117,7 +117,7 @@ public class Membership {
 	}
 
     /** Registers a MembershipListener on this Membership facade.
-     * @param listener The MembershipListener to register.*/
+     * @param listener The MembershipListener to register. Cannot be null. */
     public void register(MembershipListener listener) {
         if (listener == null)
             throw new NullPointerSimulationException("membership listener");
@@ -125,7 +125,7 @@ public class Membership {
     }
 
     /** Deregisters a MembershipListener on this Membership facade.
-     * @param listener The MembershipListener to Deregister.*/
+     * @param listener The MembershipListener to Deregister. Cannot be null. */
     public boolean deregister(MembershipListener listener) {
         if (listener == null)
             throw new NullPointerSimulationException("membership listener");
