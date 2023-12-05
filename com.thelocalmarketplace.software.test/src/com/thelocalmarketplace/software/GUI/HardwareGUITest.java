@@ -245,7 +245,14 @@ public class HardwareGUITest {
     @After
     public void teardown() throws InterruptedException {
     	Thread.sleep(300);
-        scs.getScreen().getFrame().dispose();
+    	
+    	Window[] windows = Window.getWindows();
+    	for(Window window: windows) {
+    		window.dispose();
+    			
+    	timer.stop();
+    	}
+    	
     }
     
     @Test
