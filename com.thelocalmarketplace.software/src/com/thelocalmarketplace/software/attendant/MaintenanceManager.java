@@ -58,7 +58,6 @@ public class MaintenanceManager {
     private IReceiptPrinter receiptPrinter;
     private Map<BigDecimal, IBanknoteDispenser> banknoteDispensers;
     private Map<BigDecimal, ICoinDispenser> coinDispensers;
-    private AbstractSelfCheckoutStation scs;
     private Session session;
     private BigDecimal[] banknoteDenominations;
     private List<BigDecimal> coinDenominations;
@@ -80,7 +79,7 @@ public class MaintenanceManager {
     	this.session = session;
         state = session.getState();
         if (state == SessionState.DISABLED) {
-            scs = session.getStation();
+            AbstractSelfCheckoutStation scs = session.getStation();
             session.notifyOpenHardware();
             banknoteDenominations = scs.getBanknoteDenominations();
             coinDenominations = scs.getCoinDenominations();
@@ -200,7 +199,6 @@ public class MaintenanceManager {
         session.notifyCloseHardware();
         session = null;
         state = null;
-        scs = null;
         banknoteDenominations = null;
         coinDenominations = null;
         receiptPrinter = null;

@@ -77,11 +77,11 @@ public class Session {
 	private Receipt receipt;
 	private Membership membership;
 	private String membershipNumber;
+	private BagDispenserController bagDispenser;
 	private boolean hasMembership = false;
 	private boolean requestApproved = false;
 	private boolean itemAdded = false;
 	private boolean itemRemoved = false;
-	private BagDispenserController bagDispenser;
 
 	private class ItemManagerListener implements ItemListener {
 		private Session outerSession;
