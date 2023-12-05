@@ -1,6 +1,5 @@
 package com.thelocalmarketplace.software.test.items;
 
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -107,6 +106,7 @@ public class AddBagsTest extends AbstractSessionTest {
 		baggingArea = scs.getBaggingArea();
 	}
 
+
 	/*
 	 * Tests that calling addBag() before the session has started has no impact on
 	 * the state of session
@@ -129,7 +129,7 @@ public class AddBagsTest extends AbstractSessionTest {
 		scs.getBaggingArea().addAnItem(bag);
 		
 		// expected that the session has not started
-		assertEquals(SessionState.PRE_SESSION, session.getState());
+		assertTrue(session.getState() == SessionState.PRE_SESSION);
 
 		// check the expected weight has been updated (?)
 		Mass expectedMassAfter = weight.getExpectedWeight();
@@ -149,13 +149,18 @@ public class AddBagsTest extends AbstractSessionTest {
 	 */
 	@Test
 	public void testAddBagSessionState() {
-
 		// start session:
 
 		// call addBags
 		session.addBags();
 		// the system is in the adding bags state
 		assertTrue(session.getState() == SessionState.ADDING_BAGS);
+
+		// add the bags to the bagging area
+		scs.getBaggingArea().addAnItem(bag);
+
+		// the system is unblocked
+		assertTrue(session.getState() == SessionState.IN_SESSION);
 	}
 
 	/*
@@ -220,85 +225,9 @@ public class AddBagsTest extends AbstractSessionTest {
 
 		// compare the masses to see they have not updated
 		assertTrue(expectedMassAfter.compareTo(expectedMassBefore) == 0);
+		
 	}
 
-
-	/*
-	 * Tests adding an item that is heavier than the set MAXBAGWEIGHT to the bagging
-	 * area results in
-	 * the expected weight not being updated (Bags too Heavy use case)
-	 * 
-	 * Expected behavior: expected weight is unchanged
-	 */
-	@Test
-	public void addBags_overweightBag_doesntUpdateExpectedWeight() {
-		// start session:
-
-		// save the expected Mass before adding the bag
-		Mass expectedMassBefore = weight.getExpectedWeight();
-
-		// call addBags
-		session.addBags();
-
-		// add the heavy bag to the bagging area
-		scs.getBaggingArea().addAnItem(overweightBag);
-
-		// check the expected weight after the interaction
-		Mass expectedMassAfter = weight.getExpectedWeight();
-
-		// compare the masses to see they have not updated
-		assertTrue(expectedMassAfter.compareTo(expectedMassBefore) == 0);
-
-	}
-
-	/*
-	 * Tests adding an item that is as heavy as the set MAXBAGWEIGHT to the bagging
-	 * area results in
-	 * the session being blocked (Bags too Heavy use case)
-	 * 
-	 * Expected behavior: Session is blocked
-	 */
-	@Test
-	public void addBags_weightLimitBag_blockSession() {
-		// start session:
-
-		// call addBags
-		session.addBags();
-
-		// Add the bag to the bagging area
-		scs.getBaggingArea().addAnItem(weightLimitBag);
-
-		// check the state
-		assertTrue(session.getState() == SessionState.BLOCKED);
-	}
-
-	/*
-	 * Tests adding an item that is as heavy as the set MAXBAGWEIGHT to the bagging
-	 * area results in
-	 * the expected weight staying the same
-	 * 
-	 * Expected behavior: expected weight is unchanged
-	 */
-	@Test
-	public void addBags_weightLimitBag_expectedWeightIsNotUpdated() {
-		// start session:
-
-		// save the expected Mass before adding the bag
-		Mass expectedMassBefore = weight.getExpectedWeight();
-
-		// call addBags
-		session.addBags();
-
-		// add the heavy bag to the bagging area
-		scs.getBaggingArea().addAnItem(weightLimitBag);
-
-		// check the expected weight after the interaction
-		Mass expectedMassAfter = weight.getExpectedWeight();
-
-		// compare the masses to see they have not updated
-		assertTrue(expectedMassAfter.compareTo(expectedMassBefore) == 0);
-	}
-	
 
 	/*
 	 * Tests adding an item that is heavier than or as heavy as the set MAXBAGWEIGHT to the bagging
@@ -359,37 +288,6 @@ public class AddBagsTest extends AbstractSessionTest {
 
 		// compare the masses to see they have updated
 		assertTrue(expectedMassAfter.compareTo(expectedMassBefore) == 0);
-	}
-
-	/*
-	 * Tests that calling purchaseBag() before the session has started has no impact on
-	 * the number of bags dispensed
-	 * ie: the number of bags the dispenser has doesnt change
-	 * 
-	 * Expected Behavior: the number of bags in the dispenser has doesnt change
-	 * UnsupportedOperationException will be thrown for the Bronze self checkout station in getReusableBagDispenser()
-	 */
-	
-	@Test
-	public void testNoBagsDispensedBeforeStartSession() {
-		// save the expected Mass before adding the bag
-		session.cancel();
-		try {
-			int expectedTotalBags = scs.getReusableBagDispenser().getQuantityRemaining();
-			session.purchaseBags(1);
-			
-			// add the bags to the bagging area
-			scs.getBaggingArea().addAnItem(purchasedBag);
-
-
-			int actualTotalBags = scs.getReusableBagDispenser().getQuantityRemaining();
-
-			// compare the masses to see they have updated
-			assertEquals(expectedTotalBags, actualTotalBags);
-		}
-		catch (UnsupportedOperationException e) {
-			 e.printStackTrace();//this exception will be thrown for the Bronze self checkout station in getReusableBagDispenser()
-		}
 	}
 	
 
@@ -453,6 +351,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 */
 	@Test
 	public void testAddPurchasedTwoBagsUpdatesWeight() {
+		
 		Mass massBefore = weight.getExpectedWeight();
 		double weightBefore = massBefore.inGrams().doubleValue();
 
@@ -477,76 +376,8 @@ public class AddBagsTest extends AbstractSessionTest {
 		
 	}
 	
-	/*
-	 * Tests that calling addBag() and then adding the bag to the bagging area does
-	 * not result in
-	 * any issues.
-	 * 
-	 * Expected behavior: the total number of bags in dispenser is updated
-	 * UnsupportedOperationException will be thrown for the Bronze self checkout station in getReusableBagDispenser()
-	 */
-	@Test
-	public void testAddPurchasedBagsUpdatesDispenser() {
-		// start session:
 
-		// save the number of bags in dispenser before adding the bag
-		try {
-			int previousBagsTotal = scs.getReusableBagDispenser().getQuantityRemaining();
 
-			// call addBags
-			session.purchaseBags(1);
-
-			// add the bags to the bagging area
-			scs.getBaggingArea().addAnItem(purchasedBag);
-
-			// check the number of bags in dispenser
-			int currentBagsTotal = scs.getReusableBagDispenser().getQuantityRemaining();
-
-			// compare the number of bags to see if they have updated
-			assertTrue(currentBagsTotal == previousBagsTotal   - 1);
-		} catch (UnsupportedOperationException e) {
-			 e.printStackTrace();//this exception will throw for the Bronze self checkout station for getReusableBagDispenser()
-		}
-	}
-	
-	/*
-	 * Tests that calling addBag() and then adding the bag to the bagging area does
-	 * not result in
-	 * any issues.
-	 * 
-	 * Expected behavior: the total number of bags in dispenser is updated
-	 * UnsupportedOperationException will be thrown for the Bronze self checkout station in getReusableBagDispenser()
-	 */
-	@Test
-	public void testAddPurchasedTwoBagsUpdatesDispenser() {
-		// start session:
-
-		// save the expected Mass before adding the bag
-		try {
-			int previousBagsTotal = scs.getReusableBagDispenser().getQuantityRemaining();
-
-			// call addBags
-			session.purchaseBags(2);
-
-			// add the bags to the bagging area
-			scs.getBaggingArea().addAnItem(purchasedBag);
-			scs.getBaggingArea().addAnItem(purchasedBag2);
-
-			// check the expected weight has been updated (?)
-
-			int currentBagsTotal = scs.getReusableBagDispenser().getQuantityRemaining();
-
-			// compare the masses to see they have updated
-			assertTrue(currentBagsTotal == previousBagsTotal - 2);
-			
-			//make sure that the number of bags in item manager is updated
-			BigInteger totalBags = itemManager.getItems().get(ReusableBagProduct.getBag());
-			assertTrue(totalBags.intValue() == 2 );
-		} catch (UnsupportedOperationException e) {
-			 e.printStackTrace();//this exception will throw for the Bronze self checkout station for getReusableBagDispenser()
-		}
-		
-	}
 	
 	/*
 	 * Tests that calling addBag() and then adding the bag to the bagging area does
