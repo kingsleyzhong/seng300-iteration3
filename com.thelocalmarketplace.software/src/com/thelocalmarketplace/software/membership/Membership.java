@@ -1,7 +1,6 @@
 package com.thelocalmarketplace.software.membership;
 
 import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
-
 import com.jjjwelectronics.IDevice;
 import com.jjjwelectronics.IDeviceListener;
 import com.jjjwelectronics.card.Card.CardData;
@@ -43,9 +42,43 @@ import java.util.List;
  * Provides functionality for entering membership numbers as a String (through the user interface), or from the card
  * reader. Membership cards should have "membership" as their type. */
 public class Membership {
-    private final List<MembershipListener> listeners = new ArrayList<>();
-    private boolean addingItems = false;
 
+    private boolean addingItems = false;
+    private final List<MembershipListener> listeners = new ArrayList<>();
+
+    private class InnerListener implements CardReaderListener {
+
+        @Override
+        public void aDeviceHasBeenEnabled(IDevice<? extends IDeviceListener> device) {}
+
+        @Override
+        public void aDeviceHasBeenDisabled(IDevice<? extends IDeviceListener> device) {}
+
+        @Override
+        public void aDeviceHasBeenTurnedOn(IDevice<? extends IDeviceListener> device) {}
+
+        @Override
+        public void aDeviceHasBeenTurnedOff(IDevice<? extends IDeviceListener> device) {}
+
+        @Override
+        public void aCardHasBeenInserted() {}
+
+        @Override
+        public void theCardHasBeenRemoved() {}
+
+        @Override
+        public void aCardHasBeenTapped() {}
+
+        @Override
+        public void aCardHasBeenSwiped() {}
+
+        // Listens for card data which has been successfully read by the card reader
+        @Override
+        public void theDataFromACardHasBeenRead(CardData data) {
+            if (data.getType().equalsIgnoreCase("membership"))
+                swipeMembership(data);
+        }
+    }
 
 	/** Initializes a new instance of a Membership facade that provides the checkout station logic with a
      * user-inputted membership number.
@@ -67,7 +100,7 @@ public class Membership {
     		throw new InvalidActionException("Membership not in database");
     	}
     }
-    
+
     /** Checks to see if the provided card data has a card number contained in the membership database.
      * If the membership number is present, then listeners are notified.
      * @param memberCard The member card to be examined for its card number */
@@ -76,40 +109,6 @@ public class Membership {
     	if (addingItems && MembershipDatabase.MEMBERSHIP_DATABASE.containsKey(memberCardNumber)) {
     		notifyMembershipEntered(memberCardNumber);
     	}
-    }
-
-    private class InnerListener implements CardReaderListener {
-
-		@Override
-		public void aDeviceHasBeenEnabled(IDevice<? extends IDeviceListener> device) {}
-
-		@Override
-		public void aDeviceHasBeenDisabled(IDevice<? extends IDeviceListener> device) {}
-
-		@Override
-		public void aDeviceHasBeenTurnedOn(IDevice<? extends IDeviceListener> device) {}
-
-		@Override
-		public void aDeviceHasBeenTurnedOff(IDevice<? extends IDeviceListener> device) {}
-
-		@Override
-		public void aCardHasBeenInserted() {}
-
-		@Override
-		public void theCardHasBeenRemoved() {}
-
-		@Override
-		public void aCardHasBeenTapped() {}
-
-		@Override
-		public void aCardHasBeenSwiped() {}
-
-		// Listens for card data which has been successfully read by the card reader
-		@Override
-		public void theDataFromACardHasBeenRead(CardData data) {
-			if (data.getType().equalsIgnoreCase("membership"))
-				swipeMembership(data);
-		}
     }
     
     /** Enables the Membership facade to listen for membership entry. */

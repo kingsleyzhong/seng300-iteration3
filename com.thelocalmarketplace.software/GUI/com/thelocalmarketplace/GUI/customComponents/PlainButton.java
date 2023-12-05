@@ -1,9 +1,8 @@
 package com.thelocalmarketplace.GUI.customComponents;
 
-import java.awt.Color;
-
-import javax.swing.JButton;
+import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
+import java.awt.*;
 
 /**
  * A simple button to replace the basic button look.

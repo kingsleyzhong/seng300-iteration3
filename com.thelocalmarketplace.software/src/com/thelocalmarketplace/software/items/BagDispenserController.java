@@ -3,7 +3,6 @@ package com.thelocalmarketplace.software.items;
 import com.jjjwelectronics.EmptyDevice;
 import com.jjjwelectronics.IDevice;
 import com.jjjwelectronics.IDeviceListener;
-import com.jjjwelectronics.bag.AbstractReusableBagDispenser;
 import com.jjjwelectronics.bag.IReusableBagDispenser;
 import com.jjjwelectronics.bag.ReusableBag;
 import com.jjjwelectronics.bag.ReusableBagDispenserListener;
@@ -36,22 +35,13 @@ import com.jjjwelectronics.bag.ReusableBagDispenserListener;
  * Kingsley Zhong 			: 30197260 
  */
 public class BagDispenserController {
+
+	private boolean outOfBags = false;
 	private IReusableBagDispenser bagDispenser; // should this instead be IReusableBagDispenser?
 	private ItemManager manager;
-	private boolean outOfBags = false;
-
-	public BagDispenserController(IReusableBagDispenser dispenser, ItemManager manager) {
-		this.bagDispenser = dispenser; 
-		this.manager = manager;
-		
-		// register InnerListener with the hardware
-		bagDispenser.register(new InnerListener());
-	}
 	
 	
 	private class InnerListener implements ReusableBagDispenserListener{
-		private boolean dispensed;
-		
 
 		@Override
 		public void aDeviceHasBeenEnabled(IDevice<? extends IDeviceListener> device) {
@@ -88,6 +78,15 @@ public class BagDispenserController {
 			outOfBags = false;
 		}
 	}
+
+
+	public BagDispenserController(IReusableBagDispenser dispenser, ItemManager manager) {
+		this.bagDispenser = dispenser;
+		this.manager = manager;
+
+		// register InnerListener with the hardware
+		bagDispenser.register(new InnerListener());
+	}
 	
 	/**
 	 * Signals the hardware (ReusableBagDispenser) to dispense a single (one, 1) bag. 
@@ -106,12 +105,6 @@ public class BagDispenserController {
 				}	
 			}
 		}
-		
-		
 		// else: bag goes to the bagging area, update weight and stuff
-		
-		
 	}
-	
-	
 }

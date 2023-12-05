@@ -11,6 +11,7 @@ import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -45,10 +46,10 @@ import java.util.regex.Pattern;
  * <p> Kingsley Zhong 				: 30197260 </p>
  */
 public class TextSearchController {
+	private boolean shift;
 	private String searchField;
 	private StringBuilder searchFieldSB;
 	private HashMap<String, Product> searchResults;
-	private boolean shift;
 
 	public TextSearchController(IKeyboard keyboard) {
 		searchResults = new HashMap<>();
@@ -132,14 +133,6 @@ public class TextSearchController {
 		}
 	}
 
-	public String getSearchField() {
-		return searchField;
-	}
-
-	public HashMap<String, Product> getSearchResults() {
-		return searchResults;
-	}
-
 	/**
 	 * This is a search engine utilizing a regex search of the product databases capable of both searching item descriptions, PLU codes, and Barcodes (UPC)
 	 * It is generally activated upon pressing the enter key when the attendant station is in search mode
@@ -192,5 +185,13 @@ public class TextSearchController {
 				searchResults.put(entry.getValue().getDescription(), entry.getValue());
 			}
 		}
+	}
+
+	public String getSearchField() {
+		return searchField;
+	}
+
+	public HashMap<String, Product> getSearchResults() {
+		return searchResults;
 	}
 }

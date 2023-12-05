@@ -1,9 +1,6 @@
 package com.thelocalmarketplace.software;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
+import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 import com.jjjwelectronics.Mass;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
@@ -24,7 +21,10 @@ import com.thelocalmarketplace.software.receipt.ReceiptListener;
 import com.thelocalmarketplace.software.weight.Weight;
 import com.thelocalmarketplace.software.weight.WeightListener;
 
-import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Class facade representing the session of a self-checkout station
@@ -241,15 +241,13 @@ public class Session {
 		@Override
 		public void notifyOutOfPaper() {
 			notifyAttendant(Requests.CANT_PRINT_RECEIPT);
-			if(sessionState != SessionState.PRE_SESSION)
-			block();
+			if(sessionState != SessionState.PRE_SESSION) block();
 		}
 
 		@Override
 		public void notifyOutOfInk() {
 			notifyAttendant(Requests.CANT_PRINT_RECEIPT);
-			if(sessionState != SessionState.PRE_SESSION)
-			block();
+			if(sessionState != SessionState.PRE_SESSION) block();
 		}
 
 		@Override
@@ -298,7 +296,7 @@ public class Session {
 	 * @param receiptPrinter
 	 *                       The PrintReceipt behavior
 	 * 
-	 * @param IremManager
+	 * @param ItemManager
 	 *                       The software for managing adding and removing items
 	 */
 	public void setup(ItemManager manager, Funds funds, Weight weight, Receipt receiptPrinter, Membership membership,
@@ -360,7 +358,7 @@ public class Session {
 	/**
 	 * Blocks the current session, preventing further action from the customer
 	 */
-	private void block() {
+	private void block () {
 		prevState = sessionState;
 		sessionState = SessionState.BLOCKED;
 		stateChanged();
@@ -371,7 +369,7 @@ public class Session {
 	 * Ends the current session, returning state to PRE_SESSION.
 	 * 
 	 */
-	private void end() {
+	private void end () {
 		prevState = sessionState;
 		sessionState = SessionState.PRE_SESSION;
 		stateChanged();
@@ -524,8 +522,7 @@ public class Session {
 				
 		}	
 	}
-	
-	// Move to receiptPrinter class 
+
 	public void printReceipt() {
 		receipt.printReceipt(manager.getItems());
 	}
@@ -638,9 +635,6 @@ public class Session {
 	public void askForHelp() {
 		notifyAttendant(Requests.HELP_REQUESTED);
 	}
-	/**
-	 * getter methods
-	 */
 
 
 	public HashMap<Product, BigInteger> getItems() {
@@ -684,20 +678,16 @@ public class Session {
 		return scs;
 	}
 
-
-
-	/**
-	 * getter for session state
-	 *
-	 * @return
-	 *         Session State
-	 */
 	public SessionState getState() {
 		return sessionState;
 	}
 	
 	public SessionState getPrevState() {
 		return prevState;
+	}
+
+	public ArrayList<SessionListener> getListeners(){
+		return listeners;
 	}
 
 	// register listeners
@@ -713,21 +703,15 @@ public class Session {
 			throw new NullPointerSimulationException("listener");
 		listeners.remove(listener);
 	}
-	
-	public ArrayList<SessionListener> getListeners(){
-		return listeners;
-	}
 
 	public final synchronized void registerHardwareListener(HardwareListener listener) {
-		if (listener == null)
-			throw new NullPointerSimulationException("listener");
-			hardwareListeners.add(listener);
+		if (listener == null) throw new NullPointerSimulationException("listener");
+		hardwareListeners.add(listener);
 	}
 
 	public final synchronized void deRegisterHardwareListener(HardwareListener listener) {
-		if (listener == null)
-			throw new NullPointerSimulationException("listener");
-			hardwareListeners.remove(listener);
+		if (listener == null) throw new NullPointerSimulationException("listener");
+		hardwareListeners.remove(listener);
 	}
 
 }

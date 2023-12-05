@@ -1,9 +1,9 @@
 package com.thelocalmarketplace.software.funds;
 
+import com.thelocalmarketplace.hardware.external.CardIssuer;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import com.thelocalmarketplace.hardware.external.CardIssuer;
 /**
  * Database storing CardIssuer(s) that exist
  * 

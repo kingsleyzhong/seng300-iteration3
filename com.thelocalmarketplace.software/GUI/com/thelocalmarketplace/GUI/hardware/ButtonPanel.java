@@ -1,22 +1,15 @@
 package com.thelocalmarketplace.GUI.hardware;
 
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
-
+import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
 import com.jjjwelectronics.EmptyDevice;
 import com.jjjwelectronics.bag.ReusableBag;
-
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 
-import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Displays the lower buttons that a user can interact with in the hardware.

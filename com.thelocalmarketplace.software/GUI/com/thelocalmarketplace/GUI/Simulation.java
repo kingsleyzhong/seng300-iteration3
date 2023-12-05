@@ -1,9 +1,6 @@
 package com.thelocalmarketplace.GUI;
 
-import java.math.BigDecimal;
-import java.util.Currency;
-import java.util.Locale;
-
+import ca.ucalgary.seng300.simulation.SimulationException;
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.OverloadedDevice;
 import com.jjjwelectronics.bag.ReusableBag;
@@ -14,12 +11,7 @@ import com.tdc.coin.Coin;
 import com.thelocalmarketplace.GUI.attendant.AttendantGUI;
 import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
 import com.thelocalmarketplace.GUI.session.SoftwareGUI;
-import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
-import com.thelocalmarketplace.hardware.AttendantStation;
-import com.thelocalmarketplace.hardware.BarcodedProduct;
-import com.thelocalmarketplace.hardware.PLUCodedProduct;
-import com.thelocalmarketplace.hardware.PriceLookUpCode;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
+import com.thelocalmarketplace.hardware.*;
 import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.attendant.Attendant;
@@ -27,9 +19,11 @@ import com.thelocalmarketplace.software.attendant.IssuePredictor;
 import com.thelocalmarketplace.software.attendant.MaintenanceManager;
 import com.thelocalmarketplace.software.exceptions.NotDisabledSessionException;
 import com.thelocalmarketplace.software.receipt.Receipt;
-
-import ca.ucalgary.seng300.simulation.SimulationException;
 import powerutility.PowerGrid;
+
+import java.math.BigDecimal;
+import java.util.Currency;
+import java.util.Locale;
 
 /**
  * Sets up the simulation ran by main. Creates session, populates items, databases

@@ -1,9 +1,5 @@
 package com.thelocalmarketplace.software.attendant;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Map;
-
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.printer.IReceiptPrinter;
 import com.jjjwelectronics.printer.ReceiptPrinterBronze;
@@ -20,6 +16,10 @@ import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionListener;
 import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.receipt.ReceiptListener;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Map;
 /*
  *
  * Project Iteration 3 Group 1

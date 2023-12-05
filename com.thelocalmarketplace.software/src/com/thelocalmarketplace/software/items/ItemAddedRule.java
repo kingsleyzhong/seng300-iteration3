@@ -1,7 +1,6 @@
 package com.thelocalmarketplace.software.items;
 
-import java.util.Map;
-
+import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
 import com.jjjwelectronics.IDevice;
 import com.jjjwelectronics.IDeviceListener;
 import com.jjjwelectronics.scanner.Barcode;
@@ -9,7 +8,8 @@ import com.jjjwelectronics.scanner.BarcodeScannerListener;
 import com.jjjwelectronics.scanner.IBarcodeScanner;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
-import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
+
+import java.util.Map;
 
 /**
  * Rule for adding items to the session.
@@ -45,27 +45,6 @@ import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
  */
 public class ItemAddedRule {
 	private ItemManager itemManager;
-
-	/**
-	 * Basic constructor for ItemAddedRule. Registers a listener to scanners being
-	 * used in the
-	 * self-checkout station.
-	 * 
-	 * @param mainScanner
-	 *                The main scanner
-	 * @param handheldScanner
-	 *                The handheld scanner
-	 * @param itemManager
-	 * 				The item manager is where items are managed
-	 */
-	public ItemAddedRule(IBarcodeScanner mainScanner, IBarcodeScanner handheldScanner, ItemManager itemManager) {
-		if (mainScanner == null || handheldScanner == null || itemManager == null) {
-			throw new InvalidArgumentSimulationException("Self Checkout Station cannot be null.");
-		}
-		mainScanner.register(new innerListener());
-		handheldScanner.register(new innerListener());
-		this.itemManager = itemManager;
-	}
 
 	/**
 	 * An innerListener class that listens to BarcodeScannerListener.
@@ -108,6 +87,26 @@ public class ItemAddedRule {
 			// TODO Auto-generated method stub
 
 		}
+	}
 
+	/**
+	 * Basic constructor for ItemAddedRule. Registers a listener to scanners being
+	 * used in the
+	 * self-checkout station.
+	 * 
+	 * @param mainScanner
+	 *                The main scanner
+	 * @param handheldScanner
+	 *                The handheld scanner
+	 * @param itemManager
+	 * 				The item manager is where items are managed
+	 */
+	public ItemAddedRule(IBarcodeScanner mainScanner, IBarcodeScanner handheldScanner, ItemManager itemManager) {
+		if (mainScanner == null || handheldScanner == null || itemManager == null) {
+			throw new InvalidArgumentSimulationException("Self Checkout Station cannot be null.");
+		}
+		mainScanner.register(new innerListener());
+		handheldScanner.register(new innerListener());
+		this.itemManager = itemManager;
 	}
 }
