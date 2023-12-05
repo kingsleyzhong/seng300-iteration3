@@ -95,7 +95,7 @@ public class Receipt {
 			isOutOfPaper = true;
 			duplicateNeeded = true;
 			for(ReceiptListener l : listeners) {
-				l.notifiyOutOfPaper();
+				l.notifyOutOfPaper();
 			}
 		}
 
@@ -104,7 +104,7 @@ public class Receipt {
 			isOutOfInk = true;
 			duplicateNeeded = true;
 			for(ReceiptListener l : listeners) {
-				l.notifiyOutOfInk();
+				l.notifyOutOfInk();
 			}
 		}
 
