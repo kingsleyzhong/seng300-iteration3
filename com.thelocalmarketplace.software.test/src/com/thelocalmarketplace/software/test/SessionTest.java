@@ -368,6 +368,37 @@ public class SessionTest extends AbstractTest {
      	session.deRegister(stub);
     }
     	
+    @Test
+    public void sessionNotProgressLowInk() throws OverloadedDevice, EmptyDevice {
+    	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+
+     	scs.getPrinter().addInk(1);
+    	scs.getPrinter().addPaper(2);
+    	scs.getPrinter().print('9');
+    	assertFalse(session.getState() == SessionState.BLOCKED);
+    }
+    
+    @Test
+    public void refillWhileNotInProgressAndDisabled() throws OverloadedDevice, EmptyDevice {
+    	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+    	session.disable();
+     	scs.getPrinter().addInk(1);
+    	scs.getPrinter().addPaper(2);
+    	assertFalse(session.getState() == SessionState.IN_SESSION);
+    	
+    }
+    
+    
+    @Test
+    public void sessionNotProgressLowPaper() throws OverloadedDevice, EmptyDevice {
+    	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+
+     	scs.getPrinter().addInk(1);
+    	scs.getPrinter().addPaper(1);
+    	scs.getPrinter().print('\n');
+    	assertFalse(session.getState() == SessionState.BLOCKED);
+    }
+    
     /*
      *Sessions can only be disabled when in the pre-session state 
      */
