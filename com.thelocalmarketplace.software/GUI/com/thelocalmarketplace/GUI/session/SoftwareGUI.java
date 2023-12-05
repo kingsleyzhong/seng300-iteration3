@@ -727,12 +727,6 @@ public class SoftwareGUI{
 		}
 
 		@Override
-		public void sessionAboutToStart(Session session) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
 		public void sessionEnded(Session session) {
 			paymentScreen.hide();
 			displayEnd();

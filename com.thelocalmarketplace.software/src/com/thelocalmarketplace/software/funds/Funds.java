@@ -277,19 +277,12 @@ public class Funds {
 		this.isPay = isPay;
 	}
 
-	public BigDecimal getItemsPrice() {
-		return itemsPrice;
-	}
-
 	/*
 	 * public BigDecimal getPaid() {
 	 * return paid;
 	 * }
 	 */
 
-	public BigDecimal getAmountDue() {
-		return amountDue;
-	}
 
 	/**
 	 * Methods for adding funds listeners to the funds
