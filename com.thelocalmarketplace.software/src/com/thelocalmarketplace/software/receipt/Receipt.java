@@ -1,10 +1,6 @@
 package com.thelocalmarketplace.software.receipt;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
+import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 import com.jjjwelectronics.EmptyDevice;
 import com.jjjwelectronics.IDevice;
 import com.jjjwelectronics.IDeviceListener;
@@ -16,7 +12,10 @@ import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.items.ReusableBagProduct;
 
-import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 /*
  * 
  * Project Iteration 3 Group 1
@@ -44,36 +43,22 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
  * Kingsley Zhong 			: 30197260 
  */
 public class Receipt {
-	
-	public ArrayList<ReceiptListener> listeners = new ArrayList<>();
+
 	private boolean isOutOfPaper = false; //Flag for running out of paper, set to false in default
 	private boolean isOutOfInk = false; //Flag for running out of ink, set to false in default
 	private boolean duplicateNeeded = false; //Flag for if the receipt was not printed out fully and a duplicate is needed.
 	private String receipt; //The receipt that should be printed
 	private IReceiptPrinter printer; //The printer associated with the session;
 
+	public ArrayList<ReceiptListener> listeners = new ArrayList<>();
+
 	int charsPrinted;
 	int linesUsed;
 
-	
 	/**
-     * Constructor that initializes the funds and registers an inner listener to the self-checkout station.
-     * 
-     * @param printer The self-checkout station
-     */
-    public Receipt (IReceiptPrinter printer) {
-        if (printer == null) {
-            throw new IllegalArgumentException("SelfCheckoutStation should not be null.");
-        }
-        InnerListener listener = new InnerListener();
-        printer.register(listener);
-        this.printer = printer;
-    }
-    
-    /**
-     * Inner class to listen for valid coin additions and update the paid amount.
-     */
-    public class InnerListener implements ReceiptPrinterListener {
+	 * Inner class to listen for valid coin additions and update the paid amount.
+	 */
+	public class InnerListener implements ReceiptPrinterListener {
 
 		@Override
 		public void aDeviceHasBeenEnabled(IDevice<? extends IDeviceListener> device) {
@@ -140,6 +125,20 @@ public class Receipt {
 				print();
 			}
 		}
+	}
+
+	/**
+     * Constructor that initializes the funds and registers an inner listener to the self-checkout station.
+     * 
+     * @param printer The self-checkout station
+     */
+    public Receipt (IReceiptPrinter printer) {
+        if (printer == null) {
+            throw new IllegalArgumentException("SelfCheckoutStation should not be null.");
+        }
+        InnerListener listener = new InnerListener();
+        printer.register(listener);
+        this.printer = printer;
     }
     
     public void printReceipt(HashMap<Product, BigInteger> items) {

@@ -1,12 +1,7 @@
 package com.thelocalmarketplace.GUI.customComponents;
 
-import java.awt.Color;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-
-import javax.swing.JPanel;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * A panel that can be colored as a gradient.

@@ -1,6 +1,6 @@
 package com.thelocalmarketplace.GUI.customComponents;
 
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * Class of constants used for setting theme colors in the GUIS

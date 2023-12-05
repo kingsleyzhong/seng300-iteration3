@@ -1,16 +1,5 @@
 package com.thelocalmarketplace.GUI.session;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.math.BigInteger;
-import java.util.HashMap;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
 import com.jjjwelectronics.Mass;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.CustomBarUI;
@@ -18,6 +7,11 @@ import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.items.ReusableBagProduct;
+
+import javax.swing.*;
+import java.awt.*;
+import java.math.BigInteger;
+import java.util.HashMap;
 
 /**
  * A class that allows products to be displayed on the screen in a scrollable list.
@@ -79,6 +73,7 @@ public class AddedProducts extends JPanel {
     	
 	}
 	
+	// Adds a product and a mass to the panel When added.
 	public void addProduct(Product product, Mass mass) {
 		CartProduct current = null;
 		
@@ -153,7 +148,4 @@ public class AddedProducts extends JPanel {
 	public CartProduct getNewPanel() {
 		return newPanel;
 	}
-	
-	
-	
 }

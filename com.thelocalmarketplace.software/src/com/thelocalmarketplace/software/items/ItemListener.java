@@ -1,10 +1,10 @@
 package com.thelocalmarketplace.software.items;
 
-import java.math.BigDecimal;
-
 import com.jjjwelectronics.Mass;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
+
+import java.math.BigDecimal;
 
 public interface ItemListener {
 

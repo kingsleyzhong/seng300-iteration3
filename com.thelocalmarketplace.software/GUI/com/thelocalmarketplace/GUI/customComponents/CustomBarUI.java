@@ -1,10 +1,8 @@
 package com.thelocalmarketplace.GUI.customComponents;
 
-import java.awt.Color;
-import java.awt.Dimension;
-
-import javax.swing.JButton;
+import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
+import java.awt.*;
 
 /**
  * Represents a custom bar for scroll panes.

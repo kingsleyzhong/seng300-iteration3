@@ -1,23 +1,16 @@
 package com.thelocalmarketplace.GUI.hardware;
 
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
-
+import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
 import com.jjjwelectronics.EmptyDevice;
 import com.jjjwelectronics.bag.ReusableBag;
-
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 import com.thelocalmarketplace.software.items.ReusableBagProduct;
 
-import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Displays the lower buttons that a user can interact with in the hardware.
@@ -94,6 +87,9 @@ public class ButtonPanel extends JPanel implements ActionListener {
 		this.add(startButton);
 	}
 
+	/**
+	 * Populates the buttons when the hardware simulation starts
+	 */
 	public void populateButtons() {
 		this.remove(startButton);
 		this.repaint();
@@ -137,9 +133,6 @@ public class ButtonPanel extends JPanel implements ActionListener {
 			gui.getStation().getScreen().getFrame().setVisible(true);
 		} else if (e.getSource() == attendantScreen) {
 			gui.getSupervisor().screen.getFrame().setVisible(true);
-		}
-		else if(e.getSource() == attendantScreen) {
-			
 		}
 		else if(e.getSource() == addBags) {
 			try {
