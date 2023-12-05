@@ -1,29 +1,16 @@
 package com.thelocalmarketplace.GUI.session;
 
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Session;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import javax.swing.JButton;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * A panel that displays a product that can be added by the visual catalogue.
@@ -164,8 +151,6 @@ public class ProductPanel extends JPanel {
         graphics.setColor(Colors.color3);
        
         graphics.fillRoundRect(0, 0, width-1, height-1, arcs.width, arcs.height); //paint background
-        //graphics.setColor(getForeground());
-        //graphics.drawRoundRect(0, 0, width-1, height-1, arcs.width, arcs.height); //paint border
     }
     
     public JButton getAddButton() {

@@ -1,9 +1,6 @@
 package com.thelocalmarketplace.GUI;
 
-import java.math.BigDecimal;
-import java.util.Currency;
-import java.util.Locale;
-
+import ca.ucalgary.seng300.simulation.SimulationException;
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.OverloadedDevice;
 import com.jjjwelectronics.bag.ReusableBag;
@@ -14,12 +11,7 @@ import com.tdc.coin.Coin;
 import com.thelocalmarketplace.GUI.attendant.AttendantGUI;
 import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
 import com.thelocalmarketplace.GUI.session.SoftwareGUI;
-import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
-import com.thelocalmarketplace.hardware.AttendantStation;
-import com.thelocalmarketplace.hardware.BarcodedProduct;
-import com.thelocalmarketplace.hardware.PLUCodedProduct;
-import com.thelocalmarketplace.hardware.PriceLookUpCode;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
+import com.thelocalmarketplace.hardware.*;
 import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.attendant.Attendant;
@@ -27,9 +19,11 @@ import com.thelocalmarketplace.software.attendant.IssuePredictor;
 import com.thelocalmarketplace.software.attendant.MaintenanceManager;
 import com.thelocalmarketplace.software.exceptions.NotDisabledSessionException;
 import com.thelocalmarketplace.software.receipt.Receipt;
-
-import ca.ucalgary.seng300.simulation.SimulationException;
 import powerutility.PowerGrid;
+
+import java.math.BigDecimal;
+import java.util.Currency;
+import java.util.Locale;
 
 /**
  * Sets up the simulation ran by main. Creates session, populates items, databases
@@ -95,9 +89,6 @@ public class Simulation {
 		
 		SelfCheckoutStationLogic.installAttendantStation(as);
 		attendant = SelfCheckoutStationLogic.getAttendant();
-		
-		
-
 		SelfCheckoutStationLogic logic = SelfCheckoutStationLogic.installOn(scs);
 		session = logic.getSession();
 		session.getStation().setSupervisor(as);
@@ -105,18 +96,11 @@ public class Simulation {
 		session.disable();
 		manager = new MaintenanceManager();
 		manager.openHardware(session);
-		
 		predictor = attendant.getIssuePredictor(session);
 		
 		hardwareGUI = new HardwareGUI(scs, as);
 		attendantGUI = new AttendantGUI(attendant, manager, predictor);
 		softwareGUI = new SoftwareGUI(session);
-		
-		// hidden by default
-		//HardwareGUI.setVisibility(false);
-		//softwareGUI.hide();
-		
-		//Pop visibility to top
 		HardwareGUI.setVisibility(true);
 	}
 	
@@ -155,6 +139,9 @@ public class Simulation {
 				BigDecimal.ONE, new BigDecimal(0.25), new BigDecimal(0.10), new BigDecimal(0.05)});
 	}
 	
+	/**
+	 * Load elements. Coins, bills =. etc
+	 */
 	public void setupLoading() {
 		Currency currency = Currency.getInstance(Locale.CANADA);
 
@@ -227,7 +214,7 @@ public class Simulation {
 	
 	public void unhide() {
 		HardwareGUI.setVisibility(true);
-		softwareGUI.unhide();
+		SoftwareGUI.unhide();
 	}
 	
 	public SoftwareGUI getSoftwareGUI() {

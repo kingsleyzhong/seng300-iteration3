@@ -1,19 +1,19 @@
 package com.thelocalmarketplace.software.items;
 
+import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
+import com.jjjwelectronics.Mass;
+import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.hardware.PLUCodedProduct;
+import com.thelocalmarketplace.hardware.PriceLookUpCode;
+import com.thelocalmarketplace.hardware.Product;
+import com.thelocalmarketplace.hardware.external.ProductDatabases;
+import com.thelocalmarketplace.software.exceptions.InvalidActionException;
+import com.thelocalmarketplace.software.exceptions.ProductNotFoundException;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import com.jjjwelectronics.Mass;
-import com.thelocalmarketplace.hardware.BarcodedProduct;
-import com.thelocalmarketplace.hardware.Product;
-import com.thelocalmarketplace.hardware.external.ProductDatabases;
-import com.thelocalmarketplace.hardware.PLUCodedProduct;
-import com.thelocalmarketplace.hardware.PriceLookUpCode;
-import com.thelocalmarketplace.software.exceptions.InvalidActionException;
-import com.thelocalmarketplace.software.exceptions.ProductNotFoundException;
-import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 
 /**
  * Manages aspects to adding items to an order
@@ -44,6 +44,9 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
  */
 
 public class ItemManager {
+
+	private boolean addItems = false;
+	private boolean addPLUItemState = false;
 	protected ArrayList<ItemListener> listeners = new ArrayList<>();
 	private HashMap<Product, BigInteger> addedProducts = new HashMap<Product, BigInteger>(); //hashMap for both barcodedProduct and PLUCodedProduct
 	private HashMap<BarcodedProduct, Integer> bulkyItems = new HashMap<BarcodedProduct, Integer>();
@@ -52,13 +55,6 @@ public class ItemManager {
 	
 	private PLUCodedProduct pluProduct;
 	private Product lastProduct;
-	private boolean addItems = false;
-	private boolean addPLUItemState = false;
-
-	public void setAddItems(boolean value) {
-		addItems = value;
-		addPLUItemState = false;
-	}
 	
 	public boolean getAddItems() {
 		return addItems;
@@ -80,14 +76,7 @@ public class ItemManager {
 	public boolean isAddPLUItemState() {
 		return addPLUItemState;
 	}
-	
-	public PLUCodedProduct getPluProduct() {
-		return pluProduct;
-	}
-	
-	public Product getLastProduct() {
-		return lastProduct;
-	}
+
 	
 	/**
 	 * Adds a barcoded product to the hashMap of the products. Updates the
@@ -143,8 +132,7 @@ public class ItemManager {
 			bulkyItems.put((BarcodedProduct)lastProduct, 1);
 		}
 	}
-	
-	
+
 	/**
 	 * Update the hashmap of bought products, the expected weight, 
 	 * and the total cost of customer's purchase after a bag is dispensed
@@ -244,6 +232,41 @@ public class ItemManager {
 		}
 		
 	}
+
+	public void clear() {
+		addedProducts = new HashMap<>();
+	}
+
+	public void setAddItems(boolean value) {
+		addItems = value;
+		addPLUItemState = false;
+	}
+
+
+	public ArrayList<ItemListener> getListeners(){
+		return listeners;
+	}
+
+	public HashMap<Product, BigInteger> getItems() {
+		return addedProducts;
+	}
+
+	public HashMap<BarcodedProduct, Integer> getBulkyItems(){
+		return bulkyItems;
+	}
+
+	public HashMap<String, Product> getVisualCatalogue() {
+		return visualCatalogue;
+	}
+
+
+	public PLUCodedProduct getPluProduct() {
+		return pluProduct;
+	}
+
+	public Product getLastProduct() {
+		return lastProduct;
+	}
 	
 	public void notifyItemAdded(Product product, Mass mass, BigDecimal price) {
 		for (ItemListener l : listeners)
@@ -259,7 +282,7 @@ public class ItemManager {
 		for (ItemListener l : listeners)
 			l.aPLUCodeHasBeenEntered(product);
 	}
-	
+
 	
 	/**
 	 * Methods for adding funds listeners to the items
@@ -281,24 +304,5 @@ public class ItemManager {
 
 		listeners.add(listener);
 	}
-	
-	public ArrayList<ItemListener> getListeners(){
-		return listeners;
-	}
 
-	public HashMap<Product, BigInteger> getItems() {
-		return addedProducts;
-	}
-	
-	public HashMap<BarcodedProduct, Integer> getBulkyItems(){
-		return bulkyItems;
-	}
-
-	public HashMap<String, Product> getVisualCatalogue() {
-		return visualCatalogue;
-	}
-
-	public void clear() {
-		addedProducts = new HashMap<>();
-	}
 }

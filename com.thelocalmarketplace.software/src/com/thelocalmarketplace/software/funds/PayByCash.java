@@ -1,15 +1,15 @@
 package com.thelocalmarketplace.software.funds;
 
-import java.math.BigDecimal;
-import java.util.Currency;
-
+import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 import com.tdc.IComponent;
 import com.tdc.IComponentObserver;
 import com.tdc.banknote.BanknoteValidator;
 import com.tdc.banknote.BanknoteValidatorObserver;
 import com.tdc.coin.CoinValidator;
 import com.tdc.coin.CoinValidatorObserver;
-import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
+
+import java.math.BigDecimal;
+import java.util.Currency;
 
 /***
  * This class contains the observers for pay by cash events 

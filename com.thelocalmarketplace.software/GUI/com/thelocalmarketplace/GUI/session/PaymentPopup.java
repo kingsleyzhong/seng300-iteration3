@@ -1,29 +1,14 @@
 package com.thelocalmarketplace.GUI.session;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import javax.swing.JPanel;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-
-import java.awt.Font;
-import javax.swing.SwingConstants;
-import java.awt.event.ActionListener;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.Color;
-import java.awt.GridLayout;
+import java.awt.event.ActionListener;
 
 /**
  * A popup that allows the user to select payment type.

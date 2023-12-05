@@ -1,10 +1,6 @@
 package com.thelocalmarketplace.software.funds;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 import com.jjjwelectronics.IllegalDigitException;
 import com.tdc.CashOverloadException;
 import com.tdc.DisabledException;
@@ -13,7 +9,11 @@ import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 import com.thelocalmarketplace.software.exceptions.NotEnoughChangeException;
 
-import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * This class represents the funds associated with a self-checkout session.
@@ -21,39 +21,40 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
  * 
  * Project Iteration 3 Group 1
  *
- * Derek Atabayev 			: 30177060 
- * Enioluwafe Balogun 		: 30174298 
- * Subeg Chahal 			: 30196531 
- * Jun Heo 					: 30173430 
- * Emily Kiddle 			: 30122331 
- * Anthony Kostal-Vazquez 	: 30048301 
- * Jessica Li 				: 30180801 
- * Sua Lim 					: 30177039 
- * Savitur Maharaj 			: 30152888 
- * Nick McCamis 			: 30192610 
- * Ethan McCorquodale 		: 30125353 
- * Katelan Ng 				: 30144672 
- * Arcleah Pascual 			: 30056034 
- * Dvij Raval 				: 30024340 
- * Chloe Robitaille 		: 30022887 
- * Danissa Sandykbayeva 	: 30200531 
- * Emily Stein 				: 30149842 
- * Thi My Tuyen Tran 		: 30193980 
- * Aoi Ueki 				: 30179305 
- * Ethan Woo 				: 30172855 
- * Kingsley Zhong 			: 30197260 
+ * Derek Atabayev : 30177060
+ * Enioluwafe Balogun : 30174298
+ * Subeg Chahal : 30196531
+ * Jun Heo : 30173430
+ * Emily Kiddle : 30122331
+ * Anthony Kostal-Vazquez : 30048301
+ * Jessica Li : 30180801
+ * Sua Lim : 30177039
+ * Savitur Maharaj : 30152888
+ * Nick McCamis : 30192610
+ * Ethan McCorquodale : 30125353
+ * Katelan Ng : 30144672
+ * Arcleah Pascual : 30056034
+ * Dvij Raval : 30024340
+ * Chloe Robitaille : 30022887
+ * Danissa Sandykbayeva : 30200531
+ * Emily Stein : 30149842
+ * Thi My Tuyen Tran : 30193980
+ * Aoi Ueki : 30179305
+ * Ethan Woo : 30172855
+ * Kingsley Zhong : 30197260
  */
 public class Funds {
+	private boolean isPay; // Flag indicating if the session is in pay mode
+	private final BigDecimal[] banknoteDenominations;
+	private final List<BigDecimal> coinDenominations;
+
 	protected ArrayList<FundsListener> listeners = new ArrayList<>();
 	private BigDecimal itemsPrice; // Summed price of all items in the session (in cents)
 	private BigDecimal amountDue; // Remaining amount to be paid (in cents)
-	private boolean isPay; // Flag indicating if the session is in pay mode
-	private final BigDecimal[] banknoteDenominations;
-    private final List<BigDecimal> coinDenominations;
 
 	public boolean payed;
 	public boolean successfulSwipe;
-  
+
 	private AbstractSelfCheckoutStation scs;
 
 	/**
@@ -75,10 +76,10 @@ public class Funds {
 		scs.getCoinSlot().disable();
 		scs.getBanknoteInput().disable();
 		// sort denominations in descending order
-        banknoteDenominations = scs.getBanknoteDenominations();
-        Arrays.sort(banknoteDenominations, Collections.reverseOrder());
-        coinDenominations = scs.getCoinDenominations();
-        coinDenominations.sort(Collections.reverseOrder());
+		banknoteDenominations = scs.getBanknoteDenominations();
+		Arrays.sort(banknoteDenominations, Collections.reverseOrder());
+		coinDenominations = scs.getCoinDenominations();
+		coinDenominations.sort(Collections.reverseOrder());
 	}
 
 	/**
@@ -103,25 +104,16 @@ public class Funds {
 		if (price.compareTo(BigDecimal.ZERO) <= 0) {
 			throw new IllegalDigitException("Price should be positive.");
 		}
-		
+
 		this.itemsPrice = this.itemsPrice.subtract(price);
 		calculateAmountDue(price);
 	}
 
-	/**
-	 * Sets the pay mode.
-	 * 
-	 * @param isPay Flag indicating if the session is in pay mode
-	 */
-	public void setPay(boolean isPay) {
-		this.isPay = isPay;
-	}
-	
 	public void enableCash() {
 		scs.getCoinSlot().enable();
 		scs.getBanknoteInput().enable();
 	}
-	
+
 	public void disableCash() {
 		scs.getCoinSlot().disable();
 		scs.getBanknoteInput().disable();
@@ -130,6 +122,12 @@ public class Funds {
 	public BigDecimal getItemsPrice() {
 		return itemsPrice;
 	}
+
+	/*
+	 * public BigDecimal getPaid() {
+	 * return paid;
+	 * }
+	 */
 
 	public BigDecimal getAmountDue() {
 		return amountDue;
@@ -143,7 +141,7 @@ public class Funds {
 	 * Calculates the amount due by subtracting the paid amount from the total items
 	 * price.
 	 */
-	private void calculateAmountDue(BigDecimal amountPaid) {	
+	private void calculateAmountDue(BigDecimal amountPaid) {
 		this.amountDue = this.amountDue.subtract(amountPaid);
 
 		for (FundsListener l : listeners)
@@ -163,7 +161,7 @@ public class Funds {
 		}
 	}
 
-	/*** 
+	/***
 	 * Checks the status of a card payment
 	 */
 	public void updatePaidCard(boolean paidBool) {
@@ -187,7 +185,7 @@ public class Funds {
 	}
 
 	/***
-	 * Calculates the change needed	 * 
+	 * Calculates the change needed *
 	 */
 	private void returnChange() {
 		double changeDue = (this.amountDue).abs().doubleValue();
@@ -198,70 +196,99 @@ public class Funds {
 	 * Returns the change back to customer
 	 * 
 	 * @param changeDue
-	 * 	 */
-	private void changeHelper(double changeDue){
-		
-		// loop through the denominations (sorted from largest to smallest) 
-        // until either the change is fully paid
-        // or the system possesses insufficient change
-        for (int index = 0; index < banknoteDenominations.length + coinDenominations.size() && changeDue > 0; index++) {
-            BigDecimal denomination;
-            boolean isBanknote = false;
+	 */
+	private void changeHelper(double changeDue) {
 
-            // if the current index is within the "banknotes zone"
-            if (index < banknoteDenominations.length) {
-                denomination = banknoteDenominations[index];
-                isBanknote = true;
-            }
-            // if the current index is within the "coins zone"
-            else
-                denomination = coinDenominations.get(index - banknoteDenominations.length);
+		// loop through the denominations (sorted from largest to smallest)
+		// until either the change is fully paid
+		// or the system possesses insufficient change
+		for (int index = 0; index < banknoteDenominations.length + coinDenominations.size() && changeDue > 0; index++) {
+			BigDecimal denomination;
+			boolean isBanknote = false;
 
-            // dispense the current denomination until it is larger than the remaining amount of change
-            while (changeDue >= denomination.doubleValue()) {
-                if (isBanknote) {
-                    try {
-                        scs.getBanknoteDispensers().get(denomination).emit();
-                    } catch (NoCashAvailableException e) {
-                    	// notifies change not available
-                    	for (FundsListener l : listeners)
-            				l.notifyInsufficentChange();
-                        break; // go to next denomination if this denomination runs out
-                    } catch (DisabledException e) {
+			// if the current index is within the "banknotes zone"
+			if (index < banknoteDenominations.length) {
+				denomination = banknoteDenominations[index];
+				isBanknote = true;
+			}
+			// if the current index is within the "coins zone"
+			else
+				denomination = coinDenominations.get(index - banknoteDenominations.length);
+
+			// dispense the current denomination until it is larger than the remaining
+			// amount of change
+			while (changeDue >= denomination.doubleValue()) {
+				if (isBanknote) {
+					try {
+						scs.getBanknoteDispensers().get(denomination).emit();
+					} catch (NoCashAvailableException e) {
+						// notifies change not available
+						for (FundsListener l : listeners)
+							l.notifyInsufficentChange();
+						break; // go to next denomination if this denomination runs out
+					} catch (DisabledException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (CashOverloadException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-                }
-                else {
-                    try {
-                        scs.getCoinDispensers().get(denomination).emit();
-                    } catch (NoCashAvailableException e) {
-                    	// notifies change not available
-                    	for (FundsListener l : listeners)
-            				l.notifyInsufficentChange();
-                        break; // go to next denomination if this denomination runs out
-                    } catch (CashOverloadException e) {
+				} else {
+					try {
+						scs.getCoinDispensers().get(denomination).emit();
+					} catch (NoCashAvailableException e) {
+						// notifies change not available
+						for (FundsListener l : listeners)
+							l.notifyInsufficentChange();
+						break; // go to next denomination if this denomination runs out
+					} catch (CashOverloadException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (DisabledException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-                }
-                changeDue -= denomination.doubleValue();
-            }
-        }
-        scs.getBanknoteOutput().dispense();
-        // occurs when all denominations have been cycled through and the change is not yet fully dispensed
-        if (changeDue > 0) {
-        	// notifies change not available
-        	for (FundsListener l : listeners)
+				}
+				changeDue -= denomination.doubleValue();
+			}
+		}
+		scs.getBanknoteOutput().dispense();
+		// occurs when all denominations have been cycled through and the change is not
+		// yet fully dispensed
+		if (changeDue > 0) {
+			// notifies change not available
+			for (FundsListener l : listeners)
 				l.notifyInsufficentChange();
-        	throw new NotEnoughChangeException("Not enough change in the machine");
-        }
+			throw new NotEnoughChangeException("Not enough change in the machine");
+		}
+	}
+
+	public void clear() {
+		itemsPrice = new BigDecimal(0);
+		amountDue = new BigDecimal(0);
+	}
+
+	/**
+	 * Sets the pay mode.
+	 *
+	 * @param isPay Flag indicating if the session is in pay mode
+	 */
+	public void setPay(boolean isPay) {
+		this.isPay = isPay;
+	}
+
+	public BigDecimal getItemsPrice() {
+		return itemsPrice;
+	}
+
+	/*
+	 * public BigDecimal getPaid() {
+	 * return paid;
+	 * }
+	 */
+
+	public BigDecimal getAmountDue() {
+		return amountDue;
 	}
 
 	/**
@@ -284,9 +311,4 @@ public class Funds {
 
 		listeners.add(listener);
 	}
-
-    public void clear() {
-		itemsPrice = new BigDecimal(0);
-		amountDue = new BigDecimal(0);
-    }
 }

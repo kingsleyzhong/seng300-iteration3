@@ -1,14 +1,7 @@
 package com.thelocalmarketplace.software;
 
-import java.util.Map;
-
 import com.jjjwelectronics.scanner.Barcode;
-import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
-import com.thelocalmarketplace.hardware.AttendantStation;
-import com.thelocalmarketplace.hardware.BarcodedProduct;
-import com.thelocalmarketplace.hardware.PLUCodedProduct;
-import com.thelocalmarketplace.hardware.PriceLookUpCode;
-import com.thelocalmarketplace.hardware.Product;
+import com.thelocalmarketplace.hardware.*;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.attendant.Attendant;
 import com.thelocalmarketplace.software.funds.Funds;
@@ -17,10 +10,12 @@ import com.thelocalmarketplace.software.funds.PayByCash;
 import com.thelocalmarketplace.software.items.BagDispenserController;
 import com.thelocalmarketplace.software.items.ItemAddedRule;
 import com.thelocalmarketplace.software.items.ItemManager;
-import com.thelocalmarketplace.software.membership.Membership;
 import com.thelocalmarketplace.software.items.PLUItemAddedRule;
+import com.thelocalmarketplace.software.membership.Membership;
 import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.weight.Weight;
+
+import java.util.Map;
 
 /**
  * A facade for the logic, supporting its installation on a self checkout
@@ -117,14 +112,6 @@ public class SelfCheckoutStationLogic {
 
 	}
 
-	public static Attendant getAttendant() {
-		return attendant;
-	}
-
-	public Session getSession() {
-		return session;
-	}
-
 	/**
 	 * populates the database with a barcode and barcoded product into the inventory
 	 *
@@ -143,5 +130,13 @@ public class SelfCheckoutStationLogic {
 		Map<PriceLookUpCode, PLUCodedProduct> pluProducts = ProductDatabases.PLU_PRODUCT_DATABASE;
 		inventory.put(product, amount);
 		pluProducts.put(plu, product);
+	}
+
+	public static Attendant getAttendant() {
+		return attendant;
+	}
+
+	public Session getSession() {
+		return session;
 	}
 }
