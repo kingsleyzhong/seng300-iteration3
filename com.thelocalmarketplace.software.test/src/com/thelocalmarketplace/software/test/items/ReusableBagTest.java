@@ -1,15 +1,12 @@
 package com.thelocalmarketplace.software.test.items;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.jjjwelectronics.EmptyDevice;
 import com.jjjwelectronics.bag.AbstractReusableBagDispenser;
 import com.jjjwelectronics.bag.ReusableBag;
 import com.thelocalmarketplace.software.items.BagDispenserController;
 import com.thelocalmarketplace.software.items.ItemManager;
+import org.junit.Before;
+import org.junit.Test;
 
 public class ReusableBagTest {
   // stub an instance of AbstractReusableBagDispenser

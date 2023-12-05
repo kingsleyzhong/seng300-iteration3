@@ -27,30 +27,26 @@ package com.thelocalmarketplace.software.test.reciept;
 * Ethan Woo 				: 30172855 
 * Kingsley Zhong 			: 30197260 
  */
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.OverloadedDevice;
 import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.scanner.BarcodedItem;
-import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
-import com.thelocalmarketplace.hardware.BarcodedProduct;
-import com.thelocalmarketplace.hardware.PLUCodedItem;
-import com.thelocalmarketplace.hardware.PLUCodedProduct;
-import com.thelocalmarketplace.hardware.PriceLookUpCode;
+import com.thelocalmarketplace.hardware.*;
 import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.receipt.ReceiptListener;
 import com.thelocalmarketplace.software.test.AbstractSessionTest;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class PrintReceiptTest extends AbstractSessionTest {
 

@@ -1,11 +1,7 @@
 package com.thelocalmarketplace.software.test.attendant;
 
-import java.math.BigDecimal;
-
-import java.util.*;
-
-import org.junit.*;
-import com.jjjwelectronics.*;
+import ca.ucalgary.seng300.simulation.SimulationException;
+import com.jjjwelectronics.OverloadedDevice;
 import com.jjjwelectronics.printer.ReceiptPrinterBronze;
 import com.jjjwelectronics.printer.ReceiptPrinterGold;
 import com.jjjwelectronics.printer.ReceiptPrinterSilver;
@@ -14,8 +10,9 @@ import com.tdc.banknote.Banknote;
 import com.tdc.banknote.IBanknoteDispenser;
 import com.tdc.coin.Coin;
 import com.tdc.coin.ICoinDispenser;
-import com.thelocalmarketplace.hardware.*;
-import com.thelocalmarketplace.software.*;
+import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+import com.thelocalmarketplace.hardware.AttendantStation;
+import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.attendant.Attendant;
 import com.thelocalmarketplace.software.attendant.IssuePredictor;
 import com.thelocalmarketplace.software.attendant.MaintenanceManager;
@@ -23,9 +20,15 @@ import com.thelocalmarketplace.software.exceptions.ClosedHardwareException;
 import com.thelocalmarketplace.software.exceptions.IncorrectDenominationException;
 import com.thelocalmarketplace.software.exceptions.NotDisabledSessionException;
 import com.thelocalmarketplace.software.test.AbstractSessionTest;
-
-import ca.ucalgary.seng300.simulation.SimulationException;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import powerutility.PowerGrid;
+
+import java.math.BigDecimal;
+import java.util.Currency;
+import java.util.Locale;
 
 /**
  * Test class for IssuesPredictor

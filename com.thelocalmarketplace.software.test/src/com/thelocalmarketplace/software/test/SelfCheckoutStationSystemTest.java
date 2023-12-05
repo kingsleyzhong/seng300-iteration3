@@ -1,26 +1,5 @@
 package com.thelocalmarketplace.software.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Currency;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.card.Card;
@@ -36,9 +15,6 @@ import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.AttendantStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.Product;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationSilver;
 import com.thelocalmarketplace.hardware.external.CardIssuer;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
@@ -49,8 +25,15 @@ import com.thelocalmarketplace.software.funds.CardIssuerDatabase;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.funds.SupportedCardIssuers;
 import com.thelocalmarketplace.software.weight.Weight;
+import org.junit.Before;
+import org.junit.Test;
 
-import powerutility.PowerGrid;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.*;
+
+import static org.junit.Assert.*;
 
 /**
  * Unit test for the integration of software for selfCheckoutStation with

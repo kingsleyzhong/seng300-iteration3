@@ -5,7 +5,9 @@ import com.tdc.CashOverloadException;
 import com.tdc.banknote.Banknote;
 import com.tdc.banknote.BanknoteStorageUnit;
 import com.tdc.banknote.IBanknoteDispenser;
-import com.tdc.coin.*;
+import com.tdc.coin.Coin;
+import com.tdc.coin.CoinStorageUnit;
+import com.tdc.coin.ICoinDispenser;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.AttendantStation;
 import com.thelocalmarketplace.software.SessionState;
@@ -21,7 +23,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Currency;
+import java.util.List;
+import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

@@ -1,15 +1,6 @@
 package com.thelocalmarketplace.software.test.items;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import org.junit.Before;
-import org.junit.Test;
-
+import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
 import com.jjjwelectronics.IDevice;
 import com.jjjwelectronics.IDeviceListener;
 import com.jjjwelectronics.Mass;
@@ -25,7 +16,15 @@ import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.items.ItemAddedRule;
 import com.thelocalmarketplace.software.items.ItemManager;
 import com.thelocalmarketplace.software.test.AbstractSessionTest;
-import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Testing for the AddItemRule class

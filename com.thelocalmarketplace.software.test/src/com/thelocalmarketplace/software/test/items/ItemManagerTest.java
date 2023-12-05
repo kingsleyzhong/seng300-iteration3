@@ -1,27 +1,12 @@
 package com.thelocalmarketplace.software.test.items;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
+import StubClasses.ItemsListenerStub;
+import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.scanner.BarcodedItem;
-import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
-import com.thelocalmarketplace.hardware.BarcodedProduct;
-import com.thelocalmarketplace.hardware.PLUCodedItem;
-import com.thelocalmarketplace.hardware.PLUCodedProduct;
-import com.thelocalmarketplace.hardware.PriceLookUpCode;
-import com.thelocalmarketplace.hardware.Product;
+import com.thelocalmarketplace.hardware.*;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.exceptions.InvalidActionException;
@@ -29,11 +14,16 @@ import com.thelocalmarketplace.software.exceptions.ProductNotFoundException;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.test.AbstractSessionTest;
 import com.thelocalmarketplace.software.weight.Weight;
-
-import StubClasses.ItemsListenerStub;
-import StubClasses.SessionListenerStub;
-import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
+import org.junit.Before;
+import org.junit.Test;
 import powerutility.PowerGrid;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.HashMap;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ItemManagerTest extends AbstractSessionTest {
 	byte num;

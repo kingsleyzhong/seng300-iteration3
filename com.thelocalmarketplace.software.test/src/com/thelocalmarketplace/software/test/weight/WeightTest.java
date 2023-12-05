@@ -1,9 +1,6 @@
 package com.thelocalmarketplace.software.test.weight;
 
-import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
-
+import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 import com.jjjwelectronics.Item;
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
@@ -13,7 +10,10 @@ import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.software.test.AbstractTest;
 import com.thelocalmarketplace.software.weight.Weight;
 import com.thelocalmarketplace.software.weight.WeightListener;
-import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /*	* Unit Test for Weight Class
  * 

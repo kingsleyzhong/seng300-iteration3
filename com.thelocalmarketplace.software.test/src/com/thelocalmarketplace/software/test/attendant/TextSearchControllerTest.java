@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * <p>A class of unit tests that test specifically the functionality of

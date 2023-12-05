@@ -1,16 +1,5 @@
 package com.thelocalmarketplace.software.test.items;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.HashMap;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.scale.IElectronicScale;
@@ -20,10 +9,16 @@ import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.exceptions.ProductNotFoundException;
-import com.thelocalmarketplace.software.items.ItemManager;
-import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.test.AbstractSessionTest;
 import com.thelocalmarketplace.software.weight.Weight;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.HashMap;
+
+import static org.junit.Assert.*;
 
 /**
  * Unit Test class for RemoveItemMethod and interaction with surrounding classes
