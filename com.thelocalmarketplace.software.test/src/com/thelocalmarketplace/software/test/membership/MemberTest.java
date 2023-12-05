@@ -51,7 +51,7 @@ public class MemberTest extends AbstractSessionTest {
 
     /** A newly registered member should be present in the database. */
     @Test
-    public void testRegisterMember() {
+    public void registerMember() {
         String membershipNumber2 = "123";
         String memberName2 = "Jane Smith";
         MembershipDatabase.registerMember(membershipNumber2, memberName2);
@@ -60,13 +60,13 @@ public class MemberTest extends AbstractSessionTest {
 
     /** A member object in the database should return the correct corresponding name. */
     @Test
-    public void testMemberName() {
+    public void memberName() {
         Assert.assertEquals(memberName, MembershipDatabase.MEMBERSHIP_DATABASE.get(membershipNumber).getName());
     }
 
     /** Points should go up with a positive delta. */
     @Test
-    public void testAddPoints() {
+    public void addPoints() {
         Member member = MembershipDatabase.MEMBERSHIP_DATABASE.get(membershipNumber);
         member.changePoints(10);
         Assert.assertEquals(10, member.getPoints());
@@ -74,7 +74,7 @@ public class MemberTest extends AbstractSessionTest {
 
     /** Points should go down with a negative delta. */
     @Test
-    public void testSubtractPoints() {
+    public void subtractPoints() {
         Member member = MembershipDatabase.MEMBERSHIP_DATABASE.get(membershipNumber);
         member.changePoints(10);
         member.changePoints(-5);
@@ -83,7 +83,7 @@ public class MemberTest extends AbstractSessionTest {
 
     /** Negative points should not be possible. */
     @Test
-    public void testNegativePoints() {
+    public void negativePoints() {
         Member member = MembershipDatabase.MEMBERSHIP_DATABASE.get(membershipNumber);
         member.changePoints(-5);
         Assert.assertEquals(0, member.getPoints());

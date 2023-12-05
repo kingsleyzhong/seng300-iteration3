@@ -60,17 +60,11 @@ public class Membership {
      * membership number is present, then listeners are notified. For use with the virtual GUI keyboard.
      * @param memberCardNumber The card number which will be checked */
     public void typeMembership(String memberCardNumber) {
-    	if (addingItems && MembershipDatabase.MEMBERSHIP_DATABASE.containsKey(memberCardNumber)) {
+    	if (addingItems && MembershipDatabase.MEMBERSHIP_DATABASE.containsKey(memberCardNumber))
     		notifyMembershipEntered(memberCardNumber);
-<<<<<<< HEAD
-    	}
-    	else {
-    		throw new InvalidActionException("Membership not in database");
-    	}
-=======
     	else
     		throw new InvalidActionException("Membership not in database");
->>>>>>> e87b52f31b66ebf80991889ef4ad115552673590
+
     }
     
     /** Checks to see if the provided card data has a card number contained in the membership database.
@@ -78,10 +72,9 @@ public class Membership {
      * @param memberCard The member card to be examined for its card number */
     private void swipeMembership(CardData memberCard) {
     	String memberCardNumber = memberCard.getNumber();
-    	if (addingItems && MembershipDatabase.MEMBERSHIP_DATABASE.containsKey(memberCardNumber)) {
+    	if (MembershipDatabase.MEMBERSHIP_DATABASE.containsKey(memberCardNumber)) {
     		notifyMembershipEntered(memberCardNumber);
     	}
-    	// else quietly ignore so as to not interrupt the session or GUI at the wrong time
     }
 
     private class InnerListener implements CardReaderListener {
@@ -142,10 +135,6 @@ public class Membership {
     /** Deregisters all MembershipListeners in this Membership facade. */
     public void deregisterAll() {
         listeners.clear();
-    }
-    
-    public List<MembershipListener> getListeners() {
-    	return listeners;
     }
 
     protected void notifyMembershipEntered(String membershipNumber) {
