@@ -394,6 +394,14 @@ public class SessionTest extends AbstractTest {
     	assertFalse(session.getState() == SessionState.BLOCKED);
     }
     
+    @Test
+    public void sessionGetManager()
+    {
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+
+        assertTrue(itemManager == session.getManager());
+    }
+    
     /*
      *Sessions can only be disabled when in the pre-session state 
      */
