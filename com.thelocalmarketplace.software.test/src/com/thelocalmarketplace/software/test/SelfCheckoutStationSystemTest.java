@@ -1,26 +1,5 @@
 package com.thelocalmarketplace.software.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Currency;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.card.Card;
@@ -36,9 +15,6 @@ import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.AttendantStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.Product;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationSilver;
 import com.thelocalmarketplace.hardware.external.CardIssuer;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
@@ -49,8 +25,15 @@ import com.thelocalmarketplace.software.funds.CardIssuerDatabase;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.funds.SupportedCardIssuers;
 import com.thelocalmarketplace.software.weight.Weight;
+import org.junit.Before;
+import org.junit.Test;
 
-import powerutility.PowerGrid;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.*;
+
+import static org.junit.Assert.*;
 
 /**
  * Unit test for the integration of software for selfCheckoutStation with
@@ -146,13 +129,13 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 
 	// Tests for start Session requirement use case
 	@Test
-	public void testInitialConfiguration() {
+	public void initialConfiguration() {
 		assertEquals(session.getState(), SessionState.PRE_SESSION);
 		assertFalse(session.getState().inPay());
 	}
 
 	@Test
-	public void testStartSession() {
+	public void startSession() {
 		session.start();
 		assertEquals(session.getState(), SessionState.IN_SESSION);
 		assertFalse(session.getState().inPay());
@@ -161,7 +144,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	// Tests for scan an Item requirement use case
 
 	@Test
-	public void testScanAnItem() {
+	public void scanAnItem() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getMainScanner().scan(item);
@@ -171,7 +154,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	}
 
 	@Test
-	public void testScanAnItemFunds() {
+	public void scanAnItemFunds() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getMainScanner().scan(item);
@@ -183,7 +166,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	}
 
 	@Test
-	public void testScanAnItemWeight() {
+	public void scanAnItemWeight() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getMainScanner().scan(item);
@@ -196,7 +179,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 
 	// Tests for add Item via handheldScan
 	@Test
-	public void testHandheldScanAnItem() {
+	public void handheldScanAnItem() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getHandheldScanner().scan(item);
@@ -206,7 +189,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	}
 
 	@Test
-	public void testHandheldScanAnItemFunds() {
+	public void handheldScanAnItemFunds() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getHandheldScanner().scan(item);
@@ -218,7 +201,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	}
 
 	@Test
-	public void testHandheldScanAnItemWeight() {
+	public void handheldScanAnItemWeight() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getHandheldScanner().scan(item);
@@ -232,19 +215,19 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	// Tests for pay via coin
 
 	@Test(expected = InvalidActionException.class)
-	public void enterPayWhenCartEmpty() {
+	public void testEnterPayWhenCartEmpty() {
 		session.start();
 		session.payByCash();
 	}
 
 	@Test(expected = DisabledException.class)
-	public void addCoinWhenNotInPay() throws DisabledException, CashOverloadException {
+	public void testAddCoinWhenNotInPay() throws DisabledException, CashOverloadException {
 		session.start();
 		scs.getCoinSlot().receive(dollar);
 	}
 
 	@Test
-	public void payForItemViaCash() throws DisabledException, CashOverloadException {
+	public void testPayForItemViaCash() throws DisabledException, CashOverloadException {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getMainScanner().scan(item);
@@ -264,7 +247,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	}
 
 	@Test
-	public void testPayItemWithCashGetChange() throws DisabledException, CashOverloadException {
+	public void payItemWithCashGetChange() throws DisabledException, CashOverloadException {
 		scs.getBanknoteDispensers().get(BigDecimal.TEN).load(ten, ten, ten);
 
 		session.start();
@@ -294,7 +277,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	}
 
 	@Test
-	public void testPayItemGetCoinChange() throws DisabledException, CashOverloadException {
+	public void payItemGetCoinChange() throws DisabledException, CashOverloadException {
 		scs.getBanknoteDispensers().get(new BigDecimal(5)).load(five, five, five);
 		scs.getCoinDispensers().get(new BigDecimal(1)).load(dollar, dollar, dollar, dollar, dollar);
 
@@ -337,7 +320,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 
 	// Tests for paying Credit via swipe
 	@Test
-	 public void testPayWithCredit() throws CashOverloadException,
+	 public void payWithCredit() throws CashOverloadException,
 	 NoCashAvailableException, DisabledException, IOException {
 	 CardIssuer ci1 = new CardIssuer(SupportedCardIssuers.ONE.getIssuer(), 1);
 	 CardIssuerDatabase.CARD_ISSUER_DATABASE.put(SupportedCardIssuers.ONE.
@@ -378,7 +361,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	 }
 	 
 	 @Test
-	 public void testPayWithDebit() throws CashOverloadException,
+	 public void payWithDebit() throws CashOverloadException,
 	 NoCashAvailableException, DisabledException, IOException {
 	 CardIssuer ci1 = new CardIssuer(SupportedCardIssuers.ONE.getIssuer(), 1);
 	 CardIssuerDatabase.CARD_ISSUER_DATABASE.put(SupportedCardIssuers.ONE.
@@ -421,7 +404,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	 // Tests for removing an item
 	 
 	 @Test
-	 public void testAddThenRemoveItem() throws DisabledException,
+	 public void addThenRemoveItem() throws DisabledException,
 	 CashOverloadException {
 	 session.start();
 	 for(int i =0; i < 100; i++) {
@@ -451,7 +434,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	 
 
 	@Test
-	public void testAddBulkyItem() {
+	public void addBulkyItem() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getMainScanner().scan(item);
@@ -461,7 +444,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	}
 
 	@Test
-	public void testRemoveBulkyItem() {
+	public void removeBulkyItem() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getMainScanner().scan(item);
@@ -471,10 +454,22 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 		assertEquals("Session is in session", SessionState.IN_SESSION, session.getState());
 	}
 
+	@Test
+	public void testRemoveAllItems() {
+		session.start();
+		for (int i = 0; i < 5; i++) {
+			scs.getMainScanner().scan(item);
+			scs.getBaggingArea().addAnItem(item);
+			scs.getBaggingArea().removeAnItem(item);
+		}
+
+		assertTrue(session.getItems().isEmpty());
+	}
+
 	// Tests for weight Discrepancy
 
 	@Test
-	public void testDiscrepancy() {
+	public void discrepancy() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getMainScanner().scan(item);
@@ -483,7 +478,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	}
 
 	@Test
-	public void testAddItemWhenDiscrepancy() {
+	public void addItemWhenDiscrepancy() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getMainScanner().scan(item);
@@ -496,7 +491,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	}
 
 	@Test
-	public void testEnterPayWhenDiscrepancy() {
+	public void enterPayWhenDiscrepancy() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getMainScanner().scan(item);
@@ -507,7 +502,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	}
 
 	@Test(expected = DisabledException.class)
-	public void testPayWhenDiscrepancy() throws DisabledException, CashOverloadException {
+	public void payWhenDiscrepancy() throws DisabledException, CashOverloadException {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getMainScanner().scan(item);
@@ -524,8 +519,19 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 		}
 	}
 
+	@Test(expected = DisabledException.class)
+	public void testDisabledComponentWhenPaying() throws DisabledException, CashOverloadException {
+		session.start();
+		for (int i = 0; i < 5; i++) {
+			scs.getMainScanner().scan(item);
+		}
+		scs.getBaggingArea().addAnItem(item);
+		session.payByCash();
+		scs.getScreen().disable();
+	}
+
 	@Test
-	public void testDiscrepancyDuringPay() {
+	public void discrepancyDuringPay() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getMainScanner().scan(item);
@@ -540,6 +546,71 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 		scs.getBaggingArea().removeAnItem(item2);
 		assertEquals(SessionState.PAY_BY_CASH, session.getState());
 		assertTrue(funds.isPay());
+	}
+
+	@Test
+	public void powerCycle(){
+		scs.getBaggingArea().turnOff();
+		scs.getScanningArea().turnOff();
+		scs.getMainScanner().turnOff();
+		scs.getHandheldScanner().turnOff();
+		scs.getScreen().turnOff();
+		scs.getReusableBagDispenser().turnOff();
+		scs.getPrinter().turnOff();
+		scs.getCardReader().turnOff();
+		
+		scs.getBaggingArea().turnOn();
+		scs.getScanningArea().turnOn();
+		scs.getMainScanner().turnOn();
+		scs.getHandheldScanner().turnOn();
+		scs.getScreen().turnOn();
+		scs.getReusableBagDispenser().turnOn();
+		scs.getPrinter().turnOn();
+		scs.getCardReader().turnOn();
+
+		scs.getBaggingArea().disable();
+		scs.getScanningArea().disable();
+		scs.getScreen().disable();
+		scs.getReusableBagDispenser().disable();
+		scs.getPrinter().disable();
+		scs.getCardReader().disable();
+		scs.getMainScanner().disable();
+		scs.getHandheldScanner().disable();
+		scs.getBanknoteInput().disable();
+		scs.getBanknoteOutput().disable();
+		scs.getBanknoteValidator().disable();
+		scs.getBanknoteStorage().disable();
+		scs.getCoinSlot().disable();
+		scs.getCoinValidator().disable();
+		scs.getCoinStorage().disable();
+
+		scs.getBaggingArea().enable();
+		scs.getScanningArea().enable();
+		scs.getScreen().enable();
+		scs.getReusableBagDispenser().enable();
+		scs.getPrinter().enable();
+		scs.getCardReader().enable();
+		scs.getMainScanner().enable();
+		scs.getHandheldScanner().enable();
+		scs.getBanknoteInput().enable();
+		scs.getBanknoteOutput().enable();
+		scs.getBanknoteValidator().enable();
+		scs.getBanknoteStorage().enable();
+		scs.getCoinSlot().enable();
+		scs.getCoinValidator().enable();
+		scs.getCoinStorage().enable();
+		
+		for(BigDecimal denomination : scs.getBanknoteDenominations()){
+			scs.getBanknoteDispensers().get(denomination).disable();
+			scs.getBanknoteDispensers().get(denomination).enable();
+		}
+		for(BigDecimal denomination : scs.getCoinDenominations()){
+			scs.getCoinDispensers().get(denomination).disable();
+			scs.getCoinDispensers().get(denomination).enable();
+		}
+
+	
+		assertEquals(SessionState.PRE_SESSION, session.getState());
 	}
 
 }

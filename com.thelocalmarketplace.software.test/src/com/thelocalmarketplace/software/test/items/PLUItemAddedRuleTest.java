@@ -1,12 +1,5 @@
 package com.thelocalmarketplace.software.test.items;
 
-import static org.junit.Assert.assertEquals;
-
-import java.math.BigInteger;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.scale.ElectronicScaleBronze;
 import com.jjjwelectronics.scale.ElectronicScaleSilver;
@@ -16,8 +9,13 @@ import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.items.ItemManager;
 import com.thelocalmarketplace.software.items.PLUItemAddedRule;
-
+import org.junit.Before;
+import org.junit.Test;
 import powerutility.PowerGrid;
+
+import java.math.BigInteger;
+
+import static org.junit.Assert.assertEquals;
 
 public class PLUItemAddedRuleTest{
 	private ItemManager item;

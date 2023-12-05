@@ -1,14 +1,5 @@
 package com.thelocalmarketplace.software.test.funds;
 
-import java.math.BigDecimal;
-import java.util.Currency;
-import java.util.Locale;
-
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.tdc.CashOverloadException;
 import com.tdc.DisabledException;
 import com.tdc.IComponent;
@@ -23,6 +14,14 @@ import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.funds.PayByCash;
 import com.thelocalmarketplace.software.test.AbstractTest;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.math.BigDecimal;
+import java.util.Currency;
+import java.util.Locale;
 
 public class PayByCashTest extends AbstractTest {
 
@@ -31,7 +30,6 @@ public class PayByCashTest extends AbstractTest {
 		// TODO Auto-generated constructor stub
 	}
 
-	private CoinValidator validator;
 	private PayByCash cashController;
 	private BigDecimal value;
 	private BigDecimal price;

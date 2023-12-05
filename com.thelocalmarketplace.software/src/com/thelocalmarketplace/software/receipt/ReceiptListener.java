@@ -30,25 +30,25 @@ public interface ReceiptListener {
 	/**
 	 * Signals an event that the printer is out of paper
 	 */
-	void notifiyOutOfPaper();
+	void notifyOutOfPaper();
 	
 	/**
 	 * Signals an event that the printer is out of ink
 	 */
-	void notifiyOutOfInk();
+	void notifyOutOfInk();
 	
 	/**
 	 * Signals an event that the printer paper has been refilled
 	 */
-	void notifiyPaperRefilled();
+	void notifyPaperRefilled();
 	
 	/**
 	 * Signals an event that the ink has been refilled
 	 */
-	void notifiyInkRefilled();
+	void notifyInkRefilled();
 	
 	/**
 	 * Signals that the receipt was successfully printed 
 	 */
-	void notifiyReceiptPrinted(int linesPrinted, int charsPrinted);
+	void notifyReceiptPrinted(int linesPrinted, int charsPrinted);
 }

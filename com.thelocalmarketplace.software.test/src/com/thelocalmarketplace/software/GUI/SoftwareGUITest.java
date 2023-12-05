@@ -217,9 +217,7 @@ public class SoftwareGUITest{
 		}
 	}
 	
-	
-	
-	
+
 	@Test
 	public void preSession() {
 		assertTrue(softwareGUI.frame.isVisible());
@@ -792,7 +790,7 @@ public class SoftwareGUITest{
 		softwareGUI.paymentScreen.getMembershipButton().doClick();
 		softwareGUI.paymentScreen.getMembershipPad().getZero().doClick();
 		softwareGUI.paymentScreen.getMembershipPad().getDone().doClick();
-		//assertTrue(session.getMembershipNumber().equals("0"));
+		assertTrue(session.getMembershipNumber().equals("0"));
 		assertTrue(false);
 
 	}
@@ -802,7 +800,7 @@ public class SoftwareGUITest{
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pay.doClick();
 		softwareGUI.paymentScreen.getMembershipButton().doClick();
-		//assertTrue(session.getMembershipNumber().equals("0"));
+		assertTrue(session.getMembershipNumber().equals("0"));
 
 	} 
 	
@@ -856,4 +854,51 @@ public class SoftwareGUITest{
 		assertTrue(softwareGUI.itemAmount.getText().equals("0"));
 		
 	}
+	
+	@Test 
+	public void blockedSessionTryAddBags() {
+		
+		softwareGUI.btnStart.doClick();
+		scs.getMainScanner().scan(item);
+
+		softwareGUI.addBags.doClick();
+		assertTrue(session.getState() == SessionState.BLOCKED);
+		
+	}
+	
+	@Test 
+	public void blockedSessionTrySearchCatalogue() {
+		
+		softwareGUI.btnStart.doClick();
+		scs.getMainScanner().scan(item);
+
+		softwareGUI.searchCatalogue.doClick();
+		assertTrue(session.getState() == SessionState.BLOCKED);
+		
+	}
+	
+	@Test 
+	public void blockedSessionTryPLU() {
+		
+		softwareGUI.btnStart.doClick();
+		scs.getMainScanner().scan(item);
+
+		softwareGUI.pluCode.doClick();
+		assertTrue(session.getState() == SessionState.BLOCKED);
+		
+	}
+	
+	@Test 
+	public void blockedSessionTryCancel() {
+		
+		softwareGUI.btnStart.doClick();
+		scs.getMainScanner().scan(item);
+
+		softwareGUI.cancel.doClick();
+		assertTrue(session.getState() == SessionState.BLOCKED);
+		
+	}
+	
+	
+	
 }

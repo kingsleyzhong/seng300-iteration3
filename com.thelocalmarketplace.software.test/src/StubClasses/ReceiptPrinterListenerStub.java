@@ -11,31 +11,31 @@ public class ReceiptPrinterListenerStub implements ReceiptListener{
 	
 	
 	@Override
-	public void notifiyOutOfPaper() {
+	public void notifyOutOfPaper() {
 		outOfPaper = true;
 		
 	}
 
 	@Override
-	public void notifiyOutOfInk() {
+	public void notifyOutOfInk() {
 		outOfInk = true;
 		
 	}
 
 	@Override
-	public void notifiyPaperRefilled() {
+	public void notifyPaperRefilled() {
 		paperRefilled = true;
 		
 	}
 
 	@Override
-	public void notifiyInkRefilled() {
+	public void notifyInkRefilled() {
 		inkRefilled = true;
 		
 	}
 
 	@Override
-	public void notifiyReceiptPrinted(int linesPrinted, int charsPrinted) {
+	public void notifyReceiptPrinted(int linesPrinted, int charsPrinted) {
 		receiptPrinted = true;
 		
 	}

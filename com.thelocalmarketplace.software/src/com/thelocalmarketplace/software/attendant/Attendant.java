@@ -1,10 +1,8 @@
 package com.thelocalmarketplace.software.attendant;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 import com.jjjwelectronics.DisabledDevice;
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.keyboard.USKeyboardQWERTY;
@@ -291,15 +289,6 @@ public class Attendant {
 					PLUCodedProduct pluProduct = (PLUCodedProduct) selectedProduct;
 					session.getManager().addItem(pluProduct.getPLUCode());
 				}
-
-				// Cancel search/request?
-				else if (description.equals("CANCEL SEARCH")){
-					sessions.put(session, Requests.NO_REQUEST);
-					return;
-				}
-			} else {
-				// Product not found for some reason - is this needed?
-				throw new ProductNotFoundException("Item not found");
 			}
 		} else {
 			// Session does not have this request 

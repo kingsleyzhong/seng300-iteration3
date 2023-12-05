@@ -7,11 +7,8 @@ import com.jjjwelectronics.IDeviceListener;
 import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.scanner.BarcodeScannerListener;
 import com.jjjwelectronics.scanner.IBarcodeScanner;
-import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
-import com.thelocalmarketplace.software.Session;
-import com.thelocalmarketplace.software.SessionState;
 import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
 
 /**
