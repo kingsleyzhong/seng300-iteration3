@@ -309,21 +309,19 @@ public class HardwareGUITest {
     //IDK WHY NONE OF THE BILL STUFF WONT WORK.... IT WORKS MANUALLY 
     @Test
     public void inputBill() {
-//		softwareGUI.btnStart.doClick();
-//		hardwareGUI.buttonPanel.startButton.doClick();
-//		
-//		scs.getMainScanner().scan(item2);
-//		scs.getBaggingArea().addAnItem(item2);
-//		
-//		softwareGUI.pay.doClick();
-//		softwareGUI.paymentScreen.getCashButton().doClick();
-//		
-//		//cashpanel.RemoveInputBill.doClick();
-//		
-//		cashpanel.FiveBillBtn.doClick();
-//		cashpanel.FiveBillBtn.doClick();
-//		
-//		Assert.assertEquals(BigDecimal.TEN , cashController.getCashPaid());
+		softwareGUI.btnStart.doClick();
+		hardwareGUI.buttonPanel.startButton.doClick();
+		
+		scs.getMainScanner().scan(item);
+		scs.getBaggingArea().addAnItem(item);
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getCashButton().doClick();
+		
+		
+		//cashpanel.FiveBillBtn.doClick();
+		cashpanel.FiveBillBtn.doClick();
+		
+		Assert.assertEquals(BigDecimal.TEN , cashController.getCashPaid());
     }
     
     @Test
