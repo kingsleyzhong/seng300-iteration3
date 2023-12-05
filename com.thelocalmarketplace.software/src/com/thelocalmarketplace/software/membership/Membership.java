@@ -60,7 +60,7 @@ public class Membership {
      * membership number is present, then listeners are notified. For use with the virtual GUI keyboard.
      * @param memberCardNumber The card number which will be checked */
     public void typeMembership(String memberCardNumber) {
-    	if (addingItems && MembershipDatabase.MEMBERSHIP_DATABASE.containsKey(memberCardNumber))
+    	if (addingItems && MembershipDatabase.MEMBERSHIP_DATABASE.containsKey(memberCardNumber)) {
     		notifyMembershipEntered(memberCardNumber);
     	}
     	else {
