@@ -70,12 +70,6 @@ public class SessionListenerStub implements SessionListener{
 	}
 
 	@Override
-	public void sessionAboutToStart(Session session) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void sessionEnded(Session session) {
 		this.sessionEnded = true;
 		
