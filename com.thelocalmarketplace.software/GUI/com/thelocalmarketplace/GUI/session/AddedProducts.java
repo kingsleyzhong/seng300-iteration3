@@ -55,6 +55,10 @@ public class AddedProducts extends JPanel {
 	
 	private HashMap<Product, CartProduct> productList = new HashMap<Product, CartProduct>();
 
+	private CartProduct current;
+
+	private CartProduct newPanel;
+
 	/**
 	 * Create the panel.
 	 */
@@ -82,7 +86,7 @@ public class AddedProducts extends JPanel {
 		}
 		
 		if(current == null) {
-			CartProduct newPanel = new CartProduct(product, session, mass);
+			newPanel = new CartProduct(product, session, mass);
 			centralPanel.add(newPanel);
 			centralPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 			centralPanel.repaint();
@@ -137,4 +141,15 @@ public class AddedProducts extends JPanel {
 	public int amount() {
 		return productList.size();
 	}
+
+	public HashMap<Product, CartProduct> getProductList() {
+		return productList;
+	}
+
+	public CartProduct getNewPanel() {
+		return newPanel;
+	}
+	
+	
+	
 }

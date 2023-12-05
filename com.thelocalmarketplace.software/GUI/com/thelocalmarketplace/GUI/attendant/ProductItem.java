@@ -5,15 +5,12 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.RenderingHints;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -63,18 +60,11 @@ import javax.swing.JButton;
 public class ProductItem extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	private Product product;
-	private Session session;
-	private Attendant attendant;
 	
 	/**
 	 * Create the panel.
 	 */
-	public ProductItem(Product product, Session session, Attendant attendant) {
-		this.product = product;
-		this.session = session;
-		this.attendant = attendant;
-		
+	public ProductItem(Product product, Session session, Attendant attendant) {		
 		//this.setSize(200, 400);
 		this.setBackground(Colors.color1);
 		this.setBorder(BorderFactory.createEmptyBorder(20,10,20,10));

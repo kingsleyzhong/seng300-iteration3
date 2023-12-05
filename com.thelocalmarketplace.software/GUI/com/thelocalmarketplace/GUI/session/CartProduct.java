@@ -11,6 +11,7 @@ import java.text.DecimalFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -66,6 +67,8 @@ public class CartProduct extends JPanel {
 	private String mass;
 	private String description;
 	private JLabel weightLabel;
+	private JButton minusButton;
+	private PlainButton plusButton;
 	
 
 	/**
@@ -125,7 +128,7 @@ public class CartProduct extends JPanel {
     	gbc_panel_1.gridy = 0;
     	this.add(panel_1, gbc_panel_1);
     	
-    	JButton minusButton = new PlainButton("-", Colors.color2);
+    	minusButton = new PlainButton("-", Colors.color2);
     	minusButton.setForeground(Colors.color3);
     	minusButton.setBorder(BorderFactory.createEmptyBorder());
     	minusButton.addActionListener(new ActionListener() {
@@ -148,7 +151,7 @@ public class CartProduct extends JPanel {
     	quantityLabel.setForeground(Colors.color3);
     	panel_1.add(quantityLabel);
     	
-    	JButton plusButton = new PlainButton("+", Colors.color2);
+    	plusButton = new PlainButton("+", Colors.color2);
     	plusButton.setForeground(Colors.color3);
     	plusButton.setBorder(BorderFactory.createEmptyBorder());
     	plusButton.addActionListener(new ActionListener() {
@@ -222,6 +225,14 @@ public class CartProduct extends JPanel {
 		else s = df.format(mass) + "g";
 		weightLabel.setText(s);
 		
+	}
+
+	public JButton getMinusButton() {
+		return minusButton;
+	}
+
+	public PlainButton getPlusButton() {
+		return plusButton;
 	}
 
 }

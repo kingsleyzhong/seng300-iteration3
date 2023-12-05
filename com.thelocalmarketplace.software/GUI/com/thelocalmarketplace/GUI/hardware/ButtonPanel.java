@@ -50,14 +50,15 @@ public class ButtonPanel extends JPanel implements ActionListener {
 	private ReusableBag[] bags = new ReusableBag[50];
 	private int numBags = 0;
 	
-	JButton mainScanner;
-	JButton handheldScanner;
-	JButton receiptPrinter;
-	JButton sessionScreen;
-	JButton attendantScreen;
-	JButton startButton;
-	JButton addBags;
-	JButton removeBags;
+	public JButton mainScanner;
+	public JButton handheldScanner;
+	public JButton receiptPrinter;
+	public JButton sessionScreen;
+	public JButton attendantScreen;
+	public JButton startButton;
+	public JButton addBags;
+	public JButton removeBags;
+	private String storedReceipt;
 	
 	private static final long serialVersionUID = 1L;
 	private HardwareGUI gui;
@@ -155,5 +156,8 @@ public class ButtonPanel extends JPanel implements ActionListener {
 			}
 			numBags = 0;
 		}
+	}
+	public String getReceipt() {
+		return storedReceipt;
 	}
 }
