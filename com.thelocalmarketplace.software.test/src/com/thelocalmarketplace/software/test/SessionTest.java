@@ -380,7 +380,6 @@ public class SessionTest extends AbstractTest {
      	scs.getPrinter().addInk(1);
     	scs.getPrinter().addPaper(2);
     	assertFalse(session.getState() == SessionState.IN_SESSION);
-    	
     }
     
     
@@ -392,6 +391,57 @@ public class SessionTest extends AbstractTest {
     	scs.getPrinter().addPaper(1);
     	scs.getPrinter().print('\n');
     	assertFalse(session.getState() == SessionState.BLOCKED);
+    }
+    
+    /* 
+     * Test of general getter statements with default setup
+     */
+    @Test
+    public void sessionGetFunds()
+    {
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+
+        assertTrue(funds == session.getFunds());
+    }
+    
+    @Test
+    public void sessionGetWeight()
+    {
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+
+        assertTrue(weight == session.getWeight());
+    }
+    
+    @Test
+    public void sessionGetManager()
+    {
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+
+        assertTrue(itemManager == session.getManager());
+    }
+    
+    @Test
+    public void sessionGetReceipt()
+    {
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+
+        assertTrue(receiptPrinter == session.getReceipt());
+    }
+    
+    @Test
+    public void sessionGetMembership()
+    {
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+
+        assertTrue(membership == session.getMembership());
+    }
+    
+    @Test
+    public void sessionGetCheckoutStation()
+    {
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+
+        assertTrue(scs == session.getStation());
     }
     
     /*
@@ -420,6 +470,7 @@ public class SessionTest extends AbstractTest {
         session.disable();
         session.enable();
         assertTrue(session.getState() != SessionState.DISABLED);
+        assertTrue(session.getPrevState() == SessionState.DISABLED);
     }
     @Test
     public void enableSessionNotDisabled() {
@@ -430,5 +481,16 @@ public class SessionTest extends AbstractTest {
         SessionState postState = session.getState();
         assertTrue(preState == postState);
     }
-   
+    
+    @Test(expected = NullPointerSimulationException.class)
+    public void addedNullHardwareListener() {
+    	session.registerHardwareListener(null);
+    	
+    }
+    
+    @Test(expected = NullPointerSimulationException.class)
+    public void removedNullHardwareListener() {
+    	session.deRegisterHardwareListener(null);
+    	
+    }
 }
