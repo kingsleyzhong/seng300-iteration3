@@ -89,9 +89,6 @@ public class Simulation {
 		
 		SelfCheckoutStationLogic.installAttendantStation(as);
 		attendant = SelfCheckoutStationLogic.getAttendant();
-		
-		
-
 		SelfCheckoutStationLogic logic = SelfCheckoutStationLogic.installOn(scs);
 		session = logic.getSession();
 		session.getStation().setSupervisor(as);
@@ -99,18 +96,11 @@ public class Simulation {
 		session.disable();
 		manager = new MaintenanceManager();
 		manager.openHardware(session);
-		
 		predictor = attendant.getIssuePredictor(session);
 		
 		hardwareGUI = new HardwareGUI(scs, as);
 		attendantGUI = new AttendantGUI(attendant, manager, predictor);
 		softwareGUI = new SoftwareGUI(session);
-		
-		// hidden by default
-		//HardwareGUI.setVisibility(false);
-		//softwareGUI.hide();
-		
-		//Pop visibility to top
 		HardwareGUI.setVisibility(true);
 	}
 	
@@ -149,6 +139,9 @@ public class Simulation {
 				BigDecimal.ONE, new BigDecimal(0.25), new BigDecimal(0.10), new BigDecimal(0.05)});
 	}
 	
+	/**
+	 * Load elements. Coins, bills =. etc
+	 */
 	public void setupLoading() {
 		Currency currency = Currency.getInstance(Locale.CANADA);
 
@@ -221,7 +214,7 @@ public class Simulation {
 	
 	public void unhide() {
 		HardwareGUI.setVisibility(true);
-		softwareGUI.unhide();
+		SoftwareGUI.unhide();
 	}
 	
 	public SoftwareGUI getSoftwareGUI() {

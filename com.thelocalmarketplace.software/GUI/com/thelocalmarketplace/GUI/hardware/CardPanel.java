@@ -210,10 +210,9 @@ public class CardPanel extends JPanel {
 		gbc_tapButton.gridy = 4;
 		gbc_tapButton.insets = new Insets(10,0,10,0);
 		panel2.add(tapButton, gbc_tapButton);
-		
-		
 	}
 	
+	//Sets your selected card to a new card
 	protected void updateSelection() {
 		infoLabel.setText(cardSelectedString);
 		infoLabel.revalidate();

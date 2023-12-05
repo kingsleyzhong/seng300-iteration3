@@ -45,9 +45,6 @@ public class MembershipNumPad {
 
 	
 	private JFrame frame;
-	
-	// JFrame size
-
 	String number;
 	
 	JLabel num;
@@ -56,27 +53,16 @@ public class MembershipNumPad {
 	private boolean validMembership;
 
 	private PlainButton one;
-
 	private PlainButton two;
-
 	private PlainButton three;
-
 	private PlainButton four;
-
 	private PlainButton five;
-
 	private PlainButton six;
-
 	private PlainButton seven;
-
 	private PlainButton eight;
-
 	private PlainButton nine;
-
 	private PlainButton delete;
-
 	private PlainButton zero;
-
 	private PlainButton done;
 			
 	public MembershipNumPad(Session session) {
@@ -111,7 +97,7 @@ public class MembershipNumPad {
 		
 		number = "";
 		
-//All the numbers 
+		//All the numbers 
 		one = new PlainButton("1",Colors.color4);
 		one.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

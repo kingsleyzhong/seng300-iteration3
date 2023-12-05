@@ -153,14 +153,8 @@ public class HardwareGUI {
 		gbc_label.gridy = 1;
 		start.add(label, gbc_label);
 		
-		//ANTHONY FOR YOU... PLEASE ADD YOUR THINGS TO THIS SPECIFIC PANEL
 		cashInput = new CashPanel(scs);
 		cashInput.setBackground(Colors.color1);
-		//ANTHONYS STUFF ABOVE
-		
-		
-		
-		
 		card = new CardPanel(scs);
 		card.setBackground(Colors.color1);
 		
@@ -261,8 +255,6 @@ public class HardwareGUI {
 			public void valueChanged(ListSelectionEvent e) {
 				JList<ItemObject> list = (JList<ItemObject>) e.getSource();
 				if(list == cartList) {
-					//scanningList.clearSelection();
-					//baggingList.clearSelection();
 					int index = list.getSelectedIndex();
 					if(index == -1) {
 						lastItem = null;
@@ -271,14 +263,6 @@ public class HardwareGUI {
 						lastItem = list.getModel().getElementAt(index);
 					}
 				}
-				//else if(list == scanningList) {
-					//cartList.clearSelection();
-					//baggingList.clearSelection();
-				//}
-				//else if(list == baggingList) {
-				//	cartList.clearSelection();
-				//	scanningList.clearSelection();
-				//}
 			}
 			
 		});

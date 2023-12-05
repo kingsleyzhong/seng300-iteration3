@@ -43,9 +43,6 @@ import java.util.Map;
 
 public class AttendantCatalogue extends JFrame {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	private Map<String, Product> inventory;

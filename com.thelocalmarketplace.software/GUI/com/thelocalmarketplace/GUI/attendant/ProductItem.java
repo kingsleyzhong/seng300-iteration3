@@ -51,7 +51,6 @@ public class ProductItem extends JPanel {
 	 * Create the panel.
 	 */
 	public ProductItem(Product product, Session session, Attendant attendant) {		
-		//this.setSize(200, 400);
 		this.setBackground(Colors.color1);
 		this.setBorder(BorderFactory.createEmptyBorder(20,10,20,10));
 		
@@ -146,8 +145,6 @@ public class ProductItem extends JPanel {
         graphics.setColor(Colors.color3);
        
         graphics.fillRoundRect(0, 0, width-1, height-1, arcs.width, arcs.height); //paint background
-        //graphics.setColor(getForeground());
-        //graphics.drawRoundRect(0, 0, width-1, height-1, arcs.width, arcs.height); //paint border
     }
 
 }

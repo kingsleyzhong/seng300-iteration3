@@ -277,6 +277,18 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	}
 
 	@Test
+	public void payItemGetCorrectRemainingAmount() throws DisabledException, CashOverloadException {
+		session.start();
+		scs.getMainScanner().scan(item);
+		scs.getBaggingArea().addAnItem(item); // item with price of 10 dollars
+		session.payByCash();
+		scs.getCoinSlot().receive(dollar); // paying one dollar only
+		Funds funds = session.getFunds();
+		BigDecimal expectedRemaining = new BigDecimal(9); // 9 dollars left to be paid
+		assertEquals("Correct change dispensed", expectedRemaining, funds.getAmountDue());
+	}
+
+	@Test
 	public void payItemGetCoinChange() throws DisabledException, CashOverloadException {
 		scs.getBanknoteDispensers().get(new BigDecimal(5)).load(five, five, five);
 		scs.getCoinDispensers().get(new BigDecimal(1)).load(dollar, dollar, dollar, dollar, dollar);
@@ -517,7 +529,8 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 		}
 		scs.getBaggingArea().addAnItem(item);
 		session.payByCash();
-		scs.getScreen().disable();
+		scs.getCoinSlot().disable();
+		scs.getCoinSlot().receive(dollar);
 	}
 
 	@Test

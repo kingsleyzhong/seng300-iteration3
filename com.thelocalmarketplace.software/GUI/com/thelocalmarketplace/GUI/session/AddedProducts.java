@@ -72,6 +72,7 @@ public class AddedProducts extends JPanel {
     	
 	}
 	
+	// Adds a product and a mass to the panel When added.
 	public void addProduct(Product product, Mass mass) {
 		CartProduct current = null;
 		
@@ -143,7 +144,4 @@ public class AddedProducts extends JPanel {
 	public CartProduct getNewPanel() {
 		return newPanel;
 	}
-	
-	
-	
 }

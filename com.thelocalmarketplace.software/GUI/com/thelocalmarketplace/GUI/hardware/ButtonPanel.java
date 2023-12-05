@@ -86,6 +86,9 @@ public class ButtonPanel extends JPanel implements ActionListener {
 		this.add(startButton);
 	}
 
+	/**
+	 * Populates the buttons when the hardware simulation starts
+	 */
 	public void populateButtons() {
 		this.remove(startButton);
 		this.repaint();
@@ -129,9 +132,6 @@ public class ButtonPanel extends JPanel implements ActionListener {
 			gui.getStation().getScreen().getFrame().setVisible(true);
 		} else if (e.getSource() == attendantScreen) {
 			gui.getSupervisor().screen.getFrame().setVisible(true);
-		}
-		else if(e.getSource() == attendantScreen) {
-			
 		}
 		else if(e.getSource() == addBags) {
 			try {
