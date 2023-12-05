@@ -195,7 +195,7 @@ public class TextSearchControllerTest extends AbstractTest {
      */
     @Test
     public void failedSearch() throws DisabledDevice{
-        stringToKeyboard("Marlboro Gold Cigarettes");
+        a.stringToKeyboard("Marlboro Gold Cigarettes");
         a.getStation().keyboard.getKey("Enter").press();
         a.getStation().keyboard.getKey("Enter").release();
         assertTrue(a.getTextSearchController().getSearchResults().isEmpty());
