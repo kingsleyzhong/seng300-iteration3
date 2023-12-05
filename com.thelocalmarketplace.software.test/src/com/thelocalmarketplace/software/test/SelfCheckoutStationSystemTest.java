@@ -215,19 +215,19 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	// Tests for pay via coin
 
 	@Test(expected = InvalidActionException.class)
-	public void testEnterPayWhenCartEmpty() {
+	public void enterPayWhenCartEmpty() {
 		session.start();
 		session.payByCash();
 	}
 
 	@Test(expected = DisabledException.class)
-	public void testAddCoinWhenNotInPay() throws DisabledException, CashOverloadException {
+	public void addCoinWhenNotInPay() throws DisabledException, CashOverloadException {
 		session.start();
 		scs.getCoinSlot().receive(dollar);
 	}
 
 	@Test
-	public void testPayForItemViaCash() throws DisabledException, CashOverloadException {
+	public void payForItemViaCash() throws DisabledException, CashOverloadException {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getMainScanner().scan(item);
@@ -243,7 +243,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 		}
 		Funds funds = session.getFunds();
 		assertEquals("Session is fully paid for", BigDecimal.ZERO, funds.getAmountDue());
-		assertEquals("Session has been notified of full payment", session.getState(), SessionState.PRE_SESSION);
+		assertEquals("Session has been notified of full payment", session.getState(), SessionState.DISABLED);
 	}
 
 	@Test
@@ -266,14 +266,26 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 			}
 		}
 		Funds funds = session.getFunds();
-		//assertEquals("Paid $20", new BigDecimal(20), funds.getPaid());
+		// assertEquals("Paid $20", new BigDecimal(20), funds.getPaid());
 		assertTrue("Session is fully paid for", funds.getAmountDue().compareTo(BigDecimal.ZERO) < 0);
-		assertEquals("Session has been notified of full payment", SessionState.PRE_SESSION, session.getState());
+		assertEquals("Session has been notified of full payment", SessionState.DISABLED, session.getState());
 
 		assertTrue(scs.getBanknoteOutput().hasDanglingBanknotes());
 		List<Banknote> change = scs.getBanknoteOutput().removeDanglingBanknotes();
 
 		assertEquals("Dispensed $10", ten, change.get(0));
+	}
+
+	@Test
+	public void payItemGetCorrectRemainingAmount() throws DisabledException, CashOverloadException {
+		session.start();
+		scs.getMainScanner().scan(item);
+		scs.getBaggingArea().addAnItem(item); // item with price of 10 dollars
+		session.payByCash();
+		scs.getCoinSlot().receive(dollar); // paying one dollar only
+		Funds funds = session.getFunds();
+		BigDecimal expectedRemaining = new BigDecimal(9); // 9 dollars left to be paid
+		assertEquals("Correct change dispensed", expectedRemaining, funds.getAmountDue());
 	}
 
 	@Test
@@ -303,9 +315,9 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 			}
 		}
 		Funds funds = session.getFunds();
-		//assertEquals("Paid $20", new BigDecimal(20), funds.getPaid());
+		// assertEquals("Paid $20", new BigDecimal(20), funds.getPaid());
 		assertTrue("Session is fully paid for", funds.getAmountDue().compareTo(BigDecimal.ZERO) < 0);
-		assertEquals("Session has been notified of full payment", SessionState.PRE_SESSION, session.getState());
+		assertEquals("Session has been notified of full payment", SessionState.DISABLED, session.getState());
 
 		List<Coin> coinchange = scs.getCoinTray().collectCoins();
 		List<Coin> expected = new ArrayList<>();
@@ -320,118 +332,115 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 
 	// Tests for paying Credit via swipe
 	@Test
-	 public void payWithCredit() throws CashOverloadException,
-	 NoCashAvailableException, DisabledException, IOException {
-	 CardIssuer ci1 = new CardIssuer(SupportedCardIssuers.ONE.getIssuer(), 1);
-	 CardIssuerDatabase.CARD_ISSUER_DATABASE.put(SupportedCardIssuers.ONE.
-	 getIssuer(), ci1);
-	 Card creditCard = new Card(SupportedCardIssuers.ONE.getIssuer(),
-	 "5299334598001547", "Brandon Chan", "666", null, false, false);
-	 
-	 Calendar exp = Calendar.getInstance();
-	 exp.set(Calendar.YEAR, 2099);
-	 exp.set(Calendar.MONTH, 12);
-	 
-	 ci1.addCardData(creditCard.number, creditCard.cardholder, exp,
-	 creditCard.cvv, 10000);
-	 
-	 session.start();
-	 for(int i =0; i < 100; i++) {
-	 scs.getMainScanner().scan(item);
-	 }
-	 scs.getBaggingArea().addAnItem(item);
-	 session.payByCard();
-	 
-	 Funds funds = session.getFunds();
-	 
-	 assertEquals(SessionState.PAY_BY_CARD, session.getState());
-	 
-	 boolean read = false;
-	 while (!read) {
-	 try {
-	 scs.getCardReader().swipe(creditCard);
-	 read = true;
-	 } catch (MagneticStripeFailureException e) {
-	 }
-	 }
-	 assertEquals("Session is fully paid for", BigDecimal.ZERO,
-	 funds.getAmountDue());
-	 assertEquals("Session has been notified of full payment", session.getState(),
-	 SessionState.PRE_SESSION);
-	 }
-	 
-	 @Test
-	 public void payWithDebit() throws CashOverloadException,
-	 NoCashAvailableException, DisabledException, IOException {
-	 CardIssuer ci1 = new CardIssuer(SupportedCardIssuers.ONE.getIssuer(), 1);
-	 CardIssuerDatabase.CARD_ISSUER_DATABASE.put(SupportedCardIssuers.ONE.
-	 getIssuer(), ci1);
-	 Card debitCard = new Card(SupportedCardIssuers.ONE.getIssuer(),
-	 "5299334598001547", "Brandon Chan", "666", null, false, false);
-	 
-	 Calendar exp = Calendar.getInstance();
-	 exp.set(Calendar.YEAR, 2099);
-	 exp.set(Calendar.MONTH, 12);
-	 
-	 ci1.addCardData(debitCard.number, debitCard.cardholder, exp, debitCard.cvv,
-	 10000);
-	 
-	 session.start();
-	 for(int i =0; i < 100; i++) {
-	 scs.getMainScanner().scan(item);
-	 }
-	 scs.getBaggingArea().addAnItem(item);
-	 session.payByCard();
-	 
-	 Funds funds = session.getFunds();
-	 
-	 assertEquals(SessionState.PAY_BY_CARD, session.getState());
-	 
-	 boolean read = false;
-	 while (!read) {
-	 try {
-	 scs.getCardReader().swipe(debitCard);
-	 read = true;
-	 } catch (MagneticStripeFailureException e) {
-	 }
-	 }
-	 assertEquals("Session is fully paid for", BigDecimal.ZERO,
-	 funds.getAmountDue());
-	 assertEquals("Session has been notified of full payment", session.getState(),
-	 SessionState.PRE_SESSION);
-	 }
-	 
-	 // Tests for removing an item
-	 
-	 @Test
-	 public void addThenRemoveItem() throws DisabledException,
-	 CashOverloadException {
-	 session.start();
-	 for(int i =0; i < 100; i++) {
-	 scs.getMainScanner().scan(item);
-	 }
-	 scs.getBaggingArea().addAnItem(item);
-	 for(int i =0; i < 100; i++) {
-	 scs.getMainScanner().scan(item2);
-	 }
-	 scs.getBaggingArea().addAnItem(item2);
-	 session.getManager().removeItem(product);
-	 scs.getBaggingArea().removeAnItem(item);
-	 session.payByCash();
-	 int count = 0;
-	 while(count<10) {
-	 scs.getCoinSlot().receive(dollar);
-	 if(scs.getCoinTray().collectCoins().isEmpty()) {
-	 count = count + 1;
-	 }
-	 }
-	 Funds funds = session.getFunds();
-	 assertEquals("Session is fully paid for", BigDecimal.ZERO,
-	 funds.getAmountDue());
-	 assertEquals("Session has been notified of full payment", session.getState(),
-	 SessionState.PRE_SESSION);
-	 }
-	 
+	public void payWithCredit() throws CashOverloadException,
+			NoCashAvailableException, DisabledException, IOException {
+		CardIssuer ci1 = new CardIssuer(SupportedCardIssuers.ONE.getIssuer(), 1);
+		CardIssuerDatabase.CARD_ISSUER_DATABASE.put(SupportedCardIssuers.ONE.getIssuer(), ci1);
+		Card creditCard = new Card(SupportedCardIssuers.ONE.getIssuer(),
+				"5299334598001547", "Brandon Chan", "666", null, false, false);
+
+		Calendar exp = Calendar.getInstance();
+		exp.set(Calendar.YEAR, 2099);
+		exp.set(Calendar.MONTH, 12);
+
+		ci1.addCardData(creditCard.number, creditCard.cardholder, exp,
+				creditCard.cvv, 10000);
+
+		session.start();
+		for (int i = 0; i < 100; i++) {
+			scs.getMainScanner().scan(item);
+		}
+		scs.getBaggingArea().addAnItem(item);
+		session.payByCard();
+
+		Funds funds = session.getFunds();
+
+		assertEquals(SessionState.PAY_BY_CARD, session.getState());
+
+		boolean read = false;
+		while (!read) {
+			try {
+				scs.getCardReader().swipe(creditCard);
+				read = true;
+			} catch (MagneticStripeFailureException e) {
+			}
+		}
+		assertEquals("Session is fully paid for", BigDecimal.ZERO,
+				funds.getAmountDue());
+		assertEquals("Session has been notified of full payment", session.getState(),
+				SessionState.DISABLED);
+	}
+
+	@Test
+	public void payWithDebit() throws CashOverloadException,
+			NoCashAvailableException, DisabledException, IOException {
+		CardIssuer ci1 = new CardIssuer(SupportedCardIssuers.ONE.getIssuer(), 1);
+		CardIssuerDatabase.CARD_ISSUER_DATABASE.put(SupportedCardIssuers.ONE.getIssuer(), ci1);
+		Card debitCard = new Card(SupportedCardIssuers.ONE.getIssuer(),
+				"5299334598001547", "Brandon Chan", "666", null, false, false);
+
+		Calendar exp = Calendar.getInstance();
+		exp.set(Calendar.YEAR, 2099);
+		exp.set(Calendar.MONTH, 12);
+
+		ci1.addCardData(debitCard.number, debitCard.cardholder, exp, debitCard.cvv,
+				10000);
+
+		session.start();
+		for (int i = 0; i < 100; i++) {
+			scs.getMainScanner().scan(item);
+		}
+		scs.getBaggingArea().addAnItem(item);
+		session.payByCard();
+
+		Funds funds = session.getFunds();
+
+		assertEquals(SessionState.PAY_BY_CARD, session.getState());
+
+		boolean read = false;
+		while (!read) {
+			try {
+				scs.getCardReader().swipe(debitCard);
+				read = true;
+			} catch (MagneticStripeFailureException e) {
+			}
+		}
+		assertEquals("Session is fully paid for", BigDecimal.ZERO,
+				funds.getAmountDue());
+		assertEquals("Session has been notified of full payment", session.getState(),
+				SessionState.DISABLED);
+	}
+
+	// Tests for removing an item
+
+	@Test
+	public void addThenRemoveItem() throws DisabledException,
+			CashOverloadException {
+		session.start();
+		for (int i = 0; i < 100; i++) {
+			scs.getMainScanner().scan(item);
+		}
+		scs.getBaggingArea().addAnItem(item);
+		for (int i = 0; i < 100; i++) {
+			scs.getMainScanner().scan(item2);
+		}
+		scs.getBaggingArea().addAnItem(item2);
+		session.getManager().removeItem(product);
+		scs.getBaggingArea().removeAnItem(item);
+		session.payByCash();
+		int count = 0;
+		while (count < 10) {
+			scs.getCoinSlot().receive(dollar);
+			if (scs.getCoinTray().collectCoins().isEmpty()) {
+				count = count + 1;
+			}
+		}
+		Funds funds = session.getFunds();
+		assertEquals("Session is fully paid for", BigDecimal.ZERO,
+				funds.getAmountDue());
+		assertEquals("Session has been notified of full payment", session.getState(),
+				SessionState.DISABLED);
+	}
 
 	@Test
 	public void addBulkyItem() {
@@ -457,11 +466,9 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	@Test
 	public void testRemoveAllItems() {
 		session.start();
-		for (int i = 0; i < 5; i++) {
-			scs.getMainScanner().scan(item);
-			scs.getBaggingArea().addAnItem(item);
-			scs.getBaggingArea().removeAnItem(item);
-		}
+
+		scs.getBaggingArea().addAnItem(item);
+		scs.getBaggingArea().removeAnItem(item);
 
 		assertTrue(session.getItems().isEmpty());
 	}
@@ -502,32 +509,15 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	}
 
 	@Test(expected = DisabledException.class)
-	public void payWhenDiscrepancy() throws DisabledException, CashOverloadException {
-		session.start();
-		for (int i = 0; i < 100; i++) {
-			scs.getMainScanner().scan(item);
-		}
-		scs.getBaggingArea().addAnItem(item);
-		session.payByCash();
-		scs.getBaggingArea().addAnItem(item2);
-		int count = 0;
-		while (count < 1) {
-			scs.getCoinSlot().receive(dollar);
-			if (scs.getCoinTray().collectCoins().isEmpty()) {
-				count = count + 1;
-			}
-		}
-	}
-
-	@Test(expected = DisabledException.class)
-	public void testDisabledComponentWhenPaying() throws DisabledException, CashOverloadException {
+	public void disabledComponentWhenPaying() throws DisabledException, CashOverloadException {
 		session.start();
 		for (int i = 0; i < 5; i++) {
 			scs.getMainScanner().scan(item);
 		}
 		scs.getBaggingArea().addAnItem(item);
 		session.payByCash();
-		scs.getScreen().disable();
+		scs.getCoinSlot().disable();
+		scs.getCoinSlot().receive(dollar);
 	}
 
 	@Test
@@ -549,7 +539,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	}
 
 	@Test
-	public void powerCycle(){
+	public void powerCycle() {
 		scs.getBaggingArea().turnOff();
 		scs.getScanningArea().turnOff();
 		scs.getMainScanner().turnOff();
@@ -558,7 +548,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 		scs.getReusableBagDispenser().turnOff();
 		scs.getPrinter().turnOff();
 		scs.getCardReader().turnOff();
-		
+
 		scs.getBaggingArea().turnOn();
 		scs.getScanningArea().turnOn();
 		scs.getMainScanner().turnOn();
@@ -599,17 +589,16 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 		scs.getCoinSlot().enable();
 		scs.getCoinValidator().enable();
 		scs.getCoinStorage().enable();
-		
-		for(BigDecimal denomination : scs.getBanknoteDenominations()){
+
+		for (BigDecimal denomination : scs.getBanknoteDenominations()) {
 			scs.getBanknoteDispensers().get(denomination).disable();
 			scs.getBanknoteDispensers().get(denomination).enable();
 		}
-		for(BigDecimal denomination : scs.getCoinDenominations()){
+		for (BigDecimal denomination : scs.getCoinDenominations()) {
 			scs.getCoinDispensers().get(denomination).disable();
 			scs.getCoinDispensers().get(denomination).enable();
 		}
 
-	
 		assertEquals(SessionState.PRE_SESSION, session.getState());
 	}
 

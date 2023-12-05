@@ -8,7 +8,6 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
-import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -56,18 +55,17 @@ public class AttendantGUI {
 	MaintenanceManager manager;
 	IssuePredictor predictor;
 	HashMap<Session, Requests> sessions;
-	List<JPanel> stationPanels;
 	static ITouchScreen asScreen;
 	TextSearchController textSearch;
 	
 	private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-	private int[] dimensions = {0,0};
 	private int width;
 	private int height;
 	
 	/**
 	 * @wbp.parser.entryPoint
 	 */
+	@SuppressWarnings("static-access")
 	public AttendantGUI(Attendant attendant, MaintenanceManager manager, IssuePredictor predictor) {
 		this.attendant = attendant;
 		this.manager = manager;
@@ -121,7 +119,7 @@ public class AttendantGUI {
 		asScreen.setVisible(false);
 	}
 	
-	public void populateSessions() {
+	private void populateSessions() {
 		JPanel main = new JPanel();
 		main.setBackground(Colors.color1);
 		main.setLayout(new GridLayout(6,0,0,0));
@@ -146,6 +144,10 @@ public class AttendantGUI {
 	
 	public static void unhide() {
 		asScreen.getFrame().setVisible(true);
+	}
+
+	public boolean isVisibile() {
+		return asScreen.getFrame().isVisible();
 	}
 	
 }

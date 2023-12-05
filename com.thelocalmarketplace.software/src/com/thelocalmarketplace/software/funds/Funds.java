@@ -46,16 +46,13 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 public class Funds {
 	protected ArrayList<FundsListener> listeners = new ArrayList<>();
 	private BigDecimal itemsPrice; // Summed price of all items in the session (in cents)
-	//private BigDecimal paid; // Amount paid by the customer (in cents)
 	private BigDecimal amountDue; // Remaining amount to be paid (in cents)
 	private boolean isPay; // Flag indicating if the session is in pay mode
 	private final BigDecimal[] banknoteDenominations;
     private final List<BigDecimal> coinDenominations;
 
-  // from old version, delete if unused/ it breaks stuff
-	// Testing ONLY
 	public boolean payed;
-	public boolean successfulSwipe;  // end old version stuff to delete
+	public boolean successfulSwipe;
   
 	private AbstractSelfCheckoutStation scs;
 
@@ -133,10 +130,6 @@ public class Funds {
 	public BigDecimal getItemsPrice() {
 		return itemsPrice;
 	}
-
-	/*public BigDecimal getPaid() {
-		return paid;
-	}*/
 
 	public BigDecimal getAmountDue() {
 		return amountDue;
