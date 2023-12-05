@@ -1,14 +1,6 @@
 package com.thelocalmarketplace.software.funds;
 
-import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
-import com.thelocalmarketplace.hardware.external.*;
-import com.thelocalmarketplace.software.Session;
-import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.exceptions.InvalidActionException;
-
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.HashMap;
 
 import com.jjjwelectronics.IDevice;
 import com.jjjwelectronics.IDeviceListener;

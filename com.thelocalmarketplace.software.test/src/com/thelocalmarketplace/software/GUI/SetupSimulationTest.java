@@ -1,16 +1,14 @@
 package com.thelocalmarketplace.software.GUI;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.thelocalmarketplace.GUI.Simulation;
 import com.thelocalmarketplace.GUI.attendant.AttendantGUI;
 import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
 import com.thelocalmarketplace.GUI.session.SoftwareGUI;
 import com.thelocalmarketplace.software.exceptions.NotDisabledSessionException;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertNotNull;
 
 public class SetupSimulationTest {
 
@@ -27,7 +25,7 @@ public class SetupSimulationTest {
 	}
 	
 	@Test
-	public void testInitialization() {
+	public void initialization() {
 		assertNotNull(hardwareGUI);
 		assertNotNull(softwareGUI);
 		//assertNotNull(attendantGUI);
