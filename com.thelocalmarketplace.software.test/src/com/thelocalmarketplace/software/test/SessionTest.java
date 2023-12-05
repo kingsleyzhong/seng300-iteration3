@@ -244,7 +244,6 @@ public class SessionTest extends AbstractTest {
         // Reset
         session.deRegister(stub);
         itemManager.removeItem(product);
-        
     }
     
     @Test
@@ -305,21 +304,26 @@ public class SessionTest extends AbstractTest {
         session.start();
         session.cancel();
         assertTrue(session.getState() == SessionState.PRE_SESSION);
-    	
     }
     
+    @Test(expected = InvalidActionException.class)
+    public void membershipEnteredNotInAddingState() {
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+        session.enterMembership();
+    }
+   
     /*
      *Sessions can only be disabled when in the pre-session state 
      */
     @Test
-    public void testDisableSession() {
+    public void disableSession() {
         session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
      	
         session.disable();
         assertTrue(session.getState()== SessionState.DISABLED);
     }
     @Test
-    public void testDisableSessionStarted() {
+    public void disableSessionStarted() {
         session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
      	session.start();
         session.disable();
@@ -329,14 +333,14 @@ public class SessionTest extends AbstractTest {
      * Sessions can only be enabled when they are disabled, no effect otherwise
      */
     @Test
-    public void testEnableSession() {
+    public void enableSession() {
         session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.disable();
         session.enable();
         assertTrue(session.getState() != SessionState.DISABLED);
     }
     @Test
-    public void testEnableSessionNotDisabled() {
+    public void enableSessionNotDisabled() {
         session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.start();
         SessionState preState = session.getState();
