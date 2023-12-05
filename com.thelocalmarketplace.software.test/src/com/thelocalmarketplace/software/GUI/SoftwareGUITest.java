@@ -11,6 +11,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
+import java.util.Currency;
+import java.util.Locale;
 
 import javax.swing.Timer;
 
@@ -23,7 +25,10 @@ import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.scanner.BarcodedItem;
+import com.tdc.CashOverloadException;
+import com.tdc.DisabledException;
 import com.tdc.banknote.BanknoteValidator;
+import com.tdc.coin.Coin;
 import com.tdc.coin.CoinValidator;
 import com.thelocalmarketplace.GUI.hardware.CashPanel;
 import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
@@ -41,6 +46,7 @@ import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.attendant.Attendant;
+import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
 import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 import com.thelocalmarketplace.software.funds.Funds;
@@ -93,28 +99,32 @@ public class SoftwareGUITest{
 	private CoinValidator validator;
 	private PayByCash cashController;
 	private Funds funds;
-	
+	private Coin coin;
 	
 	private BarcodedProduct product;
 	private Barcode barcode;
 	private BarcodedItem item;
-	private BarcodedItem item2;
+	private BarcodedItem item2;	
+	
+	private PriceLookUpCode plu1;
+	private PLUCodedProduct pluProduct1;
+	
 	
 	Robot robot;
 	Timer timer;
 	int runs = 0;
-	private PriceLookUpCode plu1;
-	private PLUCodedProduct pluProduct1;
+
+
 	
 	@Before
 	public void setup() {
 		barcode = new Barcode(new Numeral[] { Numeral.valueOf((byte) 1) });
-		product = new BarcodedProduct(barcode, "Some product", 10, 20.0);
+		product = new BarcodedProduct(barcode, "Some product", 1, 20.0);
 		SelfCheckoutStationLogic.populateDatabase(barcode, product, 20);
 		
 		plu1 = new PriceLookUpCode(new String("0000"));
-		pluProduct1 = new PLUCodedProduct(plu1, "baaananas", 10);
-		SelfCheckoutStationLogic.populateDatabase(plu1, pluProduct1, 10);
+		pluProduct1 = new PLUCodedProduct(plu1, "Another product", 1);
+		SelfCheckoutStationLogic.populateDatabase(plu1, pluProduct1, 1);
 		
 		MembershipDatabase.registerMember("0", "name");
 		
@@ -136,6 +146,9 @@ public class SoftwareGUITest{
 
 		coinValidator = scs.getCoinValidator();
 		banknoteValidator = scs.getBanknoteValidator();
+		
+		Currency currency = Currency.getInstance(Locale.CANADA);
+		coin = new Coin(currency, new BigDecimal(1));
 
 		cashController = new PayByCash(coinValidator, banknoteValidator, funds);
 		
@@ -146,7 +159,9 @@ public class SoftwareGUITest{
 		item2 = new BarcodedItem(barcode, new Mass(20.0));
 		
 		
-		
+/***
+ * Robot made for pressing the key "enter" for cases of pop ups		
+ */
 		try {
 			robot = new Robot();
 
@@ -174,38 +189,78 @@ public class SoftwareGUITest{
 	@After
 	public void teardown() {
 		Window[] windows = Window.getWindows();
-		for(Window window: windows) {
-			window.dispose();
+		
+		while (Window.getWindows().length == 0) {
+			for(Window window: windows) {
+				window.dispose();
+			}
+			timer.stop();
 		}
-		timer.stop();
 	}
 	
 	
 	
 	@Test
-	public void testStart() {
+	public void preSession() {
 		assertTrue(softwareGUI.frame.isVisible());
 		assertTrue(softwareGUI.frame.getContentPane().getComponent(0) == softwareGUI.startPane);
 		assertTrue(session.getState() == SessionState.PRE_SESSION);
 	}
 	
 	@Test
-	public void testStartButton() {
+	public void startButton() {
 		softwareGUI.btnStart.doClick();
 		assertFalse(softwareGUI.frame.getContentPane().getComponent(0) == softwareGUI.startPane);
 		assertTrue(softwareGUI.frame.getContentPane().getComponent(0) == softwareGUI.mainPane);
-		assertTrue(session.getState() == SessionState.IN_SESSION);
+		assertTrue(softwareGUI.displayingStart);
+	}
+	
+	@Test 
+	public void openHardwareScreen() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.hardwareButton.doClick();
+		assertTrue(HardwareGUI.hardwareFrame.isVisible());
+	}
+	
+	
+	@Test
+	public void openAttendantScreen() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.attendantButton.doClick();
+		assertTrue(false);
 	}
 	
 	@Test
-	public void testPayButton() {
+	public void cancelSession() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.cancel.doClick();
+		assertTrue(session.getState() == SessionState.PRE_SESSION);
+	}
+	
+	@Test 
+	public void displayDisabled() {
+		session.disable();
+		softwareGUI.btnStart.doClick();
+		assertTrue(softwareGUI.displayingDisabled);	
+		
+	}
+	
+	@Test
+	public void callAttendantButton() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.callAttendant.doClick();
+		assertTrue(attendant.getCurrentRequest(session) == Requests.HELP_REQUESTED);	
+	}
+	
+	@Test
+	public void payButton() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pay.doClick();
 		assertTrue(softwareGUI.paymentScreen.isVisible());
 	}
 	
 	@Test
-	public void testAddItem() {
+	public void addingItem() {
 		softwareGUI.btnStart.doClick();
 		scs.getMainScanner().scan(item);
 		assertTrue(softwareGUI.cartItemsPanel.contains(product));
@@ -214,7 +269,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAdd2Items() {
+	public void adding2Items() {
 		softwareGUI.btnStart.doClick();
 		scs.getMainScanner().scan(item);
 		scs.getBaggingArea().addAnItem(item);
@@ -225,8 +280,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	
-	public void testAddItemDoPayCash() {
+	public void addItemDoPayCash() {
 		softwareGUI.btnStart.doClick();
 		scs.getMainScanner().scan(item);
 		scs.getBaggingArea().addAnItem(item);
@@ -236,7 +290,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAddItemDoPayCard() {
+	public void addItemDoPayCard() {
 		softwareGUI.btnStart.doClick();
 		scs.getMainScanner().scan(item);
 		scs.getBaggingArea().addAnItem(item);
@@ -246,487 +300,14 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testOpenCatalog() {
+	public void openCatalog() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.searchCatalogue.doClick();
 		assertTrue(softwareGUI.catalogue.isVisible());
 	}
 	
-	@Test
-	public void testUpdate() {
-		assertTrue(false);
-		
-	}
-	
-	@Test
-	public void testOpenAddBags() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.addBags.doClick();
-		assertTrue(softwareGUI.addBagsScreen.isVisible());
-	}
-	
-	@Test
-	public void testAddPersonalBags() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.addBags.doClick();
-		softwareGUI.addBagsScreen.getAddPersonalBagButton().doClick();
-		assertTrue(session.getState() == SessionState.ADDING_BAGS);
-	}
-	
-	@Test
-	public void testOpenAddStoreBag() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.addBags.doClick();
-		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
-		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().isVisible());
-
-	}
-	
-	@Test
-	public void testAddStoreBagOne() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.addBags.doClick();
-		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
-		softwareGUI.addBagsScreen.getNumOfBagsScreen().getOne().doClick();
-		Assert.assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("1"));
-
-	}
-	
-	@Test
-	public void testAddStoreBagTwo() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.addBags.doClick();
-		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
-		softwareGUI.addBagsScreen.getNumOfBagsScreen().getTwo().doClick();
-		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("2"));
-
-	}
-	
-	@Test
-	public void testAddStoreBagThree() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.addBags.doClick();
-		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
-		softwareGUI.addBagsScreen.getNumOfBagsScreen().getThree().doClick();
-		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("3"));
-
-	}
-	
-	@Test
-	public void testAddStoreBagFour() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.addBags.doClick();
-		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
-		softwareGUI.addBagsScreen.getNumOfBagsScreen().getFour().doClick();
-		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("4"));
-
-	}
-	
-	@Test
-	public void testAddStoreBagFive() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.addBags.doClick();
-		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
-		softwareGUI.addBagsScreen.getNumOfBagsScreen().getFive().doClick();
-		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("5"));
-
-	}
-	
-	@Test
-	public void testAddStoreBagSix() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.addBags.doClick();
-		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
-		softwareGUI.addBagsScreen.getNumOfBagsScreen().getSix().doClick();
-		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("6"));
-
-	}
-	
-	@Test
-	public void testAddStoreBagSeven() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.addBags.doClick();
-		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
-		softwareGUI.addBagsScreen.getNumOfBagsScreen().getSeven().doClick();
-		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("7"));
-
-	}
-	
-	@Test
-	public void testAddStoreBagEight() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.addBags.doClick();
-		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
-		softwareGUI.addBagsScreen.getNumOfBagsScreen().getEight().doClick();
-		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("8"));
-
-	}
-	
-	@Test
-	public void testAddStoreBagNine() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.addBags.doClick();
-		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
-		softwareGUI.addBagsScreen.getNumOfBagsScreen().getNine().doClick();
-		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("9"));
-
-	}
-	
-	@Test
-	public void testAddStoreBagZero() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.addBags.doClick();
-		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
-		softwareGUI.addBagsScreen.getNumOfBagsScreen().getZero().doClick();
-		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("0"));
-
-	}
-	
-	@Test
-	public void testAddStoreBagDelete() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.addBags.doClick();
-		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
-		softwareGUI.addBagsScreen.getNumOfBagsScreen().getOne().doClick();
-		softwareGUI.addBagsScreen.getNumOfBagsScreen().getDelete().doClick();
-		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals(""));
-
-	}
-	
 	@Test 
-	public void testAddStoreBagDone() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.addBags.doClick();
-		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
-		softwareGUI.addBagsScreen.getNumOfBagsScreen().getDone().doClick();
-		//Where to check for bags 
-		assertTrue(false);
-
-	}
-	
-	@Test
-	public void testOpenAddBagsClose() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.addBags.doClick();
-		softwareGUI.addBagsScreen.getCancelButton().doClick();
-		assertFalse(softwareGUI.addBagsScreen.getNumOfBagsScreen().isVisible());
-
-	}
-	
-	@Test
-	public void testAddPLUOpen() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pluCode.doClick();
-		assertTrue(softwareGUI.pluNumPad.isVisible());
-		
-	}
-	
-	@Test
-	public void testAddPLUCodeOne() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pluCode.doClick();
-		softwareGUI.pluNumPad.getOne().doClick();
-		assertTrue(softwareGUI.pluNumPad.getPlu().equals("1"));
-		
-	}
-	
-	@Test
-	public void testAddPLUCodeTwo() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pluCode.doClick();
-		softwareGUI.pluNumPad.getTwo().doClick();
-		assertTrue(softwareGUI.pluNumPad.getPlu().equals("2"));
-
-	}
-	
-	@Test
-	public void testAddPLUCodeThree() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pluCode.doClick();
-		softwareGUI.pluNumPad.getThree().doClick();
-		assertTrue(softwareGUI.pluNumPad.getPlu().equals("3"));
-
-	}
-	
-	@Test
-	public void testAddPLUCodeFour() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pluCode.doClick();
-		softwareGUI.pluNumPad.getFour().doClick();
-		assertTrue(softwareGUI.pluNumPad.getPlu().equals("4"));
-
-	}
-	
-	@Test
-	public void testAddPLUCodeFive() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pluCode.doClick();
-		softwareGUI.pluNumPad.getFive().doClick();
-		assertTrue(softwareGUI.pluNumPad.getPlu().equals("5"));
-
-	}
-	
-	@Test
-	public void testAddPLUCodeSix() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pluCode.doClick();
-		softwareGUI.pluNumPad.getSix().doClick();
-		assertTrue(softwareGUI.pluNumPad.getPlu().equals("6"));
-
-	}
-	
-	@Test
-	public void testAddPLUCodeSeven() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pluCode.doClick();
-		softwareGUI.pluNumPad.getSeven().doClick();
-		assertTrue(softwareGUI.pluNumPad.getPlu().equals("7"));
-
-	}
-	
-	@Test
-	public void testAddPLUCodeEight() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pluCode.doClick();
-		softwareGUI.pluNumPad.getEight().doClick();
-		assertTrue(softwareGUI.pluNumPad.getPlu().equals("8"));
-
-	}
-	
-	@Test
-	public void testAddPLUCodeNine() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pluCode.doClick();
-		softwareGUI.pluNumPad.getNine().doClick();
-		assertTrue(softwareGUI.pluNumPad.getPlu().equals("9"));
-
-	}
-	
-	@Test
-	public void testAddPLUCodeZero() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pluCode.doClick();
-		softwareGUI.pluNumPad.getZero().doClick();
-		assertTrue(softwareGUI.pluNumPad.getPlu().equals("0"));
-
-
-	}
-	
-	@Test
-	public void testAddPLUCodeDelete() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pluCode.doClick();
-		softwareGUI.pluNumPad.getOne().doClick();
-		softwareGUI.pluNumPad.getDelete().doClick();
-		assertTrue(softwareGUI.pluNumPad.getPlu().equals(""));
-
-	}
-	
-	@Test
-	public void testAddPLUCodeDone() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pluCode.doClick();
-		softwareGUI.pluNumPad.getOne().doClick();
-		softwareGUI.pluNumPad.getDone().doClick();
-		assertTrue(session.getState() != SessionState.ADD_PLU_ITEM);
-	}
-	
-//Testing 0000	
-	@Test
-	public void testAddPLUValid() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pluCode.doClick();
-		softwareGUI.pluNumPad.getZero().doClick();
-		softwareGUI.pluNumPad.getZero().doClick();
-		softwareGUI.pluNumPad.getZero().doClick();
-		softwareGUI.pluNumPad.getZero().doClick();
-		softwareGUI.pluNumPad.getDone().doClick();
-		robot.keyPress(KeyEvent.VK_ENTER);
-		robot.keyRelease(KeyEvent.VK_ENTER);
-		robot.keyPress(KeyEvent.VK_ENTER);
-		robot.keyRelease(KeyEvent.VK_ENTER);
-		
-		assertTrue(session.getState() == SessionState.ADD_PLU_ITEM);
-
-		
-	}
-	
-	@Test
-	public void testAddPLUInvalid() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pluCode.doClick();
-		softwareGUI.pluNumPad.getZero().doClick();
-		softwareGUI.pluNumPad.getZero().doClick();
-		softwareGUI.pluNumPad.getZero().doClick();
-		softwareGUI.pluNumPad.getTwo().doClick();
-		softwareGUI.pluNumPad.getDone().doClick();
-		robot.keyPress(KeyEvent.VK_ENTER);
-		robot.keyRelease(KeyEvent.VK_ENTER);
-		assertTrue(session.getState() != SessionState.ADD_PLU_ITEM);
-
-		
-	}
-
-	
-	@Test
-	public void testCashCannotPayForEmpty() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pay.doClick();
-		softwareGUI.paymentScreen.getCashButton();
-		assertTrue(session.getState() == SessionState.IN_SESSION);
-
-	}
-	
-	@Test
-	public void testCardCannotPayForEmpty() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pay.doClick();
-		softwareGUI.paymentScreen.getCardButton();
-		assertTrue(session.getState() == SessionState.IN_SESSION);
-	}
-	
-	@Test 
-	public void testMembershipButton() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pay.doClick();
-		softwareGUI.paymentScreen.getMembershipButton().doClick();
-		assertTrue(softwareGUI.paymentScreen.getMembershipPad().isVisible());
-	}
-	
-	@Test
-	public void testMembershipOne() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pay.doClick();
-		softwareGUI.paymentScreen.getMembershipButton().doClick();
-		softwareGUI.paymentScreen.getMembershipPad().getOne().doClick();
-		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("1"));
-		
-	}
-	
-	@Test
-	public void testMembershipTwo() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pay.doClick();
-		softwareGUI.paymentScreen.getMembershipButton().doClick();
-		softwareGUI.paymentScreen.getMembershipPad().getTwo().doClick();
-		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("2"));
-
-	}
-	
-	@Test
-	public void testMembershipThree() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pay.doClick();
-		softwareGUI.paymentScreen.getMembershipButton().doClick();
-		softwareGUI.paymentScreen.getMembershipPad().getThree().doClick();
-		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("3"));
-
-	}
-	
-	@Test
-	public void testMembershipFour() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pay.doClick();
-		softwareGUI.paymentScreen.getMembershipButton().doClick();
-		softwareGUI.paymentScreen.getMembershipPad().getFour().doClick();
-		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("4"));
-
-	}
-	
-	@Test
-	public void testMembershipFive() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pay.doClick();
-		softwareGUI.paymentScreen.getMembershipButton().doClick();
-		softwareGUI.paymentScreen.getMembershipPad().getFive().doClick();
-		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("5"));
-
-	}
-	
-	@Test
-	public void testMembershipSix() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pay.doClick();
-		softwareGUI.paymentScreen.getMembershipButton().doClick();
-		softwareGUI.paymentScreen.getMembershipPad().getSix().doClick();
-		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("6"));
-
-	}
-	
-	@Test
-	public void testMembershipSeven() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pay.doClick();
-		softwareGUI.paymentScreen.getMembershipButton().doClick();
-		softwareGUI.paymentScreen.getMembershipPad().getSeven().doClick();
-		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("7"));
-
-	}
-	
-	@Test
-	public void testMembershipEight() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pay.doClick();
-		softwareGUI.paymentScreen.getMembershipButton().doClick();
-		softwareGUI.paymentScreen.getMembershipPad().getEight().doClick();
-		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("8"));
-
-	}
-	
-	@Test
-	public void testMembershipNine() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pay.doClick();
-		softwareGUI.paymentScreen.getMembershipButton().doClick();
-		softwareGUI.paymentScreen.getMembershipPad().getNine().doClick();
-		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("9"));
-
-	}
-	
-	@Test
-	public void testMembershipZero() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pay.doClick();
-		softwareGUI.paymentScreen.getMembershipButton().doClick();
-		softwareGUI.paymentScreen.getMembershipPad().getZero().doClick();
-		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("0"));
-
-	}
-	
-	@Test
-	public void testMembershipDelete() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pay.doClick();
-		softwareGUI.paymentScreen.getMembershipButton().doClick();
-		softwareGUI.paymentScreen.getMembershipPad().getZero().doClick();
-		softwareGUI.paymentScreen.getMembershipPad().getDelete().doClick();
-		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals(""));
-
-	}
-	
-	@Test
-	public void testMembershipDone() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pay.doClick();
-		softwareGUI.paymentScreen.getMembershipButton().doClick();
-		softwareGUI.paymentScreen.getMembershipPad().getZero().doClick();
-		softwareGUI.paymentScreen.getMembershipPad().getDone().doClick();
-		//assertTrue(session.getMembershipNumber().equals("0"));
-		assertTrue(false);
-
-	}
-	
-	@Test
-	public void testMembershipValid() {
-		softwareGUI.btnStart.doClick();
-		softwareGUI.pay.doClick();
-		softwareGUI.paymentScreen.getMembershipButton().doClick();
-		//assertTrue(session.getMembershipNumber().equals("0"));
-
-	} 
-	
-	@Test 
-	public void testSearchCatalogueAddItem() {
+	public void searchCatalogueAddItem() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.searchCatalogue.doClick();
 		softwareGUI.catalogue.getHashMapForButtons().keySet();
@@ -740,6 +321,507 @@ public class SoftwareGUITest{
 		assertEquals("1", softwareGUI.itemAmount.getText());
 		}
 		
+	}
+	
+	@Test
+	public void openAddBags() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		assertTrue(softwareGUI.addBagsScreen.isVisible());
+	}
+	
+	@Test
+	public void addPersonalBags() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getAddPersonalBagButton().doClick();
+		assertTrue(session.getState() == SessionState.ADDING_BAGS);
+	}
+	
+	@Test
+	public void openAddStoreBag() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
+		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().isVisible());
+
+	}
+	
+	@Test
+	public void addStoreBagOne() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
+		softwareGUI.addBagsScreen.getNumOfBagsScreen().getOne().doClick();
+		Assert.assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("1"));
+
+	}
+	
+	@Test
+	public void addStoreBagTwo() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
+		softwareGUI.addBagsScreen.getNumOfBagsScreen().getTwo().doClick();
+		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("2"));
+
+	}
+	
+	@Test
+	public void addStoreBagThree() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
+		softwareGUI.addBagsScreen.getNumOfBagsScreen().getThree().doClick();
+		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("3"));
+
+	}
+	
+	@Test
+	public void addStoreBagFour() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
+		softwareGUI.addBagsScreen.getNumOfBagsScreen().getFour().doClick();
+		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("4"));
+
+	}
+	
+	@Test
+	public void addStoreBagFive() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
+		softwareGUI.addBagsScreen.getNumOfBagsScreen().getFive().doClick();
+		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("5"));
+
+	}
+	
+	@Test
+	public void addStoreBagSix() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
+		softwareGUI.addBagsScreen.getNumOfBagsScreen().getSix().doClick();
+		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("6"));
+
+	}
+	
+	@Test
+	public void addStoreBagSeven() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
+		softwareGUI.addBagsScreen.getNumOfBagsScreen().getSeven().doClick();
+		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("7"));
+
+	}
+	
+	@Test
+	public void addStoreBagEight() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
+		softwareGUI.addBagsScreen.getNumOfBagsScreen().getEight().doClick();
+		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("8"));
+
+	}
+	
+	@Test
+	public void addStoreBagNine() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
+		softwareGUI.addBagsScreen.getNumOfBagsScreen().getNine().doClick();
+		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("9"));
+
+	}
+	
+	@Test
+	public void addStoreBagZero() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
+		softwareGUI.addBagsScreen.getNumOfBagsScreen().getZero().doClick();
+		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals("0"));
+
+	}
+	
+	@Test
+	public void addStoreBagDelete() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
+		softwareGUI.addBagsScreen.getNumOfBagsScreen().getOne().doClick();
+		softwareGUI.addBagsScreen.getNumOfBagsScreen().getDelete().doClick();
+		assertTrue(softwareGUI.addBagsScreen.getNumOfBagsScreen().getNumber().equals(""));
+
+	}
+	
+	@Test 
+	public void addStoreBagDone() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
+		softwareGUI.addBagsScreen.getNumOfBagsScreen().getDone().doClick();
+		//Where to check for bags 
+		assertTrue(false);
+
+	}
+	
+	@Test
+	public void openAddBagsClose() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.addBags.doClick();
+		softwareGUI.addBagsScreen.getCancelButton().doClick();
+		assertFalse(softwareGUI.addBagsScreen.getNumOfBagsScreen().isVisible());
+
+	}
+	
+	@Test
+	public void addPLUOpen() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		assertTrue(softwareGUI.pluNumPad.isVisible());
+		
+	}
+	
+	@Test
+	public void addPLUCodeOne() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		softwareGUI.pluNumPad.getOne().doClick();
+		assertTrue(softwareGUI.pluNumPad.getPlu().equals("1"));
+		
+	}
+	
+	@Test
+	public void addPLUCodeTwo() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		softwareGUI.pluNumPad.getTwo().doClick();
+		assertTrue(softwareGUI.pluNumPad.getPlu().equals("2"));
+
+	}
+	
+	@Test
+	public void addPLUCodeThree() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		softwareGUI.pluNumPad.getThree().doClick();
+		assertTrue(softwareGUI.pluNumPad.getPlu().equals("3"));
+
+	}
+	
+	@Test
+	public void addPLUCodeFour() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		softwareGUI.pluNumPad.getFour().doClick();
+		assertTrue(softwareGUI.pluNumPad.getPlu().equals("4"));
+
+	}
+	
+	@Test
+	public void addPLUCodeFive() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		softwareGUI.pluNumPad.getFive().doClick();
+		assertTrue(softwareGUI.pluNumPad.getPlu().equals("5"));
+
+	}
+	
+	@Test
+	public void addPLUCodeSix() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		softwareGUI.pluNumPad.getSix().doClick();
+		assertTrue(softwareGUI.pluNumPad.getPlu().equals("6"));
+
+	}
+	
+	@Test
+	public void addPLUCodeSeven() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		softwareGUI.pluNumPad.getSeven().doClick();
+		assertTrue(softwareGUI.pluNumPad.getPlu().equals("7"));
+
+	}
+	
+	@Test
+	public void addPLUCodeEight() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		softwareGUI.pluNumPad.getEight().doClick();
+		assertTrue(softwareGUI.pluNumPad.getPlu().equals("8"));
+
+	}
+	
+	@Test
+	public void addPLUCodeNine() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		softwareGUI.pluNumPad.getNine().doClick();
+		assertTrue(softwareGUI.pluNumPad.getPlu().equals("9"));
+
+	}
+	
+	@Test
+	public void addPLUCodeZero() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		softwareGUI.pluNumPad.getZero().doClick();
+		assertTrue(softwareGUI.pluNumPad.getPlu().equals("0"));
+
+
+	}
+	
+	@Test
+	public void addPLUCodeDelete() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		softwareGUI.pluNumPad.getOne().doClick();
+		softwareGUI.pluNumPad.getDelete().doClick();
+		assertTrue(softwareGUI.pluNumPad.getPlu().equals(""));
+
+	}
+	
+	@Test
+	public void addPLUCodeDone() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		softwareGUI.pluNumPad.getOne().doClick();
+		softwareGUI.pluNumPad.getDone().doClick();
+		assertTrue(session.getState() != SessionState.ADD_PLU_ITEM);
+	}
+	
+//Testing 0000	
+	@Test
+	public void addPLUValid() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		softwareGUI.pluNumPad.getZero().doClick();
+		softwareGUI.pluNumPad.getZero().doClick();
+		softwareGUI.pluNumPad.getZero().doClick();
+		softwareGUI.pluNumPad.getZero().doClick();
+		softwareGUI.pluNumPad.getDone().doClick();
+		
+		assertTrue(session.getState() == SessionState.ADD_PLU_ITEM);
+
+		
+	}
+	
+	@Test
+	public void addPLUInvalid() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pluCode.doClick();
+		softwareGUI.pluNumPad.getZero().doClick();
+		softwareGUI.pluNumPad.getZero().doClick();
+		softwareGUI.pluNumPad.getZero().doClick();
+		softwareGUI.pluNumPad.getTwo().doClick();
+		softwareGUI.pluNumPad.getDone().doClick();
+		robot.keyPress(KeyEvent.VK_ENTER);
+		robot.keyRelease(KeyEvent.VK_ENTER);
+		assertTrue(session.getState() != SessionState.ADD_PLU_ITEM);
+
+		
+	}
+
+	
+	@Test
+	public void cashCannotPayForEmpty() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getCashButton();
+		assertTrue(session.getState() == SessionState.IN_SESSION);
+
+	}
+	
+	@Test
+	public void cardCannotPayForEmpty() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getCardButton();
+		assertTrue(session.getState() == SessionState.IN_SESSION);
+	}
+	
+	@Test 
+	public void membershipButton() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getMembershipButton().doClick();
+		assertTrue(softwareGUI.paymentScreen.getMembershipPad().isVisible());
+	}
+	
+	@Test
+	public void membershipOne() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getMembershipButton().doClick();
+		softwareGUI.paymentScreen.getMembershipPad().getOne().doClick();
+		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("1"));
+		
+	}
+	
+	@Test
+	public void membershipTwo() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getMembershipButton().doClick();
+		softwareGUI.paymentScreen.getMembershipPad().getTwo().doClick();
+		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("2"));
+
+	}
+	
+	@Test
+	public void membershipThree() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getMembershipButton().doClick();
+		softwareGUI.paymentScreen.getMembershipPad().getThree().doClick();
+		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("3"));
+
+	}
+	
+	@Test
+	public void membershipFour() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getMembershipButton().doClick();
+		softwareGUI.paymentScreen.getMembershipPad().getFour().doClick();
+		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("4"));
+
+	}
+	
+	@Test
+	public void membershipFive() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getMembershipButton().doClick();
+		softwareGUI.paymentScreen.getMembershipPad().getFive().doClick();
+		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("5"));
+
+	}
+	
+	@Test
+	public void membershipSix() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getMembershipButton().doClick();
+		softwareGUI.paymentScreen.getMembershipPad().getSix().doClick();
+		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("6"));
+
+	}
+	
+	@Test
+	public void membershipSeven() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getMembershipButton().doClick();
+		softwareGUI.paymentScreen.getMembershipPad().getSeven().doClick();
+		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("7"));
+
+	}
+	
+	@Test
+	public void membershipEight() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getMembershipButton().doClick();
+		softwareGUI.paymentScreen.getMembershipPad().getEight().doClick();
+		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("8"));
+
+	}
+	
+	@Test
+	public void membershipNine() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getMembershipButton().doClick();
+		softwareGUI.paymentScreen.getMembershipPad().getNine().doClick();
+		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("9"));
+
+	}
+	
+	@Test
+	public void membershipZero() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getMembershipButton().doClick();
+		softwareGUI.paymentScreen.getMembershipPad().getZero().doClick();
+		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals("0"));
+
+	}
+	
+	@Test
+	public void membershipDelete() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getMembershipButton().doClick();
+		softwareGUI.paymentScreen.getMembershipPad().getZero().doClick();
+		softwareGUI.paymentScreen.getMembershipPad().getDelete().doClick();
+		assertTrue(softwareGUI.paymentScreen.getMembershipPad().getNumber().equals(""));
+
+	}
+	
+	@Test
+	public void membershipDone() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getMembershipButton().doClick();
+		softwareGUI.paymentScreen.getMembershipPad().getZero().doClick();
+		softwareGUI.paymentScreen.getMembershipPad().getDone().doClick();
+		//assertTrue(session.getMembershipNumber().equals("0"));
+		assertTrue(false);
+
+	}
+	
+	@Test
+	public void membershipValid() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getMembershipButton().doClick();
+		//assertTrue(session.getMembershipNumber().equals("0"));
+
+	} 
+	
+	@Test
+	public void paymentNotValid() {
+		softwareGUI.btnStart.doClick();
+		softwareGUI.pay.doClick();
+		assertTrue(session.getState() == SessionState.IN_SESSION);
+	}
+
+	@Test 
+	public void endScreen() throws DisabledException, CashOverloadException {
+		
+		softwareGUI.btnStart.doClick();
+		scs.getMainScanner().scan(item);
+		scs.getBaggingArea().addAnItem(item);
+
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getCashButton().doClick();
+		
+		coinValidator.receive(coin);
+		coinValidator.receive(coin);
+		
+		assertTrue(softwareGUI.displayingEnd);
+	
+	}
+	
+	@Test 
+	public void hideScreen() {
+		
+		softwareGUI.hide();
+		assertFalse(softwareGUI.frame.isVisible());
+	}
+	
+	@Test 
+	public void unhideScreen() {
+		
+		softwareGUI.unhide();
+		assertTrue(softwareGUI.frame.isVisible());
 	}
 	
 }
