@@ -383,10 +383,10 @@ public class Session {
 		for(SessionListener l:listeners) {
 			l.sessionEnded(this);
 		}
-		// if the session is slated to be disabled, do that
-//		if (!disableSelf) {
-//			disable();
-//		}
+		//if the session is slated to be disabled, do that
+		if (!disableSelf) {
+			disable();
+		}
 	}
 
 	/**
