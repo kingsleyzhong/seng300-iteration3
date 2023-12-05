@@ -296,7 +296,7 @@ public class Session {
 	 * @param receiptPrinter
 	 *                       The PrintReceipt behavior
 	 * 
-	 * @param IremManager
+	 * @param ItemManager
 	 *                       The software for managing adding and removing items
 	 */
 	public void setup(ItemManager manager, Funds funds, Weight weight, Receipt receiptPrinter, Membership membership,
@@ -522,8 +522,7 @@ public class Session {
 				
 		}	
 	}
-	
-	// Move to receiptPrinter class 
+
 	public void printReceipt() {
 		receipt.printReceipt(manager.getItems());
 	}

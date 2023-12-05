@@ -101,11 +101,6 @@ public class Attendant {
 		}
 
 		@Override
-		public void sessionAboutToStart(Session session) {
-
-		}
-
-		@Override
 		public void sessionEnded(Session session) {
 			sessions.put(session,  Requests.NO_REQUEST); // resets the current Request to be NO_REQUEST
 
