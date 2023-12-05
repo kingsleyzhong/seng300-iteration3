@@ -139,9 +139,9 @@ public class HardwareGUITest {
 
         //cash panel stuff
         cashpanel = new CashPanel(scs);
-
-
         funds = new Funds(scs);
+        
+        
 
         coinValidator = scs.getCoinValidator();
         banknoteValidator = scs.getBanknoteValidator();
@@ -312,13 +312,14 @@ public class HardwareGUITest {
 		softwareGUI.btnStart.doClick();
 		hardwareGUI.buttonPanel.startButton.doClick();
 		
-		scs.getMainScanner().scan(item);
-		scs.getBaggingArea().addAnItem(item);
+		scs.getMainScanner().scan(item2);
+		scs.getBaggingArea().addAnItem(item2);
+		
 		softwareGUI.pay.doClick();
 		softwareGUI.paymentScreen.getCashButton().doClick();
 		
 		
-		//cashpanel.FiveBillBtn.doClick();
+		cashpanel.FiveBillBtn.doClick();
 		cashpanel.FiveBillBtn.doClick();
 		
 		Assert.assertEquals(BigDecimal.TEN , cashController.getCashPaid());
@@ -343,7 +344,23 @@ public class HardwareGUITest {
 
     @Test
     public void inputMultipleCoins() {
-
+		softwareGUI.btnStart.doClick();
+		hardwareGUI.buttonPanel.startButton.doClick();
+		
+		scs.getMainScanner().scan(item);
+		scs.getBaggingArea().addAnItem(item);
+		
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getCashButton().doClick();
+		
+		cashpanel.button_five_cent.doClick();
+		cashpanel.button_ten_cent.doClick();
+		cashpanel.button_twentyfive_cent.doClick();
+		cashpanel.button_one_coin.doClick();
+		cashpanel.btn_two_coin.doClick();
+		
+		Assert.assertEquals(BigDecimal.valueOf(3.40) , cashController.getCashPaid());
+		
     }
 
     @Test

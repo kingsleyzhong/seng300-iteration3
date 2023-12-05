@@ -75,7 +75,7 @@ public class CashPanel extends JPanel{
 	public JButton btn_two_coin;
 	public JButton btnNoncoin;
 	public JButton btn_remove_coins;
-	
+	public JButton button_five_cent;
 	
 	//coins
 	private Coin Five_Cent_Coin;
@@ -253,7 +253,7 @@ public class CashPanel extends JPanel{
 		Coins.setLayout(new GridLayout(5, 1, 15, 15));
 
 		//5 cent coin button
-		JButton button_five_cent = new PlainButton("5¢", Colors.color1);
+		button_five_cent = new PlainButton("5¢", Colors.color1);
 		button_five_cent.setForeground(Colors.color3);
 		button_five_cent.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
