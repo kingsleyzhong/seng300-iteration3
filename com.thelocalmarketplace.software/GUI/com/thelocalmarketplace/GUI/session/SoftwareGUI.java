@@ -85,10 +85,16 @@ public class SoftwareGUI{
 	public JButton searchCatalogue;
 	public JButton callAttendant;
 	public JButton pay;
+	public PlainButton hardwareButton;
+	public PlainButton attendantButton;
 	
     public PaymentPopup paymentScreen;
 	public AddBagsPopup addBagsScreen;
 	public PLUNumPad pluNumPad;
+	
+	public boolean displayingStart = false;
+	public boolean displayingEnd = false;
+	public boolean displayingDisabled = false;
 
 
     int quantity = 0;
@@ -118,6 +124,7 @@ public class SoftwareGUI{
 	
 	Timer discrepancyTimer;
 	Timer endTimer = null;
+	
 	
 	// Buttons
 	public SoftwareGUI(Session session) {
@@ -193,6 +200,7 @@ public class SoftwareGUI{
 	}
 	
 	public JPanel end() {
+		
 		JPanel main = new GradientPanel(Colors.color1, Colors.color2);
 		main.setLayout(new GridLayout(1, 0, 0, 0));
 		
@@ -248,7 +256,7 @@ public class SoftwareGUI{
 		orangePanel.setBackground(Colors.color5);
 		orangePanel.setLayout(new BorderLayout());
 				
-		JButton hardwareButton = new PlainButton("Hardware GUI", Colors.color5);
+		hardwareButton = new PlainButton("Hardware GUI", Colors.color5);
 		hardwareButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -256,7 +264,7 @@ public class SoftwareGUI{
 					
 			}		
 		});
-		JButton attendantButton = new PlainButton("Attendant GUI", Colors.color5);
+		attendantButton = new PlainButton("Attendant GUI", Colors.color5);
 		attendantButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -454,6 +462,7 @@ public class SoftwareGUI{
 	}
 	
 	public void displayStart() {
+		displayingStart = true;
 		frame.getContentPane().removeAll();
 		quantity = 0;
 		if(endTimer != null) endTimer.stop();
@@ -474,6 +483,7 @@ public class SoftwareGUI{
 	}
 	
 	public void displayEnd() {
+		displayingEnd = true;
 		frame.getContentPane().removeAll();
 		endPane = end();
 		frame.getContentPane().add(endPane);
@@ -483,6 +493,7 @@ public class SoftwareGUI{
 	}
 	
 	public void displayDisabled() {
+		displayingDisabled = true;
 		frame.getContentPane().removeAll();
 		JLabel disabled = new JLabel("THIS STATION IS DISABLED!");
 		disabled.setBackground(Colors.color1);

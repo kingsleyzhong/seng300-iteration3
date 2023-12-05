@@ -16,7 +16,8 @@ public class SessionListenerStub implements SessionListener{
 	public HashMap<Product, BigInteger> products = new HashMap<Product, BigInteger>();
 	public BigDecimal currentExpectedPrice;
 	public boolean discrepancy;
-	PLUCodedProduct pluProduct;
+	public PLUCodedProduct pluProduct;
+	public boolean sessionEnded;
 	
 	@Override
 	public void getRequest(Session session, Requests request) {
@@ -76,7 +77,7 @@ public class SessionListenerStub implements SessionListener{
 
 	@Override
 	public void sessionEnded(Session session) {
-		// TODO Auto-generated method stub
+		this.sessionEnded = true;
 		
 	}
 

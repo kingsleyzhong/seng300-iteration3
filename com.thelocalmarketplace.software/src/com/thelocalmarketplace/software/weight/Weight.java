@@ -8,8 +8,6 @@ import com.jjjwelectronics.IDeviceListener;
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.scale.ElectronicScaleListener;
 import com.jjjwelectronics.scale.IElectronicScale;
-import com.thelocalmarketplace.software.SessionState;
-
 import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 
 /**

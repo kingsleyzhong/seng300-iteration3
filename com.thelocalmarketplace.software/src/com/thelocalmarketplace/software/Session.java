@@ -239,35 +239,33 @@ public class Session {
 	private class PrinterListener implements ReceiptListener {
 
 		@Override
-		public void notifiyOutOfPaper() {
+		public void notifyOutOfPaper() {
 			notifyAttendant(Requests.CANT_PRINT_RECEIPT);
 			if(sessionState != SessionState.PRE_SESSION)
 			block();
 		}
 
 		@Override
-		public void notifiyOutOfInk() {
+		public void notifyOutOfInk() {
 			notifyAttendant(Requests.CANT_PRINT_RECEIPT);
 			if(sessionState != SessionState.PRE_SESSION)
 			block();
 		}
 
 		@Override
-		public void notifiyPaperRefilled() {
+		public void notifyPaperRefilled() {
 			if(sessionState != SessionState.PRE_SESSION && sessionState != SessionState.DISABLED)
 				resume();
 		}
 
 		@Override
-		public void notifiyInkRefilled() {
+		public void notifyInkRefilled() {
 			if(sessionState != SessionState.PRE_SESSION && sessionState != SessionState.DISABLED)
 				resume();
 		}
 
 		@Override
-		public void notifiyReceiptPrinted(int linesPrinted, int charsPrinted) {
-			// Should notifyPaid() not wait until receipt is successfully printed to change
-			// to PRE_SESSION?
+		public void notifyReceiptPrinted(int linesPrinted, int charsPrinted) {
 			notifySessionEnd();
 		}
 
@@ -385,8 +383,8 @@ public class Session {
 		for(SessionListener l:listeners) {
 			l.sessionEnded(this);
 		}
-		// if the session is slated to be disabled, do that
-		if (disableSelf) {
+		//if the session is slated to be disabled, do that
+		if (!disableSelf) {
 			disable();
 		}
 	}

@@ -1,15 +1,6 @@
 package com.thelocalmarketplace.software.test.items;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import org.junit.Before;
-import org.junit.Test;
-
+import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
 import com.jjjwelectronics.IDevice;
 import com.jjjwelectronics.IDeviceListener;
 import com.jjjwelectronics.Mass;
@@ -25,7 +16,15 @@ import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.items.ItemAddedRule;
 import com.thelocalmarketplace.software.items.ItemManager;
 import com.thelocalmarketplace.software.test.AbstractSessionTest;
-import ca.ucalgary.seng300.simulation.InvalidArgumentSimulationException;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Testing for the AddItemRule class
@@ -85,13 +84,13 @@ public class ItemAddedRuleTest extends AbstractSessionTest {
     }
 
     @Test(expected = InvalidArgumentSimulationException.class)
-    public void testNullSCS() {
+    public void nllSCS() {
         ItemManager itemManagerNull = null;
         new ItemAddedRule(scs.getMainScanner(), scs.getHandheldScanner(), itemManagerNull);
     }
 
     @Test
-    public void testAddBarcodeItemInDatabase() {
+    public void addBarcodeItemInDatabase() {
         session.start();
 
         while (!listener.barcodesScanned.contains(item.getBarcode())) {
@@ -102,7 +101,7 @@ public class ItemAddedRuleTest extends AbstractSessionTest {
     }
 
     @Test(expected = InvalidArgumentSimulationException.class)
-    public void testAddItemNotInDatabase() {
+    public void addItemNotInDatabase() {
         session.start();
 
         Barcode barcodeNotInDatabase = new Barcode(new Numeral[] { Numeral.five, Numeral.five, Numeral.eight });
@@ -114,14 +113,14 @@ public class ItemAddedRuleTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testSessionNotOn() {
+    public void sessionNotOn() {
         scs.getMainScanner().scan(item);
         HashMap<Product, BigInteger> productList = session.getItems();
         assertFalse(productList.containsKey(product));
     }
 
     @Test
-    public void testSessionFrozen() {
+    public void sessionFrozen() {
         session.start();
 
         while (!listener.barcodesScanned.contains(item.getBarcode())) {
@@ -140,7 +139,7 @@ public class ItemAddedRuleTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testNoExceptionsOccur() {
+    public void nExceptionsOccur() {
         scs.getMainScanner().turnOff();
         scs.getMainScanner().turnOn();
         scs.getMainScanner().disable();
@@ -149,7 +148,7 @@ public class ItemAddedRuleTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testAddBagInDatabase() {
+    public void addBagInDatabase() {
         session.start();
 
         /**

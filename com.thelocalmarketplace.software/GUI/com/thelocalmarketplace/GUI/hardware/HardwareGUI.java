@@ -82,7 +82,8 @@ public class HardwareGUI {
 	public JPanel screens;
 	public JPanel start;
 	public JPanel cashInput;
-	public JPanel card;
+	public CardPanel card;
+	private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	private int width;
 	private int height;
 	public boolean clicked = false;
@@ -439,6 +440,22 @@ public class HardwareGUI {
             index = -1;
         }
     }
+
+	public DefaultListModel<ItemObject> getItemsInBaggingArea() {
+		return itemsInBaggingArea;
+	}
+
+	public DefaultListModel<ItemObject> getItemsInCart() {
+		return itemsInCart;
+	}
+
+	public DefaultListModel<ItemObject> getItemsInScanningArea() {
+		return itemsInScanningArea;
+	}
+
+	public void setLastItem(ItemObject item) {
+		lastItem = item;
+	}
 
 	public static void setVisibility(boolean visibility) {
 		hardwareFrame.setVisible(visibility);
