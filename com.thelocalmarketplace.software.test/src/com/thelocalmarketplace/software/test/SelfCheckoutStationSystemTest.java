@@ -460,6 +460,18 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 		assertEquals("Session is in session", SessionState.IN_SESSION, session.getState());
 	}
 
+	@Test
+	public void removeAllItems() {
+		session.start();
+		for (int i = 0; i < 5; i++) {
+			scs.getMainScanner().scan(item);
+			scs.getBaggingArea().addAnItem(item);
+			scs.getBaggingArea().removeItem(item);
+		}
+
+		assertTrue(session.getItems().isEmpty());
+	}
+
 	// Tests for weight Discrepancy
 
 	@Test
