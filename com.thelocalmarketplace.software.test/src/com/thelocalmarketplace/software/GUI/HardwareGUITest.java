@@ -241,8 +241,10 @@ public class HardwareGUITest {
         Window[] windows = Window.getWindows();
         for (Window window : windows) {
             window.dispose();
-
-            timer.stop();
+           
+         if(timer != null) {
+        	 timer.stop();        	 
+         }
         }
 
     }
