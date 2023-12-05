@@ -106,7 +106,7 @@ public class PayByCashTest extends AbstractTest {
 	 * @throws CashOverloadException
 	 */
 	@Test
-
+	
 	public void invalidCoinObserved() throws DisabledException, CashOverloadException {
 		scs.getCoinSlot().enable();
 		Currency currency = Currency.getInstance(Locale.CANADA);

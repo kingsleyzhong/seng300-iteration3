@@ -5,7 +5,10 @@ import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.scanner.BarcodedItem;
+import com.tdc.CashOverloadException;
+import com.tdc.DisabledException;
 import com.tdc.banknote.BanknoteValidator;
+import com.tdc.coin.Coin;
 import com.tdc.coin.CoinValidator;
 import com.thelocalmarketplace.GUI.hardware.ButtonPanel;
 import com.thelocalmarketplace.GUI.hardware.CashPanel;
@@ -34,6 +37,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
+import java.util.List;
 import java.awt.event.InputEvent;
 
 /**
@@ -288,17 +292,59 @@ public class HardwareGUITest {
 
     @Test
     public void inputMultipleBills() {
-
+		softwareGUI.btnStart.doClick();
+		hardwareGUI.buttonPanel.startButton.doClick();
+		
+		scs.getMainScanner().scan(item2);
+		scs.getBaggingArea().addAnItem(item2);
+		
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getCashButton().doClick();
+		
+		
+		cashpanel.FiveBillBtn.doClick();
+		cashpanel.FiveBillBtn.doClick();
+		
+		Assert.assertEquals(BigDecimal.TEN , cashController.getCashPaid());
     }
 
     @Test
     public void inputNonBill() {
+		softwareGUI.btnStart.doClick();
+		hardwareGUI.buttonPanel.startButton.doClick();
+		
+		scs.getMainScanner().scan(item);
+		scs.getBaggingArea().addAnItem(item);
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getCashButton().doClick();
+		
+		cashpanel.NonBillBtn.doClick();
 
+		
+		Assert.assertEquals(BigDecimal.ZERO, cashController.getCashPaid());
     }
 
     @Test
     public void removeInputBills() {
+		softwareGUI.btnStart.doClick();
+		hardwareGUI.buttonPanel.startButton.doClick();
+		
+		scs.getMainScanner().scan(item);
+		scs.getBaggingArea().addAnItem(item);
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getCashButton().doClick();
+		
+		//add non bill
+		cashpanel.NonBillBtn.doClick();
+		
+		//check there is a dangling bill
+		Assert.assertTrue(scs.getBanknoteInput().hasDanglingBanknotes());
+		
+		//remove it 
+		cashpanel.RemoveInputBill.doClick();
 
+		//check that its been removed
+		Assert.assertFalse(scs.getBanknoteInput().hasDanglingBanknotes());
     }
 
     @Test
@@ -319,8 +365,8 @@ public class HardwareGUITest {
 		softwareGUI.paymentScreen.getCashButton().doClick();
 		
 		
-		cashpanel.FiveBillBtn.doClick();
-		cashpanel.FiveBillBtn.doClick();
+		cashpanel.TenBillBtn.doClick();
+		//cashpanel.FiveBillBtn.doClick();
 		
 		Assert.assertEquals(BigDecimal.TEN , cashController.getCashPaid());
     }
@@ -354,6 +400,7 @@ public class HardwareGUITest {
 		softwareGUI.paymentScreen.getCashButton().doClick();
 		
 		cashpanel.button_five_cent.doClick();
+		
 		cashpanel.button_ten_cent.doClick();
 		cashpanel.button_twentyfive_cent.doClick();
 		cashpanel.button_one_coin.doClick();
@@ -363,14 +410,45 @@ public class HardwareGUITest {
 		
     }
 
+
     @Test
-    public void inputNonCoin() {
+    public void inputNonCoin() throws DisabledException, CashOverloadException{
+		softwareGUI.btnStart.doClick();
+		hardwareGUI.buttonPanel.startButton.doClick();
+		
+		scs.getMainScanner().scan(item);
+		scs.getBaggingArea().addAnItem(item);
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getCashButton().doClick();
+		
+		cashpanel.btnNoncoin.doClick();
 
+		
+		Assert.assertEquals(BigDecimal.ZERO, cashController.getCashPaid());
     }
-
+    
+    //DONT KNOW WHAT TO ASSERT HERE
     @Test
     public void removeCoinTray() {
-
+    	
+		softwareGUI.btnStart.doClick();
+		hardwareGUI.buttonPanel.startButton.doClick();
+		
+		scs.getMainScanner().scan(item);
+		scs.getBaggingArea().addAnItem(item);
+		softwareGUI.pay.doClick();
+		softwareGUI.paymentScreen.getCashButton().doClick();
+		
+		
+		cashpanel.btnNoncoin.doClick();
+		
+		//check has 1 coin
+		//Assert.assertEquals(1, coins.size());
+		
+		cashpanel.btn_remove_coins.doClick();
+		
+		//check empty
+		//Assert.assertEquals(0, coins.size());
     }
 
     @Test
