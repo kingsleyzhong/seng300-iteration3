@@ -345,7 +345,28 @@ public class SessionTest extends AbstractTest {
     	// Reset
      	session.deRegister(stub);
     }
+   
+    @Test 
+    public void receiptPrinted() throws OverloadedDevice {
+    	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+    	session.start();
+     	SessionListenerStub stub = new SessionListenerStub();
+     	session.register(stub);
+     	
+    	itemManager.addItem(product);
+    	scs.getBaggingArea().addAnItem(barcodedItem);
     
+        scs.getPrinter().addPaper(512);
+        scs.getPrinter().addInk(1024);
+        
+        session.printReceipt();
+        scs.getPrinter().cutPaper();
+        
+        assertEquals(stub.sessionEnded, true);
+    	
+    	// Reset
+     	session.deRegister(stub);
+    }
     	
     /*
      *Sessions can only be disabled when in the pre-session state 
