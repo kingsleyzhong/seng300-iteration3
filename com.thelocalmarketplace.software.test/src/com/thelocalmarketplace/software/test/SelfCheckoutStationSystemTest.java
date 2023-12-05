@@ -529,7 +529,8 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 		}
 		scs.getBaggingArea().addAnItem(item);
 		session.payByCash();
-		scs.getScreen().disable();
+		scs.getCoinSlot().disable();
+		scs.getCoinSlot().receive(dollar);
 	}
 
 	@Test
