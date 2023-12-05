@@ -26,9 +26,17 @@ import com.thelocalmarketplace.software.attendant.Attendant;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.funds.PayByCash;
 
+import StubClasses.BarcodeScannerListenerStub;
+import StubClasses.CardListenerStub;
 import powerutility.PowerGrid;
 
 import javax.swing.*;
+
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

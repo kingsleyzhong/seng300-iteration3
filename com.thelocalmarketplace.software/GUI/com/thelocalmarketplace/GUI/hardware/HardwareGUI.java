@@ -83,7 +83,6 @@ public class HardwareGUI {
 	public JPanel start;
 	public JPanel cashInput;
 	public CardPanel card;
-	private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	private int width;
 	private int height;
 	public boolean clicked = false;
@@ -100,7 +99,6 @@ public class HardwareGUI {
 	public JPanel scanningPanel;
 	public JPanel baggingPanel;
 	public ButtonPanel buttonPanel;
-
 	private ItemObject lastObject = null;
 	protected ItemObject lastItem;
 
