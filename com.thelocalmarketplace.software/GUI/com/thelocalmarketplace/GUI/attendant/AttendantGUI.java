@@ -145,5 +145,9 @@ public class AttendantGUI {
 	public static void unhide() {
 		asScreen.getFrame().setVisible(true);
 	}
+
+	public boolean isVisibile() {
+		return asScreen.getFrame().isVisible();
+	}
 	
 }

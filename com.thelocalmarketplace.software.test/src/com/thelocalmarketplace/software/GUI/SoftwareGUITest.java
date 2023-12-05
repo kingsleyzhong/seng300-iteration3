@@ -30,6 +30,7 @@ import com.tdc.DisabledException;
 import com.tdc.banknote.BanknoteValidator;
 import com.tdc.coin.Coin;
 import com.tdc.coin.CoinValidator;
+import com.thelocalmarketplace.GUI.attendant.AttendantGUI;
 import com.thelocalmarketplace.GUI.hardware.CashPanel;
 import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
 import com.thelocalmarketplace.GUI.session.ProductPanel;
@@ -40,15 +41,19 @@ import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.Product;
+import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.attendant.Attendant;
+import com.thelocalmarketplace.software.attendant.IssuePredictor;
+import com.thelocalmarketplace.software.attendant.MaintenanceManager;
 import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
 import com.thelocalmarketplace.software.exceptions.InvalidActionException;
+import com.thelocalmarketplace.software.exceptions.NotDisabledSessionException;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.funds.PayByCash;
 import com.thelocalmarketplace.software.membership.Membership;
@@ -91,13 +96,15 @@ public class SoftwareGUITest{
 	private AttendantStation as;
 	private Session session;
 	private SoftwareGUI softwareGUI;
-	private HardwareGUI hardwaregui;
+	private MaintenanceManager manager;
+	private IssuePredictor predictor;
+	private HardwareGUI hardwareGUI;
+	private AttendantGUI attendantGUI;
 	
-	private CashPanel cashpanel;
+	
 	private CoinValidator coinValidator;
 	private BanknoteValidator banknoteValidator;
 	private CoinValidator validator;
-	private PayByCash cashController;
 	private Funds funds;
 	private Coin coin;
 	
@@ -115,9 +122,10 @@ public class SoftwareGUITest{
 	int runs = 0;
 
 
+
 	
 	@Before
-	public void setup() {
+	public void setup() throws NotDisabledSessionException {
 		barcode = new Barcode(new Numeral[] { Numeral.valueOf((byte) 1) });
 		product = new BarcodedProduct(barcode, "Some product", 1, 20.0);
 		SelfCheckoutStationLogic.populateDatabase(barcode, product, 20);
@@ -126,21 +134,33 @@ public class SoftwareGUITest{
 		pluProduct1 = new PLUCodedProduct(plu1, "Another product", 1);
 		SelfCheckoutStationLogic.populateDatabase(plu1, pluProduct1, 1);
 		
-		MembershipDatabase.registerMember("0", "name");
-		
-		scs = new SelfCheckoutStationGold();
+		item = new BarcodedItem(barcode, new Mass(20.0));
+		item2 = new BarcodedItem(barcode, new Mass(20.0));
+		scs = new SelfCheckoutStationBronze();
 		as = new AttendantStation();
+		
 		PowerGrid.engageUninterruptiblePowerSource();
 		scs.plugIn(PowerGrid.instance());
+		as.plugIn(PowerGrid.instance());
 		scs.turnOn();
+		as.turnOn();
+		
 		SelfCheckoutStationLogic.installAttendantStation(as);
+		attendant = SelfCheckoutStationLogic.getAttendant();
+		
 		SelfCheckoutStationLogic logic = SelfCheckoutStationLogic.installOn(scs);
 		session = logic.getSession();
-		softwareGUI = new SoftwareGUI(session);
-		hardwaregui = new HardwareGUI(scs, as);
+		session.getStation().setSupervisor(as);
 		
-		//cash panel stuff
-		cashpanel = new CashPanel(scs);
+		session.disable();
+		manager = new MaintenanceManager();
+		manager.openHardware(session);
+		
+		predictor = attendant.getIssuePredictor(session);
+		
+		hardwareGUI = new HardwareGUI(scs, as);
+		attendantGUI = new AttendantGUI(attendant, manager, predictor);
+		softwareGUI = new SoftwareGUI(session);
 		
 		funds = new Funds(scs);
 
@@ -149,14 +169,13 @@ public class SoftwareGUITest{
 		
 		Currency currency = Currency.getInstance(Locale.CANADA);
 		coin = new Coin(currency, new BigDecimal(1));
-
-		cashController = new PayByCash(coinValidator, banknoteValidator, funds);
 		
 		scs.getScreen().setVisible(true);
 		
+		session.enable();
+		hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.buttonPanel.sessionScreen.doClick();
 
-		item = new BarcodedItem(barcode, new Mass(20.0));
-		item2 = new BarcodedItem(barcode, new Mass(20.0));
 		
 		
 /***
@@ -200,6 +219,7 @@ public class SoftwareGUITest{
 	
 	
 	
+	
 	@Test
 	public void preSession() {
 		assertTrue(softwareGUI.frame.isVisible());
@@ -227,7 +247,7 @@ public class SoftwareGUITest{
 	public void openAttendantScreen() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.attendantButton.doClick();
-		assertTrue(false);
+		assertTrue(attendantGUI.isVisibile());
 	}
 	
 	@Test
@@ -264,7 +284,7 @@ public class SoftwareGUITest{
 		softwareGUI.btnStart.doClick();
 		scs.getMainScanner().scan(item);
 		assertTrue(softwareGUI.cartItemsPanel.contains(product));
-		assertEquals("$10.00", softwareGUI.cartTotalInDollars.getText());
+		assertEquals("$1.00", softwareGUI.cartTotalInDollars.getText());
 		assertEquals("20.00g", softwareGUI.infoWeightNumber.getText());
 	}
 	
@@ -275,7 +295,7 @@ public class SoftwareGUITest{
 		scs.getBaggingArea().addAnItem(item);
 		scs.getMainScanner().scan(item2);
 		assertTrue(softwareGUI.cartItemsPanel.contains(product));
-		assertEquals("$20.00", softwareGUI.cartTotalInDollars.getText());
+		assertEquals("$2.00", softwareGUI.cartTotalInDollars.getText());
 		assertEquals("40.00g", softwareGUI.infoWeightNumber.getText());
 	}
 	
@@ -804,7 +824,6 @@ public class SoftwareGUITest{
 		softwareGUI.paymentScreen.getCashButton().doClick();
 		
 		coinValidator.receive(coin);
-		coinValidator.receive(coin);
 		
 		assertTrue(softwareGUI.displayingEnd);
 	
@@ -824,4 +843,17 @@ public class SoftwareGUITest{
 		assertTrue(softwareGUI.frame.isVisible());
 	}
 	
+	
+	@Test 
+	public void removingAProduct() {
+		
+		softwareGUI.btnStart.doClick();
+		scs.getMainScanner().scan(item);
+		scs.getBaggingArea().addAnItem(item);
+		
+		softwareGUI.cartItemsPanel.getNewPanel().getMinusButton();
+		
+		assertTrue(softwareGUI.itemAmount.getText().equals("0"));
+		
+	}
 }
