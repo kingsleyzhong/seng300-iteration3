@@ -525,4 +525,69 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 		assertTrue(funds.isPay());
 	}
 
+	@Test
+	public void powerCycle(){
+		scs.getBaggingArea().turnOff();
+		scs.getScanningArea().turnOff();
+		scs.getMainScanner().turnOff();
+		scs.getHandheldScanner().turnOff();
+		scs.getScreen().turnOff();
+		scs.getReusableBagDispenser().turnOff();
+		scs.getPrinter().turnOff();
+		scs.getCardReader().turnOff();
+		
+		scs.getBaggingArea().turnOn();
+		scs.getScanningArea().turnOn();
+		scs.getMainScanner().turnOn();
+		scs.getHandheldScanner().turnOn();
+		scs.getScreen().turnOn();
+		scs.getReusableBagDispenser().turnOn();
+		scs.getPrinter().turnOn();
+		scs.getCardReader().turnOn();
+
+		scs.getBaggingArea().disable();
+		scs.getScanningArea().disable();
+		scs.getScreen().disable();
+		scs.getReusableBagDispenser().disable();
+		scs.getPrinter().disable();
+		scs.getCardReader().disable();
+		scs.getMainScanner().disable();
+		scs.getHandheldScanner().disable();
+		scs.getBanknoteInput().disable();
+		scs.getBanknoteOutput().disable();
+		scs.getBanknoteValidator().disable();
+		scs.getBanknoteStorage().disable();
+		scs.getCoinSlot().disable();
+		scs.getCoinValidator().disable();
+		scs.getCoinStorage().disable();
+
+		scs.getBaggingArea().enable();
+		scs.getScanningArea().enable();
+		scs.getScreen().enable();
+		scs.getReusableBagDispenser().enable();
+		scs.getPrinter().enable();
+		scs.getCardReader().enable();
+		scs.getMainScanner().enable();
+		scs.getHandheldScanner().enable();
+		scs.getBanknoteInput().enable();
+		scs.getBanknoteOutput().enable();
+		scs.getBanknoteValidator().enable();
+		scs.getBanknoteStorage().enable();
+		scs.getCoinSlot().enable();
+		scs.getCoinValidator().enable();
+		scs.getCoinStorage().enable();
+		
+		for(BigDecimal denomination : scs.getBanknoteDenominations()){
+			scs.getBanknoteDispensers().get(denomination).disable();
+			scs.getBanknoteDispensers().get(denomination).enable();
+		}
+		for(BigDecimal denomination : scs.getCoinDenominations()){
+			scs.getCoinDispensers().get(denomination).disable();
+			scs.getCoinDispensers().get(denomination).enable();
+		}
+
+	
+		assertEquals(SessionState.PRE_SESSION, session.getState());
+	}
+
 }

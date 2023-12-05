@@ -75,15 +75,12 @@ public class PayByCardTest extends AbstractTest {
 	private Card cdnDep;
 	private Card debit;
 	private Funds funds;
-	private PayByCard pbc;
 
 	@Before
 	public void setup() {
 		basicDefaultSetup();
 
 		funds = new Funds(scs);
-
-		pbc = new PayByCard(scs.getCardReader(), funds);
 
 		ci1 = new CardIssuer(SupportedCardIssuers.ONE.getIssuer(), 1);
 		ci2 = new CardIssuer(SupportedCardIssuers.TWO.getIssuer(), 5);
@@ -152,7 +149,6 @@ public class PayByCardTest extends AbstractTest {
 		funds.update(itemPrice);
 		funds.setPay(true);
 		while (!funds.successfulSwipe) {
-			System.out.print("I ran");
 			try {
 				scs.getCardReader().swipe(cdnDep);
 			} catch (MagneticStripeFailureException e) {

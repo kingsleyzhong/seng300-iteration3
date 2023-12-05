@@ -20,6 +20,12 @@ public class ReusableBagTest {
     public ReusableBag dispense() throws EmptyDevice {
       return new ReusableBag(); // will be used for verifying the dispense method
     }
+
+	@Override
+	public int getQuantityRemaining() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
   }
 
   private AbstractReusableBagDispenser bagDispenser;

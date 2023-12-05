@@ -1,9 +1,18 @@
 package com.thelocalmarketplace.software.test;
 
+import static org.junit.Assert.*;
 import StubClasses.SessionListenerStub;
 import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+
+import com.jjjwelectronics.EmptyDevice;
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
+import com.jjjwelectronics.OverloadedDevice;
 import com.jjjwelectronics.printer.IReceiptPrinter;
 import com.jjjwelectronics.scale.IElectronicScale;
 import com.jjjwelectronics.scanner.Barcode;
@@ -17,6 +26,7 @@ import com.thelocalmarketplace.hardware.AttendantStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionState;
+import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.items.BagDispenserController;
@@ -78,6 +88,7 @@ public class SessionTest extends AbstractTest {
     private Numeral[] digits;
     private Barcode barcode;
     private Barcode barcode2;
+    private BarcodedItem barcodedItem;
 
     private Funds funds;
     private Weight weight;
@@ -107,6 +118,7 @@ public class SessionTest extends AbstractTest {
         barcode2 = new Barcode(new Numeral[] { numeral });
         product = new BarcodedProduct(barcode, "Sample Product", 10, 100.0);
         product2 = new BarcodedProduct(barcode2, "Sample Product 2", 15, 20.0);
+        barcodedItem = new BarcodedItem(barcode, new Mass(product.getExpectedWeight()));
         funds = new Funds(scs);
         itemManager = new ItemManager();
         bagDispenser = new BagDispenserController(scs.getReusableBagDispenser(), itemManager);
@@ -121,6 +133,12 @@ public class SessionTest extends AbstractTest {
         membership = new Membership(scs.getCardReader());
     }
 
+    @After
+    public void clearDatabase() {
+    	ProductDatabases.BARCODED_PRODUCT_DATABASE.clear();
+    	ProductDatabases.PLU_PRODUCT_DATABASE.clear();
+    }
+    
     @Test
     public void sessionInitialization() {
         assertEquals(session.getState(), SessionState.PRE_SESSION);
@@ -218,7 +236,6 @@ public class SessionTest extends AbstractTest {
         // Reset
         session.deRegister(stub);
         itemManager.removeItem(product);
-        
     }
     
     @Test
@@ -239,14 +256,139 @@ public class SessionTest extends AbstractTest {
     }
     
     @Test
+    public void aPLUCodeWasEnteredListenerNotified() {
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+        session.start();
+     	SessionListenerStub stub = new SessionListenerStub();
+        session.register(stub);
+        
+        PriceLookUpCode pluCode = new PriceLookUpCode("1234");
+        PLUCodedProduct pluProduct = new PLUCodedProduct(pluCode, "bread", 500);
+        SelfCheckoutStationLogic.populateDatabase(pluCode, pluProduct, num);
+        itemManager.addItem(pluCode);
+        
+        assertTrue(stub.pluProduct.getPLUCode().equals(pluCode));
+        
+        // Reset
+        session.deRegister(stub);
+    }
+    
+    
+    @Test
+    public void addItemInSessionDiscrepancy() {
+    	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+    	session.start();
+     	SessionListenerStub stub = new SessionListenerStub();
+     	session.register(stub);
+     	
+    	scs.getBaggingArea().addAnItem(barcodedItem);
+     	
+     	assertTrue(stub.request == Requests.WEIGHT_DISCREPANCY);
+    	// Reset
+     	session.deRegister(stub);
+     	scs.getBaggingArea().removeAnItem(barcodedItem);
+
+    }
+    
+    @Test
     public void cancelSessionInSession() {
         session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.start();
         session.cancel();
         assertTrue(session.getState() == SessionState.PRE_SESSION);
+    }
+    
+    @Test(expected = InvalidActionException.class)
+    public void membershipEnteredNotInAddingState() {
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+        session.enterMembership();
+    }
+    
+    @Test
+    public void paperRefilledAndLow() throws EmptyDevice, OverloadedDevice {
+    	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+    	session.start();
+     	SessionListenerStub stub = new SessionListenerStub();
+     	session.register(stub);
+     	scs.getPrinter().addInk(1);
+    	scs.getPrinter().addPaper(1);
+    	assertEquals(session.getState(), SessionState.IN_SESSION);
+    	
+    	scs.getPrinter().print('\n');
+
+    	assertEquals(stub.request, Requests.CANT_PRINT_RECEIPT);
+    	// Reset
+     	session.deRegister(stub);
+    }
+    
+    @Test
+    public void inkRefilledAndLow() throws OverloadedDevice, EmptyDevice {
+    	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+    	session.start();
+     	SessionListenerStub stub = new SessionListenerStub();
+     	session.register(stub);
+     	scs.getPrinter().addInk(1);
+    	scs.getPrinter().addPaper(2);
+    	scs.getPrinter().print('9');
+    	assertEquals(stub.request, Requests.CANT_PRINT_RECEIPT);
+    	
+    	// Reset
+     	session.deRegister(stub);
+    }
+   
+    @Test 
+    public void receiptPrinted() throws OverloadedDevice {
+    	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+    	session.start();
+     	SessionListenerStub stub = new SessionListenerStub();
+     	session.register(stub);
+     	
+    	itemManager.addItem(product);
+    	scs.getBaggingArea().addAnItem(barcodedItem);
+    
+        scs.getPrinter().addPaper(512);
+        scs.getPrinter().addInk(1024);
+        
+        session.printReceipt();
+        scs.getPrinter().cutPaper();
+        
+        assertEquals(stub.sessionEnded, true);
+    	
+    	// Reset
+     	session.deRegister(stub);
+    }
+    	
+    @Test
+    public void sessionNotProgressLowInk() throws OverloadedDevice, EmptyDevice {
+    	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+
+     	scs.getPrinter().addInk(1);
+    	scs.getPrinter().addPaper(2);
+    	scs.getPrinter().print('9');
+    	assertFalse(session.getState() == SessionState.BLOCKED);
+    }
+    
+    @Test
+    public void refillWhileNotInProgressAndDisabled() throws OverloadedDevice, EmptyDevice {
+    	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+    	session.disable();
+     	scs.getPrinter().addInk(1);
+    	scs.getPrinter().addPaper(2);
+    	assertFalse(session.getState() == SessionState.IN_SESSION);
     	
     }
-      
+    
+    
+    @Test
+    public void sessionNotProgressLowPaper() throws OverloadedDevice, EmptyDevice {
+    	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+
+     	scs.getPrinter().addInk(1);
+    	scs.getPrinter().addPaper(1);
+    	scs.getPrinter().print('\n');
+    	assertFalse(session.getState() == SessionState.BLOCKED);
+    }
+    
     /*
      *Sessions can only be disabled when in the pre-session state 
      */

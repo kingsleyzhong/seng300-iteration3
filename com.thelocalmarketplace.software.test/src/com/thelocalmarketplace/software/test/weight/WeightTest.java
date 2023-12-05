@@ -124,8 +124,6 @@ public class WeightTest extends AbstractTest {
 		Item item = new BarcodedItem(barcode, new Mass(150.0));
 		scs.getBaggingArea().addAnItem(item); // Simulate the scale reporting a new mass
 		
-//		System.out.println(weight.getExpectedWeight() + " " + weight.getActualWeight());
-//		System.out.println(weight.isDiscrepancy());
 		assertTrue("Discrepancy flag should be true.", weight.isDiscrepancy());
 		assertTrue("Discrepancy should be notified.", weightListener.discrepancyNotified);
 	}

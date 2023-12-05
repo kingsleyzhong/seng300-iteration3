@@ -30,7 +30,6 @@ public class PayByCashTest extends AbstractTest {
 		// TODO Auto-generated constructor stub
 	}
 
-	private CoinValidator validator;
 	private PayByCash cashController;
 	private BigDecimal value;
 	private BigDecimal price;

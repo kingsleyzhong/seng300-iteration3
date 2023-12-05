@@ -4,8 +4,6 @@ import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationSilver;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import powerutility.PowerGrid;
 
 import java.lang.reflect.InvocationTargetException;

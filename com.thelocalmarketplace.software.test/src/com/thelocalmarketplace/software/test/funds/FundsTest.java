@@ -255,7 +255,6 @@ public class FundsTest extends AbstractTest {
 		// Cleanup from other methods
 		funds.setPay(false);
 		
-		Currency currency = Currency.getInstance(Locale.CANADA);
 		FundsListenerStub stub = new FundsListenerStub();
 		price = BigDecimal.valueOf(1);
 		funds.register(stub);
