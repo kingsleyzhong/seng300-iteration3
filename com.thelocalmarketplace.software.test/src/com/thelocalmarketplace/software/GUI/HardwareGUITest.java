@@ -1,5 +1,6 @@
 package com.thelocalmarketplace.software.GUI;
 
+import StubClasses.CardListenerStub;
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.scanner.Barcode;
@@ -66,6 +67,7 @@ public class HardwareGUITest {
     private Session session;
     private SoftwareGUI softwareGUI;
     private HardwareGUI hardwareGUI;
+    private CardListenerStub cardListenerStub;
 
     private CashPanel cashpanel;
     private CoinValidator coinValidator;
@@ -133,6 +135,8 @@ public class HardwareGUITest {
 
         coinValidator = scs.getCoinValidator();
         banknoteValidator = scs.getBanknoteValidator();
+        cardListenerStub = new CardListenerStub();
+        scs.getCardReader().register(cardListenerStub);
 
         cashController = new PayByCash(coinValidator, banknoteValidator, funds);
 
@@ -352,47 +356,101 @@ public class HardwareGUITest {
 
     @Test
     public void creditCardSwipe() {
-
+        hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.card.creditCardButton.doClick();
+        try {
+            hardwareGUI.card.swipeButton.doClick();
+        }
+        catch (Exception e) {}
+        Assert.assertTrue(cardListenerStub.cardSwiped);
     }
 
     @Test
     public void creditCardInsert() {
-
+        hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.card.creditCardButton.doClick();
+        try {
+            hardwareGUI.card.insertButton.doClick();
+        }
+        catch (Exception e) {}
+        Assert.assertTrue(cardListenerStub.cardInserted);
     }
 
     @Test
     public void creditCardTap() {
-
+        hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.card.creditCardButton.doClick();
+        try {
+            hardwareGUI.card.tapButton.doClick();
+        }
+        catch (Exception e) {}
+        Assert.assertTrue(cardListenerStub.cardTapped);
     }
     
     @Test
     public void debitCardSwipe() {
-
+        hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.card.debitCardButton.doClick();
+        try {
+            hardwareGUI.card.swipeButton.doClick();
+        }
+        catch (Exception e) {}
+        Assert.assertTrue(cardListenerStub.cardSwiped);
     }
 
     @Test
     public void debitCardInsert() {
-
+        hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.card.creditCardButton.doClick();
+        try {
+            hardwareGUI.card.insertButton.doClick();
+        }
+        catch (Exception e) {}
+        Assert.assertTrue(cardListenerStub.cardInserted);
     }
 
     @Test
     public void debitCardTap() {
-
+        hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.card.creditCardButton.doClick();
+        try {
+            hardwareGUI.card.tapButton.doClick();
+        }
+        catch (Exception e) {}
+        Assert.assertTrue(cardListenerStub.cardTapped);
     }
 
     @Test
     public void invalidCardSwipe() {
-
+        hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.card.invalidCardButton.doClick();
+        try {
+            hardwareGUI.card.swipeButton.doClick();
+        }
+        catch (Exception e) {}
+        Assert.assertTrue(cardListenerStub.cardSwiped);
     }
 
     @Test
     public void invalidCardInsert() {
-
+        hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.card.invalidCardButton.doClick();
+        try {
+            hardwareGUI.card.tapButton.doClick();
+        }
+        catch (Exception e) {}
+        Assert.assertTrue(cardListenerStub.cardTapped);
     }
 
     @Test
     public void invalidCardTap() {
-
+        hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.card.invalidCardButton.doClick();
+        try {
+            hardwareGUI.card.tapButton.doClick();
+        }
+        catch (Exception e) {}
+        Assert.assertTrue(cardListenerStub.cardTapped);
     }
 
 
