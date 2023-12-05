@@ -1,19 +1,21 @@
 package com.thelocalmarketplace.software.test.items;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.jjjwelectronics.EmptyDevice;
 import com.jjjwelectronics.bag.AbstractReusableBagDispenser;
 import com.jjjwelectronics.bag.ReusableBag;
 import com.thelocalmarketplace.software.items.BagDispenserController;
 import com.thelocalmarketplace.software.items.ItemManager;
+import org.junit.Before;
+import org.junit.Test;
 
 public class ReusableBagTest {
   // stub an instance of AbstractReusableBagDispenser
   private static class ReusableBagDispenser extends AbstractReusableBagDispenser {
+    @Override
+    public int getQuantityRemaining() {
+      return 0;
+    }
+
     @Override
     public ReusableBag dispense() throws EmptyDevice {
       return new ReusableBag(); // will be used for verifying the dispense method
@@ -39,14 +41,14 @@ public class ReusableBagTest {
   }
 
   @Test
-  public void testDispenseBag() {
+  public void dispenseBag() {
     bagDispenserController.dispenseBag(1);
 
     // needs assertions
   }
 
   @Test (expected = EmptyDevice.class)
-  public void testDispenseBagWithEmptyDispenser() {
+  public void dispenseBagWithEmptyDispenser() {
     // refactor the dispense method to throw EmptyDevice
     AbstractReusableBagDispenser emptyDispenser = new AbstractReusableBagDispenser() {
       @Override

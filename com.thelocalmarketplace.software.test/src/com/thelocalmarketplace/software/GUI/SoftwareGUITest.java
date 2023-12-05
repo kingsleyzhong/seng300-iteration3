@@ -1,24 +1,5 @@
 package com.thelocalmarketplace.software.GUI;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.awt.AWTException;
-import java.awt.Robot;
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.math.BigDecimal;
-
-import javax.swing.Timer;
-
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.scanner.Barcode;
@@ -29,26 +10,28 @@ import com.thelocalmarketplace.GUI.hardware.CashPanel;
 import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
 import com.thelocalmarketplace.GUI.session.ProductPanel;
 import com.thelocalmarketplace.GUI.session.SoftwareGUI;
-import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
-import com.thelocalmarketplace.hardware.AttendantStation;
-import com.thelocalmarketplace.hardware.BarcodedProduct;
-import com.thelocalmarketplace.hardware.PLUCodedProduct;
-import com.thelocalmarketplace.hardware.PriceLookUpCode;
-import com.thelocalmarketplace.hardware.Product;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
-import com.thelocalmarketplace.hardware.external.ProductDatabases;
+import com.thelocalmarketplace.hardware.*;
 import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.attendant.Attendant;
-import com.thelocalmarketplace.software.exceptions.CartEmptyException;
-import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.funds.PayByCash;
-import com.thelocalmarketplace.software.membership.Membership;
 import com.thelocalmarketplace.software.membership.MembershipDatabase;
-
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import powerutility.PowerGrid;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.math.BigDecimal;
+
+import static org.junit.Assert.*;
 
 public class SoftwareGUITest{
 
@@ -153,7 +136,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testPayWithCoin() {
+	public void payWithCoin() {
 		softwareGUI.btnStart.doClick();
 		
 		scs.getMainScanner().scan(item);
@@ -171,14 +154,14 @@ public class SoftwareGUITest{
 	
 	
 	@Test
-	public void testStart() {
+	public void start() {
 		assertTrue(softwareGUI.frame.isVisible());
 		assertTrue(softwareGUI.frame.getContentPane().getComponent(0) == softwareGUI.startPane);
 		assertTrue(session.getState() == SessionState.PRE_SESSION);
 	}
 	
 	@Test
-	public void testStartButton() {
+	public void startButton() {
 		softwareGUI.btnStart.doClick();
 		assertFalse(softwareGUI.frame.getContentPane().getComponent(0) == softwareGUI.startPane);
 		assertTrue(softwareGUI.frame.getContentPane().getComponent(0) == softwareGUI.mainPane);
@@ -186,14 +169,14 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testPayButton() {
+	public void payButton() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pay.doClick();
 		assertTrue(softwareGUI.paymentScreen.isVisible());
 	}
 	
 	@Test
-	public void testAddItem() {
+	public void addItem() {
 		softwareGUI.btnStart.doClick();
 		scs.getMainScanner().scan(item);
 		assertTrue(softwareGUI.cartItemsPanel.contains(product));
@@ -202,7 +185,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAdd2Items() {
+	public void add2Items() {
 		softwareGUI.btnStart.doClick();
 		scs.getMainScanner().scan(item);
 		scs.getBaggingArea().addAnItem(item);
@@ -214,7 +197,7 @@ public class SoftwareGUITest{
 	
 	@Test
 	
-	public void testAddItemDoPayCash() {
+	public void addItemDoPayCash() {
 		softwareGUI.btnStart.doClick();
 		scs.getMainScanner().scan(item);
 		scs.getBaggingArea().addAnItem(item);
@@ -224,7 +207,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAddItemDoPayCard() {
+	public void addItemDoPayCard() {
 		softwareGUI.btnStart.doClick();
 		scs.getMainScanner().scan(item);
 		scs.getBaggingArea().addAnItem(item);
@@ -234,27 +217,27 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testOpenCatalog() {
+	public void openCatalog() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.searchCatalogue.doClick();
 		assertTrue(softwareGUI.catalogue.isVisible());
 	}
 	
 	@Test
-	public void testUpdate() {
+	public void update() {
 		assertTrue(false);
 		
 	}
 	
 	@Test
-	public void testOpenAddBags() {
+	public void openAddBags() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.addBags.doClick();
 		assertTrue(softwareGUI.addBagsScreen.isVisible());
 	}
 	
 	@Test
-	public void testAddPersonalBags() {
+	public void addPersonalBags() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.addBags.doClick();
 		softwareGUI.addBagsScreen.getAddPersonalBagButton().doClick();
@@ -262,7 +245,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testOpenAddStoreBag() {
+	public void openAddStoreBag() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.addBags.doClick();
 		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
@@ -271,7 +254,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAddStoreBagOne() {
+	public void addStoreBagOne() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.addBags.doClick();
 		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
@@ -281,7 +264,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAddStoreBagTwo() {
+	public void addStoreBagTwo() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.addBags.doClick();
 		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
@@ -291,7 +274,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAddStoreBagThree() {
+	public void addStoreBagThree() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.addBags.doClick();
 		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
@@ -301,7 +284,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAddStoreBagFour() {
+	public void addStoreBagFour() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.addBags.doClick();
 		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
@@ -311,7 +294,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAddStoreBagFive() {
+	public void addStoreBagFive() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.addBags.doClick();
 		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
@@ -321,7 +304,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAddStoreBagSix() {
+	public void addStoreBagSix() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.addBags.doClick();
 		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
@@ -331,7 +314,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAddStoreBagSeven() {
+	public void addStoreBagSeven() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.addBags.doClick();
 		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
@@ -341,7 +324,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAddStoreBagEight() {
+	public void addStoreBagEight() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.addBags.doClick();
 		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
@@ -351,7 +334,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAddStoreBagNine() {
+	public void addStoreBagNine() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.addBags.doClick();
 		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
@@ -361,7 +344,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAddStoreBagZero() {
+	public void addStoreBagZero() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.addBags.doClick();
 		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
@@ -371,7 +354,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAddStoreBagDelete() {
+	public void addStoreBagDelete() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.addBags.doClick();
 		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
@@ -382,7 +365,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test 
-	public void testAddStoreBagDone() {
+	public void addStoreBagDone() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.addBags.doClick();
 		softwareGUI.addBagsScreen.getAddStoreBagButton().doClick();
@@ -393,7 +376,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testOpenAddBagsClose() {
+	public void openAddBagsClose() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.addBags.doClick();
 		softwareGUI.addBagsScreen.getCancelButton().doClick();
@@ -402,7 +385,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAddPLUOpen() {
+	public void addPLUOpen() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pluCode.doClick();
 		assertTrue(softwareGUI.pluNumPad.isVisible());
@@ -410,7 +393,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAddPLUCodeOne() {
+	public void addPLUCodeOne() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pluCode.doClick();
 		softwareGUI.pluNumPad.getOne().doClick();
@@ -419,7 +402,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAddPLUCodeTwo() {
+	public void addPLUCodeTwo() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pluCode.doClick();
 		softwareGUI.pluNumPad.getTwo().doClick();
@@ -428,7 +411,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAddPLUCodeThree() {
+	public void addPLUCodeThree() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pluCode.doClick();
 		softwareGUI.pluNumPad.getThree().doClick();
@@ -437,7 +420,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAddPLUCodeFour() {
+	public void addPLUCodeFour() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pluCode.doClick();
 		softwareGUI.pluNumPad.getFour().doClick();
@@ -446,7 +429,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAddPLUCodeFive() {
+	public void addPLUCodeFive() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pluCode.doClick();
 		softwareGUI.pluNumPad.getFive().doClick();
@@ -455,7 +438,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAddPLUCodeSix() {
+	public void addPLUCodeSix() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pluCode.doClick();
 		softwareGUI.pluNumPad.getSix().doClick();
@@ -464,7 +447,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAddPLUCodeSeven() {
+	public void addPLUCodeSeven() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pluCode.doClick();
 		softwareGUI.pluNumPad.getSeven().doClick();
@@ -473,7 +456,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAddPLUCodeEight() {
+	public void addPLUCodeEight() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pluCode.doClick();
 		softwareGUI.pluNumPad.getEight().doClick();
@@ -482,7 +465,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAddPLUCodeNine() {
+	public void addPLUCodeNine() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pluCode.doClick();
 		softwareGUI.pluNumPad.getNine().doClick();
@@ -491,7 +474,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAddPLUCodeZero() {
+	public void addPLUCodeZero() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pluCode.doClick();
 		softwareGUI.pluNumPad.getZero().doClick();
@@ -501,7 +484,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAddPLUCodeDelete() {
+	public void addPLUCodeDelete() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pluCode.doClick();
 		softwareGUI.pluNumPad.getOne().doClick();
@@ -511,7 +494,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAddPLUCodeDone() {
+	public void addPLUCodeDone() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pluCode.doClick();
 		softwareGUI.pluNumPad.getOne().doClick();
@@ -521,7 +504,7 @@ public class SoftwareGUITest{
 	
 //Testing 0000	
 	@Test
-	public void testAddPLUValid() {
+	public void addPLUValid() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pluCode.doClick();
 		softwareGUI.pluNumPad.getZero().doClick();
@@ -540,7 +523,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testAddPLUInvalid() {
+	public void addPLUInvalid() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pluCode.doClick();
 		softwareGUI.pluNumPad.getZero().doClick();
@@ -557,7 +540,7 @@ public class SoftwareGUITest{
 
 	
 	@Test
-	public void testCashCannotPayForEmpty() {
+	public void cashCannotPayForEmpty() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pay.doClick();
 		softwareGUI.paymentScreen.getCashButton();
@@ -566,7 +549,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testCardCannotPayForEmpty() {
+	public void cardCannotPayForEmpty() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pay.doClick();
 		softwareGUI.paymentScreen.getCardButton();
@@ -574,7 +557,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test 
-	public void testMembershipButton() {
+	public void membershipButton() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pay.doClick();
 		softwareGUI.paymentScreen.getMembershipButton().doClick();
@@ -582,7 +565,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testMembershipOne() {
+	public void membershipOne() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pay.doClick();
 		softwareGUI.paymentScreen.getMembershipButton().doClick();
@@ -592,7 +575,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testMembershipTwo() {
+	public void membershipTwo() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pay.doClick();
 		softwareGUI.paymentScreen.getMembershipButton().doClick();
@@ -602,7 +585,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testMembershipThree() {
+	public void membershipThree() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pay.doClick();
 		softwareGUI.paymentScreen.getMembershipButton().doClick();
@@ -612,7 +595,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testMembershipFour() {
+	public void membershipFour() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pay.doClick();
 		softwareGUI.paymentScreen.getMembershipButton().doClick();
@@ -622,7 +605,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testMembershipFive() {
+	public void membershipFive() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pay.doClick();
 		softwareGUI.paymentScreen.getMembershipButton().doClick();
@@ -632,7 +615,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testMembershipSix() {
+	public void membershipSix() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pay.doClick();
 		softwareGUI.paymentScreen.getMembershipButton().doClick();
@@ -642,7 +625,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testMembershipSeven() {
+	public void membershipSeven() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pay.doClick();
 		softwareGUI.paymentScreen.getMembershipButton().doClick();
@@ -652,7 +635,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testMembershipEight() {
+	public void membershipEight() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pay.doClick();
 		softwareGUI.paymentScreen.getMembershipButton().doClick();
@@ -662,7 +645,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testMembershipNine() {
+	public void membershipNine() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pay.doClick();
 		softwareGUI.paymentScreen.getMembershipButton().doClick();
@@ -672,7 +655,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testMembershipZero() {
+	public void membershipZero() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pay.doClick();
 		softwareGUI.paymentScreen.getMembershipButton().doClick();
@@ -682,7 +665,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testMembershipDelete() {
+	public void membershipDelete() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pay.doClick();
 		softwareGUI.paymentScreen.getMembershipButton().doClick();
@@ -693,7 +676,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testMembershipDone() {
+	public void membershipDone() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pay.doClick();
 		softwareGUI.paymentScreen.getMembershipButton().doClick();
@@ -705,7 +688,7 @@ public class SoftwareGUITest{
 	}
 	
 	@Test
-	public void testMembershipValid() {
+	public void membershipValid() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.pay.doClick();
 		softwareGUI.paymentScreen.getMembershipButton().doClick();
@@ -714,7 +697,7 @@ public class SoftwareGUITest{
 	} 
 	
 	@Test 
-	public void testSearchCatalogueAddItem() {
+	public void searchCatalogueAddItem() {
 		softwareGUI.btnStart.doClick();
 		softwareGUI.searchCatalogue.doClick();
 		softwareGUI.catalogue.getHashMapForButtons().keySet();
