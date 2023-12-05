@@ -115,7 +115,6 @@ public class SoftwareGUI{
 	private int height;
 	private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	
-	
 	// Panel components of JFrame
 	JPanel orangePanel;
 	JPanel cartInfoPanel;

@@ -53,9 +53,6 @@ import java.awt.event.ActionEvent;
 public class AddBagsPopup {
 
 	JFrame frame;
-	
-	// JFrame size
-
 	private JPanel panel;
 	private JLabel bagOptions;
 

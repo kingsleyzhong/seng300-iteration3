@@ -87,7 +87,7 @@ public class ItemObject {
 
         //final DataFlavor flavor;
 
-        try {//from  w  w  w  . j  a  va 2s .  c  o m
+        try {
             flavor = new DataFlavor(localObject);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
@@ -119,9 +119,7 @@ public class ItemObject {
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);
                 }
-
             }
-
         };
     }
 }

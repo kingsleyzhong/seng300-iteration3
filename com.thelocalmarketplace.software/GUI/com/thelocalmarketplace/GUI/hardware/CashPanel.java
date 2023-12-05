@@ -263,8 +263,6 @@ public class CashPanel extends JPanel{
 				} catch (DisabledException | CashOverloadException e1) {
 					JOptionPane.showMessageDialog(null, "Coin Not Accepted");
 				}
-				
-				
 			}
 		});
 		Coins.add(button_five_cent);
@@ -280,8 +278,6 @@ public class CashPanel extends JPanel{
 				} catch (DisabledException | CashOverloadException e1) {
 					JOptionPane.showMessageDialog(null, "Coin Not Accepted");
 				}
-				
-				
 			}
 		});
 		Coins.add(button_ten_cent);
@@ -297,8 +293,6 @@ public class CashPanel extends JPanel{
 				} catch (DisabledException | CashOverloadException e1) {
 					JOptionPane.showMessageDialog(null, "Coin Not Accepted");
 				}
-				
-				
 			}
 		});
 		Coins.add(button_twentyfive_cent);
@@ -369,11 +363,6 @@ public class CashPanel extends JPanel{
 			}
 		});
 		Coins.add(btn_remove_coins);
-
-		
-		
-	
-		
 	}
 	
 	public void setUpCashData() {
@@ -400,9 +389,6 @@ public class CashPanel extends JPanel{
 		
 		//Bill that should be rejected
 		Non_Bill  = new Banknote(Currency.getInstance( Locale.CANADA )   , BigDecimal.valueOf(5000.00));
-		
-		
-		
 	}
 	
 	
