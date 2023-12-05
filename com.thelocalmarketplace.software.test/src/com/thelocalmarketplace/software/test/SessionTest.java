@@ -122,13 +122,13 @@ public class SessionTest extends AbstractTest {
     }
 
     @Test
-    public void testSessionInitialization() {
+    public void sessionInitialization() {
         assertEquals(session.getState(), SessionState.PRE_SESSION);
         assertFalse(session.getState().inPay());
     }
 
     @Test
-    public void testStartSession() {
+    public void startSession() {
     	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.start();
         assertEquals(session.getState(), SessionState.IN_SESSION);
@@ -136,7 +136,7 @@ public class SessionTest extends AbstractTest {
     }
 
     @Test
-    public void testCancelSession() {
+    public void cancelSession() {
     	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.start();
         session.cancel();
@@ -159,7 +159,7 @@ public class SessionTest extends AbstractTest {
     }
 
     @Test
-    public void testPaid() throws DisabledException, CashOverloadException {
+    public void paid() throws DisabledException, CashOverloadException {
         session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.start();
         itemManager.addItem(product);
@@ -251,14 +251,14 @@ public class SessionTest extends AbstractTest {
      *Sessions can only be disabled when in the pre-session state 
      */
     @Test
-    public void testDisableSession() {
+    public void disableSession() {
         session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
      	
         session.disable();
         assertTrue(session.getState()== SessionState.DISABLED);
     }
     @Test
-    public void testDisableSessionStarted() {
+    public void disableSessionStarted() {
         session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
      	session.start();
         session.disable();
@@ -268,14 +268,14 @@ public class SessionTest extends AbstractTest {
      * Sessions can only be enabled when they are disabled, no effect otherwise
      */
     @Test
-    public void testEnableSession() {
+    public void enableSession() {
         session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.disable();
         session.enable();
         assertTrue(session.getState() != SessionState.DISABLED);
     }
     @Test
-    public void testEnableSessionNotDisabled() {
+    public void enableSessionNotDisabled() {
         session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.start();
         SessionState preState = session.getState();

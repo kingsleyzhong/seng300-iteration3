@@ -91,12 +91,12 @@ public class PrintReceiptTest extends AbstractSessionTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testNullStation() {
+    public void nllStation() {
         receiptPrinter = new Receipt(null);
     }
 
     @Test
-    public void testBarcodedItemPrintReceipt() throws OverloadedDevice {
+    public void barcodedItemPrintReceipt() throws OverloadedDevice {
         scs.getPrinter().addPaper(512);
         scs.getPrinter().addInk(1024);
         session.start();
@@ -114,7 +114,7 @@ public class PrintReceiptTest extends AbstractSessionTest {
     }
     
     @Test
-    public void testPLUItemPrintReceipt() throws OverloadedDevice {
+    public void pLUItemPrintReceipt() throws OverloadedDevice {
         scs.getPrinter().addPaper(512);
         scs.getPrinter().addInk(1024);
         session.start();
@@ -132,7 +132,7 @@ public class PrintReceiptTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testPrintReceiptOnlyAddPaper() throws OverloadedDevice {
+    public void printReceiptOnlyAddPaper() throws OverloadedDevice {
         session.start();
         itemManager.addItem(product);
         session.printReceipt();
@@ -147,7 +147,7 @@ public class PrintReceiptTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testPrintReceiptOnlyAddInk() throws OverloadedDevice {
+    public void printReceiptOnlyAddInk() throws OverloadedDevice {
         session.start();
         
         itemManager.addItem(product);
@@ -168,7 +168,7 @@ public class PrintReceiptTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testMultipleItemPrintReceipt() throws OverloadedDevice {
+    public void multipleItemPrintReceipt() throws OverloadedDevice {
         scs.getPrinter().addPaper(512);
         scs.getPrinter().addInk(1024);
         session.start();
@@ -200,7 +200,7 @@ public class PrintReceiptTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testPrintReceiptOutOffPaper() throws OverloadedDevice {
+    public void printReceiptOutOffPaper() throws OverloadedDevice {
         scs.getPrinter().addPaper(2);
         scs.getPrinter().addInk(1024);
         session.start();
@@ -222,7 +222,7 @@ public class PrintReceiptTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testPrintReceiptOutOffInk() throws OverloadedDevice {
+    public void printReceiptOutOffInk() throws OverloadedDevice {
         scs.getPrinter().addPaper(512);
         scs.getPrinter().addInk(20);
         session.start();
@@ -242,7 +242,7 @@ public class PrintReceiptTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testPrintReceiptReloadPaper() throws OverloadedDevice {
+    public void printReceiptReloadPaper() throws OverloadedDevice {
         scs.getPrinter().addPaper(1);
         scs.getPrinter().addInk(1024);
         session.start();
@@ -272,7 +272,7 @@ public class PrintReceiptTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testPrintReceiptReloadInk() throws OverloadedDevice {
+    public void printReceiptReloadInk() throws OverloadedDevice {
         scs.getPrinter().addPaper(512);
         scs.getPrinter().addInk(20);
         session.start();
@@ -301,7 +301,7 @@ public class PrintReceiptTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testRegisterListener() throws OverloadedDevice {
+    public void registerListener() throws OverloadedDevice {
         PrinterListener stub = new PrinterListener();
         receiptPrinter.register(stub);
         scs.getPrinter().addPaper(512);
@@ -322,14 +322,14 @@ public class PrintReceiptTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testDeregisterListener() throws OverloadedDevice {
+    public void deregisterListener() throws OverloadedDevice {
         PrinterListener stub = new PrinterListener();
         receiptPrinter.register(stub);
         assertTrue(receiptPrinter.deregister(stub));
     }
 
     @Test
-    public void testDeregisterAllListeners() throws OverloadedDevice {
+    public void deregisterAllListeners() throws OverloadedDevice {
         PrinterListener stub = new PrinterListener();
         receiptPrinter.register(stub);
         receiptPrinter.deregisterAll();
@@ -337,7 +337,7 @@ public class PrintReceiptTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testPrintingLineLongerThenCharLimit() throws OverloadedDevice {
+    public void printingLineLongerThenCharLimit() throws OverloadedDevice {
         BarcodedProduct product3 = new BarcodedProduct(barcode2,
                 "A very long long long long long long long product name", 15, 20.0);
         scs.getPrinter().addPaper(512);

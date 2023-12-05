@@ -127,16 +127,11 @@ public class PayByCardTest extends AbstractTest {
 		scs.getCardReader().deregisterAll();
 	}
 
-	// ---------- BRONZE TESTS ----------
-
 	@Test(expected = NoPowerException.class)
 	public void powerOffSwipe() throws IOException {
 		scs.turnOff();
 		scs.getCardReader().swipe(debit);
 		scs.turnOn();
-		// Swiping a card when the reader is not supposed to be in use (wrong session
-		// state
-		// Expect that aCardHasBeenSwiped throws InvalidActionException
 	}
 
 	@Test(expected = InvalidActionException.class)
@@ -148,14 +143,10 @@ public class PayByCardTest extends AbstractTest {
 			} catch (MagneticStripeFailureException e) {
 			}
 		}
-		// Swiping a card when the reader is not supposed to be in use (wrong session
-		// state
-		// Expect that aCardHasBeenSwiped throws InvalidActionException
 	}
 
 	@Test(expected = InvalidActionException.class)
-	public void testInvalidCardNumber()
-			throws IOException, CashOverloadException, NoCashAvailableException, DisabledException {
+	public void invalidCardNumber() throws IOException {
 		long price = 100;
 		BigDecimal itemPrice = new BigDecimal(price);
 		funds.update(itemPrice);
@@ -167,14 +158,10 @@ public class PayByCardTest extends AbstractTest {
 			} catch (MagneticStripeFailureException e) {
 			}
 		}
-		// The card numbers do not match and will decline a card if the card is blocked
-		// authorizeHold should return -1
-		// How do we effectively call authorize hold
 	}
 
 	@Test(expected = InvalidActionException.class)
-	public void testBlockedCard()
-			throws IOException, CashOverloadException, NoCashAvailableException, DisabledException {
+	public void blockedCard() throws IOException {
 		long price = 100;
 		BigDecimal itemPrice = new BigDecimal(price);
 		funds.update(itemPrice);
@@ -187,17 +174,10 @@ public class PayByCardTest extends AbstractTest {
 			} catch (MagneticStripeFailureException e) {
 			}
 		}
-		// This will decline a card if the card is blocked
-		// authorizeHold should return -1
 	}
 
-	// PayByCard currently is not capable of doing anything with the -1 value;
-	// change this?
-	// Otherwise testing both that cards are counting correct hold counts or not
-	// (redundant?)
 	@Test(expected = InvalidActionException.class)
-	public void testHoldCountDecline()
-			throws IOException, CashOverloadException, NoCashAvailableException, DisabledException {
+	public void holdCountDecline() throws IOException {
 		ci1.authorizeHold(disCard.number, 1);
 		long price = 100;
 		BigDecimal itemPrice = new BigDecimal(price);
@@ -215,8 +195,7 @@ public class PayByCardTest extends AbstractTest {
 	}
 
 	@Test(expected = InvalidActionException.class)
-	public void testAvailableBalanceDecline()
-			throws IOException, CashOverloadException, NoCashAvailableException, DisabledException {
+	public void availableBalanceDecline() throws IOException {
 		long price = 1000000;
 		BigDecimal itemPrice = new BigDecimal(price);
 		funds.update(itemPrice);
@@ -227,13 +206,10 @@ public class PayByCardTest extends AbstractTest {
 			} catch (MagneticStripeFailureException e) {
 			}
 		}
-		// This will decline a card if there is insufficient available balance
-		// postTransaction should return false
 	}
 
 	@Test
-	public void testSuccessfulSwipe()
-			throws CashOverloadException, NoCashAvailableException, DisabledException, IOException {
+	public void successfulSwipe() throws IOException {
 		long price = 10;
 		BigDecimal itemPrice = new BigDecimal(price);
 		funds.update(itemPrice);
@@ -246,14 +222,11 @@ public class PayByCardTest extends AbstractTest {
 			} catch (MagneticStripeFailureException e) {
 			}
 		}
-		// This will post a successful charge on the given card
-		// postTransaction should return true
 		assertTrue(funds.payed);
 	}
 
 	@Test
-	public void testSuccessfulTap()
-			throws CashOverloadException, NoCashAvailableException, DisabledException, IOException {
+	public void successfulTap() throws IOException {
 		long price = 2;
 		BigDecimal itemPrice = new BigDecimal(price);
 		funds.update(itemPrice);
@@ -266,14 +239,11 @@ public class PayByCardTest extends AbstractTest {
 			} catch (ChipFailureException e) {
 			}
 		}
-		// This will post a successful charge on the given card
-		// postTransaction should return true
 		assertTrue(funds.payed);
 	}
 
 	@Test(expected = InvalidPINException.class)
-	public void testIncorrectPin()
-			throws CashOverloadException, NoCashAvailableException, DisabledException, IOException {
+	public void incorrectPin() throws IOException {
 		long price = 10;
 		BigDecimal itemPrice = new BigDecimal(price);
 		funds.update(itemPrice);
@@ -287,8 +257,7 @@ public class PayByCardTest extends AbstractTest {
 	}
 
 	@Test
-	public void testSuccessfulInsert()
-			throws CashOverloadException, NoCashAvailableException, DisabledException, IOException {
+	public void successfulInsert() throws IOException {
 		long price = 10;
 		BigDecimal itemPrice = new BigDecimal(price);
 		funds.update(itemPrice);
@@ -301,8 +270,6 @@ public class PayByCardTest extends AbstractTest {
 			} catch (InvalidPINException | ChipFailureException e) {
 			}
 		}
-		// This will post a successful charge on the given card
-		// postTransaction should return true
 		assertTrue(funds.payed);
 	}
 

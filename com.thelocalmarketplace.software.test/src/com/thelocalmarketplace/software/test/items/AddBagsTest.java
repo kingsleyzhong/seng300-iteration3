@@ -114,7 +114,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * Expected Behavior: the session remains in the pre-session state
 	 */
 	@Test
-	public void test_addBags_beforeStartSession_stateUnchanged() {
+	public void addBags_beforeStartSession_stateUnchanged() {
 		// call addBags
 		session.cancel();
 		session.addBags();
@@ -134,7 +134,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * Expected Behavior: the expected weight on the scale doesnt change
 	 */
 	@Test
-	public void test_addBags_beforeStartSession_expectedWeightUnchanged() {
+	public void addBags_beforeStartSession_expectedWeightUnchanged() {
 		session.cancel();
 		// save the expected Mass before adding the bag
 		Mass expectedMassBefore = weight.getExpectedWeight();
@@ -160,7 +160,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * Expected behavior: Session.sessionState == ADDING_BAGS
 	 */
 	@Test
-	public void test_addBags_updatesSessionState() {
+	public void addBags_updatesSessionState() {
 		// start session:
 
 		// call addBags
@@ -180,7 +180,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 */
 	// bug found
 	@Test
-	public void test_addBags_addingBagsUnblocksSession() {
+	public void addBags_addingBagsUnblocksSession() {
 		// start session:
 
 		// call addBags
@@ -201,7 +201,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * Expected behavior: the expected weight of session is updated
 	 */
 	@Test
-	public void test_addBags_updatesExpectedWeight() {
+	public void addBags_updatesExpectedWeight() {
 		// start session:
 
 		// save the expected Mass before adding the bag
@@ -230,7 +230,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * Expected behavior: the expected weight of session is not updated
 	 */
 	@Test
-	public void test_addBags_unexpectedChange_doesntUpdateExpectedWeight() {
+	public void addBags_unexpectedChange_doesntUpdateExpectedWeight() {
 		// start session:
 
 		// pre-test: add an item to the bagging area
@@ -262,7 +262,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * Expected behavior: the session is blocked (this is a weight discrepancy)
 	 */
 	@Test
-	public void test_addBags_unexpectedChange_blocksSession() {
+	public void addBags_unexpectedChange_blocksSession() {
 		// pre-test: add an item to the bagging area
 		weight.update(notBagMass); // sets the expected mass on the scale to already know about the bag
 
@@ -287,7 +287,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * Expected behavior: Session is blocked
 	 */
 	@Test
-	public void test_addBags_overweightBag_blockSession() {
+	public void addBags_overweightBag_blockSession() {
 		// start session:
 
 		// call addBags
@@ -308,7 +308,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * Expected behavior: expected weight is unchanged
 	 */
 	@Test
-	public void test_addBags_overweightBag_doesntUpdateExpectedWeight() {
+	public void addBags_overweightBag_doesntUpdateExpectedWeight() {
 		// start session:
 
 		// save the expected Mass before adding the bag
@@ -336,7 +336,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * Expected behavior: Session is blocked
 	 */
 	@Test
-	public void test_addBags_weightLimitBag_blockSession() {
+	public void addBags_weightLimitBag_blockSession() {
 		// start session:
 
 		// call addBags
@@ -357,7 +357,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * Expected behavior: expected weight is unchanged
 	 */
 	@Test
-	public void test_addBags_weightLimitBag_expectedWeightIsNotUpdated() {
+	public void addBags_weightLimitBag_expectedWeightIsNotUpdated() {
 		// start session:
 
 		// save the expected Mass before adding the bag
@@ -386,7 +386,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * Expected Behavior: the session remains in the pre-session state
 	 */
 	@Test
-	public void test_purchaseBags_beforeStartSession_stateUnchanged() {
+	public void purchaseBags_beforeStartSession_stateUnchanged() {
 		
 		session.cancel();
 		session.purchaseBags(1);
@@ -406,7 +406,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * Expected Behavior: the expected weight on the scale doesnt change
 	 */
 	@Test
-	public void test_purchaseBags_beforeStartSession_expectedWeightUnchanged() {
+	public void purchaseBags_beforeStartSession_expectedWeightUnchanged() {
 		// save the expected Mass before adding the bag
 		session.cancel();
 		Mass expectedMassBefore = weight.getExpectedWeight();
@@ -432,7 +432,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 */
 	
 	@Test
-	public void test_purchaseBags_beforeStartSession_noBagsDispensed() {
+	public void purchaseBags_beforeStartSession_noBagsDispensed() {
 		// save the expected Mass before adding the bag
 		session.cancel();
 		int expectedTotalBags = scs.getReusableBagDispenser().getQuantityRemaining();
@@ -459,7 +459,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 */
 	// bug found
 	@Test
-	public void test_purchaseBags_addingBagsUnblocksSession() {
+	public void purchaseBags_addingBagsUnblocksSession() {
 		// start session:
 
 		// call addBags
@@ -480,7 +480,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * Expected behavior: the expected weight of session is updated
 	 */
 	@Test
-	public void test_purchaseBags_updatesExpectedWeight() {
+	public void purchaseBags_updatesExpectedWeight() {
 		// start session:
 
 		// save the expected Mass before adding the bag
@@ -509,7 +509,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * Expected behavior: the expected weight of session is updated
 	 */
 	@Test
-	public void test_purchaseMultipleBags_updatesExpectedWeight() {
+	public void purchaseMultipleBags_updatesExpectedWeight() {
 
 		Mass massBefore = weight.getExpectedWeight();
 		double weightBefore = massBefore.inGrams().doubleValue();
@@ -542,7 +542,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * Expected behavior: the expected weight of session is updated
 	 */
 	@Test
-	public void test_purchaseBags_updatesBagsLeft() {
+	public void purchaseBags_updatesBagsLeft() {
 		// start session:
 
 		// save the expected Mass before adding the bag
@@ -570,7 +570,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * Expected behavior: the expected weight of session is updated
 	 */
 	@Test
-	public void test_purchaseMultipleBags_updatesBagsLeft() {
+	public void purchaseMultipleBags_updatesBagsLeft() {
 		// start session:
 
 		// save the expected Mass before adding the bag
@@ -599,7 +599,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * Expected behavior: the expected weight of session is updated
 	 */
 	@Test
-	public void test_purchaseMultipleBags_orderUpdatedCorrectly() {
+	public void purchaseMultipleBags_orderUpdatedCorrectly() {
 	
 		session.purchaseBags(2);
 
@@ -623,7 +623,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * Expected behavior: Session is blocked
 	 */
 	@Test
-	public void test_purchaseBags_overweightBag_blockSession() {
+	public void purchaseBags_overweightBag_blockSession() {
 		// start session:
 
 		// call addBags
@@ -642,7 +642,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * Expected behavior: expected weight is unchanged
 	 */
 	@Test
-	public void test_purchaseBags_overweightBag_UpdatesExpectedWeight() {
+	public void purchaseBags_overweightBag_UpdatesExpectedWeight() {
 		// start session:
 
 		// save the expected Mass before adding the bag
@@ -669,7 +669,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * Expected behavior: State is changed to SessionState.In_SESSION
 	 */
 	@Test
-	public void test_removePurchasedBags_updatesState() {
+	public void removePurchasedBags_updatesState() {
 		// start session:
 
 		// call addBags
@@ -691,7 +691,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * Expected behavior: Expected Weight of the session is not updated
 	 */
 	@Test
-	public void test_removePurchasedBags_UpdateExpectedWeight() {
+	public void removePurchasedBags_UpdateExpectedWeight() {
 		// start session:
 
 		// save the expected Mass before adding the bag
@@ -722,7 +722,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * Expected behavior: State is changed to SessionState.In_SESSION
 	 */
 	@Test
-	public void test_cancelAddBags_updatesState() {
+	public void cancelAddBags_updatesState() {
 		// call addBags
 		session.addBags();
 
@@ -742,7 +742,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * Expected behavior: Expected Weight of the session is not updated
 	 */
 	@Test
-	public void test_cancelAddBags_doesntUpdateExpectedWeight() {
+	public void cancelAddBags_doesntUpdateExpectedWeight() {
 		// save the expected Mass before adding the bag
 		Mass expectedMassBefore = weight.getExpectedWeight();
 
@@ -769,7 +769,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * Expected behavior: State is unchanged and remains in the PRE_SESSION state
 	 */
 	@Test
-	public void test_cancelAddBags_doesntUpdatesState_PRE_SESSION() {
+	public void cancelAddBags_doesntUpdatesState_PRE_SESSION() {
 		// dont start session
 		session.cancel();
 
@@ -788,7 +788,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * Expected behavior: State is SessionState.BLOCKED
 	 */
 	@Test
-	public void test_cancelAddBags_blocksSystem() {
+	public void cancelAddBags_blocksSystem() {
 		// start session:
 
 		// call addBags
@@ -811,7 +811,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * Tests using a double (representing the desired maximum bag weight in grams)
 	 */
 	@Test
-	public void test_configureMAXBAGWEIGHT_byDouble() {
+	public void configureMAXBAGWEIGHT_byDouble() {
 		double newMAXBAGWEIGHT = 6.78; // 6.79g
 		// create a Mass using this
 		Mass expectedMaxBagWeight = new Mass(newMAXBAGWEIGHT);
@@ -834,7 +834,7 @@ public class AddBagsTest extends AbstractSessionTest {
 	 * micrograms)
 	 */
 	@Test
-	public void test_configureMAXBAGWEIGHT_byLong() {
+	public void configureMAXBAGWEIGHT_byLong() {
 		long newMAXBAGWEIGHT = 678; // 679g
 		// create a Mass using this
 		Mass expectedMaxBagWeight = new Mass(newMAXBAGWEIGHT);

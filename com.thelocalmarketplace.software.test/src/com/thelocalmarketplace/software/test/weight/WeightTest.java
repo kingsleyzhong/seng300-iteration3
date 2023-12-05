@@ -89,7 +89,7 @@ public class WeightTest extends AbstractTest {
 	}
 
 	@Test
-	public void testUpdateWithOneItem() {
+	public void updateWithOneItem() {
 		Mass mass1 = new Mass(2.0);
 		weight.update(mass1);
 		Mass expected = mass1;
@@ -98,7 +98,7 @@ public class WeightTest extends AbstractTest {
 	}
 
 	@Test
-	public void testUpdateWithTwoItems() {
+	public void updateWithTwoItems() {
 		Mass mass1 = new Mass(2.0);
 		Mass mass2 = new Mass(200.0);
 		weight.update(mass1);
@@ -109,7 +109,7 @@ public class WeightTest extends AbstractTest {
 	}
 
 	@Test
-	public void testTheMassOnTheScaleHasChangedUpdatesActualWeight() {
+	public void theMassOnTheScaleHasChangedUpdatesActualWeight() {
 		Mass newMass = new Mass(10.0);
 		Barcode barcode = new Barcode(new Numeral[] { Numeral.valueOf((byte) 1) });
 		Item item = new BarcodedItem(barcode, new Mass(10.0));
@@ -118,7 +118,7 @@ public class WeightTest extends AbstractTest {
 	}
 
 	@Test
-	public void testCheckDiscrepancyWithDifferentWeights() {
+	public void checkDiscrepancyWithDifferentWeights() {
 		weight.update(new Mass(100.0)); // Set expected weight to 100
 		Barcode barcode = new Barcode(new Numeral[] { Numeral.valueOf((byte) 1) });
 		Item item = new BarcodedItem(barcode, new Mass(150.0));
@@ -131,7 +131,7 @@ public class WeightTest extends AbstractTest {
 	}
 
 	@Test
-	public void testCheckDiscrepancyWithSameWeights() {
+	public void checkDiscrepancyWithSameWeights() {
 		weight.update(new Mass(100.0)); // Set expected weight to 100
 		Barcode barcode = new Barcode(new Numeral[] { Numeral.valueOf((byte) 1) });
 		Item item = new BarcodedItem(barcode, new Mass(100.0));
@@ -140,7 +140,7 @@ public class WeightTest extends AbstractTest {
 	}
 
 	@Test
-	public void testCheckDiscrepancySmallDifference() {
+	public void checkDiscrepancySmallDifference() {
 		weight.update(new Mass(100.0)); // Set expected weight to 100
 		Barcode barcode = new Barcode(new Numeral[] { Numeral.valueOf((byte) 1) });
 		Item item = new BarcodedItem(barcode, new Mass(104.0));
@@ -149,7 +149,7 @@ public class WeightTest extends AbstractTest {
 	}
 
 	@Test
-	public void testCheckDiscrepancyFixed() {
+	public void checkDiscrepancyFixed() {
 		weight.update(new Mass(100.0)); // Set expected weight to 100
 		Barcode barcode = new Barcode(new Numeral[] { Numeral.valueOf((byte) 1) });
 		Item item = new BarcodedItem(barcode, new Mass(50.0));
@@ -160,17 +160,17 @@ public class WeightTest extends AbstractTest {
 	}
 
 	@Test(expected = NullPointerSimulationException.class)
-	public void testRegisterNullListener() {
+	public void registerNullListener() {
 		weight.register(null);
 	}
 
 	@Test(expected = NullPointerSimulationException.class)
-	public void testDeRegisterNullListener() {
+	public void deRegisterNullListener() {
 		weight.deRegister(null);
 	}
 
 	@Test
-	public void testDeRegisterListener() {
+	public void deRegisterListener() {
 		weight.deRegister(weightListener);
 		assertFalse("Listener should be removed.", weight.listeners.contains(weightListener));
 	}

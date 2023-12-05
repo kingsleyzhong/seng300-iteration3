@@ -12,6 +12,11 @@ public class ReusableBagTest {
   // stub an instance of AbstractReusableBagDispenser
   private static class ReusableBagDispenser extends AbstractReusableBagDispenser {
     @Override
+    public int getQuantityRemaining() {
+      return 0;
+    }
+
+    @Override
     public ReusableBag dispense() throws EmptyDevice {
       return new ReusableBag(); // will be used for verifying the dispense method
     }
@@ -30,14 +35,14 @@ public class ReusableBagTest {
   }
 
   @Test
-  public void testDispenseBag() {
+  public void dispenseBag() {
     bagDispenserController.dispenseBag(1);
 
     // needs assertions
   }
 
   @Test (expected = EmptyDevice.class)
-  public void testDispenseBagWithEmptyDispenser() {
+  public void dispenseBagWithEmptyDispenser() {
     // refactor the dispense method to throw EmptyDevice
     AbstractReusableBagDispenser emptyDispenser = new AbstractReusableBagDispenser() {
       @Override

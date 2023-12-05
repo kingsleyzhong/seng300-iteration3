@@ -59,14 +59,14 @@ public class SelfCheckoutStationLogicTest extends AbstractTest {
     }
 
     @Test
-    public void testInstallation() {
+    public void installation() {
         SelfCheckoutStationLogic.installAttendantStation(station);
         logic = SelfCheckoutStationLogic.installOn(scs);
         assertNotNull(logic);
     }
 
     @Test
-    public void testInstallationComponents() {
+    public void installationComponents() {
         // Check that the logic has installed Funds, Weight, and ItemAddedRule on the
         // session and scs.
         SelfCheckoutStationLogic.installAttendantStation(station);

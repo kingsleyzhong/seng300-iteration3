@@ -65,22 +65,22 @@ public class MembershipTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testNullCardReader() {
+    public void nllCardReader() {
         Assert.assertThrows(NullPointerSimulationException.class, () -> new Membership(null));
     }
 
     @Test
-    public void testNullAddListener() {
+    public void nllAddListener() {
         Assert.assertThrows(NullPointerSimulationException.class, () -> membership.register(null));
     }
 
     @Test
-    public void testNullRemoveListener() {
+    public void nllRemoveListener() {
         Assert.assertThrows(NullPointerSimulationException.class, () -> membership.deregister(null));
     }
 
     @Test
-    public void testRegisterListener() {
+    public void registerListener() {
         StubListener listener2 = new StubListener();
         membership.register(listener2);
         membership.setAddingItems(true);
@@ -89,14 +89,14 @@ public class MembershipTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testDeregisterListener() {
+    public void deregisterListener() {
         membership.deregister(stubListener);
         membership.typeMembership(membershipNumber);
         Assert.assertNull(stubListener.enteredMembershipNumber);
     }
 
     @Test
-    public void testDeregisterAllListeners() {
+    public void deregisterAllListeners() {
         StubListener stubListener2 = new StubListener();
         membership.register(stubListener2);
         membership.deregisterAll();
@@ -106,27 +106,27 @@ public class MembershipTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testTypeMembershipNotAddingItems() {
+    public void typeMembershipNotAddingItems() {
         membership.typeMembership(membershipNumber);
         Assert.assertNull(stubListener.enteredMembershipNumber);
     }
 
     @Test
-    public void testTypeNotAMember() {
+    public void typeNotAMember() {
         membership.setAddingItems(true);
         membership.typeMembership("1");
         Assert.assertNull(stubListener.enteredMembershipNumber);
     }
 
     @Test
-    public void testTypeValidMembership() {
+    public void typeValidMembership() {
         membership.setAddingItems(true);
         membership.typeMembership(membershipNumber);
         Assert.assertEquals(stubListener.enteredMembershipNumber, membershipNumber);
     }
 
     @Test
-    public void testSwipeMembershipNotAddingItems() throws IOException {
+    public void swipeMembershipNotAddingItems() throws IOException {
         int success = 0;
         for (int i = 0; i < 1000; i++) { // loop to account for swipe failures in hardware
             stubListener.enteredMembershipNumber = null;
@@ -141,7 +141,7 @@ public class MembershipTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testSwipeMembership() throws IOException {
+    public void swipeMembership() throws IOException {
         membership.setAddingItems(true);
         int success = 0;
         for (int i = 0; i < 1000; i++) { // loop to account for swipe failures in hardware
@@ -157,7 +157,7 @@ public class MembershipTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testSwipeOtherCard() throws IOException {
+    public void swipeOtherCard() throws IOException {
         Card otherCard = new Card("VISA", "4123456789012345", "John Doe", "111", "1111", true, true);
         membership.setAddingItems(true);
         int success = 0;
@@ -174,7 +174,7 @@ public class MembershipTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testSwipeNotAMember() throws IOException {
+    public void swipeNotAMember() throws IOException {
         Card otherCard = new Card("member", "1", "Jane Smith", "", "", false, false);
         membership.setAddingItems(true);
         int success = 0;

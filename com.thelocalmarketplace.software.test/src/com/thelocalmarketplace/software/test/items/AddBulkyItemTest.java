@@ -93,7 +93,7 @@ public class AddBulkyItemTest extends AbstractSessionTest {
      * Scenario: add an item, customer call addBulkyItem, attendant approves
      */
     @Test
-    public void testAddBulkyItem() {
+    public void addBulkyItem() {
         itemManager.addItem(product);
         session.addBulkyItem();
         session.attendantApprove(Requests.BULKY_ITEM);
@@ -110,7 +110,7 @@ public class AddBulkyItemTest extends AbstractSessionTest {
      * Scenario: add items, customer calls addBulkyItem, attendant does not approve
      */
     @Test
-    public void testBulkyItemNotApproved() {
+    public void bulkyItemNotApproved() {
         itemManager.addItem(product);
         session.addBulkyItem();
         
@@ -123,7 +123,7 @@ public class AddBulkyItemTest extends AbstractSessionTest {
      * Scenario: add items, customer call addBulkyItem, attendant approves
      */
     @Test
-    public void testAddTwoBulkyItemAndInSession() {
+    public void addTwoBulkyItemAndInSession() {
         itemManager.addItem(product);
         baggingArea.addAnItem(item);
         
@@ -141,7 +141,7 @@ public class AddBulkyItemTest extends AbstractSessionTest {
      * Scenario: add items, customer call addBulkyItem, attendant approves
      */
     @Test
-    public void testAddTwoSameBulkyItem() {
+    public void addTwoSameBulkyItem() {
         itemManager.addItem(product);
         baggingArea.addAnItem(item);
         
@@ -159,7 +159,7 @@ public class AddBulkyItemTest extends AbstractSessionTest {
      * Scenario: scan an item with handheld scanner, call addBulkyItem
      */
     @Test
-    public void testAddBulkyItemHandheldScanner() {
+    public void addBulkyItemHandheldScanner() {
         while (!listener.barcodesScanned.contains(item.getBarcode())) {
             scs.getHandheldScanner().scan(item);
         }
@@ -183,7 +183,7 @@ public class AddBulkyItemTest extends AbstractSessionTest {
      * 3. attendant signals the system of weight discrepancy approval
      */
     @Test
-    public void testBulkyItemWeightDiscrepancy() {
+    public void bulkyItemWeightDiscrepancy() {
         itemManager.addItem(product);
         session.addBulkyItem();
         session.attendantApprove(Requests.BULKY_ITEM);
@@ -200,7 +200,7 @@ public class AddBulkyItemTest extends AbstractSessionTest {
      * weight discrepancy fixed using option 1
      */
     @Test
-    public void testBulkyItemWeightDiscrepancyResolved() {
+    public void bulkyItemWeightDiscrepancyResolved() {
         itemManager.addItem(product);
         session.addBulkyItem();
         session.attendantApprove(Requests.BULKY_ITEM);
@@ -224,7 +224,7 @@ public class AddBulkyItemTest extends AbstractSessionTest {
      * 3. attendant signals the system of weight discrepancy approval
      */
     @Test
-    public void testAddItemButNotCallBulkyItem() {
+    public void addItemButNotCallBulkyItem() {
         itemManager.addItem(product);
         assertEquals("Discrepancy must have occurred", session.getState(), SessionState.BLOCKED);
     }
@@ -238,7 +238,7 @@ public class AddBulkyItemTest extends AbstractSessionTest {
      * weight discrepancy fixed using option 2
      */
     @Test
-    public void testAddItemButNotCallBulkyItemFixed() {
+    public void addItemButNotCallBulkyItemFixed() {
         itemManager.addItem(product);
         session.addBulkyItem();
         session.attendantApprove(Requests.BULKY_ITEM);
@@ -251,7 +251,7 @@ public class AddBulkyItemTest extends AbstractSessionTest {
      * temp removed: cancel isn't supported
      */
 //    @Test
-//    public void testCancelBulkyItem() {
+//    public void cancelBulkyItem() {
 //        scs.plugIn(PowerGrid.instance());
 //        scs.turnOn();
 //        session.start();
@@ -271,7 +271,7 @@ public class AddBulkyItemTest extends AbstractSessionTest {
      * Temp removed: this isn't a feature anymore
      */
 //    @Test
-//    public void testCancelWithTwoBulkyItem() {
+//    public void cancelWithTwoBulkyItem() {
 //        scs.plugIn(PowerGrid.instance());
 //        scs.turnOn();
 //        session.start();
@@ -296,7 +296,7 @@ public class AddBulkyItemTest extends AbstractSessionTest {
      * temp removed: cancel isn't supported ATM
      */
 //    @Test
-//    public void testBulkyItemNotCalled() {
+//    public void bulkyItemNotCalled() {
 //        session.start();
 //        
 //        itemManager.addItem(product);
@@ -310,7 +310,7 @@ public class AddBulkyItemTest extends AbstractSessionTest {
      * test case to remove a bulky item
      */
     @Test
-    public void testRemoveBulkyItem() {
+    public void removeBulkyItem() {
         itemManager.addItem(product);
         session.addBulkyItem();
         session.attendantApprove(Requests.BULKY_ITEM);
@@ -326,7 +326,7 @@ public class AddBulkyItemTest extends AbstractSessionTest {
      * test case to remove a bulky item (with 2 bulky items scanned)
      */
     @Test
-    public void testRemoveBulkyItemTwoItems() {
+    public void removeBulkyItemTwoItems() {
         itemManager.addItem(product);
         session.addBulkyItem();
         session.attendantApprove(Requests.BULKY_ITEM);
@@ -343,7 +343,7 @@ public class AddBulkyItemTest extends AbstractSessionTest {
      * test case to remove a bulky item (with 3 bulky items scanned)
      */
     @Test
-    public void testRemoveBulkyItemThreeItems() {
+    public void removeBulkyItemThreeItems() {
         itemManager.addItem(product);
         session.addBulkyItem();
         session.attendantApprove(Requests.BULKY_ITEM);
@@ -367,7 +367,7 @@ public class AddBulkyItemTest extends AbstractSessionTest {
      * - temp removed, I don't even know what this is trying to do -Kingsley
      */
 //    @Test
-//    public void testRemoveBulkyItemNotFound() {
+//    public void removeBulkyItemNotFound() {
 //        // need to have bulky item in the hashmap but not have any quantity
 //        session.start();
 //        
@@ -382,7 +382,7 @@ public class AddBulkyItemTest extends AbstractSessionTest {
      * I also don't know what this is trying to do.
      */
 //    @Test
-//    public void testAddBulkyItemNotAllowed() {
+//    public void addBulkyItemNotAllowed() {
 //        session.start();
 //        
 //        // session.bulkyItemMap(new HashMap<BarcodedProduct, Integer>());

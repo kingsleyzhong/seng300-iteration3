@@ -65,27 +65,27 @@ public class AttendantTest extends AbstractTest {
     }
 
     @Test
-    public void testConstructor() {
+    public void constructor() {
         Attendant tempAttendant = new Attendant(station);
         assertNotNull(tempAttendant);
     }
 
     @Test
-    public void testDisableSession() {
+    public void disableSession() {
     	attendant.disableStation(session);
     	
     	assertEquals(SessionState.DISABLED, session.getState());
     }
     
     @Test
-    public void testEnableStation() {
+    public void enableStation() {
     	attendant.enableStation(session);
     	
     	assertEquals(SessionState.PRE_SESSION, session.getState());
     }
     
     @Test 
-    public void testGetStation() {
+    public void getStation() {
     	AttendantStation expected = station;
     	AttendantStation result = attendant.getStation();
     	
@@ -93,7 +93,7 @@ public class AttendantTest extends AbstractTest {
     }
     
     @Test 
-    public void testGetCustomerStation() {
+    public void getCustomerStation() {
     	AbstractSelfCheckoutStation expected = attendant.getCustomerStation(session);
     	
     	if (session.getStation() instanceof SelfCheckoutStationBronze) 
@@ -105,7 +105,7 @@ public class AttendantTest extends AbstractTest {
     }
     
     @Test(expected = SessionNotRegisteredException.class)
-    public void testGetCustomerStationUnregistered() {
+    public void getCustomerStationUnregistered() {
     	attendant = new Attendant(station);
     	attendant.getCustomerStation(session);
     }

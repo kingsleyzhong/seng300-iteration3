@@ -78,7 +78,7 @@ public class ItemManagerTest extends AbstractSessionTest {
     }
 	
     @Test
-    public void testAddItem() {
+    public void addItem() {
         session.start();
         itemManager.addItem(product);
         HashMap<Product, BigInteger> list = session.getItems();
@@ -91,7 +91,7 @@ public class ItemManagerTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testAddItemQuantity() {
+    public void addItemQuantity() {
     	BarcodedItem barcodedItemDuplicate = new BarcodedItem(barcode, new Mass(product.getExpectedWeight()));
         session.start();
         // Add multiple quantities of the same product
@@ -190,14 +190,14 @@ public class ItemManagerTest extends AbstractSessionTest {
     }
 
     @Test
-    public void testDiscrepancy() {
+    public void discrepancy() {
         session.start();
         itemManager.addItem(product);
         assertEquals("Discrepancy must have occured", session.getState(), SessionState.BLOCKED);
     }
     
     @Test 
-    public void testWeightDiscrepancyResolved() {
+    public void weightDiscrepancyResolved() {
     	// Create random item 
     	BarcodedItem item = new BarcodedItem(barcode, new Mass(100.0));
     	

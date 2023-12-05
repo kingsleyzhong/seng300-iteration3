@@ -71,30 +71,30 @@ public class FundsTest extends AbstractTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testNullSelfCheckoutStation() {
+	public void nullSelfCheckoutStation() {
 		scs = null;
 		funds = new Funds(scs);
 	}
 
 	@Test
-	public void testUpdateValidPrice() throws CashOverloadException, NoCashAvailableException, DisabledException {
+	public void updateValidPrice() throws CashOverloadException, NoCashAvailableException, DisabledException {
 		funds.update(price);
 		assertEquals(price, funds.getItemsPrice());	
 	}
 
 	@Test(expected = IllegalDigitException.class)
-	public void testUpdateInvalidPriceZero() throws CashOverloadException, NoCashAvailableException, DisabledException {
+	public void updateInvalidPriceZero() throws CashOverloadException, NoCashAvailableException, DisabledException {
 		funds.update(BigDecimal.valueOf(0.00));
 	}
 
 	@Test(expected = IllegalDigitException.class)
-	public void testUpdateInvalidPriceNegative()
+	public void updateInvalidPriceNegative()
 			throws CashOverloadException, NoCashAvailableException, DisabledException {
 		funds.update(BigDecimal.valueOf(-1.00));
 	}
 
 	@Test
-	public void testRemoveValidItemPrice() throws CashOverloadException, NoCashAvailableException, DisabledException {
+	public void removeValidItemPrice() throws CashOverloadException, NoCashAvailableException, DisabledException {
 		assertEquals(BigDecimal.valueOf(0), funds.getItemsPrice());
 		funds.update(price);
 		assertEquals(BigDecimal.valueOf(1), funds.getItemsPrice());
@@ -103,33 +103,33 @@ public class FundsTest extends AbstractTest {
 	}
 
 	@Test(expected = IllegalDigitException.class)
-	public void testRemoveInvalidItemPriceZero()
+	public void removeInvalidItemPriceZero()
 			throws CashOverloadException, NoCashAvailableException, DisabledException {
 		funds.update(price);
 		funds.removeItemPrice(BigDecimal.valueOf(0.00));
 	}
 
 	@Test(expected = IllegalDigitException.class)
-	public void testRemoveInvalidItemPriceNegative()
+	public void removeInvalidItemPriceNegative()
 			throws CashOverloadException, NoCashAvailableException, DisabledException {
 		funds.update(price);
 		funds.removeItemPrice(BigDecimal.valueOf(-1.00));
 	}
 
 	@Test
-	public void testTurnOnPay() {
+	public void turnOnPay() {
 		funds.setPay(true);
 		assertTrue(funds.isPay());
 	}
 
 	@Test
-	public void testTurnOffPay() {
+	public void turnOffPay() {
 		funds.setPay(false);
 		assertFalse(funds.isPay());
 	}
 
 	@Test
-	public void testAmountPaidFullCash()
+	public void amountPaidFullCash()
 			throws DisabledException, CashOverloadException, NoCashAvailableException {
 		Currency currency = Currency.getInstance(Locale.CANADA);
 		Coin coinAmountPaid = new Coin(currency, amountPaid);
@@ -150,7 +150,7 @@ public class FundsTest extends AbstractTest {
 	}
 
 	@Test
-	public void testAmountPaidPartialCash() throws DisabledException, CashOverloadException {
+	public void amountPaidPartialCash() throws DisabledException, CashOverloadException {
 		price = BigDecimal.valueOf(2);
 
 		Currency currency = Currency.getInstance(Locale.CANADA);
@@ -170,19 +170,19 @@ public class FundsTest extends AbstractTest {
 	}
 
 	@Test(expected = SimulationException.class)
-	public void testRegisterInvalidListener() {
+	public void registerInvalidListener() {
 		FundsListenerStub stub = null;
 		funds.register(stub);
 	}
 
 	@Test(expected = SimulationException.class)
-	public void testDeregisterInvalidListener() {
+	public void deregisterInvalidListener() {
 		FundsListenerStub stub = null;
 		funds.deregister(stub);
 	}
 
 	@Test
-	public void testUnregisterListener() throws DisabledException, CashOverloadException {
+	public void unregisterListener() throws DisabledException, CashOverloadException {
 		Currency currency = Currency.getInstance(Locale.CANADA);
 		Coin coinAmountPaid = new Coin(currency, amountPaid);
 
@@ -201,7 +201,7 @@ public class FundsTest extends AbstractTest {
 	}
 
 	@Test
-	public void testUnregisterAllListeners() throws DisabledException, CashOverloadException {
+	public void unregisterAllListeners() throws DisabledException, CashOverloadException {
 		Currency currency = Currency.getInstance(Locale.CANADA);
 		Coin coinAmountPaid = new Coin(currency, amountPaid);
 
@@ -226,7 +226,7 @@ public class FundsTest extends AbstractTest {
 	}
 
 	@Test
-	public void testEnableDisable() {
+	public void enableDisable() {
 		scs.getCoinValidator().disable();
 		scs.getCoinValidator().enable();
 		scs.getCoinValidator().disactivate();
@@ -234,7 +234,7 @@ public class FundsTest extends AbstractTest {
 	}
 
 	@Test(expected = NotEnoughChangeException.class)
-	public void testNotEnoughChange() throws DisabledException, CashOverloadException {
+	public void notEnoughChange() throws DisabledException, CashOverloadException {
 		Currency currency = Currency.getInstance(Locale.CANADA);
 		FundsListenerStub stub = new FundsListenerStub();
 		price = BigDecimal.valueOf(2);

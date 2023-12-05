@@ -115,7 +115,7 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 	}
 
 	@Test
-	public void testCheckLowInk() throws OverloadedDevice {
+	public void checkLowInk() throws OverloadedDevice {
 		//session.setup(itemManager, funds, weight, receiptPrinter, null, scs, null);
 		scs.getCoinDispensers().values();
 		// Bronze
@@ -137,7 +137,7 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 	}
 
 	@Test
-	public void testCheckLowInkWhenFull() throws OverloadedDevice {
+	public void checkLowInkWhenFull() throws OverloadedDevice {
 		// Bronze
 		bronzePrinter.addInk(ReceiptPrinterBronze.MAXIMUM_INK);
 		issuePredictor.checkLowInk(session, bronzePrinter);
@@ -157,7 +157,7 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 	}
 
 	@Test
-	public void testCheckLowPaper() throws OverloadedDevice {
+	public void checkLowPaper() throws OverloadedDevice {
 		// Bronze
 		issuePredictor.checkLowPaper(session, scs.getPrinter());
 		Assert.assertEquals(SessionState.DISABLED, session.getState());
@@ -177,7 +177,7 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 	}
 
 	@Test
-	public void testCheckLowPaperWhenFull() throws OverloadedDevice {
+	public void checkLowPaperWhenFull() throws OverloadedDevice {
 		// Bronze
 		bronzePrinter.addPaper(ReceiptPrinterBronze.MAXIMUM_PAPER);
 		issuePredictor.checkLowPaper(session, scs.getPrinter());
@@ -198,7 +198,7 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 	}
 
 	@Test
-	public void testCheckLowCoins() throws OverloadedDevice, IncorrectDenominationException, ClosedHardwareException, CashOverloadException, NotDisabledSessionException {	
+	public void checkLowCoins() throws OverloadedDevice, IncorrectDenominationException, ClosedHardwareException, CashOverloadException, NotDisabledSessionException {
 		// No coins added
 		issuePredictor.checkLowCoins(session, scs.getCoinDispensers());
 		// Should be disabled
@@ -218,7 +218,7 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 	
 	
 	@Test
-	public void testCheckLowBanknotes() throws OverloadedDevice, CashOverloadException {		
+	public void checkLowBanknotes() throws OverloadedDevice, CashOverloadException {
 		// No banknotes added
 		issuePredictor.checkLowBanknotes(session, scs.getBanknoteDispensers());
 		// Should be disabled 
@@ -239,7 +239,7 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 	}
 
 	@Test
-	public void testCheckCoinsFull() throws OverloadedDevice, SimulationException, CashOverloadException {
+	public void checkCoinsFull() throws OverloadedDevice, SimulationException, CashOverloadException {
 		for (int i = 0; i < 500; i++) { 
 	        scs.getCoinStorage().load(new Coin(Currency.getInstance(Locale.CANADA), new BigDecimal ("2.00"))); // Add $2.00 500 times
 	        }
@@ -258,7 +258,7 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 
 	
 	@Test
-	public void testCheckBanknotesFull() throws OverloadedDevice, SimulationException, CashOverloadException {
+	public void checkBanknotesFull() throws OverloadedDevice, SimulationException, CashOverloadException {
 		 for (int i = 0; i < 500; i++) { 
 		        scs.getBanknoteStorage().load(new Banknote(Currency.getInstance(Locale.CANADA), new BigDecimal ("5.00"))); // Add $5.00 500 times
 		        }
@@ -276,7 +276,7 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 	}
 
 	@Test
-	public void testNotPreSession() {
+	public void notPreSession() {
 		session.start();
 		issuePredictor.checkLowInk(session, bronzePrinter);
 		issuePredictor.checkLowPaper(session, bronzePrinter);
@@ -289,7 +289,7 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 	
 	
 	@Test
-	public void testPredictionCheckSessionEnded() throws NotDisabledSessionException, SimulationException, CashOverloadException, OverloadedDevice {
+	public void predictionCheckSessionEnded() throws NotDisabledSessionException, SimulationException, CashOverloadException, OverloadedDevice {
 		 
 		 bronzePrinter.addPaper(ReceiptPrinterBronze.MAXIMUM_PAPER);
 		 bronzePrinter.addInk(ReceiptPrinterBronze.MAXIMUM_INK);
@@ -313,7 +313,7 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 	}
 	
 	@Test
-	public void testPredictionCheckHadwareClosed() throws NotDisabledSessionException {
+	public void predictionCheckHadwareClosed() throws NotDisabledSessionException {
 		session.disable();
 		mm.openHardware(session);
 		mm.closeHardware();
