@@ -109,13 +109,13 @@ public class TextSearchControllerTest extends AbstractTest {
     @Test
     public void populateSearchFieldTest() throws DisabledDevice {
         String expectedSearch = "yo";
-        stringToKeyboard(expectedSearch);
+        a.stringToKeyboard(expectedSearch);
 
         a.getStation().keyboard.getKey("FnLock Esc").press();
         a.getStation().keyboard.getKey("FnLock Esc").release();
         
         expectedSearch = "Thi$ b3tt3r WoRk.k";
-        stringToKeyboard(expectedSearch);
+        a.stringToKeyboard(expectedSearch);
         
         a.getStation().keyboard.getKey("Backspace").press();
         a.getStation().keyboard.getKey("Backspace").release();
@@ -138,7 +138,7 @@ public class TextSearchControllerTest extends AbstractTest {
         expectedResults.add(product2.getDescription());
         expectedResults.add(product3.getDescription());
 
-        stringToKeyboard("6");
+        a.stringToKeyboard("6");
 
         a.getStation().keyboard.getKey("Enter").press();
         a.getStation().keyboard.getKey("Enter").release();
@@ -158,7 +158,7 @@ public class TextSearchControllerTest extends AbstractTest {
 
         expectedResults.add(product1.getDescription());
 
-        stringToKeyboard("1");
+        a.stringToKeyboard("1");
 
         a.getStation().keyboard.getKey("Enter").press();
         a.getStation().keyboard.getKey("Enter").release();
@@ -180,7 +180,7 @@ public class TextSearchControllerTest extends AbstractTest {
         expectedResults.add(product2.getDescription());
         expectedResults.add(product3.getDescription());
 
-        stringToKeyboard("aisin");
+        a.stringToKeyboard("aisin");
 
         a.getStation().keyboard.getKey("Enter").press();
         a.getStation().keyboard.getKey("Enter").release();
@@ -195,7 +195,7 @@ public class TextSearchControllerTest extends AbstractTest {
      */
     @Test
     public void failedSearchTest() throws DisabledDevice{
-        stringToKeyboard("Marlboro Gold Cigarettes");
+        a.stringToKeyboard("Marlboro Gold Cigarettes");
         a.getStation().keyboard.getKey("Enter").press();
         a.getStation().keyboard.getKey("Enter").release();
         assertTrue(a.getTextSearchController().getSearchResults().isEmpty());
@@ -239,70 +239,5 @@ public class TextSearchControllerTest extends AbstractTest {
     public void noPowerReleaseTest() throws DisabledDevice {
         a.getStation().unplug();
         a.getStation().keyboard.getKey("Shift (Right)").release();
-    }
- 
-    // -------------------- END TESTS --------------------
-
-    // The following may be removed
-
-    /**
-     * This is a utility method that will convert a string into the associated key presses on the
-     * USKeyboardQWERTY, a similar function may be included in the GUI, but that is outside
-     * the scope of this test class. This may be removed.
-     * @param input
-     * @throws DisabledDevice
-     */
-    public void stringToKeyboard(String input) throws DisabledDevice {
-        USKeyboardQWERTY keyboard = a.getStation().keyboard;
-
-        // Generate Mapping for Non-Alphabetical Shift Modified Keys
-        Map<Character, Boolean> shiftModified = new HashMap<>();
-        Map<Character, String> labelLookup = new HashMap<>();
-
-        for (String label : USKeyboardQWERTY.WINDOWS_QWERTY) {
-            if(label.length() == 3 && label.charAt(1) == ' ') { // Desired Format
-                Character c1 = label.charAt(0);
-                Character c2 = label.charAt(2);
-
-                shiftModified.put(c1, false);
-                shiftModified.put(c2, true);
-
-                labelLookup.put(c1, label);
-                labelLookup.put(c2, label);
-            }
-        }
-
-        for (int i = 0; i < input.length(); i++) {
-            Character c = input.charAt(i);
-            boolean shift = false;
-            String targetLabel;
-
-            if(c == ' ') {
-                targetLabel = "Spacebar";
-            }
-            else if(Character.isLowerCase(c)) {
-                targetLabel = String.valueOf(Character.toUpperCase(c));
-            }
-            else if(Character.isUpperCase(c)) {
-                targetLabel = String.valueOf(c);
-                shift = true;
-            }
-            else if(labelLookup.containsKey(c)) {
-                targetLabel = labelLookup.get(c);
-                shift = shiftModified.get(c);
-            }
-            else {
-                continue;
-            }
-
-            if(shift) {
-                keyboard.getKey("Shift (Left)").press();
-            }
-            keyboard.getKey(targetLabel).press();
-            keyboard.getKey(targetLabel).release();
-            if(shift) {
-                keyboard.getKey("Shift (Left)").release();
-            }
-        }
     }
 }
