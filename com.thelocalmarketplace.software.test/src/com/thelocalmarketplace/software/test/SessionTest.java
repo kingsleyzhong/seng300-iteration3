@@ -125,7 +125,7 @@ public class SessionTest extends AbstractTest {
         barcodedItem = new BarcodedItem(barcode, new Mass(product.getExpectedWeight()));
         funds = new Funds(scs);
         itemManager = new ItemManager();
-        bagDispenser = new BagDispenserController();
+        bagDispenser = new BagDispenserController(scs.getReusableBagDispenser(), itemManager);
 
         IElectronicScale baggingArea = scs.getBaggingArea();
         weight = new Weight(baggingArea);

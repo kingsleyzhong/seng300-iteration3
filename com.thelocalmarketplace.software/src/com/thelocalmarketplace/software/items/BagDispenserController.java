@@ -39,6 +39,14 @@ public class BagDispenserController {
 	private boolean outOfBags = false;
 	private IReusableBagDispenser bagDispenser; // should this instead be IReusableBagDispenser?
 	private ItemManager manager;
+	
+	public BagDispenserController(IReusableBagDispenser dispenser, ItemManager manager) {
+		this.bagDispenser = dispenser; 
+		this.manager = manager;
+		
+		// register InnerListener with the hardware
+		bagDispenser.register(new InnerListener());
+	}
 
 	private class InnerListener implements ReusableBagDispenserListener {
 

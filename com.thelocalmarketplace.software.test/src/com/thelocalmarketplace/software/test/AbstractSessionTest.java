@@ -62,7 +62,7 @@ abstract public class AbstractSessionTest extends AbstractTest {
 		funds = new Funds(scs);
 		receiptPrinter = new Receipt(scs.getPrinter());
 		membership = new Membership(scs.getCardReader());
-		bagDispenser = new BagDispenserController();
+		bagDispenser = new BagDispenserController(scs.getReusableBagDispenser(), itemManager);
 		session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
 	}
 
