@@ -1,5 +1,12 @@
 package com.thelocalmarketplace.software.GUI;
 
+import java.awt.Container;
+
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.scanner.Barcode;
@@ -21,13 +28,8 @@ import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.attendant.Attendant;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.funds.PayByCash;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import powerutility.PowerGrid;
 
-import java.awt.*;
+import powerutility.PowerGrid;
 
 public class HardwareGUITest {
     private AbstractSelfCheckoutStation scs;
@@ -66,17 +68,11 @@ public class HardwareGUITest {
 
         //cash panel stuff
         cashpanel = new CashPanel(scs);
-
         funds = new Funds(scs);
-
         coinValidator = scs.getCoinValidator();
         banknoteValidator = scs.getBanknoteValidator();
 
         cashController = new PayByCash(coinValidator, banknoteValidator, funds);
-
-
-
-
 
         scs.getScreen().setVisible(true);
 
