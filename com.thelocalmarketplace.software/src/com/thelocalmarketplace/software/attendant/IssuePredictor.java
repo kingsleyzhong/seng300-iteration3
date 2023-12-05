@@ -125,9 +125,6 @@ public class IssuePredictor  {
 		public void pricePaidUpdated(Session session, BigDecimal amountDue) {}
 
 		@Override
-		public void sessionAboutToStart(Session session) {}
-
-		@Override
 		public void sessionEnded(Session session) {
 			// run the prediction algorithm
 			predictionCheck(session);
