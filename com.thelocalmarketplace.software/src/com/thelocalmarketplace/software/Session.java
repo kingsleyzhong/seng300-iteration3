@@ -239,33 +239,33 @@ public class Session {
 	private class PrinterListener implements ReceiptListener {
 
 		@Override
-		public void notifiyOutOfPaper() {
+		public void notifyOutOfPaper() {
 			notifyAttendant(Requests.CANT_PRINT_RECEIPT);
 			if(sessionState != SessionState.PRE_SESSION)
 			block();
 		}
 
 		@Override
-		public void notifiyOutOfInk() {
+		public void notifyOutOfInk() {
 			notifyAttendant(Requests.CANT_PRINT_RECEIPT);
 			if(sessionState != SessionState.PRE_SESSION)
 			block();
 		}
 
 		@Override
-		public void notifiyPaperRefilled() {
+		public void notifyPaperRefilled() {
 			if(sessionState != SessionState.PRE_SESSION && sessionState != SessionState.DISABLED)
 				resume();
 		}
 
 		@Override
-		public void notifiyInkRefilled() {
+		public void notifyInkRefilled() {
 			if(sessionState != SessionState.PRE_SESSION && sessionState != SessionState.DISABLED)
 				resume();
 		}
 
 		@Override
-		public void notifiyReceiptPrinted(int linesPrinted, int charsPrinted) {
+		public void notifyReceiptPrinted(int linesPrinted, int charsPrinted) {
 			notifySessionEnd();
 		}
 

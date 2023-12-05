@@ -18,6 +18,10 @@ import com.thelocalmarketplace.software.exceptions.ClosedHardwareException;
 import com.thelocalmarketplace.software.exceptions.IncorrectDenominationException;
 import com.thelocalmarketplace.software.exceptions.NotDisabledSessionException;
 import com.thelocalmarketplace.software.test.AbstractSessionTest;
+
+import StubClasses.MaintenanceManagerListenerStub;
+import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +33,7 @@ import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test class for MaintenanceManager
@@ -69,6 +74,9 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     private MaintenanceManager maintenanceManager;
     private IssuePredictor predictor;
 
+    private MaintenanceManagerListenerStub listener1;
+    private MaintenanceManagerListenerStub listener2;
+    
     private Coin nickel;
     private Coin dime;
     private Coin quarter;
@@ -89,6 +97,8 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         AbstractSelfCheckoutStation.configureBanknoteDenominations(new BigDecimal[] { new BigDecimal(10), new BigDecimal(5) });
         AbstractSelfCheckoutStation.configureCoinDenominations(new BigDecimal[] { new BigDecimal(0.10), new BigDecimal(0.05) });
 
+        listener1 = new MaintenanceManagerListenerStub();
+        listener2 = new MaintenanceManagerListenerStub();
         station = new AttendantStation();
         station.plugIn(powerGrid);
         station.turnOn();
@@ -96,6 +106,9 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         attendant.registerOn(session,scs);
 
         maintenanceManager = new MaintenanceManager();
+        maintenanceManager.register(listener1);
+        maintenanceManager.register(listener2);
+        
         attendant.addIssuePrediction(session);
         predictor = attendant.getIssuePredictor(session);
 
@@ -136,6 +149,22 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         maintenanceManager.openHardware(session);
     }
 
+    @Test (expected = NullPointerSimulationException.class)
+    public void testRegisterNullListener() {
+    	maintenanceManager.register(null);
+    }
+    
+    @Test (expected = NullPointerSimulationException.class)
+    public void testDeregisterNullListener() {
+    	maintenanceManager.deRegister(null);
+    }
+    
+    @Test
+    public void testDeregisterListener() {
+    	maintenanceManager.deRegister(listener1);
+    	assertEquals(maintenanceManager.getListeners().size(),1);
+    }
+    
     /**
      * test case for refilling ink when printer is low on ink
      * @throws OverloadedDevice if too much ink is refilled
@@ -156,6 +185,7 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         int expected = 1 << 20;
         int actual = maintenanceManager.getCurrentAmountOfInk() + 10;
         Assert.assertEquals(expected, actual);
+        assertTrue(listener1.inkAdded);
     }
 
     /**
@@ -175,6 +205,8 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         int expected = 1 << 20;
         int actual = maintenanceManager.getCurrentAmountOfInk();
         Assert.assertEquals(expected, actual);
+        assertTrue(listener1.inkAdded);
+
     }
 
     /**
@@ -192,6 +224,7 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         attendant.disableStation(session);
         maintenanceManager.openHardware(session);
         maintenanceManager.refillInk(100);
+        
     }
 
     /**
@@ -243,6 +276,8 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         int expected = 1 << 10;
         int actual = maintenanceManager.getCurrentAmountOfPaper() + 10;
         Assert.assertEquals(expected, actual);
+        assertTrue(listener1.paperAdded);
+
     }
 
     /**
@@ -262,6 +297,7 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         int expected = 1 << 10;
         int actual = maintenanceManager.getCurrentAmountOfPaper();
         Assert.assertEquals(expected, actual);
+        assertTrue(listener1.paperAdded);
     }
 
     /**
@@ -326,6 +362,7 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         maintenanceManager.addCoins(new BigDecimal(0.05), nickel, nickel, nickel);
         maintenanceManager.closeHardware();
         assertEquals(tempCoinDispenser.size(), 4);
+        assertTrue(listener1.coinAdded);
     }
 
     /**
@@ -346,6 +383,7 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         maintenanceManager.closeHardware();
 
         assertEquals(1, session.getStation().getCoinDispensers().get(new BigDecimal(0.05)).size());
+        assertTrue(listener1.coinAdded);
     }
 
     /**
@@ -427,6 +465,7 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
             }
         }
         assertEquals(coinsRemoved, 3);
+        assertTrue(listener1.coinRemoved);
     }
 
     /**
@@ -456,6 +495,7 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         maintenanceManager.addBanknotes(new BigDecimal(5), five, five, five);
         maintenanceManager.closeHardware();
         assertEquals(tempBanknoteDispenser.size(), 4);
+        assertTrue(listener1.banknoteAdded);
     }
 
     /**
@@ -550,6 +590,7 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
             }
         }
         assertEquals(banknotesRemoved, 3);
+        assertTrue(listener1.banknoteRemoved);
     }
 
     /**

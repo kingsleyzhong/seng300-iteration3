@@ -64,7 +64,6 @@ public class Membership {
     		notifyMembershipEntered(memberCardNumber);
     	else
     		throw new InvalidActionException("Membership not in database");
-
     }
     
     /** Checks to see if the provided card data has a card number contained in the membership database.
