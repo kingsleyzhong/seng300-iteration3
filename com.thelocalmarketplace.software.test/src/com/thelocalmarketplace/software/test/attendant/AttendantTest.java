@@ -1,5 +1,6 @@
 package com.thelocalmarketplace.software.test.attendant;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Arrays;
@@ -17,7 +18,11 @@ import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationSilver;
 import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
+import com.thelocalmarketplace.software.Session;
+import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.attendant.Attendant;
+import com.thelocalmarketplace.software.attendant.IssuePredictor;
+import com.thelocalmarketplace.software.exceptions.SessionNotRegisteredException;
 import com.thelocalmarketplace.software.test.AbstractTest;
 
 import powerutility.PowerGrid;
@@ -61,12 +66,16 @@ public class AttendantTest extends AbstractTest {
     private AttendantStation station;
 
     private Attendant attendant;
+    private Session session;
 
     @Before
     public void setup() {
         basicDefaultSetup();
         station = new AttendantStation();
         attendant = new Attendant(station);
+        session = new Session();
+        attendant.registerOn(session, scs);
+        //attendant.addIssuePrediction(session);
     }
 
     @Test
@@ -75,14 +84,44 @@ public class AttendantTest extends AbstractTest {
         assertNotNull(tempAttendant);
     }
 
-    
-    @Test
-    public void testEnableSession() {
-    	
-    }
-    
     @Test
     public void testDisableSession() {
+    	attendant.disableStation(session);
     	
+    	assertEquals(SessionState.DISABLED, session.getState());
     }
+    
+    @Test
+    public void testEnableStation() {
+    	attendant.enableStation(session);
+    	
+    	assertEquals(SessionState.PRE_SESSION, session.getState());
+    }
+    
+    @Test 
+    public void testGetStation() {
+    	AttendantStation expected = station;
+    	AttendantStation result = attendant.getStation();
+    	
+    	assertEquals(expected, result);
+    }
+    
+    @Test 
+    public void testGetCustomerStation() {
+    	AbstractSelfCheckoutStation expected = attendant.getCustomerStation(session);
+    	
+    	if (session.getStation() instanceof SelfCheckoutStationBronze) 
+    		assertEquals(SelfCheckoutStationBronze.class, expected);
+    	else if (session.getStation() instanceof SelfCheckoutStationSilver) 
+    		assertEquals(SelfCheckoutStationSilver.class, expected);
+    	else if (session.getStation() instanceof SelfCheckoutStationGold)
+    		assertEquals(SelfCheckoutStationGold.class, expected);
+    }
+    
+    @Test(expected = SessionNotRegisteredException.class)
+    public void testGetCustomerStationUnregistered() {
+    	attendant = new Attendant(station);
+    	attendant.getCustomerStation(session);
+    }
+     
 }
