@@ -63,16 +63,19 @@ public class CardPanel extends JPanel {
 
 	private AbstractSelfCheckoutStation scs;
 	
-	private Card cardSelected;
-	private String cardSelectedString = "Credit Card";
-	private Card debitCard;
-	private Card creditCard;
-	private Card invalidCard;
-	private Card membershipCard;
-	
-	private JLabel infoLabel;
-	private JPanel infoPanel;
-	private JPanel panel2;
+	public Card cardSelected;
+	public String cardSelectedString = "Credit Card";
+	public Card debitCard;
+	public Card creditCard;
+	public Card invalidCard;
+	public Card membershipCard;
+	public JLabel infoLabel;
+	public JPanel infoPanel;
+	public JPanel panel2;
+	public JButton creditCardButton;
+	public JButton debitCardButton;
+	public JButton invalidCardButton;
+	public JButton membershipCardButton;
 	
 	private boolean inserted = false;
 	
@@ -100,7 +103,7 @@ public class CardPanel extends JPanel {
 		label.setForeground(Colors.color3);
 		panel.add(label);
 		
-		JButton creditCardButton = new PlainButton("Credit Card", Colors.color3);
+		creditCardButton = new PlainButton("Credit Card", Colors.color3);
 		creditCardButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -113,7 +116,7 @@ public class CardPanel extends JPanel {
 		});
 		panel.add(creditCardButton);
 		
-		JButton debitCardButton = new PlainButton("Debit Card", Colors.color3);
+		debitCardButton = new PlainButton("Debit Card", Colors.color3);
 		debitCardButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -126,7 +129,7 @@ public class CardPanel extends JPanel {
 		});
 		panel.add(debitCardButton);
 		
-		JButton invalidCardButton = new PlainButton("Invalid Card", Colors.color3);
+		invalidCardButton = new PlainButton("Invalid Card", Colors.color3);
 		invalidCardButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -139,7 +142,7 @@ public class CardPanel extends JPanel {
 		});
 		panel.add(invalidCardButton);
 		
-		JButton membershipCardButton = new PlainButton("Membership Card", Colors.color3);
+		membershipCardButton = new PlainButton("Membership Card", Colors.color3);
 		membershipCardButton.addActionListener(new ActionListener() {
 
 			@Override

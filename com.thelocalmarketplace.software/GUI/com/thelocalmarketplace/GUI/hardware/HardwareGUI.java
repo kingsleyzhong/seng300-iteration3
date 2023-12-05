@@ -79,7 +79,7 @@ public class HardwareGUI {
 	public JPanel screens;
 	public JPanel start;
 	public JPanel cashInput;
-	public JPanel card;
+	public CardPanel card;
 	private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	private int width;
 	private int height;

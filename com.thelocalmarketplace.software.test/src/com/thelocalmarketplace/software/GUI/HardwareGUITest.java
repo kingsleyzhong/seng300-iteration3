@@ -38,7 +38,6 @@ public class HardwareGUITest {
     private Session session;
     private SoftwareGUI softwareGUI;
     private HardwareGUI hardwareGUI;
-    private ButtonPanel buttonPanel;
 
     private CashPanel cashpanel;
     private CoinValidator coinValidator;
@@ -100,6 +99,7 @@ public class HardwareGUITest {
 
         //cash panel stuff
         cashpanel = new CashPanel(scs);
+
 
         funds = new Funds(scs);
 
@@ -296,37 +296,77 @@ public class HardwareGUITest {
 
     @Test
     public void selectCredit() {
-
+        hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.card.creditCardButton.doClick();
+        Assert.assertEquals("Credit Card", hardwareGUI.card.cardSelectedString);
     }
 
     @Test
     public void selectDebit() {
-
+        hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.card.debitCardButton.doClick();
+        Assert.assertEquals("Debit Card", hardwareGUI.card.cardSelectedString);
     }
 
     @Test
     public void selectInvalidCard() {
-
+        hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.card.invalidCardButton.doClick();
+        Assert.assertEquals("Invalid Card", hardwareGUI.card.cardSelectedString);
     }
 
     @Test
     public void selectMembershipCard() {
+        hardwareGUI.buttonPanel.startButton.doClick();
+        hardwareGUI.card.membershipCardButton.doClick();
+        Assert.assertEquals("Membership Card", hardwareGUI.card.cardSelectedString);
+    }
+
+    @Test
+    public void creditCardSwipe() {
 
     }
 
     @Test
-    public void cardSwipe() {
+    public void creditCardInsert() {
 
     }
 
     @Test
-    public void cardInsert() {
+    public void creditCardTap() {
+
+    }
+    
+    @Test
+    public void debitCardSwipe() {
 
     }
 
     @Test
-    public void cardTap() {
+    public void debitCardInsert() {
 
     }
+
+    @Test
+    public void debitCardTap() {
+
+    }
+
+    @Test
+    public void invalidCardSwipe() {
+
+    }
+
+    @Test
+    public void invalidCardInsert() {
+
+    }
+
+    @Test
+    public void invalidCardTap() {
+
+    }
+
+
 
 }
