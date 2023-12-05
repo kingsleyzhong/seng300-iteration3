@@ -1,7 +1,5 @@
 package com.thelocalmarketplace.GUI.hardware;
 
-import javax.swing.JPanel;
-
 import com.jjjwelectronics.card.BlockedCardException;
 import com.jjjwelectronics.card.Card;
 import com.jjjwelectronics.card.InvalidPINException;
@@ -14,20 +12,13 @@ import com.thelocalmarketplace.software.funds.CardIssuerDatabase;
 import com.thelocalmarketplace.software.funds.SupportedCardIssuers;
 import com.thelocalmarketplace.software.membership.MembershipDatabase;
 
-import java.awt.GridLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
 
 /**
  * Panel that holds user interaction with scanning/tapping/inserting a card.

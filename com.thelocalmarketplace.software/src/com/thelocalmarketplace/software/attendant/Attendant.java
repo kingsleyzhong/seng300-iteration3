@@ -1,20 +1,16 @@
 package com.thelocalmarketplace.software.attendant;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
 import com.jjjwelectronics.DisabledDevice;
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.keyboard.USKeyboardQWERTY;
-import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
-import com.thelocalmarketplace.hardware.AttendantStation;
-import com.thelocalmarketplace.hardware.BarcodedProduct;
-import com.thelocalmarketplace.hardware.PLUCodedProduct;
-import com.thelocalmarketplace.hardware.Product;
+import com.thelocalmarketplace.hardware.*;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionListener;
-import com.thelocalmarketplace.software.exceptions.ProductNotFoundException;
 import com.thelocalmarketplace.software.exceptions.SessionNotRegisteredException;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Simulation of attendant station, its functions, and its interactions with customer stations/session
@@ -50,62 +46,7 @@ public class Attendant {
 	private HashMap<Session, Requests> sessions = new HashMap<>();
 	private HashMap<Session, IssuePredictor> predictors = new HashMap<>();
 	private HashMap<Session, AbstractSelfCheckoutStation> stations = new HashMap<>();
-	
-	/**
-	 * Creates an instance of class Attendant given an instance of hardware AttendantStation.
-	 * Associates the Attendant with the keyboard.
-	 * 
-	 * @param as
-	 * 				an instance of type AttendantStation
-	 */
-	public Attendant(AttendantStation as) {
-		this.as = as;
-		ts = new TextSearchController(as.keyboard);
-	}
 
-	/**
-	 * Registers an instance of Session with this instance of Attendant.
-	 * Attendant will be added as a listener to the given instance of Session.
-	 * 
-	 * @param session
-	 * 					an instance of Session
-	 */
-	public void registerOn(Session session, AbstractSelfCheckoutStation scs) {
-		// register the Attendant as a listener
-		session.register(new InnerSessionListener());
-		
-		//add the customer station hardware to the hardware tracker
-		as.add(scs);
-		// associate the hardware with the Session
-		stations.put(session, scs);
-		
-		// start tracking the session and its requests
-		sessions.put(session,Requests.NO_REQUEST);// by default a Session has no request
-	}
-	
-	/**
-	 * Method for associating the Attendant with an instance of IssuePredictor.
-	 * @param session
-	 * 						an instance of Session
-	 */
-	public void addIssuePrediction(Session session) {
-		// checks if this Attendant is tracking this Session
-		if(sessions.containsKey(session)) {
-			//// creates an instance of IssuePredictor, associates it with session
-			// get the hardware associated with this Session
-			IssuePredictor predictor = new IssuePredictor(session, stations.get(session));
-
-			// associates the inner issue predictor listener with the predictor
-			predictor.register(new InnerPredictionListener());
-			
-			// adds the issuer predictor to the HashMap
-			predictors.put(session, predictor);			
-		}
-		else {
-			throw new SessionNotRegisteredException();
-		}
-	}
-	
 	/**
 	 * Receives updates about changes in instances of Session
 	 * Used to get messages from Customers (eg. weight discrepancy, help request)
@@ -114,39 +55,39 @@ public class Attendant {
 
 		@Override
 		public void itemAdded(Session session, Product product, Mass ofProduct, Mass currentExpectedWeight,
-				BigDecimal currentExpectedPrice) {
-			
+							  BigDecimal currentExpectedPrice) {
+
 		}
 
 		@Override
 		public void itemRemoved(Session session, Product product, Mass ofProduct, Mass currentExpectedMass,
-				BigDecimal currentExpectedPrice) {
-			
+								BigDecimal currentExpectedPrice) {
+
 		}
 
 		@Override
 		public void addItemToScaleDiscrepancy(Session session) {
-			
+
 		}
 
 		@Override
 		public void removeItemFromScaleDiscrepancy(Session session) {
-			
+
 		}
 
 		@Override
 		public void discrepancy(Session session, String message) {
-		 
+
 		}
 
 		@Override
 		public void discrepancyResolved(Session session) {
-			
+
 		}
 
 		@Override
 		public void pricePaidUpdated(Session session, BigDecimal amountDue) {
-			
+
 		}
 
 		/**
@@ -161,31 +102,31 @@ public class Attendant {
 
 		@Override
 		public void sessionAboutToStart(Session session) {
-			
+
 		}
 
 		@Override
 		public void sessionEnded(Session session) {
 			sessions.put(session,  Requests.NO_REQUEST); // resets the current Request to be NO_REQUEST
-			
+
 		}
 
 		@Override
 		public void pluCodeEntered(PLUCodedProduct product) {
-			
+
 		}
 
 		@Override
 		public void sessionStateChanged() {
-			
+
 		}
 	}
-	
+
 
 	/**
 	 * Receives notifications when an issue (eg. low ink, paper, low coins) is likely to occur for a given Session
 	 * Used to let Attendant know when a customer station might have issues before they happen.
-	 * 
+	 *
 	 */
 	private class InnerPredictionListener implements IssuePredictorListener{
 
@@ -227,7 +168,7 @@ public class Attendant {
 	}
 
 
-	
+
 	/**
 	 * Handles all possible ways an attendant could "approve" a customer's request
 	 * @param session
@@ -241,10 +182,22 @@ public class Attendant {
 		else {
 			throw new SessionNotRegisteredException();
 		}
-		
+
 	}
-	
-	
+
+	/**
+	 * Creates an instance of class Attendant given an instance of hardware AttendantStation.
+	 * Associates the Attendant with the keyboard.
+	 * 
+	 * @param as
+	 * 				an instance of type AttendantStation
+	 */
+	public Attendant(AttendantStation as) {
+		this.as = as;
+		ts = new TextSearchController(as.keyboard);
+	}
+
+
 	/**
 	 * Method for enabling a Customer SelfCheckoutStation associated with a given session, unlocking the 
 	 * Session and putting it into the PRE_SESSION state
@@ -430,5 +383,48 @@ public class Attendant {
 	 */
 	public TextSearchController getTextSearchController() {
 		return ts;
+	}
+
+	/**
+	 * Registers an instance of Session with this instance of Attendant.
+	 * Attendant will be added as a listener to the given instance of Session.
+	 *
+	 * @param session
+	 * 					an instance of Session
+	 */
+	public void registerOn(Session session, AbstractSelfCheckoutStation scs) {
+		// register the Attendant as a listener
+		session.register(new InnerSessionListener());
+
+		//add the customer station hardware to the hardware tracker
+		as.add(scs);
+		// associate the hardware with the Session
+		stations.put(session, scs);
+
+		// start tracking the session and its requests
+		sessions.put(session,Requests.NO_REQUEST);// by default a Session has no request
+	}
+
+	/**
+	 * Method for associating the Attendant with an instance of IssuePredictor.
+	 * @param session
+	 * 						an instance of Session
+	 */
+	public void addIssuePrediction(Session session) {
+		// checks if this Attendant is tracking this Session
+		if(sessions.containsKey(session)) {
+			//// creates an instance of IssuePredictor, associates it with session
+			// get the hardware associated with this Session
+			IssuePredictor predictor = new IssuePredictor(session, stations.get(session));
+
+			// associates the inner issue predictor listener with the predictor
+			predictor.register(new InnerPredictionListener());
+
+			// adds the issuer predictor to the HashMap
+			predictors.put(session, predictor);
+		}
+		else {
+			throw new SessionNotRegisteredException();
+		}
 	}
 }

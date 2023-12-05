@@ -1,26 +1,18 @@
 package com.thelocalmarketplace.GUI.attendant;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import com.thelocalmarketplace.software.Session;
-import java.awt.GridLayout;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.HashMap;
-import javax.swing.JPanel;
-import javax.swing.JButton;
-import javax.swing.JFrame;
 import com.jjjwelectronics.screen.ITouchScreen;
 import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
 import com.thelocalmarketplace.GUI.session.SoftwareGUI;
-import com.thelocalmarketplace.software.attendant.Attendant;
-import com.thelocalmarketplace.software.attendant.IssuePredictor;
-import com.thelocalmarketplace.software.attendant.MaintenanceManager;
-import com.thelocalmarketplace.software.attendant.Requests;
-import com.thelocalmarketplace.software.attendant.TextSearchController;
+import com.thelocalmarketplace.software.Session;
+import com.thelocalmarketplace.software.attendant.*;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.HashMap;
 
 /**
  * An interface to display interactions with the attendant and attendant station.

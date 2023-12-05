@@ -1,11 +1,11 @@
 package com.thelocalmarketplace.software;
 
-import com.thelocalmarketplace.software.attendant.Requests;
-import java.math.BigDecimal;
 import com.jjjwelectronics.Mass;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.attendant.Requests;
+
+import java.math.BigDecimal;
 
 /**
  * Project Iteration 3 Group 1
@@ -56,8 +56,6 @@ public interface SessionListener {
 	void discrepancyResolved(Session session);
 	
 	void pricePaidUpdated(Session session, BigDecimal amountDue);
-	
-	void sessionAboutToStart(Session session);
 	
 	void sessionEnded(Session session);
 	

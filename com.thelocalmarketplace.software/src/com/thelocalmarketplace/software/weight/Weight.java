@@ -1,14 +1,14 @@
 package com.thelocalmarketplace.software.weight;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-
+import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 import com.jjjwelectronics.IDevice;
 import com.jjjwelectronics.IDeviceListener;
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.scale.ElectronicScaleListener;
 import com.jjjwelectronics.scale.IElectronicScale;
-import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
 
 /**
  * Tracks the weight of the system. Contains an expected weight, which contains
@@ -55,26 +55,10 @@ public class Weight {
 	
 	private Mass MAXBAGWEIGHT = new Mass(500 * Mass.MICROGRAMS_PER_GRAM);
 
-	/**
-	 * Basic constructors for weight class
-	 *
-	 * @param scs
-	 *            The self-checkout station in which the weight shall be registered
-	 *            to
-	 */
-	public Weight(IElectronicScale baggingArea) {
-		baggingArea.register(new innerListener());
+	public void setInSession(boolean value) {
+		inSession = value;
 	}
-
-    public void clear() {
-		expectedWeight = Mass.ZERO;
-		checkDiscrepancy();
-    }
-
-    public void setInSession(boolean value) {
-    	inSession = value;
-    }
-    public class innerListener implements ElectronicScaleListener {
+	public class innerListener implements ElectronicScaleListener {
 
 		@Override
 		public void aDeviceHasBeenEnabled(IDevice<? extends IDeviceListener> device) {
@@ -125,22 +109,22 @@ public class Weight {
 
 		}
 	}
-	
+
 	/**
 	 * Method used to indicate a desire to add a bag to the bagging area
 	 */
 	public void addBags() {
-			bagCheck = true;
+		bagCheck = true;
 	}
-	
+
 	/*
 	 * Occurs when the bags the Customer added to the bagging area are above the
 	 * maximum allowed bag weight
 	 * (set by MAXBAGWEIGHT, able to be configured).
-	 * 
+	 *
 	 * Currently sorta useless without an attendant or any way to contact an
 	 * attendant
-	 * 
+	 *
 	 * Once blocked this could be overrides the same as any other blocked state
 	 */
 	private void bagsTooHeavy() {
@@ -149,7 +133,22 @@ public class Weight {
 			l.notifyBagsTooHeavy();
 		}
 	}
-	
+
+	/**
+	 * Basic constructors for weight class
+	 *
+	 * @param scs
+	 *            The self-checkout station in which the weight shall be registered
+	 *            to
+	 */
+	public Weight(IElectronicScale baggingArea) {
+		baggingArea.register(new innerListener());
+	}
+
+    public void clear() {
+		expectedWeight = Mass.ZERO;
+		checkDiscrepancy();
+    }
 
 	/*
 	 * Runs when a customer has signaled their desire to add their own bags to the

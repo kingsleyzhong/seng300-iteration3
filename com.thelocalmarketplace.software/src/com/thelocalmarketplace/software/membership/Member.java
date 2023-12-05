@@ -35,6 +35,14 @@ public class Member {
         this.name = name;
     }
 
+    /** Changes the member's number of points.
+     * @param delta The amount to change the points by. Can be positive to add, or negative to subtract. */
+    public void changePoints(int delta) {
+        points += delta;
+        if (points < 0)
+            points = 0;
+    }
+
     /** Returns the member's name.
      * @return The member's name. */
     public String getName() {
@@ -45,13 +53,5 @@ public class Member {
      * @return The member's number of points.*/
     public int getPoints() {
         return points;
-    }
-
-    /** Changes the member's number of points.
-     * @param delta The amount to change the points by. Can be positive to add, or negative to subtract. */
-    public void changePoints(int delta) {
-        points += delta;
-        if (points < 0)
-            points = 0;
     }
 }

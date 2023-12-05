@@ -1,10 +1,6 @@
 package com.thelocalmarketplace.software.funds;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 import com.jjjwelectronics.IllegalDigitException;
 import com.tdc.CashOverloadException;
 import com.tdc.DisabledException;
@@ -13,7 +9,11 @@ import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 import com.thelocalmarketplace.software.exceptions.NotEnoughChangeException;
 
-import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * This class represents the funds associated with a self-checkout session.
@@ -44,19 +44,16 @@ import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
  * Kingsley Zhong 			: 30197260 
  */
 public class Funds {
-	protected ArrayList<FundsListener> listeners = new ArrayList<>();
-	private BigDecimal itemsPrice; // Summed price of all items in the session (in cents)
-	//private BigDecimal paid; // Amount paid by the customer (in cents)
-	private BigDecimal amountDue; // Remaining amount to be paid (in cents)
 	private boolean isPay; // Flag indicating if the session is in pay mode
 	private final BigDecimal[] banknoteDenominations;
-    private final List<BigDecimal> coinDenominations;
+	private final List<BigDecimal> coinDenominations;
 
-  // from old version, delete if unused/ it breaks stuff
+	protected ArrayList<FundsListener> listeners = new ArrayList<>();
+	private BigDecimal itemsPrice; // Summed price of all items in the session (in cents)
+	private BigDecimal amountDue; // Remaining amount to be paid (in cents)
+
 	// Testing ONLY
 	public boolean payed;
-	public boolean successfulSwipe;  // end old version stuff to delete
-  
 	private AbstractSelfCheckoutStation scs;
 
 	/**
@@ -110,15 +107,6 @@ public class Funds {
 		this.itemsPrice = this.itemsPrice.subtract(price);
 		calculateAmountDue(price);
 	}
-
-	/**
-	 * Sets the pay mode.
-	 * 
-	 * @param isPay Flag indicating if the session is in pay mode
-	 */
-	public void setPay(boolean isPay) {
-		this.isPay = isPay;
-	}
 	
 	public void enableCash() {
 		scs.getCoinSlot().enable();
@@ -128,18 +116,6 @@ public class Funds {
 	public void disableCash() {
 		scs.getCoinSlot().disable();
 		scs.getBanknoteInput().disable();
-	}
-
-	public BigDecimal getItemsPrice() {
-		return itemsPrice;
-	}
-
-	/*public BigDecimal getPaid() {
-		return paid;
-	}*/
-
-	public BigDecimal getAmountDue() {
-		return amountDue;
 	}
 
 	public boolean isPay() {
@@ -271,6 +247,33 @@ public class Funds {
         }
 	}
 
+	public void clear() {
+		itemsPrice = new BigDecimal(0);
+		amountDue = new BigDecimal(0);
+	}
+
+	/**
+	 * Sets the pay mode.
+	 *
+	 * @param isPay Flag indicating if the session is in pay mode
+	 */
+	public void setPay(boolean isPay) {
+		this.isPay = isPay;
+	}
+
+	public BigDecimal getItemsPrice() {
+		return itemsPrice;
+	}
+
+	/*public BigDecimal getPaid() {
+		return paid;
+	}*/
+
+	public BigDecimal getAmountDue() {
+		return amountDue;
+	}
+
+
 	/**
 	 * Methods for adding funds listeners to the funds
 	 */
@@ -291,9 +294,4 @@ public class Funds {
 
 		listeners.add(listener);
 	}
-
-    public void clear() {
-		itemsPrice = new BigDecimal(0);
-		amountDue = new BigDecimal(0);
-    }
 }

@@ -1,14 +1,14 @@
 package com.thelocalmarketplace.software.funds;
 
-import com.thelocalmarketplace.software.exceptions.InvalidActionException;
-
 import com.jjjwelectronics.IDevice;
 import com.jjjwelectronics.IDeviceListener;
 import com.jjjwelectronics.card.Card.CardData;
+import com.jjjwelectronics.card.CardReaderListener;
+import com.jjjwelectronics.card.ICardReader;
 import com.tdc.CashOverloadException;
 import com.tdc.DisabledException;
 import com.tdc.NoCashAvailableException;
-import com.jjjwelectronics.card.*;
+import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 
 /**
  * <p> This class facilitates communication between com.jjjwelectronics.card.CardReaderListener and com.thelocalmarketplace.software.funds.Funds</p> 
@@ -38,22 +38,8 @@ import com.jjjwelectronics.card.*;
  * Kingsley Zhong 			: 30197260 
  */
 public class PayByCard {
-	
-	//private Card card;
 	private double amountDue;
-	boolean posted;
 	private Funds funds;
-	
-	public PayByCard(ICardReader cardReader, Funds funds) {
-		if(cardReader == null) throw new NullPointerException("CardReader is null");
-		if(funds == null) throw new NullPointerException("Funds is null");
-
-		InnerListener cardListener = new InnerListener();
-		cardReader.register(cardListener);
-		
-		amountDue = funds.getAmountDue().doubleValue();
-		this.funds = funds;
-	}
 	
 	private class InnerListener implements CardReaderListener {
 
@@ -108,6 +94,16 @@ public class PayByCard {
 		}
 	}
 
+	public PayByCard(ICardReader cardReader, Funds funds) {
+		if(cardReader == null) throw new NullPointerException("CardReader is null");
+		if(funds == null) throw new NullPointerException("Funds is null");
+
+		InnerListener cardListener = new InnerListener();
+		cardReader.register(cardListener);
+
+		amountDue = funds.getAmountDue().doubleValue();
+		this.funds = funds;
+	}
 	
     /**
      * Facilitates all communication with CardIssuer(s) required for billing/posting 

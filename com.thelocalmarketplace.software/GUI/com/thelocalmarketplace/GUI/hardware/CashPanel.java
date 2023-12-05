@@ -1,9 +1,6 @@
 package com.thelocalmarketplace.GUI.hardware;
 
-import java.awt.GridLayout;
-
-import javax.swing.JPanel;
-
+import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 import com.tdc.CashOverloadException;
 import com.tdc.DisabledException;
 import com.tdc.banknote.Banknote;
@@ -12,20 +9,17 @@ import com.thelocalmarketplace.GUI.customComponents.Colors;
 import com.thelocalmarketplace.GUI.customComponents.PlainButton;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 
-import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
-
-import java.awt.Color;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
-import javax.swing.JButton;
+import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
-import java.awt.event.ActionEvent;
 
 /**
  * A panel that allows the user to interact with adding cash, adding coins, collecting

@@ -6,16 +6,10 @@ import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.scale.ElectronicScaleListener;
 import com.jjjwelectronics.scale.IElectronicScale;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
-import com.thelocalmarketplace.hardware.PriceLookUpCode;
 
 public class PLUItemAddedRule {
 		private ItemManager itemManager;
-		
-		public PLUItemAddedRule(IElectronicScale scannerScale, ItemManager i) {
-			itemManager = i;
-			scannerScale.register(new innerListener());
-		}
-		
+
 		public class innerListener implements ElectronicScaleListener {
 
 			@Override
@@ -66,7 +60,10 @@ public class PLUItemAddedRule {
 				// TODO Auto-generated method stub
 				
 			}
-
-			
 		}
+
+	public PLUItemAddedRule(IElectronicScale scannerScale, ItemManager i) {
+		itemManager = i;
+		scannerScale.register(new innerListener());
+	}
 }
