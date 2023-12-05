@@ -1,6 +1,5 @@
 package com.thelocalmarketplace.software.receipt;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,9 +11,7 @@ import com.jjjwelectronics.IDeviceListener;
 import com.jjjwelectronics.OverloadedDevice;
 import com.jjjwelectronics.printer.IReceiptPrinter;
 import com.jjjwelectronics.printer.ReceiptPrinterListener;
-import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
-import powerutility.NoPowerException;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.items.ReusableBagProduct;
@@ -98,12 +95,18 @@ public class Receipt {
 		public void thePrinterIsOutOfPaper() {
 			isOutOfPaper = true;
 			duplicateNeeded = true;
+			for(ReceiptListener l : listeners) {
+				l.notifyOutOfPaper();
+			}
 		}
 
 		@Override
 		public void thePrinterIsOutOfInk() {
 			isOutOfInk = true;
 			duplicateNeeded = true;
+			for(ReceiptListener l : listeners) {
+				l.notifyOutOfInk();
+			}
 		}
 
 		@Override
@@ -118,7 +121,7 @@ public class Receipt {
 		public void paperHasBeenAddedToThePrinter() {
 			isOutOfPaper = false;
 			for(ReceiptListener l : listeners) {
-				l.notifiyPaperRefilled();
+				l.notifyPaperRefilled();
 			}
 			if (duplicateNeeded) {
 				// start printing duplicate copy of the receipt again if one is needed
@@ -130,7 +133,7 @@ public class Receipt {
 		public void inkHasBeenAddedToThePrinter() {
 			isOutOfInk = false;
 			for(ReceiptListener l : listeners) {
-				l.notifiyInkRefilled();
+				l.notifyInkRefilled();
 			}
 			if (duplicateNeeded) {
 				// start printing duplicate copy of the receipt again if one is needed
@@ -177,13 +180,13 @@ public class Receipt {
         		// Notify and break out of the printing loop if out of paper or ink
         		if (isOutOfPaper) {
         			for(ReceiptListener l : listeners) {
-        				l.notifiyOutOfPaper();
+        				l.notifyOutOfPaper();
         			}
         			throw new EmptyDevice("Out of Paper");
         		}
         		if (isOutOfInk) {
         			for(ReceiptListener l : listeners) {
-        				l.notifiyOutOfInk();
+        				l.notifyOutOfInk();
         			}
         			throw new EmptyDevice("Out of Ink");
         		}
@@ -193,7 +196,7 @@ public class Receipt {
         	}
         	// If the condition is passed, then all characters were successfully printed to the receipt
         		for(ReceiptListener l : listeners) {
-    				l.notifiyReceiptPrinted(linesUsed, charsPrinted);
+    				l.notifyReceiptPrinted(linesUsed, charsPrinted);
     			}
 
 			linesUsed = 0;

@@ -49,7 +49,7 @@ public class Membership {
 
 	/** Initializes a new instance of a Membership facade that provides the checkout station logic with a
      * user-inputted membership number.
-     * @param cardReader The card reader to read membership cards. */
+     * @param cardReader The card reader to read membership cards. Cannot be null. */
     public Membership(ICardReader cardReader) {
     	if (cardReader == null)
             throw new NullPointerSimulationException("card reader");
@@ -76,7 +76,6 @@ public class Membership {
     	if (addingItems && MembershipDatabase.MEMBERSHIP_DATABASE.containsKey(memberCardNumber)) {
     		notifyMembershipEntered(memberCardNumber);
     	}
-    	// else quietly ignore so as to not interrupt the session or GUI at the wrong time
     }
 
     private class InnerListener implements CardReaderListener {
@@ -108,7 +107,7 @@ public class Membership {
 		// Listens for card data which has been successfully read by the card reader
 		@Override
 		public void theDataFromACardHasBeenRead(CardData data) {
-			if (addingItems && data.getType().equalsIgnoreCase("membership"))
+			if (data.getType().equalsIgnoreCase("membership"))
 				swipeMembership(data);
 		}
     }
@@ -119,7 +118,7 @@ public class Membership {
 	}
 
     /** Registers a MembershipListener on this Membership facade.
-     * @param listener The MembershipListener to register.*/
+     * @param listener The MembershipListener to register. Cannot be null. */
     public void register(MembershipListener listener) {
         if (listener == null)
             throw new NullPointerSimulationException("membership listener");
@@ -127,7 +126,7 @@ public class Membership {
     }
 
     /** Deregisters a MembershipListener on this Membership facade.
-     * @param listener The MembershipListener to Deregister.*/
+     * @param listener The MembershipListener to Deregister. Cannot be null. */
     public boolean deregister(MembershipListener listener) {
         if (listener == null)
             throw new NullPointerSimulationException("membership listener");
@@ -137,10 +136,6 @@ public class Membership {
     /** Deregisters all MembershipListeners in this Membership facade. */
     public void deregisterAll() {
         listeners.clear();
-    }
-    
-    public List<MembershipListener> getListeners() {
-    	return listeners;
     }
 
     protected void notifyMembershipEntered(String membershipNumber) {
