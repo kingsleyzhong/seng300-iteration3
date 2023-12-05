@@ -45,9 +45,6 @@ import java.util.List;
 import java.util.Locale;
 import java.awt.event.InputEvent;
 
-import java.awt.AWTException;
-import java.awt.Robot;
-
 /**
  * Isolated test cases for Hardware GUI
  *
@@ -225,6 +222,16 @@ public class HardwareGUITest {
                 panelRobot.keyRelease(KeyEvent.VK_4);
                 panelRobot.keyPress(KeyEvent.VK_ENTER);
                 panelRobot.keyRelease(KeyEvent.VK_ENTER);
+    			Window[] frames = JDialog.getWindows();
+    			for (Window frame : frames)
+    				if(frame.getClass() == JDialog.class) {
+    					frame.dispose();
+    			  	}
+
+    				runs +=1;
+    				if(runs>20) {
+    					timer.stop();
+    				}
                 runs +=1;
                 if(runs>20) {
                     timer.stop();
