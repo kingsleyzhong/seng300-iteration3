@@ -44,9 +44,6 @@ abstract public class AbstractSessionTest extends AbstractTest {
 		// TODO Auto-generated constructor stub
 	}
 
-
-
-
 	protected Session session;
 	protected ItemManager itemManager;
 	protected Funds funds;
@@ -55,9 +52,6 @@ abstract public class AbstractSessionTest extends AbstractTest {
 	protected Membership membership;
 	protected BagDispenserController bagDispenser;
 
-
-	
-	
 	public void basicDefaultSetup() {
 		super.basicDefaultSetup();
 		

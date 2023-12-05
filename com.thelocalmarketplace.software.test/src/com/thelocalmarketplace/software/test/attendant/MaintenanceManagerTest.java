@@ -76,15 +76,12 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
 
     private MaintenanceManagerListenerStub listener1;
     private MaintenanceManagerListenerStub listener2;
-    
+
     private Coin nickel;
     private Coin dime;
-    private Coin quarter;
-    private Coin dollar;
 
     private Banknote five;
     private Banknote ten;
-    private Banknote twenty;
     private Currency cad = Currency.getInstance(Locale.CANADA);
 
     /**
@@ -94,8 +91,10 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     public void setup() throws OverloadedDevice, CashOverloadException {
         basicDefaultSetup();
 
-        AbstractSelfCheckoutStation.configureBanknoteDenominations(new BigDecimal[] { new BigDecimal(10), new BigDecimal(5) });
-        AbstractSelfCheckoutStation.configureCoinDenominations(new BigDecimal[] { new BigDecimal(0.10), new BigDecimal(0.05) });
+        AbstractSelfCheckoutStation
+                .configureBanknoteDenominations(new BigDecimal[] { new BigDecimal(10), new BigDecimal(5) });
+        AbstractSelfCheckoutStation
+                .configureCoinDenominations(new BigDecimal[] { new BigDecimal(0.10), new BigDecimal(0.05) });
 
         listener1 = new MaintenanceManagerListenerStub();
         listener2 = new MaintenanceManagerListenerStub();
@@ -103,12 +102,12 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         station.plugIn(powerGrid);
         station.turnOn();
         attendant = new Attendant(station);
-        attendant.registerOn(session,scs);
+        attendant.registerOn(session, scs);
 
         maintenanceManager = new MaintenanceManager();
         maintenanceManager.register(listener1);
         maintenanceManager.register(listener2);
-        
+
         attendant.addIssuePrediction(session);
         predictor = attendant.getIssuePredictor(session);
 
@@ -135,41 +134,42 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
      */
     @Test
     public void constructor() {
-        Attendant tempAttendant = new Attendant(station);
         maintenanceManager = new MaintenanceManager();
         assertNotNull(maintenanceManager);
     }
 
     /**
      * test case for opening hardware when not disabled
+     * 
      * @throws NotDisabledSessionException if session is not disabled
      */
-    @Test (expected = NotDisabledSessionException.class)
+    @Test(expected = NotDisabledSessionException.class)
     public void openHardwareWhenNotDisabled() throws NotDisabledSessionException {
         maintenanceManager.openHardware(session);
     }
 
-    @Test (expected = NullPointerSimulationException.class)
+    @Test(expected = NullPointerSimulationException.class)
     public void testRegisterNullListener() {
-    	maintenanceManager.register(null);
+        maintenanceManager.register(null);
     }
-    
-    @Test (expected = NullPointerSimulationException.class)
+
+    @Test(expected = NullPointerSimulationException.class)
     public void testDeregisterNullListener() {
-    	maintenanceManager.deRegister(null);
+        maintenanceManager.deRegister(null);
     }
-    
+
     @Test
     public void testDeregisterListener() {
-    	maintenanceManager.deRegister(listener1);
-    	assertEquals(maintenanceManager.getListeners().size(),1);
+        maintenanceManager.deRegister(listener1);
+        assertEquals(maintenanceManager.getListeners().size(), 1);
     }
-    
+
     /**
      * test case for refilling ink when printer is low on ink
-     * @throws OverloadedDevice if too much ink is refilled
+     * 
+     * @throws OverloadedDevice            if too much ink is refilled
      * @throws NotDisabledSessionException if session is not disabled
-     * @throws ClosedHardwareException if hardware is closed
+     * @throws ClosedHardwareException     if hardware is closed
      */
     @Test
     public void addInkWhenLow() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException {
@@ -190,9 +190,10 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
 
     /**
      * test case for adding ink when printer is empty on ink
-     * @throws OverloadedDevice if too much ink is refilled
+     * 
+     * @throws OverloadedDevice            if too much ink is refilled
      * @throws NotDisabledSessionException if session is not disabled
-     * @throws ClosedHardwareException if hardware is not closed
+     * @throws ClosedHardwareException     if hardware is not closed
      */
     @Test
     public void addInkWhenEmpty() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException {
@@ -211,11 +212,12 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
 
     /**
      * test case for refiling ink when printer is full of ink
-     * @throws OverloadedDevice if too much ink is refilled
+     * 
+     * @throws OverloadedDevice            if too much ink is refilled
      * @throws NotDisabledSessionException if session is not disabled
-     * @throws ClosedHardwareException if hardware is not closed
+     * @throws ClosedHardwareException     if hardware is not closed
      */
-    @Test (expected = OverloadedDevice.class)
+    @Test(expected = OverloadedDevice.class)
     public void addInkWhenFull() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException {
         // full on ink
         session.getStation().getPrinter().addInk(1 << 20);
@@ -224,16 +226,17 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         attendant.disableStation(session);
         maintenanceManager.openHardware(session);
         maintenanceManager.refillInk(100);
-        
+
     }
 
     /**
      * test case for refilling ink to more than max capacity
-     * @throws OverloadedDevice if too much ink is refilled
+     * 
+     * @throws OverloadedDevice            if too much ink is refilled
      * @throws NotDisabledSessionException if session is not disabled
-     * @throws ClosedHardwareException if hardware is closed
+     * @throws ClosedHardwareException     if hardware is closed
      */
-    @Test (expected = OverloadedDevice.class)
+    @Test(expected = OverloadedDevice.class)
     public void addInkMoreThanMax() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException {
         // add ink so that amount + remaining > max
         session.getStation().getPrinter().addInk(10);
@@ -246,10 +249,11 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
 
     /**
      * test case for refilling ink when printer is not opened
-     * @throws OverloadedDevice if too much ink is refilled
+     * 
+     * @throws OverloadedDevice        if too much ink is refilled
      * @throws ClosedHardwareException if hardware is closed
      */
-    @Test (expected = ClosedHardwareException.class)
+    @Test(expected = ClosedHardwareException.class)
     public void addInkPrinterNotOpened() throws OverloadedDevice, ClosedHardwareException {
         // add ink when printer is not opened
 
@@ -258,12 +262,14 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
 
     /**
      * test case for refilling paper when printer is low on paper
-     * @throws OverloadedDevice if too much paper is refilled
+     * 
+     * @throws OverloadedDevice            if too much paper is refilled
      * @throws NotDisabledSessionException if session is not disabled
-     * @throws ClosedHardwareException if hardware is closed
+     * @throws ClosedHardwareException     if hardware is closed
      */
     @Test
-    public void addPaperWhenLow() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException, CashOverloadException {
+    public void addPaperWhenLow()
+            throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException, CashOverloadException {
         // low on paper
         session.getStation().getPrinter().addPaper(10);
 
@@ -282,9 +288,10 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
 
     /**
      * test case for refilling paper when printer is empty on paper
-     * @throws OverloadedDevice if too much paper is refilled
+     * 
+     * @throws OverloadedDevice            if too much paper is refilled
      * @throws NotDisabledSessionException if session is not disabled
-     * @throws ClosedHardwareException if hardware is closed
+     * @throws ClosedHardwareException     if hardware is closed
      */
     @Test
     public void addPaperWhenEmpty() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException {
@@ -302,11 +309,12 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
 
     /**
      * test case for refilling paper when printer is full of paper
-     * @throws OverloadedDevice if too much paper is refilled
+     * 
+     * @throws OverloadedDevice            if too much paper is refilled
      * @throws NotDisabledSessionException if session is not disabled
-     * @throws ClosedHardwareException if hardware is closed
+     * @throws ClosedHardwareException     if hardware is closed
      */
-    @Test (expected = OverloadedDevice.class)
+    @Test(expected = OverloadedDevice.class)
     public void addPaperWhenFull() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException {
         // full on ink
         session.getStation().getPrinter().addPaper(1 << 10);
@@ -319,11 +327,12 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
 
     /**
      * test case for refilling paper to more than max capacity
-     * @throws OverloadedDevice if too much paper is refilled
+     * 
+     * @throws OverloadedDevice            if too much paper is refilled
      * @throws NotDisabledSessionException if session is not disabled
-     * @throws ClosedHardwareException if hardware is not closed
+     * @throws ClosedHardwareException     if hardware is not closed
      */
-    @Test (expected = OverloadedDevice.class)
+    @Test(expected = OverloadedDevice.class)
     public void addPaperMoreThanMax() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException {
         // add paper so that amount + remaining > max
         session.getStation().getPrinter().addPaper(10);
@@ -336,10 +345,11 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
 
     /**
      * test case for refilling paper when hardware is not opened
-     * @throws OverloadedDevice if too much paper is refilled
+     * 
+     * @throws OverloadedDevice        if too much paper is refilled
      * @throws ClosedHardwareException if hardware is closed
      */
-    @Test (expected = ClosedHardwareException.class)
+    @Test(expected = ClosedHardwareException.class)
     public void addPaperPrinterNotOpened() throws OverloadedDevice, ClosedHardwareException {
         // add ink when printer is not opened
         maintenanceManager.refillPaper(100);
@@ -347,13 +357,16 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
 
     /**
      * test case for adding coins to coin dispenser
-     * @throws CashOverloadException if too much coin is added
-     * @throws NotDisabledSessionException if session is not disabled
-     * @throws ClosedHardwareException if hardware is closed
-     * @throws IncorrectDenominationException if the coins don't have the correct denomination
+     * 
+     * @throws CashOverloadException          if too much coin is added
+     * @throws NotDisabledSessionException    if session is not disabled
+     * @throws ClosedHardwareException        if hardware is closed
+     * @throws IncorrectDenominationException if the coins don't have the correct
+     *                                        denomination
      */
     @Test
-    public void addCoin() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException, IncorrectDenominationException {
+    public void addCoin() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException,
+            IncorrectDenominationException {
         ICoinDispenser tempCoinDispenser = session.getStation().getCoinDispensers().get(new BigDecimal(0.05));
         tempCoinDispenser.load(nickel);
 
@@ -367,13 +380,16 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
 
     /**
      * test case for adding coins with non existent denomination
-     * @throws CashOverloadException if too much coin are added
-     * @throws NotDisabledSessionException if session is not disabled
-     * @throws ClosedHardwareException if hardware is closed
-     * @throws IncorrectDenominationException if the coins do not have the correct denomination
+     * 
+     * @throws CashOverloadException          if too much coin are added
+     * @throws NotDisabledSessionException    if session is not disabled
+     * @throws ClosedHardwareException        if hardware is closed
+     * @throws IncorrectDenominationException if the coins do not have the correct
+     *                                        denomination
      */
     @Test
-    public void addCoinNoDenomination() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException, IncorrectDenominationException {
+    public void addCoinNoDenomination() throws CashOverloadException, NotDisabledSessionException,
+            ClosedHardwareException, IncorrectDenominationException {
         ICoinDispenser tempCoinDispenser = session.getStation().getCoinDispensers().get(new BigDecimal(0.05));
         tempCoinDispenser.load(nickel);
 
@@ -388,13 +404,16 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
 
     /**
      * test case for adding coins with incorrect denomination
-     * @throws CashOverloadException if too much coin is added
-     * @throws NotDisabledSessionException if session is not disabled
-     * @throws ClosedHardwareException if hardware is not closed
-     * @throws IncorrectDenominationException if the coins do not have the correct denomination
+     * 
+     * @throws CashOverloadException          if too much coin is added
+     * @throws NotDisabledSessionException    if session is not disabled
+     * @throws ClosedHardwareException        if hardware is not closed
+     * @throws IncorrectDenominationException if the coins do not have the correct
+     *                                        denomination
      */
-    @Test (expected = IncorrectDenominationException.class)
-    public void addCoinIncorrectDenomination() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException, IncorrectDenominationException {
+    @Test(expected = IncorrectDenominationException.class)
+    public void addCoinIncorrectDenomination() throws CashOverloadException, NotDisabledSessionException,
+            ClosedHardwareException, IncorrectDenominationException {
         ICoinDispenser tempCoinDispenser = session.getStation().getCoinDispensers().get(new BigDecimal(0.05));
         tempCoinDispenser.load(nickel, nickel, nickel);
 
@@ -406,18 +425,21 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
 
     /**
      * test case for adding too much coin
-     * @throws CashOverloadException if too much coin is added
-     * @throws NotDisabledSessionException if session is not disabled
-     * @throws ClosedHardwareException if hardware is closed
-     * @throws IncorrectDenominationException if coins do not have correct denomination
+     * 
+     * @throws CashOverloadException          if too much coin is added
+     * @throws NotDisabledSessionException    if session is not disabled
+     * @throws ClosedHardwareException        if hardware is closed
+     * @throws IncorrectDenominationException if coins do not have correct
+     *                                        denomination
      */
-    @Test (expected = CashOverloadException.class)
-    public void addCoinOverflow() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException, IncorrectDenominationException {
+    @Test(expected = CashOverloadException.class)
+    public void addCoinOverflow() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException,
+            IncorrectDenominationException {
         ICoinDispenser tempCoinDispenser = session.getStation().getCoinDispensers().get(new BigDecimal(0.05));
 
         Coin coinList[] = new Coin[tempCoinDispenser.getCapacity()];
         for (Coin i : coinList) {
-            i.DEFAULT_CURRENCY = Currency.getInstance(Locale.CANADA);
+            Coin.DEFAULT_CURRENCY = Currency.getInstance(Locale.CANADA);
             i = new Coin(new BigDecimal(0.05));
             tempCoinDispenser.load(i);
         } // Fills Coin Dispenser to full capacity
@@ -430,12 +452,15 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
 
     /**
      * test case for adding coins when hardware is closed
-     * @throws CashOverloadException if too much coin is added
-     * @throws ClosedHardwareException if hardware is closed
-     * @throws IncorrectDenominationException if coins do not have the correct denomination
+     * 
+     * @throws CashOverloadException          if too much coin is added
+     * @throws ClosedHardwareException        if hardware is closed
+     * @throws IncorrectDenominationException if coins do not have the correct
+     *                                        denomination
      */
-    @Test (expected = ClosedHardwareException.class)
-    public void addCoinClosedHardware() throws CashOverloadException, ClosedHardwareException, IncorrectDenominationException {
+    @Test(expected = ClosedHardwareException.class)
+    public void addCoinClosedHardware()
+            throws CashOverloadException, ClosedHardwareException, IncorrectDenominationException {
         ICoinDispenser tempCoinDispenser = session.getStation().getCoinDispensers().get(new BigDecimal(0.05));
         tempCoinDispenser.load(nickel);
         maintenanceManager.addCoins(new BigDecimal(0.05), nickel, nickel, nickel);
@@ -443,12 +468,14 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
 
     /**
      * test case for removing coins from coin storage unit
-     * @throws CashOverloadException if too much coin is added
+     * 
+     * @throws CashOverloadException       if too much coin is added
      * @throws NotDisabledSessionException if session is not disabled
-     * @throws ClosedHardwareException if hardware is closed
+     * @throws ClosedHardwareException     if hardware is closed
      */
     @Test
-    public void emptyCoinStorageUnit() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException {
+    public void emptyCoinStorageUnit()
+            throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException {
         CoinStorageUnit tempStorage = session.getStation().getCoinStorage();
         tempStorage.load(nickel, nickel, nickel);
 
@@ -459,7 +486,7 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         assertEquals(tempStorage.getCoinCount(), 0);
 
         int coinsRemoved = 0;
-        for (Coin coin: removedCoins) {
+        for (Coin coin : removedCoins) {
             if (coin != null) {
                 coinsRemoved++;
             }
@@ -470,23 +497,27 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
 
     /**
      * test case for removing coins when hardware is not opened
-     * @throws CashOverloadException if too much coin is added
+     * 
+     * @throws CashOverloadException   if too much coin is added
      * @throws ClosedHardwareException if hardware is closed
      */
-    @Test (expected = ClosedHardwareException.class)
-    public void removeCoinsHardwareNotOpened() throws CashOverloadException, ClosedHardwareException{
+    @Test(expected = ClosedHardwareException.class)
+    public void removeCoinsHardwareNotOpened() throws CashOverloadException, ClosedHardwareException {
         maintenanceManager.removeCoins();
     }
 
     /**
      * test case for adding banknote to banknote dispenser
-     * @throws CashOverloadException if too much banknote is added
-     * @throws NotDisabledSessionException if session is not disabled
-     * @throws ClosedHardwareException if hardware is not closed
-     * @throws IncorrectDenominationException if banknotes do not have the correct denomination
+     * 
+     * @throws CashOverloadException          if too much banknote is added
+     * @throws NotDisabledSessionException    if session is not disabled
+     * @throws ClosedHardwareException        if hardware is not closed
+     * @throws IncorrectDenominationException if banknotes do not have the correct
+     *                                        denomination
      */
     @Test
-    public void addBanknote() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException, IncorrectDenominationException {
+    public void addBanknote() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException,
+            IncorrectDenominationException {
         IBanknoteDispenser tempBanknoteDispenser = session.getStation().getBanknoteDispensers().get(new BigDecimal(5));
         tempBanknoteDispenser.load(five);
 
@@ -500,13 +531,16 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
 
     /**
      * test case for adding banknotes with non existent denomination
-     * @throws CashOverloadException if too much banknote is added
-     * @throws NotDisabledSessionException if session is not disabled
-     * @throws ClosedHardwareException if hardware is not closed
-     * @throws IncorrectDenominationException if banknotes do not have correct denomination
+     * 
+     * @throws CashOverloadException          if too much banknote is added
+     * @throws NotDisabledSessionException    if session is not disabled
+     * @throws ClosedHardwareException        if hardware is not closed
+     * @throws IncorrectDenominationException if banknotes do not have correct
+     *                                        denomination
      */
     @Test
-    public void addBanknoteNoDenomination() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException, IncorrectDenominationException {
+    public void addBanknoteNoDenomination() throws CashOverloadException, NotDisabledSessionException,
+            ClosedHardwareException, IncorrectDenominationException {
         attendant.disableStation(session);
         maintenanceManager.openHardware(session);
         maintenanceManager.addBanknotes(new BigDecimal(100), five, five, five);
@@ -516,13 +550,16 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
 
     /**
      * test case for adding banknotes with incorrect denomination
-     * @throws CashOverloadException if too much banknote is added
-     * @throws NotDisabledSessionException if session is not disabled
-     * @throws ClosedHardwareException if hardware is not closed
-     * @throws IncorrectDenominationException if banknotes do not have correct denomination
+     * 
+     * @throws CashOverloadException          if too much banknote is added
+     * @throws NotDisabledSessionException    if session is not disabled
+     * @throws ClosedHardwareException        if hardware is not closed
+     * @throws IncorrectDenominationException if banknotes do not have correct
+     *                                        denomination
      */
-    @Test (expected = IncorrectDenominationException.class)
-    public void addBanknoteIncorrectDenomination() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException, IncorrectDenominationException {
+    @Test(expected = IncorrectDenominationException.class)
+    public void addBanknoteIncorrectDenomination() throws CashOverloadException, NotDisabledSessionException,
+            ClosedHardwareException, IncorrectDenominationException {
         IBanknoteDispenser tempBanknoteDispenser = session.getStation().getBanknoteDispensers().get(new BigDecimal(5));
         tempBanknoteDispenser.load(five);
 
@@ -534,13 +571,16 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
 
     /**
      * test case for adding too much banknote
-     * @throws CashOverloadException if too much banknote is added
-     * @throws NotDisabledSessionException if session is not disabled
-     * @throws ClosedHardwareException if hardware is closed
-     * @throws IncorrectDenominationException if banknotes do not have correct denomination
+     * 
+     * @throws CashOverloadException          if too much banknote is added
+     * @throws NotDisabledSessionException    if session is not disabled
+     * @throws ClosedHardwareException        if hardware is closed
+     * @throws IncorrectDenominationException if banknotes do not have correct
+     *                                        denomination
      */
-    @Test (expected = CashOverloadException.class)
-    public void addBanknoteOverflow() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException, IncorrectDenominationException {
+    @Test(expected = CashOverloadException.class)
+    public void addBanknoteOverflow() throws CashOverloadException, NotDisabledSessionException,
+            ClosedHardwareException, IncorrectDenominationException {
         IBanknoteDispenser tempBanknoteDispenser = session.getStation().getBanknoteDispensers().get(new BigDecimal(5));
 
         Banknote banknoteList[] = new Banknote[tempBanknoteDispenser.getCapacity()];
@@ -557,23 +597,28 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
 
     /**
      * test case for adding banknotes when hardware is closed
-     * @throws CashOverloadException if too much banknote is added
-     * @throws ClosedHardwareException if hardware is closed
-     * @throws IncorrectDenominationException if banknotes do not have correct denomination
+     * 
+     * @throws CashOverloadException          if too much banknote is added
+     * @throws ClosedHardwareException        if hardware is closed
+     * @throws IncorrectDenominationException if banknotes do not have correct
+     *                                        denomination
      */
-    @Test (expected = ClosedHardwareException.class)
-    public void addBanknoteClosedHardware() throws CashOverloadException, ClosedHardwareException, IncorrectDenominationException {
+    @Test(expected = ClosedHardwareException.class)
+    public void addBanknoteClosedHardware()
+            throws CashOverloadException, ClosedHardwareException, IncorrectDenominationException {
         maintenanceManager.addBanknotes(new BigDecimal(5), five);
     }
 
     /**
      * test case for removing banknotes from banknote storage unit
-     * @throws CashOverloadException if too much banknote is added
+     * 
+     * @throws CashOverloadException       if too much banknote is added
      * @throws NotDisabledSessionException if session is not disabled
-     * @throws ClosedHardwareException if hardware is closed
+     * @throws ClosedHardwareException     if hardware is closed
      */
     @Test
-    public void emptyBanknoteStorage() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException {
+    public void emptyBanknoteStorage()
+            throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException {
         BanknoteStorageUnit tempStorage = session.getStation().getBanknoteStorage();
         tempStorage.load(five, five, five);
 
@@ -584,7 +629,7 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
         assertEquals(tempStorage.getBanknoteCount(), 0);
 
         int banknotesRemoved = 0;
-        for (Banknote banknote: removedBanknotes) {
+        for (Banknote banknote : removedBanknotes) {
             if (banknote != null) {
                 banknotesRemoved++;
             }
@@ -595,45 +640,33 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
 
     /**
      * test case for removing banknotes when hardware is closed
+     * 
      * @throws ClosedHardwareException if hardware is closed
      */
-    @Test (expected = ClosedHardwareException.class)
-    public void removeBanknotesHardwareNotOpened() throws ClosedHardwareException{
+    @Test(expected = ClosedHardwareException.class)
+    public void removeBanknotesHardwareNotOpened() throws ClosedHardwareException {
         maintenanceManager.removeBanknotes();
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
-     * test case for detecting change: ink is refilled to printer and there is no more issue
-     * @throws OverloadedDevice if too much ink is added
+     * test case for detecting change: ink is refilled to printer and there is no
+     * more issue
+     * 
+     * @throws OverloadedDevice            if too much ink is added
      * @throws NotDisabledSessionException if session is not disabled
-     * @throws ClosedHardwareException if hardware is closed
-     * @throws CashOverloadException 
+     * @throws ClosedHardwareException     if hardware is closed
+     * @throws CashOverloadException
      */
     @Test
-    public void addInkDetectChange() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException, CashOverloadException {
+    public void addInkDetectChange()
+            throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException, CashOverloadException {
         scs.getPrinter().addPaper(1 << 10);
 
         scs.getBanknoteDispensers().get(new BigDecimal(5)).load(five, five, five, five, five, five);
         scs.getBanknoteDispensers().get(new BigDecimal(10)).load(ten, ten, ten, ten, ten, ten);
         scs.getCoinDispensers().get(new BigDecimal(0.05)).load(nickel, nickel, nickel, nickel, nickel, nickel);
         scs.getCoinDispensers().get(new BigDecimal(0.1)).load(dime, dime, dime, dime, dime, dime);
-    	
+
         predictor.checkLowInk(session, session.getStation().getPrinter());
         Assert.assertEquals(SessionState.DISABLED, session.getState());
         // add ink
@@ -645,14 +678,17 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     }
 
     /**
-     * test case for detecting change: paper is refilled to printer and there is no more issue
-     * @throws OverloadedDevice if too much paper is refilled
+     * test case for detecting change: paper is refilled to printer and there is no
+     * more issue
+     * 
+     * @throws OverloadedDevice            if too much paper is refilled
      * @throws NotDisabledSessionException if session is not disabled
-     * @throws ClosedHardwareException if hardware is closed
-     * @throws CashOverloadException 
+     * @throws ClosedHardwareException     if hardware is closed
+     * @throws CashOverloadException
      */
     @Test
-    public void addPaperDetectChange() throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException, CashOverloadException {
+    public void addPaperDetectChange()
+            throws OverloadedDevice, NotDisabledSessionException, ClosedHardwareException, CashOverloadException {
         scs.getPrinter().addInk(1 << 20);
 
         scs.getBanknoteDispensers().get(new BigDecimal(5)).load(five, five, five, five, five, five);
@@ -670,8 +706,10 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     }
 
     /**
-     * test case for detecting change: printer is low on ink but ink is not refilled; issue is not resolved
-     * @throws OverloadedDevice if too much ink is refilled
+     * test case for detecting change: printer is low on ink but ink is not
+     * refilled; issue is not resolved
+     * 
+     * @throws OverloadedDevice            if too much ink is refilled
      * @throws NotDisabledSessionException if session is not disabled
      */
     @Test
@@ -686,8 +724,10 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     }
 
     /**
-     * test case for detecting change: printer is low on paper but is not refilled; issue is not resolved
-     * @throws OverloadedDevice if too much paper is refilled
+     * test case for detecting change: printer is low on paper but is not refilled;
+     * issue is not resolved
+     * 
+     * @throws OverloadedDevice            if too much paper is refilled
      * @throws NotDisabledSessionException if session is not disabled
      */
     @Test
@@ -702,14 +742,18 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     }
 
     /**
-     * test case for detecting change: coins are added to coin dispenser and there is no more issue
-     * @throws CashOverloadException if too much coin is added
-     * @throws NotDisabledSessionException if session is not disabled
-     * @throws ClosedHardwareException if hardware is closed
-     * @throws IncorrectDenominationException if coins do not have correct denomination
+     * test case for detecting change: coins are added to coin dispenser and there
+     * is no more issue
+     * 
+     * @throws CashOverloadException          if too much coin is added
+     * @throws NotDisabledSessionException    if session is not disabled
+     * @throws ClosedHardwareException        if hardware is closed
+     * @throws IncorrectDenominationException if coins do not have correct
+     *                                        denomination
      */
     @Test
-    public void coinDispenserDetectChange() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException, IncorrectDenominationException, OverloadedDevice {
+    public void coinDispenserDetectChange() throws CashOverloadException, NotDisabledSessionException,
+            ClosedHardwareException, IncorrectDenominationException, OverloadedDevice {
         setupNoIssueSCS();
         ICoinDispenser tempCoinDispenser1 = session.getStation().getCoinDispensers().get(new BigDecimal(0.05));
         ICoinDispenser tempCoinDispenser2 = session.getStation().getCoinDispensers().get(new BigDecimal(0.10));
@@ -736,16 +780,21 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     }
 
     /**
-     * test case for detecting change: banknotes are added and there is no more issue
-     * @throws CashOverloadException if too much banknote is added
-     * @throws NotDisabledSessionException if session is not disabled
-     * @throws ClosedHardwareException if hardware is closed
-     * @throws IncorrectDenominationException if banknotes do not have correct denomination
+     * test case for detecting change: banknotes are added and there is no more
+     * issue
+     * 
+     * @throws CashOverloadException          if too much banknote is added
+     * @throws NotDisabledSessionException    if session is not disabled
+     * @throws ClosedHardwareException        if hardware is closed
+     * @throws IncorrectDenominationException if banknotes do not have correct
+     *                                        denomination
      */
     @Test
-    public void banknoteDispenserDetectChange() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException, IncorrectDenominationException {
+    public void banknoteDispenserDetectChange() throws CashOverloadException, NotDisabledSessionException,
+            ClosedHardwareException, IncorrectDenominationException {
         IBanknoteDispenser tempBanknoteDispenser1 = session.getStation().getBanknoteDispensers().get(new BigDecimal(5));
-        IBanknoteDispenser tempBanknoteDispenser2 = session.getStation().getBanknoteDispensers().get(new BigDecimal(10));
+        IBanknoteDispenser tempBanknoteDispenser2 = session.getStation().getBanknoteDispensers()
+                .get(new BigDecimal(10));
 
         predictor.checkLowBanknotes(session, session.getStation().getBanknoteDispensers());
 
@@ -765,14 +814,17 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     }
 
     /**
-     * test case for detecting change: coins are removed from coin storage unit when it's full; there is no more issue
-     * @throws CashOverloadException if too much coin is added
+     * test case for detecting change: coins are removed from coin storage unit when
+     * it's full; there is no more issue
+     * 
+     * @throws CashOverloadException       if too much coin is added
      * @throws NotDisabledSessionException if session is not disabled
-     * @throws ClosedHardwareException if hardware is cloed
-     * @throws OverloadedDevice 
+     * @throws ClosedHardwareException     if hardware is cloed
+     * @throws OverloadedDevice
      */
     @Test
-    public void coinStorageDetectChange() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException, OverloadedDevice {
+    public void coinStorageDetectChange()
+            throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException, OverloadedDevice {
         CoinStorageUnit tempStorage = session.getStation().getCoinStorage();
         int i = tempStorage.getCapacity();
         while (i != 0) {
@@ -789,13 +841,16 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     }
 
     /**
-     * test case for detecting change: banknotes are removed from banknote storage unit when it's full; there is no more issue
-     * @throws CashOverloadException if too much banknote is added
+     * test case for detecting change: banknotes are removed from banknote storage
+     * unit when it's full; there is no more issue
+     * 
+     * @throws CashOverloadException       if too much banknote is added
      * @throws NotDisabledSessionException if session is not disabled
-     * @throws ClosedHardwareException if hardware is closed
+     * @throws ClosedHardwareException     if hardware is closed
      */
     @Test
-    public void banknoteStorageDetectChange() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException, OverloadedDevice {
+    public void banknoteStorageDetectChange()
+            throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException, OverloadedDevice {
         setupNoIssueSCS();
         BanknoteStorageUnit tempStorage = session.getStation().getBanknoteStorage();
         int i = tempStorage.getCapacity();
@@ -814,8 +869,10 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     }
 
     /**
-     * test case for detecting change: dispenser is low on coin but is not refilled; issue not resolved
-     * @throws CashOverloadException if too much coin is added
+     * test case for detecting change: dispenser is low on coin but is not refilled;
+     * issue not resolved
+     * 
+     * @throws CashOverloadException       if too much coin is added
      * @throws NotDisabledSessionException if session is not disabled
      */
     @Test
@@ -828,8 +885,10 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     }
 
     /**
-     * test case for detecting change: dispenser is low on banknote but is not refilled; issue not resolved
-     * @throws CashOverloadException if too much banknote is added
+     * test case for detecting change: dispenser is low on banknote but is not
+     * refilled; issue not resolved
+     * 
+     * @throws CashOverloadException       if too much banknote is added
      * @throws NotDisabledSessionException if session is not disabled
      */
     @Test
@@ -842,8 +901,10 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     }
 
     /**
-     * test case for detecting change: coin storage unit is full of coin but is not removed; issue not resolved
-     * @throws CashOverloadException if too much coin is added
+     * test case for detecting change: coin storage unit is full of coin but is not
+     * removed; issue not resolved
+     * 
+     * @throws CashOverloadException       if too much coin is added
      * @throws NotDisabledSessionException if session is not disabled
      */
     @Test
@@ -863,8 +924,10 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     }
 
     /**
-     * test case for detecting change: banknote storage unit is full of banknote but is not removed; issue not resolved
-     * @throws CashOverloadException if too much banknote is added
+     * test case for detecting change: banknote storage unit is full of banknote but
+     * is not removed; issue not resolved
+     * 
+     * @throws CashOverloadException       if too much banknote is added
      * @throws NotDisabledSessionException if session is not disabled
      */
     @Test
@@ -884,17 +947,21 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     }
 
     /**
-     * test case for detecting change: dispenser is low on coin; coin is added but not enough; issue not resolved
-     * @throws CashOverloadException if too much coin is added
-     * @throws NotDisabledSessionException if session is not disabled
-     * @throws ClosedHardwareException if hardware is closed
-     * @throws IncorrectDenominationException if coin does not have correct denomination
+     * test case for detecting change: dispenser is low on coin; coin is added but
+     * not enough; issue not resolved
+     * 
+     * @throws CashOverloadException          if too much coin is added
+     * @throws NotDisabledSessionException    if session is not disabled
+     * @throws ClosedHardwareException        if hardware is closed
+     * @throws IncorrectDenominationException if coin does not have correct
+     *                                        denomination
      */
     @Test
-    public void addCoinButNoChange() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException, IncorrectDenominationException {
+    public void addCoinButNoChange() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException,
+            IncorrectDenominationException {
         predictor.checkLowCoins(session, session.getStation().getCoinDispensers());
         assertEquals(SessionState.DISABLED, session.getState());
-        
+
         maintenanceManager.openHardware(session);
         maintenanceManager.addCoins(new BigDecimal(0.05), nickel);
         maintenanceManager.addCoins(new BigDecimal(0.10), dime);
@@ -904,14 +971,18 @@ public class MaintenanceManagerTest extends AbstractSessionTest {
     }
 
     /**
-     * test case for detecting change: dispenser is low on banknote; banknote is added but not enough; issue not resolved
-     * @throws CashOverloadException if too much banknote is added
-     * @throws NotDisabledSessionException if session is not disabled
-     * @throws ClosedHardwareException if hardware is closed
-     * @throws IncorrectDenominationException if banknote does not have correct denomination
+     * test case for detecting change: dispenser is low on banknote; banknote is
+     * added but not enough; issue not resolved
+     * 
+     * @throws CashOverloadException          if too much banknote is added
+     * @throws NotDisabledSessionException    if session is not disabled
+     * @throws ClosedHardwareException        if hardware is closed
+     * @throws IncorrectDenominationException if banknote does not have correct
+     *                                        denomination
      */
     @Test
-    public void addBanknoteButNoChange() throws CashOverloadException, NotDisabledSessionException, ClosedHardwareException, IncorrectDenominationException {
+    public void addBanknoteButNoChange() throws CashOverloadException, NotDisabledSessionException,
+            ClosedHardwareException, IncorrectDenominationException {
         predictor.checkLowBanknotes(session, session.getStation().getBanknoteDispensers());
 
         maintenanceManager.openHardware(session);

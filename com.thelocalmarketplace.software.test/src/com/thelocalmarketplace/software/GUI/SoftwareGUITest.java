@@ -31,7 +31,6 @@ import com.tdc.banknote.BanknoteValidator;
 import com.tdc.coin.Coin;
 import com.tdc.coin.CoinValidator;
 import com.thelocalmarketplace.GUI.attendant.AttendantGUI;
-import com.thelocalmarketplace.GUI.hardware.CashPanel;
 import com.thelocalmarketplace.GUI.hardware.HardwareGUI;
 import com.thelocalmarketplace.GUI.session.ProductPanel;
 import com.thelocalmarketplace.GUI.session.SoftwareGUI;
@@ -42,8 +41,6 @@ import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
-import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionState;
@@ -51,14 +48,8 @@ import com.thelocalmarketplace.software.attendant.Attendant;
 import com.thelocalmarketplace.software.attendant.IssuePredictor;
 import com.thelocalmarketplace.software.attendant.MaintenanceManager;
 import com.thelocalmarketplace.software.attendant.Requests;
-import com.thelocalmarketplace.software.exceptions.CartEmptyException;
-import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 import com.thelocalmarketplace.software.exceptions.NotDisabledSessionException;
 import com.thelocalmarketplace.software.funds.Funds;
-import com.thelocalmarketplace.software.funds.PayByCash;
-import com.thelocalmarketplace.software.membership.Membership;
-import com.thelocalmarketplace.software.membership.MembershipDatabase;
-
 import powerutility.PowerGrid;
 
 /**

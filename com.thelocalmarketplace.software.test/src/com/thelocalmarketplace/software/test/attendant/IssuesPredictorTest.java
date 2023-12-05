@@ -58,7 +58,7 @@ import java.util.Locale;
  * Kingsley Zhong : 30197260
  */
 
-public class IssuesPredictorTest extends AbstractSessionTest{
+public class IssuesPredictorTest extends AbstractSessionTest {
 
 	private IssuePredictor issuePredictor;
 	private PowerGrid powerGrid;
@@ -81,42 +81,40 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 		as = new Attendant(new AttendantStation());
 		// create issuePredictor instance
 		as.registerOn(session, scs);
-        as.addIssuePrediction(session);
-        issuePredictor = as.getIssuePredictor(session);
+		as.addIssuePrediction(session);
+		issuePredictor = as.getIssuePredictor(session);
 
 		// Create power source
 		PowerGrid.engageUninterruptiblePowerSource();
 		powerGrid = PowerGrid.instance();
-
 
 		// Bronze Printer
 		bronzePrinter = (ReceiptPrinterBronze) scs.getPrinter();
 		bronzePrinter.plugIn(powerGrid);
 		bronzePrinter.turnOn();
 
-    	// Silver Printer
-    	silverPrinter = new ReceiptPrinterSilver();
-    	silverPrinter.plugIn(powerGrid);
-    	silverPrinter.turnOn();
+		// Silver Printer
+		silverPrinter = new ReceiptPrinterSilver();
+		silverPrinter.plugIn(powerGrid);
+		silverPrinter.turnOn();
 
-   		// Gold Printer
-   		goldPrinter = new ReceiptPrinterGold();
-   		goldPrinter.plugIn(powerGrid);
-    	goldPrinter.turnOn();
+		// Gold Printer
+		goldPrinter = new ReceiptPrinterGold();
+		goldPrinter.plugIn(powerGrid);
+		goldPrinter.turnOn();
 
 		// Maintenance Manager
 		mm = new MaintenanceManager();
 
 		// Create coin & banknote
-		coin = new Coin(Currency.getInstance(Locale.CANADA), new BigDecimal ("2.00"));
-		banknote = new Banknote(Currency.getInstance(Locale.CANADA), new BigDecimal ("5.00"));
-
+		coin = new Coin(Currency.getInstance(Locale.CANADA), new BigDecimal("2.00"));
+		banknote = new Banknote(Currency.getInstance(Locale.CANADA), new BigDecimal("5.00"));
 
 	}
 
 	@Test
 	public void checkLowInk() throws OverloadedDevice {
-		//session.setup(itemManager, funds, weight, receiptPrinter, null, scs, null);
+		// session.setup(itemManager, funds, weight, receiptPrinter, null, scs, null);
 		scs.getCoinDispensers().values();
 		// Bronze
 		issuePredictor.checkLowInk(session, scs.getPrinter());
@@ -198,7 +196,8 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 	}
 
 	@Test
-	public void checkLowCoins() throws OverloadedDevice, IncorrectDenominationException, ClosedHardwareException, CashOverloadException, NotDisabledSessionException {
+	public void checkLowCoins() throws OverloadedDevice, IncorrectDenominationException, ClosedHardwareException,
+			CashOverloadException, NotDisabledSessionException {
 		// No coins added
 		issuePredictor.checkLowCoins(session, scs.getCoinDispensers());
 		// Should be disabled
@@ -208,14 +207,13 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 		for (ICoinDispenser dispenser : scs.getCoinDispensers().values()) {
 			for (int i = 0; i < 50; i++) { // Add 50 coins
 				dispenser.load(coin);
-	       }
+			}
 		}
 
 		issuePredictor.checkLowCoins(session, scs.getCoinDispensers());
 		// Should be in PRE_SESSION (no issues)
 		Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
 	}
-
 
 	@Test
 	public void checkLowBanknotes() throws OverloadedDevice, CashOverloadException {
@@ -228,48 +226,52 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 		for (IBanknoteDispenser dispenser : scs.getBanknoteDispensers().values()) {
 			for (int i = 0; i < 50; i++) { // Add 50 banknotes
 				dispenser.load(banknote);
-	       }
+			}
 		}
 
 		issuePredictor.checkLowBanknotes(session, scs.getBanknoteDispensers());
 		// Should be in PRE_SESSION (no issues)
 		Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
 
-
 	}
 
 	@Test
 	public void checkCoinsFull() throws OverloadedDevice, SimulationException, CashOverloadException {
-		for (int i = 0; i < 500; i++) { 
-	        scs.getCoinStorage().load(new Coin(Currency.getInstance(Locale.CANADA), new BigDecimal ("2.00"))); // Add $2.00 500 times
-	        }
+		for (int i = 0; i < 500; i++) {
+			scs.getCoinStorage().load(new Coin(Currency.getInstance(Locale.CANADA), new BigDecimal("2.00"))); // Add
+																												// $2.00
+																												// 500
+																												// times
+		}
 		issuePredictor.checkCoinsFull(session, scs.getCoinStorage());
 		// Should not be Disabled (no issue)
 		Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
 
 		// Add 500 more coins (1000 is max)
 		for (int i = 0; i < 500; i++) {
-	        scs.getCoinStorage().load(coin); // Add $2.00 500 times
-	        }
+			scs.getCoinStorage().load(coin); // Add $2.00 500 times
+		}
 		issuePredictor.checkCoinsFull(session, scs.getCoinStorage());
 		// Should be Disabled
 		Assert.assertEquals(SessionState.DISABLED, session.getState());
 	}
 
-
 	@Test
 	public void checkBanknotesFull() throws OverloadedDevice, SimulationException, CashOverloadException {
-		 for (int i = 0; i < 500; i++) { 
-		        scs.getBanknoteStorage().load(new Banknote(Currency.getInstance(Locale.CANADA), new BigDecimal ("5.00"))); // Add $5.00 500 times
-		        }
+		for (int i = 0; i < 500; i++) {
+			scs.getBanknoteStorage().load(new Banknote(Currency.getInstance(Locale.CANADA), new BigDecimal("5.00"))); // Add
+																														// $5.00
+																														// 500
+																														// times
+		}
 		issuePredictor.checkBanknotesFull(session, scs.getBanknoteStorage());
 		// Should not be Disabled (no issues)
 		Assert.assertEquals(SessionState.PRE_SESSION, session.getState());
 
 		// Add 500 more Banknotes (1000 is max)
-		 for (int i = 0; i < 500; i++) {
-		        scs.getBanknoteStorage().load(banknote); // Add $5.00 500 times
-		        }
+		for (int i = 0; i < 500; i++) {
+			scs.getBanknoteStorage().load(banknote); // Add $5.00 500 times
+		}
 		issuePredictor.checkBanknotesFull(session, scs.getBanknoteStorage());
 		// Should be Disabled
 		Assert.assertEquals(SessionState.DISABLED, session.getState());
@@ -287,28 +289,29 @@ public class IssuesPredictorTest extends AbstractSessionTest{
 		Assert.assertEquals(SessionState.IN_SESSION, session.getState());
 	}
 
-
 	@Test
-	public void predictionCheckSessionEnded() throws NotDisabledSessionException, SimulationException, CashOverloadException, OverloadedDevice {
-		 
-		 bronzePrinter.addPaper(ReceiptPrinterBronze.MAXIMUM_PAPER);
-		 bronzePrinter.addInk(ReceiptPrinterBronze.MAXIMUM_INK);
-		 for (IBanknoteDispenser dispenser : scs.getBanknoteDispensers().values()) {
-			 for (int i = 0; i < 50; i++) { // Add 50 banknotes
-				 dispenser.load(banknote);
-			}
-		 }
-		 for (ICoinDispenser dispenser : scs.getCoinDispensers().values()) {
-			 for (int i = 0; i < 50; i++) { // Add 50 coins
-				 dispenser.load(coin);
-			 }
-		 }
+	public void predictionCheckSessionEnded()
+			throws NotDisabledSessionException, SimulationException, CashOverloadException, OverloadedDevice {
 
-		 session.start();
-		 session.getFunds().setPay(true);
-		 session.getFunds().update(new BigDecimal(0.1));
-		 session.printReceipt();
-		 Assert.assertEquals(SessionState.PRE_SESSION, session.getState()); // Disabled since there may be prediction issues
+		bronzePrinter.addPaper(ReceiptPrinterBronze.MAXIMUM_PAPER);
+		bronzePrinter.addInk(ReceiptPrinterBronze.MAXIMUM_INK);
+		for (IBanknoteDispenser dispenser : scs.getBanknoteDispensers().values()) {
+			for (int i = 0; i < 50; i++) { // Add 50 banknotes
+				dispenser.load(banknote);
+			}
+		}
+		for (ICoinDispenser dispenser : scs.getCoinDispensers().values()) {
+			for (int i = 0; i < 50; i++) { // Add 50 coins
+				dispenser.load(coin);
+			}
+		}
+
+		session.start();
+		session.getFunds().setPay(true);
+		session.getFunds().update(new BigDecimal(0.1));
+		session.printReceipt();
+		Assert.assertEquals(SessionState.PRE_SESSION, session.getState()); // Disabled since there may be prediction
+																			// issues
 
 	}
 

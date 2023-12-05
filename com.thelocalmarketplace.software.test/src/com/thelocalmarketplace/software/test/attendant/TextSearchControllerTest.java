@@ -3,7 +3,6 @@ package com.thelocalmarketplace.software.test.attendant;
 import com.jjjwelectronics.DisabledDevice;
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
-import com.jjjwelectronics.keyboard.USKeyboardQWERTY;
 import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.scanner.BarcodedItem;
 import com.thelocalmarketplace.hardware.*;
@@ -19,8 +18,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * <p>A class of unit tests that test specifically the functionality of
@@ -64,10 +61,6 @@ public class TextSearchControllerTest extends AbstractTest {
     private Barcode barcode2;
     private PriceLookUpCode plu;
 
-    private BarcodedItem item1;
-    private BarcodedItem item2;
-    private PLUCodedItem item3;
-
     private ArrayList<String> expectedResults;
 
     public TextSearchControllerTest(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
@@ -86,15 +79,12 @@ public class TextSearchControllerTest extends AbstractTest {
         expectedResults = new ArrayList<>();
         barcode1 = new Barcode(new Numeral[]{Numeral.valueOf((byte) 1)});
         product1 = new BarcodedProduct(barcode1, "Raisin Bran Cereal", 10, 100.0);
-        item1 = new BarcodedItem(barcode1, new Mass(100.0));
 
         barcode2 = new Barcode(new Numeral[]{Numeral.valueOf((byte) 2)});
         product2 = new BarcodedProduct(barcode2, "Sun-Maid Raisins 6 Pack", 3, 10.0);
-        item2 = new BarcodedItem(barcode2, new Mass(100.0));
 
         plu = new PriceLookUpCode("6666");
         product3 = new PLUCodedProduct(plu, "Bulk Raisins", 5);
-        item3 = new PLUCodedItem(plu, new Mass(1.0));
 
         ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode1, product1); // Add a product to the database
         ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode2, product2); // Add a product to the database

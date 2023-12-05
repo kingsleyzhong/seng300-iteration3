@@ -89,7 +89,6 @@ public class PayByCashTest extends AbstractTest {
 
 		Coin coin = new Coin(currency, value);
 
-		
 		while (!cvListener.coinIsValid) {
 			scs.getCoinSlot().receive(coin);
 		}
@@ -104,14 +103,13 @@ public class PayByCashTest extends AbstractTest {
 	 * @throws CashOverloadException
 	 */
 	@Test
-	
+
 	public void invalidCoinObserved() throws DisabledException, CashOverloadException {
 		scs.getCoinSlot().enable();
 		Currency currency = Currency.getInstance(Locale.CANADA);
 		value = BigDecimal.valueOf(2);
 
 		Coin coin = new Coin(currency, value);
-
 
 		scs.getCoinSlot().receive(coin);
 		Assert.assertEquals(BigDecimal.ZERO, cashController.getCashPaid());
@@ -125,12 +123,11 @@ public class PayByCashTest extends AbstractTest {
 	 * @throws CashOverloadException
 	 */
 	@Test(expected = DisabledException.class)
-	
+
 	public void payInactive() throws DisabledException, CashOverloadException {
 		scs.getCoinSlot().disable();
 		Currency currency = Currency.getInstance(Locale.CANADA);
 		value = BigDecimal.valueOf(1);
-
 
 		Coin coin = new Coin(currency, value);
 
@@ -155,7 +152,6 @@ public class PayByCashTest extends AbstractTest {
 		value = BigDecimal.valueOf(1);
 
 		Banknote note = new Banknote(currency, value);
-
 
 		while (!bvListener.cashIsValid) {
 			if (scs.getBanknoteInput().hasDanglingBanknotes()) {
@@ -202,7 +198,6 @@ public class PayByCashTest extends AbstractTest {
 
 		Banknote note = new Banknote(currency, value);
 
-
 		while (!bvListener.cashIsValid) {
 			if (scs.getBanknoteInput().hasDanglingBanknotes()) {
 				scs.getBanknoteInput().removeDanglingBanknote();
@@ -211,7 +206,6 @@ public class PayByCashTest extends AbstractTest {
 		}
 
 	}
-
 
 	/**
 	 * a Stub of the coin validator listener to check if coins have been "seen" or

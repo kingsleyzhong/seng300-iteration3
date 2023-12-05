@@ -52,7 +52,6 @@ public class PrintReceiptTest extends AbstractSessionTest {
 
     public PrintReceiptTest(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
         super(testName, scsClass);
-        // TODO Auto-generated constructor stub
     }
 
     private BarcodedProduct product;
@@ -61,7 +60,7 @@ public class PrintReceiptTest extends AbstractSessionTest {
     private Numeral numeral;
     private Barcode barcode;
     private Barcode barcode2;
-    
+
     private PriceLookUpCode plu1;
     private PLUCodedProduct pluProduct;
 
@@ -78,7 +77,7 @@ public class PrintReceiptTest extends AbstractSessionTest {
         barcode2 = new Barcode(new Numeral[] { numeral, numeral });
         product = new BarcodedProduct(barcode, "Sample Product", 10, 100.0);
         product2 = new BarcodedProduct(barcode2, "Sample Product 2", 15, 20.0);
-        
+
         plu1 = new PriceLookUpCode("32145");
         pluProduct = new PLUCodedProduct(plu1, "Sample Product 3", 15);
 
@@ -100,31 +99,33 @@ public class PrintReceiptTest extends AbstractSessionTest {
         scs.getPrinter().addPaper(512);
         scs.getPrinter().addInk(1024);
         session.start();
-        
+
         itemManager.addItem(product);
-        // Have to add product as an item to the bagging area for the session to not be blocked (corrects weight discrepancy)
+        // Have to add product as an item to the bagging area for the session to not be
+        // blocked (corrects weight discrepancy)
         Mass item1Mass = new Mass(product.getExpectedWeight());
         BarcodedItem item1 = new BarcodedItem(product.getBarcode(), item1Mass);
         scs.getBaggingArea().addAnItem(item1);
-        
+
         session.printReceipt();
         scs.getPrinter().cutPaper();
         String testReceipt = scs.getPrinter().removeReceipt();
         assertTrue(testReceipt.contains("Item: Sample Product Amount: 1 Price: 10.0\n"));
     }
-    
+
     @Test
     public void pLUItemPrintReceipt() throws OverloadedDevice {
         scs.getPrinter().addPaper(512);
         scs.getPrinter().addInk(1024);
         session.start();
-        
+
         Mass massOfPLUItem = new Mass(2000.0);
         itemManager.addItem(pluProduct, massOfPLUItem);
-        // Have to add product as an item to the bagging area for the session to not be blocked (corrects weight discrepancy)
+        // Have to add product as an item to the bagging area for the session to not be
+        // blocked (corrects weight discrepancy)
         PLUCodedItem plutItem = new PLUCodedItem(pluProduct.getPLUCode(), massOfPLUItem);
         scs.getBaggingArea().addAnItem(plutItem);
-        
+
         session.printReceipt();
         scs.getPrinter().cutPaper();
         String testReceipt = scs.getPrinter().removeReceipt();
@@ -149,13 +150,14 @@ public class PrintReceiptTest extends AbstractSessionTest {
     @Test
     public void printReceiptOnlyAddInk() throws OverloadedDevice {
         session.start();
-        
+
         itemManager.addItem(product);
-        // Have to add product as an item to the bagging area for the session to not be blocked (corrects weight discrepancy)
+        // Have to add product as an item to the bagging area for the session to not be
+        // blocked (corrects weight discrepancy)
         Mass item1Mass = new Mass(product.getExpectedWeight());
         BarcodedItem item1 = new BarcodedItem(product.getBarcode(), item1Mass);
         scs.getBaggingArea().addAnItem(item1);
-        
+
         session.printReceipt();
         scs.getPrinter().cutPaper();
         String testReceipt = scs.getPrinter().removeReceipt();
@@ -172,25 +174,28 @@ public class PrintReceiptTest extends AbstractSessionTest {
         scs.getPrinter().addPaper(512);
         scs.getPrinter().addInk(1024);
         session.start();
-        
+
         itemManager.addItem(product);
-        // Have to add product as an item to the bagging area for the session to not be blocked (corrects weight discrepancy)
+        // Have to add product as an item to the bagging area for the session to not be
+        // blocked (corrects weight discrepancy)
         Mass item1Mass = new Mass(product.getExpectedWeight());
         BarcodedItem item1 = new BarcodedItem(product.getBarcode(), item1Mass);
         scs.getBaggingArea().addAnItem(item1);
-        
+
         Mass massOfPLUItem = new Mass(3000.0);
         itemManager.addItem(pluProduct, massOfPLUItem);
-        // Have to add product as an item to the bagging area for the session to not be blocked (corrects weight discrepancy)
+        // Have to add product as an item to the bagging area for the session to not be
+        // blocked (corrects weight discrepancy)
         PLUCodedItem plutItem = new PLUCodedItem(pluProduct.getPLUCode(), massOfPLUItem);
         scs.getBaggingArea().addAnItem(plutItem);
-        
+
         itemManager.addItem(product2);
-        // Have to add product as an item to the bagging area for the session to not be blocked (corrects weight discrepancy)
+        // Have to add product as an item to the bagging area for the session to not be
+        // blocked (corrects weight discrepancy)
         Mass item2Mass = new Mass(product2.getExpectedWeight());
         BarcodedItem item2 = new BarcodedItem(product2.getBarcode(), item2Mass);
         scs.getBaggingArea().addAnItem(item2);
-        
+
         session.printReceipt();
         scs.getPrinter().cutPaper();
         String testReceipt = scs.getPrinter().removeReceipt();
@@ -205,15 +210,17 @@ public class PrintReceiptTest extends AbstractSessionTest {
         scs.getPrinter().addInk(1024);
         session.start();
         assertTrue(session.getState() == SessionState.IN_SESSION);
-        
+
         itemManager.addItem(product);
-        // Have to add product as an item to the bagging area for the session to not be blocked (corrects weight discrepancy)
+        // Have to add product as an item to the bagging area for the session to not be
+        // blocked (corrects weight discrepancy)
         Mass item1Mass = new Mass(product.getExpectedWeight());
         BarcodedItem item1 = new BarcodedItem(product.getBarcode(), item1Mass);
         scs.getBaggingArea().addAnItem(item1);
-        
+
         itemManager.addItem(product2);
-        // Have to add product as an item to the bagging area for the session to not be blocked (corrects weight discrepancy)
+        // Have to add product as an item to the bagging area for the session to not be
+        // blocked (corrects weight discrepancy)
         Mass item2Mass = new Mass(product2.getExpectedWeight());
         BarcodedItem item2 = new BarcodedItem(product2.getBarcode(), item2Mass);
         scs.getBaggingArea().addAnItem(item2);
@@ -227,13 +234,14 @@ public class PrintReceiptTest extends AbstractSessionTest {
         scs.getPrinter().addInk(20);
         session.start();
         assertTrue(session.getState() == SessionState.IN_SESSION);
-        
+
         itemManager.addItem(product);
-        // Have to add product as an item to the bagging area for the session to not be blocked (corrects weight discrepancy)
+        // Have to add product as an item to the bagging area for the session to not be
+        // blocked (corrects weight discrepancy)
         Mass item1Mass = new Mass(product.getExpectedWeight());
         BarcodedItem item1 = new BarcodedItem(product.getBarcode(), item1Mass);
         scs.getBaggingArea().addAnItem(item1);
-        
+
         session.printReceipt();
         scs.getPrinter().cutPaper();
         String testReceipt = scs.getPrinter().removeReceipt();
@@ -246,19 +254,21 @@ public class PrintReceiptTest extends AbstractSessionTest {
         scs.getPrinter().addPaper(1);
         scs.getPrinter().addInk(1024);
         session.start();
-        
+
         itemManager.addItem(product);
-        // Have to add product as an item to the bagging area for the session to not be blocked (corrects weight discrepancy)
+        // Have to add product as an item to the bagging area for the session to not be
+        // blocked (corrects weight discrepancy)
         Mass item1Mass = new Mass(product.getExpectedWeight());
         BarcodedItem item1 = new BarcodedItem(product.getBarcode(), item1Mass);
         scs.getBaggingArea().addAnItem(item1);
-        
+
         itemManager.addItem(product2);
-        // Have to add product as an item to the bagging area for the session to not be blocked (corrects weight discrepancy)
+        // Have to add product as an item to the bagging area for the session to not be
+        // blocked (corrects weight discrepancy)
         Mass item2Mass = new Mass(product2.getExpectedWeight());
         BarcodedItem item2 = new BarcodedItem(product2.getBarcode(), item2Mass);
         scs.getBaggingArea().addAnItem(item2);
-        
+
         session.printReceipt();
         scs.getPrinter().cutPaper();
         scs.getPrinter().removeReceipt();
@@ -266,7 +276,7 @@ public class PrintReceiptTest extends AbstractSessionTest {
         session.printReceipt();
         scs.getPrinter().cutPaper();
         String testReceipt = scs.getPrinter().removeReceipt();
-        
+
         assertTrue(testReceipt.contains("Item: Sample Product Amount: 1 Price: 10.0\n"));
         assertTrue(testReceipt.contains("Item: Sample Product 2 Amount: 1 Price: 15.0\n"));
     }
@@ -276,19 +286,21 @@ public class PrintReceiptTest extends AbstractSessionTest {
         scs.getPrinter().addPaper(512);
         scs.getPrinter().addInk(20);
         session.start();
-        
+
         itemManager.addItem(product);
-        // Have to add product as an item to the bagging area for the session to not be blocked (corrects weight discrepancy)
+        // Have to add product as an item to the bagging area for the session to not be
+        // blocked (corrects weight discrepancy)
         Mass item1Mass = new Mass(product.getExpectedWeight());
         BarcodedItem item1 = new BarcodedItem(product.getBarcode(), item1Mass);
         scs.getBaggingArea().addAnItem(item1);
-        
+
         itemManager.addItem(product2);
-        // Have to add product as an item to the bagging area for the session to not be blocked (corrects weight discrepancy)
+        // Have to add product as an item to the bagging area for the session to not be
+        // blocked (corrects weight discrepancy)
         Mass item2Mass = new Mass(product2.getExpectedWeight());
         BarcodedItem item2 = new BarcodedItem(product2.getBarcode(), item2Mass);
         scs.getBaggingArea().addAnItem(item2);
-        
+
         session.printReceipt();
         scs.getPrinter().cutPaper();
         scs.getPrinter().removeReceipt();
@@ -307,13 +319,14 @@ public class PrintReceiptTest extends AbstractSessionTest {
         scs.getPrinter().addPaper(512);
         scs.getPrinter().addInk(1024);
         session.start();
-        
+
         itemManager.addItem(product);
-        // Have to add product as an item to the bagging area for the session to not be blocked (corrects weight discrepancy)
+        // Have to add product as an item to the bagging area for the session to not be
+        // blocked (corrects weight discrepancy)
         Mass item1Mass = new Mass(product.getExpectedWeight());
         BarcodedItem item1 = new BarcodedItem(product.getBarcode(), item1Mass);
         scs.getBaggingArea().addAnItem(item1);
-        
+
         session.printReceipt();
         scs.getPrinter().cutPaper();
         String testReceipt = scs.getPrinter().removeReceipt();
@@ -343,13 +356,14 @@ public class PrintReceiptTest extends AbstractSessionTest {
         scs.getPrinter().addPaper(512);
         scs.getPrinter().addInk(1024);
         session.start();
-        
+
         itemManager.addItem(product3);
-        // Have to add product as an item to the bagging area for the session to not be blocked (corrects weight discrepancy)
+        // Have to add product as an item to the bagging area for the session to not be
+        // blocked (corrects weight discrepancy)
         Mass item3Mass = new Mass(product3.getExpectedWeight());
         BarcodedItem item3 = new BarcodedItem(product3.getBarcode(), item3Mass);
         scs.getBaggingArea().addAnItem(item3);
-        
+
         session.printReceipt();
         String errorMessage = errContent.toString();
         assertTrue(errorMessage.contains("The line is too long. Add a newline"));

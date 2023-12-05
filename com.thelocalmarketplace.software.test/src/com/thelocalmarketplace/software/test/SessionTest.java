@@ -108,7 +108,6 @@ public class SessionTest extends AbstractTest {
 
     public SessionTest(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
         super(testName, scsClass);
-        // TODO Auto-generated constructor stub
     }
 
     @Before

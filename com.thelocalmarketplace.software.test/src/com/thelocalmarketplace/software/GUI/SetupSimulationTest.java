@@ -15,7 +15,7 @@ public class SetupSimulationTest {
 	private HardwareGUI hardwareGUI;
 	private SoftwareGUI softwareGUI;
 	private AttendantGUI attendantGUI;
-	
+
 	@Before
 	public void setup() throws NotDisabledSessionException {
 		Simulation simulation = new Simulation();
@@ -23,11 +23,11 @@ public class SetupSimulationTest {
 		softwareGUI = simulation.getSoftwareGUI();
 		attendantGUI = simulation.getAttendantGUI();
 	}
-	
+
 	@Test
 	public void initialization() {
 		assertNotNull(hardwareGUI);
 		assertNotNull(softwareGUI);
-		//assertNotNull(attendantGUI);
+		assertNotNull(attendantGUI);
 	}
 }

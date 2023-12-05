@@ -58,7 +58,6 @@ public class ItemAddedRuleTest extends AbstractSessionTest {
 
     public ItemAddedRuleTest(String testName, Class<? extends AbstractSelfCheckoutStation> scsClass) {
         super(testName, scsClass);
-        // TODO Auto-generated constructor stub
     }
 
     private BarcodedProduct product;
@@ -145,17 +144,6 @@ public class ItemAddedRuleTest extends AbstractSessionTest {
         scs.getMainScanner().disable();
         scs.getMainScanner().enable();
 
-    }
-
-    @Test
-    public void addBagInDatabase() {
-        session.start();
-
-        /**
-         * call method to purchase bag
-         * list of bags = session.getBagItems();
-         * assertTrue(productList.containsKey(bag));
-         **/
     }
 
     public class ScannerListenerStub implements BarcodeScannerListener {
