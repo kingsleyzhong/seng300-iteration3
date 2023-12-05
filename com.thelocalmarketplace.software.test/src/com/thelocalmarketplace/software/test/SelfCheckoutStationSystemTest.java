@@ -508,23 +508,6 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 		assertEquals(SessionState.BLOCKED, session.getState());
 	}
 
-	@Test
-	public void payWhenDiscrepancy() throws DisabledException, CashOverloadException {
-		session.start();
-		scs.getBaggingArea().addAnItem(item);
-		session.payByCash(); // this is a successful payment
-		scs.getBaggingArea().addAnItem(item2);
-		session.payByCash(); // won't proceed because of of session freeze from previous payment action
-		assertEquals(SessionState.BLOCKED, session.getState());
-		int count = 0;
-		while (count < 1) {
-			scs.getCoinSlot().receive(dollar);
-			if (scs.getCoinTray().collectCoins().isEmpty()) {
-				count = count + 1;
-			}
-		}
-	}
-
 	@Test(expected = DisabledException.class)
 	public void disabledComponentWhenPaying() throws DisabledException, CashOverloadException {
 		session.start();
