@@ -1,7 +1,8 @@
 package com.thelocalmarketplace.software.test;
 
 import static org.junit.Assert.*;
-
+import StubClasses.SessionListenerStub;
+import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,9 +26,6 @@ import com.thelocalmarketplace.hardware.AttendantStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.PriceLookUpCode;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationSilver;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
 import com.thelocalmarketplace.software.Session;
@@ -41,19 +39,16 @@ import com.thelocalmarketplace.software.items.ItemManager;
 import com.thelocalmarketplace.software.membership.Membership;
 import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.weight.Weight;
-
-import StubClasses.ItemsListenerStub;
-import StubClasses.SessionListenerStub;
-import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
+import org.junit.Before;
+import org.junit.Test;
 import powerutility.PowerGrid;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Currency;
-import java.util.HashMap;
 import java.util.Locale;
+
+import static org.junit.Assert.*;
 
 /**
  * Unit Test class for Session and interaction with surrounding classes Weight
@@ -150,13 +145,13 @@ public class SessionTest extends AbstractTest {
     }
     
     @Test
-    public void testSessionInitialization() {
+    public void sessionInitialization() {
         assertEquals(session.getState(), SessionState.PRE_SESSION);
         assertFalse(session.getState().inPay());
     }
 
     @Test
-    public void testStartSession() {
+    public void startSession() {
     	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.start();
         assertEquals(session.getState(), SessionState.IN_SESSION);
@@ -164,7 +159,7 @@ public class SessionTest extends AbstractTest {
     }
 
     @Test
-    public void testCancelSession() {
+    public void cancelSession() {
     	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.start();
         session.cancel();
@@ -187,7 +182,7 @@ public class SessionTest extends AbstractTest {
     }
 
     @Test
-    public void testPaid() throws DisabledException, CashOverloadException {
+    public void paid() throws DisabledException, CashOverloadException {
         session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.start();
         itemManager.addItem(product);
@@ -368,6 +363,37 @@ public class SessionTest extends AbstractTest {
      	session.deRegister(stub);
     }
     	
+    @Test
+    public void sessionNotProgressLowInk() throws OverloadedDevice, EmptyDevice {
+    	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+
+     	scs.getPrinter().addInk(1);
+    	scs.getPrinter().addPaper(2);
+    	scs.getPrinter().print('9');
+    	assertFalse(session.getState() == SessionState.BLOCKED);
+    }
+    
+    @Test
+    public void refillWhileNotInProgressAndDisabled() throws OverloadedDevice, EmptyDevice {
+    	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+    	session.disable();
+     	scs.getPrinter().addInk(1);
+    	scs.getPrinter().addPaper(2);
+    	assertFalse(session.getState() == SessionState.IN_SESSION);
+    	
+    }
+    
+    
+    @Test
+    public void sessionNotProgressLowPaper() throws OverloadedDevice, EmptyDevice {
+    	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+
+     	scs.getPrinter().addInk(1);
+    	scs.getPrinter().addPaper(1);
+    	scs.getPrinter().print('\n');
+    	assertFalse(session.getState() == SessionState.BLOCKED);
+    }
+    
     /*
      *Sessions can only be disabled when in the pre-session state 
      */

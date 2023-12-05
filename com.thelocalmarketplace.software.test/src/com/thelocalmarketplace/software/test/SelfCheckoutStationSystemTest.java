@@ -1,20 +1,5 @@
 package com.thelocalmarketplace.software.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Currency;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import org.junit.Before;
-import org.junit.Test;
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.card.Card;
@@ -40,6 +25,15 @@ import com.thelocalmarketplace.software.funds.CardIssuerDatabase;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.funds.SupportedCardIssuers;
 import com.thelocalmarketplace.software.weight.Weight;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.*;
+
+import static org.junit.Assert.*;
 
 /**
  * Unit test for the integration of software for selfCheckoutStation with
@@ -135,13 +129,13 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 
 	// Tests for start Session requirement use case
 	@Test
-	public void testInitialConfiguration() {
+	public void initialConfiguration() {
 		assertEquals(session.getState(), SessionState.PRE_SESSION);
 		assertFalse(session.getState().inPay());
 	}
 
 	@Test
-	public void testStartSession() {
+	public void startSession() {
 		session.start();
 		assertEquals(session.getState(), SessionState.IN_SESSION);
 		assertFalse(session.getState().inPay());
@@ -150,7 +144,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	// Tests for scan an Item requirement use case
 
 	@Test
-	public void testScanAnItem() {
+	public void scanAnItem() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getMainScanner().scan(item);
@@ -160,7 +154,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	}
 
 	@Test
-	public void testScanAnItemFunds() {
+	public void scanAnItemFunds() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getMainScanner().scan(item);
@@ -172,7 +166,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	}
 
 	@Test
-	public void testScanAnItemWeight() {
+	public void scanAnItemWeight() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getMainScanner().scan(item);
@@ -185,7 +179,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 
 	// Tests for add Item via handheldScan
 	@Test
-	public void testHandheldScanAnItem() {
+	public void handheldScanAnItem() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getHandheldScanner().scan(item);
@@ -195,7 +189,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	}
 
 	@Test
-	public void testHandheldScanAnItemFunds() {
+	public void handheldScanAnItemFunds() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getHandheldScanner().scan(item);
@@ -207,7 +201,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	}
 
 	@Test
-	public void testHandheldScanAnItemWeight() {
+	public void handheldScanAnItemWeight() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getHandheldScanner().scan(item);
@@ -253,7 +247,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	}
 
 	@Test
-	public void testPayItemWithCashGetChange() throws DisabledException, CashOverloadException {
+	public void payItemWithCashGetChange() throws DisabledException, CashOverloadException {
 		scs.getBanknoteDispensers().get(BigDecimal.TEN).load(ten, ten, ten);
 
 		session.start();
@@ -283,7 +277,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	}
 
 	@Test
-	public void testPayItemGetCoinChange() throws DisabledException, CashOverloadException {
+	public void payItemGetCoinChange() throws DisabledException, CashOverloadException {
 		scs.getBanknoteDispensers().get(new BigDecimal(5)).load(five, five, five);
 		scs.getCoinDispensers().get(new BigDecimal(1)).load(dollar, dollar, dollar, dollar, dollar);
 
@@ -326,7 +320,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 
 	// Tests for paying Credit via swipe
 	@Test
-	 public void testPayWithCredit() throws CashOverloadException,
+	 public void payWithCredit() throws CashOverloadException,
 	 NoCashAvailableException, DisabledException, IOException {
 	 CardIssuer ci1 = new CardIssuer(SupportedCardIssuers.ONE.getIssuer(), 1);
 	 CardIssuerDatabase.CARD_ISSUER_DATABASE.put(SupportedCardIssuers.ONE.
@@ -367,7 +361,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	 }
 	 
 	 @Test
-	 public void testPayWithDebit() throws CashOverloadException,
+	 public void payWithDebit() throws CashOverloadException,
 	 NoCashAvailableException, DisabledException, IOException {
 	 CardIssuer ci1 = new CardIssuer(SupportedCardIssuers.ONE.getIssuer(), 1);
 	 CardIssuerDatabase.CARD_ISSUER_DATABASE.put(SupportedCardIssuers.ONE.
@@ -410,7 +404,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	 // Tests for removing an item
 	 
 	 @Test
-	 public void testAddThenRemoveItem() throws DisabledException,
+	 public void addThenRemoveItem() throws DisabledException,
 	 CashOverloadException {
 	 session.start();
 	 for(int i =0; i < 100; i++) {
@@ -440,7 +434,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	 
 
 	@Test
-	public void testAddBulkyItem() {
+	public void addBulkyItem() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getMainScanner().scan(item);
@@ -450,7 +444,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	}
 
 	@Test
-	public void testRemoveBulkyItem() {
+	public void removeBulkyItem() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getMainScanner().scan(item);
@@ -475,7 +469,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	// Tests for weight Discrepancy
 
 	@Test
-	public void testDiscrepancy() {
+	public void discrepancy() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getMainScanner().scan(item);
@@ -484,7 +478,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	}
 
 	@Test
-	public void testAddItemWhenDiscrepancy() {
+	public void addItemWhenDiscrepancy() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getMainScanner().scan(item);
@@ -497,7 +491,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	}
 
 	@Test
-	public void testEnterPayWhenDiscrepancy() {
+	public void enterPayWhenDiscrepancy() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getMainScanner().scan(item);
@@ -508,7 +502,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	}
 
 	@Test(expected = DisabledException.class)
-	public void testPayWhenDiscrepancy() throws DisabledException, CashOverloadException {
+	public void payWhenDiscrepancy() throws DisabledException, CashOverloadException {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getMainScanner().scan(item);
@@ -537,7 +531,7 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	}
 
 	@Test
-	public void testDiscrepancyDuringPay() {
+	public void discrepancyDuringPay() {
 		session.start();
 		for (int i = 0; i < 100; i++) {
 			scs.getMainScanner().scan(item);
