@@ -5,6 +5,9 @@ import static org.junit.Assert.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.printer.IReceiptPrinter;
@@ -20,11 +23,16 @@ import com.thelocalmarketplace.hardware.AttendantStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.PriceLookUpCode;
+import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
+import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
+import com.thelocalmarketplace.hardware.SelfCheckoutStationSilver;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionState;
+import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.exceptions.CartEmptyException;
+import com.thelocalmarketplace.software.exceptions.InvalidActionException;
 import com.thelocalmarketplace.software.funds.Funds;
 import com.thelocalmarketplace.software.items.BagDispenserController;
 import com.thelocalmarketplace.software.items.ItemManager;
@@ -32,13 +40,17 @@ import com.thelocalmarketplace.software.membership.Membership;
 import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.weight.Weight;
 
+import StubClasses.ItemsListenerStub;
 import StubClasses.SessionListenerStub;
 import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 import powerutility.PowerGrid;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Currency;
+import java.util.HashMap;
 import java.util.Locale;
 
 /**
@@ -84,6 +96,7 @@ public class SessionTest extends AbstractTest {
     private Numeral[] digits;
     private Barcode barcode;
     private Barcode barcode2;
+    private BarcodedItem barcodedItem;
 
     private Funds funds;
     private Weight weight;
@@ -113,6 +126,7 @@ public class SessionTest extends AbstractTest {
         barcode2 = new Barcode(new Numeral[] { numeral });
         product = new BarcodedProduct(barcode, "Sample Product", 10, 100.0);
         product2 = new BarcodedProduct(barcode2, "Sample Product 2", 15, 20.0);
+        barcodedItem = new BarcodedItem(barcode, new Mass(product.getExpectedWeight()));
         funds = new Funds(scs);
         itemManager = new ItemManager();
         bagDispenser = new BagDispenserController(scs.getReusableBagDispenser(), itemManager);
@@ -268,6 +282,23 @@ public class SessionTest extends AbstractTest {
         session.deRegister(stub);
     }
     
+    
+    @Test
+    public void addItemInSessionDiscrepancy() {
+    	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+    	session.start();
+     	SessionListenerStub stub = new SessionListenerStub();
+     	session.register(stub);
+     	
+    	scs.getBaggingArea().addAnItem(barcodedItem);
+     	
+     	assertTrue(stub.request == Requests.WEIGHT_DISCREPANCY);
+    	// Reset
+     	session.deRegister(stub);
+     	scs.getBaggingArea().removeAnItem(barcodedItem);
+
+    }
+    
     @Test
     public void cancelSessionInSession() {
         session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
@@ -276,7 +307,7 @@ public class SessionTest extends AbstractTest {
         assertTrue(session.getState() == SessionState.PRE_SESSION);
     	
     }
-      
+    
     /*
      *Sessions can only be disabled when in the pre-session state 
      */
