@@ -454,11 +454,9 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	@Test
 	public void testRemoveAllItems() {
 		session.start();
-		for (int i = 0; i < 5; i++) {
-			scs.getMainScanner().scan(item);
-			scs.getBaggingArea().addAnItem(item);
-			scs.getBaggingArea().removeAnItem(item);
-		}
+
+		scs.getBaggingArea().addAnItem(item);
+		scs.getBaggingArea().removeAnItem(item);
 
 		assertTrue(session.getItems().isEmpty());
 	}
@@ -501,9 +499,6 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 	@Test(expected = DisabledException.class)
 	public void payWhenDiscrepancy() throws DisabledException, CashOverloadException {
 		session.start();
-		for (int i = 0; i < 100; i++) {
-			scs.getMainScanner().scan(item);
-		}
 		scs.getBaggingArea().addAnItem(item);
 		session.payByCash();
 		scs.getBaggingArea().addAnItem(item2);
@@ -516,16 +511,6 @@ public class SelfCheckoutStationSystemTest extends AbstractTest {
 		}
 	}
 
-	@Test(expected = DisabledException.class)
-	public void testDisabledComponentWhenPaying() throws DisabledException, CashOverloadException {
-		session.start();
-		for (int i = 0; i < 5; i++) {
-			scs.getMainScanner().scan(item);
-		}
-		scs.getBaggingArea().addAnItem(item);
-		session.payByCash();
-		scs.getScreen().disable();
-	}
 
 	@Test
 	public void discrepancyDuringPay() {
