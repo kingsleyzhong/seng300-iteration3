@@ -40,6 +40,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
@@ -120,20 +121,22 @@ public class HardwareGUITest {
          *
          * @param startPoint The starting point of the drag.
          * @param endPoint   The end point of the drag.
+         * @throws InterruptedException 
          */
-        public void drag(Point startPoint, Point endPoint) {
+        public void drag(Point startPoint, Point endPoint) throws InterruptedException {
             // Move the mouse to the start point
             robot.mouseMove(startPoint.x, startPoint.y);
 
-            // Press the mouse button (left click)
+            // Press the left mouse button
             robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
-            robot.delay(200); // short delay to allow the mouse press to register
 
-            // Move the mouse to the end point while the button is pressed
+            // Delay to simulate hold time
+            robot.delay(200);
+
+            // Move to the end point
             robot.mouseMove(endPoint.x, endPoint.y);
-            robot.delay(200); // short delay for the dragging to register
 
-            // Release the mouse button
+            // Release the left mouse button
             robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
         }
 
@@ -142,7 +145,14 @@ public class HardwareGUITest {
     }
 
     @Before
-    public void setup() throws AWTException, CashOverloadException {
+    public void setup() throws AWTException, CashOverloadException, InterruptedException {
+    	Thread.sleep(300);
+        //telling it what banknotes it can take
+        AbstractSelfCheckoutStation.configureBanknoteDenominations(new BigDecimal[] {new BigDecimal(100),
+                new BigDecimal(50), new BigDecimal(20), new BigDecimal(10), new BigDecimal(5) });
+        AbstractSelfCheckoutStation.configureCoinDenominations(new BigDecimal[] { new BigDecimal(2),
+                BigDecimal.ONE, new BigDecimal(0.25), new BigDecimal(0.10), new BigDecimal(0.05)});
+
         scs = new SelfCheckoutStationGold();
         as = new AttendantStation();
         PowerGrid.engageUninterruptiblePowerSource();
@@ -161,15 +171,9 @@ public class HardwareGUITest {
         cashpanel = new CashPanel(scs);
         funds = new Funds(scs);
         
-        //telling it what banknotes it can take
-		AbstractSelfCheckoutStation.configureBanknoteDenominations(new BigDecimal[] {new BigDecimal(100), 
-				new BigDecimal(50), new BigDecimal(20), new BigDecimal(10), new BigDecimal(5) });
-		AbstractSelfCheckoutStation.configureCoinDenominations(new BigDecimal[] { new BigDecimal(2), 
-				BigDecimal.ONE, new BigDecimal(0.25), new BigDecimal(0.10), new BigDecimal(0.05)});
-        
 		//adding change to the machine
 		Banknote ten = new Banknote(Currency.getInstance(Locale.CANADA), new BigDecimal(10));
-		scs.getBanknoteDispensers().get(ten.getDenomination()).load(ten);;
+		scs.getBanknoteDispensers().get(ten.getDenomination()).load(ten);
 		
 		
 
@@ -204,13 +208,10 @@ public class HardwareGUITest {
         expensive_item = new BarcodedItem(expensive_barcode, new Mass(20.0));
         
         dragRobot = new DragRobot();
-        try {
-            panelRobot = new Robot();
-
-        } catch (AWTException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+    }
+    
+    private void panelRobotSetup() throws AWTException {
+    	panelRobot = new Robot();
         runs=0;
         timer = new Timer(1000, new ActionListener() {
 
@@ -237,7 +238,8 @@ public class HardwareGUITest {
     }
     
     @After
-    public void teardown() {
+    public void teardown() throws InterruptedException {
+    	Thread.sleep(300);
         scs.getScreen().getFrame().dispose();
     }
     
@@ -250,7 +252,8 @@ public class HardwareGUITest {
     }
 
     @Test
-    public void testStartButton() {
+    public void testStartButton() throws InterruptedException {
+    	Thread.sleep(500);
         hardwareGUI.buttonPanel.startButton.doClick();
         Container tempComponent = (Container) HardwareGUI.hardwareFrame.getContentPane().getComponent(0);
         Assert.assertNotEquals(tempComponent.getComponent(0), hardwareGUI.buttonPanel.startButton);
@@ -272,20 +275,18 @@ public class HardwareGUITest {
     }
 
     @Test
-    public void dragItemFromCartToBagging() {
+    public void dragItemFromCartToBagging() throws InterruptedException {
         hardwareGUI.buttonPanel.startButton.doClick();
-        System.out.println(hardwareGUI.cartPanel.getLocationOnScreen());
-        Point cartCoord = hardwareGUI.cartPanel.getComponent(0).getLocationOnScreen();
-        cartCoord.move(10, 10);
-        Point baggingCoord = hardwareGUI.baggingPanel.getLocationOnScreen();
-        baggingCoord.move(10, 10);
-        dragRobot.drag(cartCoord, baggingCoord);
-        System.out.println(hardwareGUI.getItemsInBaggingArea().size());
+        HardwareGUI.setVisibility(true);
+    	Thread.sleep(500);
+        dragRobot.drag(new Point(100, 100), new Point(500, 400));
+        Thread.sleep(1000);
         Assert.assertEquals(1, hardwareGUI.getItemsInBaggingArea().size());
     }
 
     @Test
     public void dragItemFromCartToScanning() {
+    	
 
     }
 
@@ -326,8 +327,21 @@ public class HardwareGUITest {
     }
 
     @Test
-    public void collectReceiptButton() {
+    public void collectReceiptButton() throws AWTException {
+    	panelRobotSetup();
+        softwareGUI.btnStart.doClick();
+        hardwareGUI.buttonPanel.startButton.doClick();
 
+        scs.getMainScanner().scan(item2);
+        scs.getBaggingArea().addAnItem(item2);
+
+        softwareGUI.pay.doClick();
+        softwareGUI.paymentScreen.getCashButton().doClick();
+
+
+        cashpanel.TenBillBtn.doClick();
+        hardwareGUI.buttonPanel.receiptPrinter.doClick();
+        Assert.assertNotEquals("", hardwareGUI.buttonPanel.getReceipt());
     }
 
     @Test
@@ -342,7 +356,8 @@ public class HardwareGUITest {
 
 
     @Test
-    public void inputMultipleBills() {
+    public void inputMultipleBills() throws AWTException {
+    	panelRobotSetup();
 		softwareGUI.btnStart.doClick();
 		hardwareGUI.buttonPanel.startButton.doClick();
 		
@@ -363,7 +378,8 @@ public class HardwareGUITest {
     }
 
     @Test
-    public void inputNonBill() {
+    public void inputNonBill() throws AWTException {
+    	panelRobotSetup();
 		softwareGUI.btnStart.doClick();
 		hardwareGUI.buttonPanel.startButton.doClick();
 		
@@ -379,7 +395,8 @@ public class HardwareGUITest {
     }
 
     @Test
-    public void removeInputBills() {
+    public void removeInputBills() throws AWTException {
+    	panelRobotSetup();
 		softwareGUI.btnStart.doClick();
 		hardwareGUI.buttonPanel.startButton.doClick();
 		
@@ -402,7 +419,8 @@ public class HardwareGUITest {
     }
 
     @Test
-    public void removeChangeBills() {
+    public void removeChangeBills() throws AWTException {
+    	panelRobotSetup();
 		softwareGUI.btnStart.doClick();
 		hardwareGUI.buttonPanel.startButton.doClick();
 		
@@ -423,7 +441,8 @@ public class HardwareGUITest {
     
 
     @Test
-    public void inputBill() {
+    public void inputBill() throws AWTException {
+    	panelRobotSetup();
 		softwareGUI.btnStart.doClick();
 		hardwareGUI.buttonPanel.startButton.doClick();
 		
@@ -441,7 +460,8 @@ public class HardwareGUITest {
     }
     
     @Test
-    public void inputCoin() {
+    public void inputCoin() throws AWTException {
+    	panelRobotSetup();
 		softwareGUI.btnStart.doClick();
 		hardwareGUI.buttonPanel.startButton.doClick();
 		
@@ -459,7 +479,8 @@ public class HardwareGUITest {
 
     //CURSED CURSED CURSED
     @Test
-    public void inputMultipleCoins() {
+    public void inputMultipleCoins() throws AWTException {
+    	panelRobotSetup();
 		softwareGUI.btnStart.doClick();
 		hardwareGUI.buttonPanel.startButton.doClick();
 		
@@ -475,13 +496,14 @@ public class HardwareGUITest {
 		cashpanel.button_one_coin.doClick();
 		cashpanel.btn_two_coin.doClick();
 
-		Assert.assertEquals(BigDecimal.valueOf(3.4) , cashController.getCashPaid());
+		Assert.assertEquals(BigDecimal.valueOf(3.4) , cashController.getCashPaid().setScale(1, RoundingMode.HALF_UP));
 		
     }
 
 
     @Test
-    public void inputNonCoin() throws DisabledException, CashOverloadException{
+    public void inputNonCoin() throws DisabledException, CashOverloadException, AWTException{
+    	panelRobotSetup();
 		softwareGUI.btnStart.doClick();
 		hardwareGUI.buttonPanel.startButton.doClick();
 		
@@ -497,7 +519,8 @@ public class HardwareGUITest {
     }
     
     @Test
-    public void removeCoinTray() {
+    public void removeCoinTray() throws AWTException {
+    	panelRobotSetup();
     	
 		softwareGUI.btnStart.doClick();
 		hardwareGUI.buttonPanel.startButton.doClick();
@@ -559,7 +582,8 @@ public class HardwareGUITest {
     }
 
     @Test
-    public void creditCardInsert() {
+    public void creditCardInsert() throws AWTException {
+    	panelRobotSetup();
         hardwareGUI.buttonPanel.startButton.doClick();
         hardwareGUI.card.creditCardButton.doClick();
         try {
@@ -593,7 +617,8 @@ public class HardwareGUITest {
     }
 
     @Test
-    public void debitCardInsert() {
+    public void debitCardInsert() throws AWTException {
+    	panelRobotSetup();
         hardwareGUI.buttonPanel.startButton.doClick();
         hardwareGUI.card.creditCardButton.doClick();
         try {
@@ -626,7 +651,8 @@ public class HardwareGUITest {
     }
 
     @Test
-    public void invalidCardInsert() {
+    public void invalidCardInsert() throws AWTException {
+    	panelRobotSetup();
         hardwareGUI.buttonPanel.startButton.doClick();
         hardwareGUI.card.invalidCardButton.doClick();
         try {

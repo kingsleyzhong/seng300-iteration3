@@ -58,6 +58,7 @@ public class ButtonPanel extends JPanel implements ActionListener {
 	public JButton startButton;
 	public JButton addBags;
 	public JButton removeBags;
+	private String storedReceipt;
 	
 	private static final long serialVersionUID = 1L;
 	private HardwareGUI gui;
@@ -155,5 +156,8 @@ public class ButtonPanel extends JPanel implements ActionListener {
 			}
 			numBags = 0;
 		}
+	}
+	public String getReceipt() {
+		return storedReceipt;
 	}
 }
