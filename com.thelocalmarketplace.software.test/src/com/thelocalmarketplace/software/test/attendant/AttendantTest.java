@@ -1,10 +1,14 @@
 package com.thelocalmarketplace.software.test.attendant;
 
+import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -12,18 +16,37 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 
+import com.jjjwelectronics.DisabledDevice;
+import com.jjjwelectronics.Mass;
+import com.jjjwelectronics.Numeral;
+import com.jjjwelectronics.keyboard.USKeyboardQWERTY;
+import com.jjjwelectronics.printer.IReceiptPrinter;
+import com.jjjwelectronics.scale.IElectronicScale;
+import com.jjjwelectronics.scanner.Barcode;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.AttendantStation;
+import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.hardware.PLUCodedItem;
+import com.thelocalmarketplace.hardware.PLUCodedProduct;
+import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationSilver;
+import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.SelfCheckoutStationLogic;
 import com.thelocalmarketplace.software.Session;
 import com.thelocalmarketplace.software.SessionState;
 import com.thelocalmarketplace.software.attendant.Attendant;
 import com.thelocalmarketplace.software.attendant.IssuePredictor;
+import com.thelocalmarketplace.software.attendant.Requests;
 import com.thelocalmarketplace.software.exceptions.SessionNotRegisteredException;
+import com.thelocalmarketplace.software.funds.Funds;
+import com.thelocalmarketplace.software.items.BagDispenserController;
+import com.thelocalmarketplace.software.items.ItemManager;
+import com.thelocalmarketplace.software.membership.Membership;
+import com.thelocalmarketplace.software.receipt.Receipt;
 import com.thelocalmarketplace.software.test.AbstractTest;
+import com.thelocalmarketplace.software.weight.Weight;
 
 import powerutility.PowerGrid;
 
@@ -64,9 +87,25 @@ public class AttendantTest extends AbstractTest {
 
     private SelfCheckoutStationLogic logic;
     private AttendantStation station;
-
+    byte num;
+    private Numeral numeral;
+    private Numeral[] digits;
+    private BarcodedProduct product;
+    private BarcodedProduct product2;
+    private Barcode barcode;
+    private Barcode barcode2;
     private Attendant attendant;
     private Session session;
+    private Funds funds;
+    private Weight weight;
+    private ItemManager itemManager;
+    private Membership membership;
+    private BagDispenserController bagDispenser;
+    private Receipt receiptPrinter;
+    
+    private PLUCodedProduct pluProduct;
+    private PriceLookUpCode pluCode;
+
 
     @Before
     public void setup() {
@@ -74,8 +113,41 @@ public class AttendantTest extends AbstractTest {
         station = new AttendantStation();
         attendant = new Attendant(station);
         session = new Session();
+        
+        
         attendant.registerOn(session, scs);
-        //attendant.addIssuePrediction(session);
+
+        station.plugIn(powerGrid);
+        station.turnOn();
+
+        num = 1;
+        numeral = Numeral.valueOf(num);
+        digits = new Numeral[] { numeral, numeral, numeral };
+        barcode = new Barcode(digits);
+        barcode2 = new Barcode(new Numeral[] { numeral });
+        product = new BarcodedProduct(barcode, "Sample Product", 10, 100.0);
+        product2 = new BarcodedProduct(barcode2, "Sample Product 2", 15, 20.0);
+        
+      
+        pluCode = new PriceLookUpCode("1234");
+        pluProduct = new PLUCodedProduct(pluCode, "bread", 500); 
+
+        
+        funds = new Funds(scs);
+        itemManager = new ItemManager();
+        bagDispenser = new BagDispenserController(scs.getReusableBagDispenser(), itemManager);
+        IElectronicScale baggingArea = scs.getBaggingArea();
+        weight = new Weight(baggingArea);
+        IReceiptPrinter printer = scs.getPrinter();
+        receiptPrinter = new Receipt(printer);
+        
+        membership = new Membership(scs.getCardReader());
+        session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+        
+	    
+	    ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode, product);
+		ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode2, product2);
+		ProductDatabases.PLU_PRODUCT_DATABASE.put(pluCode, pluProduct);
     }
 
     @Test
@@ -86,6 +158,7 @@ public class AttendantTest extends AbstractTest {
 
     @Test
     public void testDisableSession() {
+    
     	attendant.disableStation(session);
     	
     	assertEquals(SessionState.DISABLED, session.getState());
@@ -96,6 +169,11 @@ public class AttendantTest extends AbstractTest {
     	attendant.enableStation(session);
     	
     	assertEquals(SessionState.PRE_SESSION, session.getState());
+    }
+    
+    @Test
+    public void testGetAllSessions() {
+    	assertEquals(attendant.getSessions().size(),1);
     }
     
     @Test 
@@ -111,17 +189,89 @@ public class AttendantTest extends AbstractTest {
     	AbstractSelfCheckoutStation expected = attendant.getCustomerStation(session);
     	
     	if (session.getStation() instanceof SelfCheckoutStationBronze) 
-    		assertEquals(SelfCheckoutStationBronze.class, expected);
+    		assertEquals(SelfCheckoutStationBronze.class.isInstance(expected), true);
     	else if (session.getStation() instanceof SelfCheckoutStationSilver) 
-    		assertEquals(SelfCheckoutStationSilver.class, expected);
+    		assertEquals(SelfCheckoutStationSilver.class.isInstance(expected), true);
     	else if (session.getStation() instanceof SelfCheckoutStationGold)
-    		assertEquals(SelfCheckoutStationGold.class, expected);
+    		assertEquals(SelfCheckoutStationGold.class.isInstance(expected), true);
     }
+    
+   
+    
+    @Test
+    public void testApproveValidRequestRequest() {
+    	session.start();
+    	session.notifyAttendant(Requests.HELP_REQUESTED);
+    	attendant.approveRequest(session);
+    	
+    }
+    
+    @Test(expected = SessionNotRegisteredException.class)
+    public void testApproveRequestWithInvalidSession() {
+    	session.start();
+    	Session anotherSession = new Session();
+    	attendant.approveRequest(anotherSession);
+    }
+    
+    
+    @Test(expected = SessionNotRegisteredException.class)
+    public void testAddIssuePredictionWithInvalidSession() {
+    	session.start();
+    	Session anotherSession = new Session();
+    	attendant.addIssuePrediction(anotherSession);
+    }
+    
+    @Test(expected = SessionNotRegisteredException.class)
+    public void testGetCurrentRequestWithInvalidSession() {
+    	session.start();
+    	Session anotherSession = new Session();
+    	attendant.getCurrentRequest(anotherSession);
+    }
+    
+    @Test(expected = SessionNotRegisteredException.class)
+    public void testGetIssuePredictorWithInvalidSession() {
+    	session.start();
+    	Session anotherSession = new Session();
+    	attendant.getIssuePredictor(anotherSession);
+    }
+    
+    @Test
+    public void testAddSearchedItemWithValidBarcodedItem() throws DisabledDevice{
+    	session.start();
+    	session.notifyAttendant(Requests.HELP_REQUESTED);
+        
+    	 attendant.stringToKeyboard("Sample Product");
+         attendant.getStation().keyboard.getKey("Enter").press();
+         attendant.getStation().keyboard.getKey("Enter").release();
+         
+         attendant.addSearchedItem("Sample Product", session);
+         assertEquals(session.getItems().size(), 1);
+         assertEquals(attendant.getCurrentRequest(session), Requests.NO_REQUEST);
+    }
+    
+    @Test
+    public void testAddSearchedItemWithValidPLUCodedItem() throws DisabledDevice{
+    	session.start();
+    	session.notifyAttendant(Requests.HELP_REQUESTED);
+        
+    	 attendant.stringToKeyboard("bread");
+         attendant.getStation().keyboard.getKey("Enter").press();
+         attendant.getStation().keyboard.getKey("Enter").release();
+         
+         attendant.addSearchedItem("bread", session);
+         assertEquals(session.getState(), SessionState.ADD_PLU_ITEM);
+         
+    }
+    
+
     
     @Test(expected = SessionNotRegisteredException.class)
     public void testGetCustomerStationUnregistered() {
     	attendant = new Attendant(station);
     	attendant.getCustomerStation(session);
     }
-     
+    
+    
+    
+    
 }

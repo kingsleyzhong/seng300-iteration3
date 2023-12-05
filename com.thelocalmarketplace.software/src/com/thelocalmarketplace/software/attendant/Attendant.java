@@ -289,15 +289,6 @@ public class Attendant {
 					PLUCodedProduct pluProduct = (PLUCodedProduct) selectedProduct;
 					session.getManager().addItem(pluProduct.getPLUCode());
 				}
-
-				// Cancel search/request?
-				else if (description.equals("CANCEL SEARCH")){
-					sessions.put(session, Requests.NO_REQUEST);
-					return;
-				}
-			} else {
-				// Product not found for some reason - is this needed?
-				throw new ProductNotFoundException("Item not found");
 			}
 		} else {
 			// Session does not have this request 
