@@ -94,12 +94,18 @@ public class Receipt {
 		public void thePrinterIsOutOfPaper() {
 			isOutOfPaper = true;
 			duplicateNeeded = true;
+			for(ReceiptListener l : listeners) {
+				l.notifiyOutOfPaper();
+			}
 		}
 
 		@Override
 		public void thePrinterIsOutOfInk() {
 			isOutOfInk = true;
 			duplicateNeeded = true;
+			for(ReceiptListener l : listeners) {
+				l.notifiyOutOfInk();
+			}
 		}
 
 		@Override

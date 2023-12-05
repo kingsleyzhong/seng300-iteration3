@@ -204,6 +204,7 @@ abstract class AbstractReceiptPrinter extends AbstractDevice<ReceiptPrinterListe
 	}
 
 	protected void notifyPaperAdded() {
+		
 		for(ReceiptPrinterListener l : listeners())
 			l.paperHasBeenAddedToThePrinter();
 	}

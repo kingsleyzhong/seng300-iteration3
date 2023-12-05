@@ -8,8 +8,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import com.jjjwelectronics.EmptyDevice;
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
+import com.jjjwelectronics.OverloadedDevice;
 import com.jjjwelectronics.printer.IReceiptPrinter;
 import com.jjjwelectronics.scale.IElectronicScale;
 import com.jjjwelectronics.scanner.Barcode;
@@ -311,7 +313,40 @@ public class SessionTest extends AbstractTest {
         session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
         session.enterMembership();
     }
-   
+    
+    @Test
+    public void paperRefilledAndLow() throws EmptyDevice, OverloadedDevice {
+    	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+    	session.start();
+     	SessionListenerStub stub = new SessionListenerStub();
+     	session.register(stub);
+     	scs.getPrinter().addInk(1);
+    	scs.getPrinter().addPaper(1);
+    	assertEquals(session.getState(), SessionState.IN_SESSION);
+    	
+    	scs.getPrinter().print('\n');
+
+    	assertEquals(stub.request, Requests.CANT_PRINT_RECEIPT);
+    	// Reset
+     	session.deRegister(stub);
+    }
+    
+    @Test
+    public void inkRefilledAndLow() throws OverloadedDevice, EmptyDevice {
+    	session.setup(itemManager, funds, weight, receiptPrinter, membership, scs, bagDispenser);
+    	session.start();
+     	SessionListenerStub stub = new SessionListenerStub();
+     	session.register(stub);
+     	scs.getPrinter().addInk(1);
+    	scs.getPrinter().addPaper(2);
+    	scs.getPrinter().print('9');
+    	assertEquals(stub.request, Requests.CANT_PRINT_RECEIPT);
+    	
+    	// Reset
+     	session.deRegister(stub);
+    }
+    
+    	
     /*
      *Sessions can only be disabled when in the pre-session state 
      */
